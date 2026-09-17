@@ -9,7 +9,6 @@ CS102 slides for two-dimensional arrays and related Java programming patterns.
 
 - [Open PDF slides](chapter-8.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

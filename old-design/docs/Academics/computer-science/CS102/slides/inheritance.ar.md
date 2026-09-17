@@ -9,7 +9,6 @@ description: شرائح CS102 عن علاقة الصنف الأب والابن،
 
 - [فتح ملف PDF](inheritance.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

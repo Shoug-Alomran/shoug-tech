@@ -73,7 +73,7 @@ function titleFromSlug(slug) {
   return slug
     .replace(/^\d+-/, "")
     .replace(/-/g, " ")
-    .replace(/\b\w/g, c => c.toUpperCase());
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function pageRank(page) {
@@ -101,7 +101,8 @@ function safeDecodeUriPart(value) {
 
 function localPdfTargets(html, htmlFile) {
   const targets = [];
-  const pattern = /(?:href|src|data|value)\s*=\s*["']([^"']+\.pdf(?:[#?][^"']*)?)["']/ig;
+  const pattern =
+    /(?:href|src|data|value)\s*=\s*["']([^"']+\.pdf(?:[#?][^"']*)?)["']/gi;
   let match;
   while ((match = pattern.exec(html))) {
     let href = match[1].split("#")[0].split("?")[0];
@@ -178,7 +179,10 @@ function build() {
     } catch (_) {}
 
     if (url === info.courseUrl) {
-      courseTitles[info.track + "/" + info.course] = extractTitle(html, info.course.toUpperCase());
+      courseTitles[info.track + "/" + info.course] = extractTitle(
+        html,
+        info.course.toUpperCase(),
+      );
       continue;
     }
 
@@ -193,18 +197,23 @@ function build() {
 
     const missingPdfTargets = offlinePlaceholder
       ? []
-      : localPdfTargets(html, file).filter(target => !fs.existsSync(target.file));
+      : localPdfTargets(html, file).filter(
+          (target) => !fs.existsSync(target.file),
+        );
     if (missingPdfTargets.length) {
       skippedMissingPdf.push({
         url,
-        pdfs: missingPdfTargets.map(target => target.href),
+        pdfs: missingPdfTargets.map((target) => target.href),
       });
       continue;
     }
 
     pages.push({
       url,
-      title: extractTitle(html, titleFromSlug(parts[parts.length - 1] || info.course)),
+      title: extractTitle(
+        html,
+        titleFromSlug(parts[parts.length - 1] || info.course),
+      ),
       track: info.track,
       course: info.course,
       section: info.section,
@@ -218,8 +227,13 @@ function build() {
   const stat101ViewerUrls = new Map();
   for (const htmlFile of walk(stat101Root)) {
     let html = "";
-    try { html = fs.readFileSync(htmlFile, "utf8"); } catch (_) { continue; }
-    const pattern = /href=["'](\/academics\/math\/stat101\/viewer\/\?[^"']+)["']/ig;
+    try {
+      html = fs.readFileSync(htmlFile, "utf8");
+    } catch (_) {
+      continue;
+    }
+    const pattern =
+      /href=["'](\/academics\/math\/stat101\/viewer\/\?[^"']+)["']/gi;
     let match;
     while ((match = pattern.exec(html))) {
       const url = decodeEntities(match[1]);
@@ -227,8 +241,13 @@ function build() {
       const normalizedUrl = url.split("?")[0] + "?" + query.toString();
       const source = query.get("src") || "";
       if (!source.endsWith(".pdf")) continue;
-      if ((query.get("section") || "").toUpperCase() === "SYLLABUS" || source.includes("/syllabus/")) continue;
-      let resourceTitle = query.get("title") || titleFromSlug(path.basename(source, ".pdf"));
+      if (
+        (query.get("section") || "").toUpperCase() === "SYLLABUS" ||
+        source.includes("/syllabus/")
+      )
+        continue;
+      let resourceTitle =
+        query.get("title") || titleFromSlug(path.basename(source, ".pdf"));
       if (resourceTitle === "STAT101 Worksheet") {
         resourceTitle = titleFromSlug(path.basename(source, ".pdf"));
       }
@@ -237,9 +256,12 @@ function build() {
         title: resourceTitle,
         track: "math",
         course: "stat101",
-        section: (query.get("section") || "study-material").toLowerCase().replace(/\s+/g, "-"),
+        section: (query.get("section") || "study-material")
+          .toLowerCase()
+          .replace(/\s+/g, "-"),
         courseUrl: "/academics/math/stat101/",
-        courseTitle: "STAT101 // Introduction to Probability Theory and Statistics",
+        courseTitle:
+          "STAT101 // Introduction to Probability Theory and Statistics",
       });
     }
   }
@@ -249,7 +271,8 @@ function build() {
     courseTitles["math/sci101"] = "SCI101 // Introduction to Physical Science";
   }
   if (stat101ViewerUrls.size) {
-    courseTitles["math/stat101"] = "STAT101 // Introduction to Probability Theory and Statistics";
+    courseTitles["math/stat101"] =
+      "STAT101 // Introduction to Probability Theory and Statistics";
   }
 
   pages.sort((a, b) => {
@@ -264,7 +287,8 @@ function build() {
   });
 
   for (const page of pages) {
-    page.courseTitle = courseTitles[page.track + "/" + page.course] || page.course.toUpperCase();
+    page.courseTitle =
+      courseTitles[page.track + "/" + page.course] || page.course.toUpperCase();
   }
 
   const counts = {};
@@ -291,13 +315,17 @@ function build() {
   fs.writeFileSync(OUT, js, "utf8");
   console.log(`[ok] course-manifest.js -> ${pages.length} content pages`);
   if (skippedMissingPdf.length) {
-    console.log(`[warn] skipped ${skippedMissingPdf.length} pages with missing local PDFs`);
+    console.log(
+      `[warn] skipped ${skippedMissingPdf.length} pages with missing local PDFs`,
+    );
     for (const item of skippedMissingPdf.slice(0, 20)) {
       console.log(`  - ${item.url} -> ${item.pdfs.join(", ")}`);
     }
   }
   if (skippedOfflineFiles.length) {
-    console.log(`[warn] skipped ${skippedOfflineFiles.length} offline filesystem placeholders`);
+    console.log(
+      `[warn] skipped ${skippedOfflineFiles.length} offline filesystem placeholders`,
+    );
     for (const file of skippedOfflineFiles.slice(0, 20)) {
       console.log(`  - ${path.relative(ROOT, file)}`);
     }

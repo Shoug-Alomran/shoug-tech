@@ -287,7 +287,7 @@ def coming_soon_panel() -> str:
         '<div class="rendered-content coming-soon-panel">'
         '<h2>Coming Soon</h2>'
         '<p>This HTML slide breakdown is coming soon.</p>'
-        '</div></div></div>'
+        '</div></div>'
     )
 
 
@@ -340,6 +340,52 @@ def show_embeds_without_intro(content: str, *, allow_pdf_embed: bool) -> str:
         lambda m: f'<iframe class="embed-frame" src="{m.group("src")}" title="PDF"></iframe>',
         content,
     )
+
+
+def repair_malformed_bilingual_embed_wrappers(content: str) -> str:
+    """Restore the container hierarchy after a duplicated bilingual embed pass."""
+    content = re.sub(
+        r'(?P<prefix><div class="embed-area-wrapper"[^>]*>\s*'
+        r'<div class="embed-container"[^>]*>\s*'
+        r'<div class="rendered-content"[^>]*>.*?</div>)\s*</div>\s*'
+        r'(?P<arabic><div class="rendered-content"[^>]*>.*?</div>)\s*'
+        r'</div>(?:\s*</div>)+',
+        r'\g<prefix>\n                \g<arabic>\n            </div>\n        </div>',
+        content,
+        flags=re.S,
+    )
+    content = re.sub(
+        r'(<div class="embed-area-wrapper"[^>]*>\s*'
+        r'<div class="embed-container"[^>]*>\s*'
+        r'<div class="rendered-content coming-soon-panel">.*?</div>\s*'
+        r'</div>\s*</div>)\s*</div>',
+        r'\1',
+        content,
+        flags=re.S,
+    )
+    content = re.sub(
+        r'(?P<block><div class="embed-area-wrapper"[^>]*>.*?</iframe>\s*'
+        r'</div>\s*</div>\s*</div>)\s*(?:</div>\s*){4}(?=</main>)',
+        r'\g<block>',
+        content,
+        flags=re.S,
+    )
+    content = re.sub(
+        r'(<div class="embed-area-wrapper"[^>]*>.*?</iframe>\s*)'
+        r'(?:</div>\s*){4}(?=</main>)',
+        r'\1</div></div></div>',
+        content,
+        flags=re.S,
+    )
+    content = re.sub(
+        r'(?P<block><div class="embed-area-wrapper"[^>]*>\s*'
+        r'<div class="embed-container"[^>]*>.*?</div>\s*</div>\s*</div>)'
+        r'\s*</div>\s*</div>(?=\s*</main>)',
+        r'\g<block>',
+        content,
+        flags=re.S,
+    )
+    return re.sub(r'</style>\s*</style>', '</style>', content)
 
 
 def add_sidebar_embed_fix(content: str) -> str:
@@ -494,6 +540,7 @@ def main() -> None:
         content = replace_primary_action(content)
         content = add_pdf_link_targets(content)
         content = show_embeds_without_intro(content, allow_pdf_embed="/slide-breakdowns/" not in path.as_posix())
+        content = repair_malformed_bilingual_embed_wrappers(content)
         content = normalize_empty_section(content)
         if "/slide-breakdowns/" in path.as_posix() and path.name == "index.html":
             if path.parent.name == "slide-breakdowns":

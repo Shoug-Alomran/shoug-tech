@@ -17,15 +17,15 @@ architecture evaluation, and architecture documentation.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | SE322 |
-| Course title | Software Design and Architecture |
-| Credits | 3 credits |
-| Contact hours | 4 contact hours: 3 lecture hours and 1 tutorial hour |
-| Prerequisite | SE311 |
-| Program role | Required core course in the BSSE program |
-| Primary textbook | Carlos Otero, *Software Engineering Design: Theory and Practice*, CRC Press, 2012 |
+| Item             | Details                                                                           |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Course code      | SE322                                                                             |
+| Course title     | Software Design and Architecture                                                  |
+| Credits          | 3 credits                                                                         |
+| Contact hours    | 4 contact hours: 3 lecture hours and 1 tutorial hour                              |
+| Prerequisite     | SE311                                                                             |
+| Program role     | Required core course in the BSSE program                                          |
+| Primary textbook | Carlos Otero, _Software Engineering Design: Theory and Practice_, CRC Press, 2012 |
 
 ---
 
@@ -58,43 +58,43 @@ By the end of SE322, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Syllabus, Background, and Problem Solving**
+- **Syllabus, Background, and Problem Solving**
 
-    Software engineering review and problem-solving foundations.
+  Software engineering review and problem-solving foundations.
 
--   **Introduction to Software Engineering Design**
+- **Introduction to Software Engineering Design**
 
-    Why software engineering design matters, design challenges, the design
-    process, and design fundamentals.
+  Why software engineering design matters, design challenges, the design
+  process, and design fundamentals.
 
--   **Software Architecture**
+- **Software Architecture**
 
-    Architecture fundamentals, key architecture tasks, architecture process,
-    requirements engineering, and the 4+1 view model.
+  Architecture fundamentals, key architecture tasks, architecture process,
+  requirements engineering, and the 4+1 view model.
 
--   **Software Quality Attributes**
+- **Software Quality Attributes**
 
-    Architecture and requirements, quality attribute considerations, quality
-    design decisions, and major quality attributes.
+  Architecture and requirements, quality attribute considerations, quality
+  design decisions, and major quality attributes.
 
--   **Architecture Styles and Patterns**
+- **Architecture Styles and Patterns**
 
-    Architecture style and pattern history, classification, and design
-    trade-offs.
+  Architecture style and pattern history, classification, and design
+  trade-offs.
 
--   **Principles of Detailed Design**
+- **Principles of Detailed Design**
 
-    Component design, object-oriented internal structure, SOLID principles, and
-    internal component behavior.
+  Component design, object-oriented internal structure, SOLID principles, and
+  internal component behavior.
 
--   **Design Patterns**
+- **Design Patterns**
 
-    Creational, structural, and behavioral design patterns in detailed design.
+  Creational, structural, and behavioral design patterns in detailed design.
 
--   **Architecture Evaluation and Documentation**
+- **Architecture Evaluation and Documentation**
 
-    Architecture evaluation, ATAM, documenting views, documenting beyond views,
-    and documenting quality.
+  Architecture evaluation, ATAM, documenting views, documenting beyond views,
+  and documenting quality.
 
 </div>
 
@@ -102,25 +102,24 @@ By the end of SE322, students should be able to:
 
 ## Assessment Breakdown
 
-| Assessment | Weight |
-|------------|--------|
-| Final exam | 40% |
-| Midterm exam | 20% |
-| Assignments, lab activities, and case studies | 15% |
-| Phased project with four deliverables | 10% |
-| Two quizzes | 10% |
-| Attendance | 5% |
+| Assessment                                    | Weight |
+| --------------------------------------------- | ------ |
+| Final exam                                    | 40%    |
+| Midterm exam                                  | 20%    |
+| Assignments, lab activities, and case studies | 15%    |
+| Phased project with four deliverables         | 10%    |
+| Two quizzes                                   | 10%    |
+| Attendance                                    | 5%     |
 
 ---
 
 ## Slide Coverage
 
-| Syllabus area | Site material |
-|---------------|---------------|
-| Introduction | Chapter 1 slides |
-| Software architecture | Chapter 2 slides |
-| Quality attributes | Chapter 3 slides |
-| Architecture patterns | Chapter 4 slides |
+| Syllabus area              | Site material    |
+| -------------------------- | ---------------- |
+| Introduction               | Chapter 1 slides |
+| Software architecture      | Chapter 2 slides |
+| Quality attributes         | Chapter 3 slides |
+| Architecture patterns      | Chapter 4 slides |
 | Detailed design principles | Chapter 5 slides |
 | Structural design patterns | Chapter 7 slides |
-

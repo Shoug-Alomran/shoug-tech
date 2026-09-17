@@ -9,7 +9,6 @@ CS101 slides for Math library functions, character processing, strings, and comm
 
 - [Open PDF slides](chapter-4.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

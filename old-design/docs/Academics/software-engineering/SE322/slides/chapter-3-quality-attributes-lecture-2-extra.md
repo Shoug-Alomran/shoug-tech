@@ -9,7 +9,6 @@ SE322 slides continuing quality attributes, trade-offs, and quality-driven desig
 
 - [Open PDF slides](chapter-3-quality-attributes-lecture-2-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

@@ -9,7 +9,6 @@ description: شرائح SE322 عن سمات الجودة وكيف تؤثر قر�
 
 - [فتح ملف الشرائح](chapter-3-quality-attributes-lecture-1-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

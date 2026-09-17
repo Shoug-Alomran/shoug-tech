@@ -4,56 +4,56 @@ This section collects ETHCS 303 exam-prep quizzes by topic.
 
 <div class="grid cards" markdown>
 
--   **Introduction to Ethical Hacking**
+- **Introduction to Ethical Hacking**
 
-    [Open quiz](introduction-to-ethical-hacking.md)
+  [Open quiz](introduction-to-ethical-hacking.md)
 
--   **Privacy Issues in Cyberspace**
+- **Privacy Issues in Cyberspace**
 
-    [Open quiz](privacy-issues-in-cyberspace.md)
+  [Open quiz](privacy-issues-in-cyberspace.md)
 
--   **Cloud Computing and Privacy Issues**
+- **Cloud Computing and Privacy Issues**
 
-    [Open quiz](cloud-computing-and-privacy-issues.md)
+  [Open quiz](cloud-computing-and-privacy-issues.md)
 
--   **Network Security and Privacy**
+- **Network Security and Privacy**
 
-    [Open quiz](network-security-and-privacy.md)
+  [Open quiz](network-security-and-privacy.md)
 
--   **Moral Systems, Ethical Concepts, and Theories**
+- **Moral Systems, Ethical Concepts, and Theories**
 
-    [Open quiz](moral-systems-ethical-concepts-and-theories.md)
+  [Open quiz](moral-systems-ethical-concepts-and-theories.md)
 
--   **Kantianism**
+- **Kantianism**
 
-    [Open quiz](kantianism.md)
+  [Open quiz](kantianism.md)
 
--   **Utilitarianism**
+- **Utilitarianism**
 
-    [Open quiz](utilitarianism.md)
+  [Open quiz](utilitarianism.md)
 
--   **Social Contract Theory**
+- **Social Contract Theory**
 
-    [Open quiz](social-contract-theory.md)
+  [Open quiz](social-contract-theory.md)
 
--   **Cyber Laws in Saudi Arabia**
+- **Cyber Laws in Saudi Arabia**
 
-    [Open quiz](cyber-laws-ksa.md)
+  [Open quiz](cyber-laws-ksa.md)
 
--   **Ethical Issues in Systems Analysis and Software Engineering**
+- **Ethical Issues in Systems Analysis and Software Engineering**
 
-    [Open quiz](ethical-issues-in-systems-analysis-and-software-engineering.md)
+  [Open quiz](ethical-issues-in-systems-analysis-and-software-engineering.md)
 
--   **Business Ethics**
+- **Business Ethics**
 
-    [Open quiz](business-ethics.md)
+  [Open quiz](business-ethics.md)
 
--   **Social Engineering**
+- **Social Engineering**
 
-    [Open quiz](social-engineering.md)
+  [Open quiz](social-engineering.md)
 
--   **Social Media Ethical, Legal, and Security Issues**
+- **Social Media Ethical, Legal, and Security Issues**
 
-    [Open quiz](social-media.md)
+  [Open quiz](social-media.md)
 
 </div>

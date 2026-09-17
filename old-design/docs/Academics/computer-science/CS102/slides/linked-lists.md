@@ -9,7 +9,6 @@ CS102 slides for linked-list concepts, node references, insertion, deletion, tra
 
 - [Open PDF slides](linked-lists.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

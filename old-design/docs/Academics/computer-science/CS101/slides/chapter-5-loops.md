@@ -9,7 +9,6 @@ CS101 slides for while, do-while, for loops, nested loops, break, continue, and 
 
 - [Open PDF slides](chapter-5.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

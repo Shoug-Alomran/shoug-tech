@@ -1,7 +1,8 @@
 !!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
 # فيديو ورشة عمل
+
 <video controls width="100%" poster="pics/poster.png">
   <source src="https://pub-1ae2691df7364eea93afb4e67996d97c.r2.dev/Final Cut.mp4" type="video/mp4">
 </video>

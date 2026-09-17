@@ -9,49 +9,48 @@ description: فهرس شرائح مقرر CS102 بروابط واضحة وصدي
 
 <div class="grid cards" markdown>
 
+- **الأصناف والكائنات**
 
--   **الأصناف والكائنات**
+  [فتح الشرائح](classes-and-objects.md)
 
-    [فتح الشرائح](classes-and-objects.md)
+- **الوراثة**
 
--   **الوراثة**
+  [فتح الشرائح](inheritance.md)
 
-    [فتح الشرائح](inheritance.md)
+- **تعدد الأشكال**
 
--   **تعدد الأشكال**
+  [فتح الشرائح](polymorphism.md)
 
-    [فتح الشرائح](polymorphism.md)
+- **الملفات**
 
--   **الملفات**
+  [فتح الشرائح](files.md)
 
-    [فتح الشرائح](files.md)
+- **العودية**
 
--   **العودية**
+  [فتح الشرائح](recursion.md)
 
-    [فتح الشرائح](recursion.md)
+- **الأصناف العامة**
 
--   **الأصناف العامة**
+  [فتح الشرائح](generic-classes.md)
 
-    [فتح الشرائح](generic-classes.md)
+- **إطار مجموعات Java**
 
--   **إطار مجموعات Java**
+  [فتح الشرائح](java-collection-framework.md)
 
-    [فتح الشرائح](java-collection-framework.md)
+- **إطار مجموعات Java - الجزء 2**
 
--   **إطار مجموعات Java - الجزء 2**
+  [فتح الشرائح](java-collection-framework-part-2.md)
 
-    [فتح الشرائح](java-collection-framework-part-2.md)
+- **Comparable وComparator والواجهات**
 
--   **Comparable وComparator والواجهات**
+  [فتح الشرائح](comparable-comparator-and-interfaces.md)
 
-    [فتح الشرائح](comparable-comparator-and-interfaces.md)
+- **القوائم المرتبطة**
 
--   **القوائم المرتبطة**
+  [فتح الشرائح](linked-lists.md)
 
-    [فتح الشرائح](linked-lists.md)
+- **المصفوفات متعددة الأبعاد**
 
--   **المصفوفات متعددة الأبعاد**
-
-    [فتح الشرائح](multidimensional-arrays.md)
+  [فتح الشرائح](multidimensional-arrays.md)
 
 </div>

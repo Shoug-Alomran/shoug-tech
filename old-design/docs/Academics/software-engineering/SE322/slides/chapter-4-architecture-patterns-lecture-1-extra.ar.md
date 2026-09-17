@@ -9,7 +9,6 @@ description: شرائح SE322 عن الأنماط المعمارية والبن�
 
 - [فتح ملف الشرائح](chapter-4-architecture-patterns-lecture-1-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

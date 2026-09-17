@@ -1,5 +1,4 @@
 let makeArticle = (nodeId, position, fname, lname, email) => {
-  
   let h2 = document.createElement("h2");
   let h2Content = document.createTextNode(`Position: ${position}`);
   h2.appendChild(h2Content);
@@ -24,15 +23,15 @@ let makeArticle = (nodeId, position, fname, lname, email) => {
 
   let node = document.getElementById(nodeId);
   node.appendChild(article);
-}
+};
 
 let getValueByID = (inputNodeId) => {
   let inputNode = document.getElementById(inputNodeId);
-  if(inputNode) return inputNode.value;
+  if (inputNode) return inputNode.value;
   return `Element with id ${inputNodeId} not found!!`;
-}
+};
 
-function clearElementByID(nodeId){ 
+function clearElementByID(nodeId) {
   // change according to need
   let inputNode = document.getElementById(nodeId);
   inputNode.remove();

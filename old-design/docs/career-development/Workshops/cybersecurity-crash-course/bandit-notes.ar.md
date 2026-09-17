@@ -1,7 +1,7 @@
 !!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
-# OverTheWire Bandit  -  شرح كامل للمستويات (0 ← 33)
+# OverTheWire Bandit - شرح كامل للمستويات (0 ← 33)
 
 ← [رجوع إلى نظرة عامة على الورشة](overview.md)
 
@@ -14,18 +14,18 @@
 
 ## تصفح سريع
 
-| المستويات | التركيز |
-|---|---|
-| [0  -  3](#level-0) | اتصال SSH، قراءة الملفات الأساسية، الملفات المخفية |
-| [4  -  6](#level-4-5) | أنواع الملفات، أمر find، البحث في نظام الملفات |
-| [7  -  9](#level-7-8) | grep، sort/uniq، strings |
-| [10  -  12](#level-10-11) | Base64، ROT13، طبقات الضغط |
-| [13  -  16](#level-13-14) | مفاتيح SSH، netcat، SSL/TLS، مسح المنافذ |
-| [17  -  20](#level-17-18) | diff، تجاوز bashrc، برامج setuid |
-| [21  -  24](#level-21-22) | مهام cron، تشفير MD5، هجوم تخمين |
-| [25  -  27](#level-25-26) | الهروب من الشل، استغلال vim، SUID |
-| [27  -  31](#level-27-28) | تاريخ Git، الفروع، العلامات، hooks |
-| [32  -  33](#level-32-33) | تجاوز شل الأحرف الكبيرة |
+| المستويات               | التركيز                                            |
+| ----------------------- | -------------------------------------------------- |
+| [0 - 3](#level-0)       | اتصال SSH، قراءة الملفات الأساسية، الملفات المخفية |
+| [4 - 6](#level-4-5)     | أنواع الملفات، أمر find، البحث في نظام الملفات     |
+| [7 - 9](#level-7-8)     | grep، sort/uniq، strings                           |
+| [10 - 12](#level-10-11) | Base64، ROT13، طبقات الضغط                         |
+| [13 - 16](#level-13-14) | مفاتيح SSH، netcat، SSL/TLS، مسح المنافذ           |
+| [17 - 20](#level-17-18) | diff، تجاوز bashrc، برامج setuid                   |
+| [21 - 24](#level-21-22) | مهام cron، تشفير MD5، هجوم تخمين                   |
+| [25 - 27](#level-25-26) | الهروب من الشل، استغلال vim، SUID                  |
+| [27 - 31](#level-27-28) | تاريخ Git، الفروع، العلامات، hooks                 |
+| [32 - 33](#level-32-33) | تجاوز شل الأحرف الكبيرة                            |
 
 ---
 
@@ -35,6 +35,7 @@
 الاتصال بسيرفر Bandit باستخدام SSH واسترجاع كلمة المرور للمستوى التالي.
 
 **الأوامر المستخدمة**
+
 ```bash
 ssh bandit0@bandit.labs.overthewire.org -p 2220
 ```
@@ -50,8 +51,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 `bandit0`
 
 ??? example "لقطة شاشة"
-    ![المستوى 0](/career-development/Workshops/cybersecurity-crash-course/pics/Level-0.png)
-
+![المستوى 0](/career-development/Workshops/cybersecurity-crash-course/pics/Level-0.png)
 
 ---
 
@@ -61,6 +61,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 تحديد موقع الملف الذي يحتوي على كلمة مرور المستوى التالي واستخدامها للدخول كمستخدم bandit1.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 cat readme
@@ -72,13 +73,14 @@ cat readme
 - أمر `cat readme` طبع محتويات ملف readme على الشاشة، وظهرت كلمة المرور
 
 **أخطاء شائعة**
+
 - محاولة استخدام `cd readme` (التعامل معه كمجلد بدلاً من ملف)
 
 **كلمة المرور للمستوى التالي**
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
 
 ??? example "لقطة شاشة"
-    ![المستوى 0 ← المستوى 1](/career-development/Workshops/cybersecurity-crash-course/pics/Level-0-→-Level-1.png)
+![المستوى 0 ← المستوى 1](/career-development/Workshops/cybersecurity-crash-course/pics/Level-0-→-Level-1.png)
 
 ---
 
@@ -88,6 +90,7 @@ cat readme
 قراءة ملف اسمه `-` ويتطلب معاملة خاصة بسبب وجود الرمز الخاص.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 cat ./-
@@ -103,7 +106,7 @@ cat ./-
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 1 ← المستوى 2](/career-development/Workshops/cybersecurity-crash-course/pics/Level-1-→-Level-2.png)
+![المستوى 1 ← المستوى 2](/career-development/Workshops/cybersecurity-crash-course/pics/Level-1-→-Level-2.png)
 
 ---
 
@@ -113,6 +116,7 @@ cat ./-
 قراءة ملف يحتوي على مسافات في اسمه ويبدأ بشرطات.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 cat -- "--spaces in this filename--"
@@ -130,7 +134,7 @@ cat -- "--spaces in this filename--"
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 2 ←المستوى 3](/career-development/Workshops/cybersecurity-crash-course/pics/Level-2-→Level-3.png)
+![المستوى 2 ←المستوى 3](/career-development/Workshops/cybersecurity-crash-course/pics/Level-2-→Level-3.png)
 
 ---
 
@@ -140,6 +144,7 @@ cat -- "--spaces in this filename--"
 تحديد موقع وقراءة ملف مخفي داخل مجلد `inhere`.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 cd inhere
@@ -166,6 +171,7 @@ cat "...Hiding-From-You"
 تحديد موقع وقراءة كلمة المرور من الملف الوحيد المقروء (نص بشري) بين عدة ملفات في مجلد `inhere`.
 
 **الأوامر المستخدمة**
+
 ```bash
 cd inhere
 ls
@@ -184,7 +190,7 @@ cat ./-file07
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
 
 ??? example "لقطة شاشة"
-    ![المستوى 4 ← المستوى 5](/career-development/Workshops/cybersecurity-crash-course/pics/Level-4-→-Level-5.png)
+![المستوى 4 ← المستوى 5](/career-development/Workshops/cybersecurity-crash-course/pics/Level-4-→-Level-5.png)
 
 ---
 
@@ -194,6 +200,7 @@ cat ./-file07
 إيجاد كلمة المرور المخزنة في ملف بخصائص محددة: مقروء بشريًا، حجمه 1033 بايت، وغير قابل للتنفيذ.
 
 **الأوامر المستخدمة**
+
 ```bash
 cd inhere
 ls
@@ -212,7 +219,7 @@ cat ./maybehere07/.file2
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
 
 ??? example "لقطة شاشة"
-    ![المستوى 5 ← المستوى 6](/career-development/Workshops/cybersecurity-crash-course/pics/Level-5-→-Level-6.png)
+![المستوى 5 ← المستوى 6](/career-development/Workshops/cybersecurity-crash-course/pics/Level-5-→-Level-6.png)
 
 ---
 
@@ -222,6 +229,7 @@ cat ./maybehere07/.file2
 تحديد موقع ملف في أي مكان بالنظام مملوك للمستخدم `bandit7` والمجموعة `bandit6` وحجمه بالضبط 33 بايت.
 
 **الأوامر المستخدمة**
+
 ```bash
 find / -type f -user bandit7 -group bandit6 -size 33c 2>/dev/null
 cat /var/lib/dpkg/info/bandit7.password
@@ -238,7 +246,7 @@ cat /var/lib/dpkg/info/bandit7.password
 `z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce`
 
 ??? example "لقطة شاشة"
-    ![المستوى 6 ← المستوى 7](/career-development/Workshops/cybersecurity-crash-course/pics/Level-6-→-Level-7.png)
+![المستوى 6 ← المستوى 7](/career-development/Workshops/cybersecurity-crash-course/pics/Level-6-→-Level-7.png)
 
 ---
 
@@ -248,6 +256,7 @@ cat /var/lib/dpkg/info/bandit7.password
 إيجاد كلمة المرور المخزنة في `data.txt` بجانب كلمة "millionth".
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 grep "millionth" data.txt
@@ -263,7 +272,7 @@ grep "millionth" data.txt
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
 
 ??? example "لقطة شاشة"
-    ![المستوى 7 ← المستوى 8](/career-development/Workshops/cybersecurity-crash-course/pics/Level-7-→-Level-8.png)
+![المستوى 7 ← المستوى 8](/career-development/Workshops/cybersecurity-crash-course/pics/Level-7-→-Level-8.png)
 
 ---
 
@@ -273,6 +282,7 @@ grep "millionth" data.txt
 إيجاد كلمة المرور في `data.txt` التي هي السطر الوحيد الذي يتكرر مرة واحدة بالضبط.
 
 **الأوامر المستخدمة**
+
 ```bash
 sort data.txt | uniq -u
 ```
@@ -287,7 +297,7 @@ sort data.txt | uniq -u
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
 
 ??? example "لقطة شاشة"
-    ![المستوى 8 ← المستوى 9](/career-development/Workshops/cybersecurity-crash-course/pics/Level-8-→-Level-9.png)
+![المستوى 8 ← المستوى 9](/career-development/Workshops/cybersecurity-crash-course/pics/Level-8-→-Level-9.png)
 
 ---
 
@@ -297,6 +307,7 @@ sort data.txt | uniq -u
 استخراج كلمة المرور من ملف ثنائي. كلمة المرور نص بشري مقروء وتسبقها عدة علامات `=`.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 strings data.txt | grep '='
@@ -313,7 +324,7 @@ strings data.txt | grep '='
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 ??? example "لقطة شاشة"
-    ![المستوى 9 ← المستوى 10](/career-development/Workshops/cybersecurity-crash-course/pics/Level-9-→-Level-10.png)
+![المستوى 9 ← المستوى 10](/career-development/Workshops/cybersecurity-crash-course/pics/Level-9-→-Level-10.png)
 
 ---
 
@@ -323,6 +334,7 @@ strings data.txt | grep '='
 استخراج كلمة المرور من ملف يحتوي على بيانات مشفرة بـ Base64.
 
 **الأوامر المستخدمة**
+
 ```bash
 cat data.txt
 cat data.txt | base64 -d
@@ -335,13 +347,14 @@ cat data.txt | base64 -d
 - المخرجات المفكوكة تظهر كلمة المرور
 
 **أخطاء شائعة**
+
 - افتراض أن مخرجات Base64 هي كلمة المرور نفسها (ما زالت بحاجة لفك التشفير)
 
 **كلمة المرور للمستوى التالي**
 `dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 ??? example "لقطة شاشة"
-    ![المستوى 10 ← المستوى 11](/career-development/Workshops/cybersecurity-crash-course/pics/Level-10-→-Level-11.png)
+![المستوى 10 ← المستوى 11](/career-development/Workshops/cybersecurity-crash-course/pics/Level-10-→-Level-11.png)
 
 ---
 
@@ -351,6 +364,7 @@ cat data.txt | base64 -d
 فك تشفير نص مخزن في `data.txt` مشفر باستخدام ROT13.
 
 **الأوامر المستخدمة**
+
 ```bash
 cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 ```
@@ -362,13 +376,14 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 - هذا يظهر كلمة المرور
 
 **أخطاء شائعة**
+
 - محاولة استخدام `sort` الذي لا يفك تشفير ROT13
 
 **كلمة المرور للمستوى التالي**
 `7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4`
 
 ??? example "لقطة شاشة"
-    ![المستوى 11 ← المستوى 12](/career-development/Workshops/cybersecurity-crash-course/pics/Level-11-→-Level-12.png)
+![المستوى 11 ← المستوى 12](/career-development/Workshops/cybersecurity-crash-course/pics/Level-11-→-Level-12.png)
 
 ---
 
@@ -378,6 +393,7 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 استخراج كلمة المرور من ملف مضغوط بشكل متكرر وتم تفريغه بصيغة hex dump.
 
 **الأوامر المستخدمة**
+
 ```bash
 xxd -r data.txt > data.bin
 file data.bin
@@ -392,14 +408,15 @@ file data.bin
 
 **دليل الأوامر**
 
-| إذا أظهر `file`... | إذن افعل... |
-|---|---|
-| ASCII text | اعرض باستخدام `cat` |
-| gzip compressed data | غيّر الاسم إلى `.gz` وفك الضغط بـ `gzip -d` |
+| إذا أظهر `file`...    | إذن افعل...                                   |
+| --------------------- | --------------------------------------------- |
+| ASCII text            | اعرض باستخدام `cat`                           |
+| gzip compressed data  | غيّر الاسم إلى `.gz` وفك الضغط بـ `gzip -d`   |
 | bzip2 compressed data | غيّر الاسم إلى `.bz2` وفك الضغط بـ `bzip2 -d` |
-| POSIX tar archive | غيّر الاسم إلى `.tar` واستخرج بـ `tar -xf` |
+| POSIX tar archive     | غيّر الاسم إلى `.tar` واستخرج بـ `tar -xf`    |
 
 **أخطاء شائعة**
+
 - محاولة فك الضغط دون تحديد نوع الملف أولاً
 - تغيير الامتداد إلى امتدادات غير صحيحة
 
@@ -407,7 +424,7 @@ file data.bin
 `FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn`
 
 ??? example "لقطة شاشة"
-    ![المستوى 12 ← المستوى 13](/career-development/Workshops/cybersecurity-crash-course/pics/Level-12-→-Level-13.png)
+![المستوى 12 ← المستوى 13](/career-development/Workshops/cybersecurity-crash-course/pics/Level-12-→-Level-13.png)
 
 ---
 
@@ -417,6 +434,7 @@ file data.bin
 استخدام مفتاح SSH الخاص المُعطى للدخول كمستخدم bandit14.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls -l
 chmod 600 sshkey.private
@@ -431,7 +449,7 @@ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
 - ملاحظة: الاتصال بـ localhost محظور، لذا يجب استخدام اسم الجهاز البعيد
 
 **كلمة المرور للمستوى التالي**
-لا توجد كلمة مرور  -  الوصول لحساب bandit14 هو الهدف.
+لا توجد كلمة مرور - الوصول لحساب bandit14 هو الهدف.
 
 ---
 
@@ -441,6 +459,7 @@ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
 استرجاع كلمة مرور bandit15 بإرسال كلمة مرور المستوى الحالي إلى المنفذ 30000 على الجهاز المحلي (localhost).
 
 **الأوامر المستخدمة**
+
 ```bash
 cat /etc/bandit_pass/bandit14
 nc localhost 30000
@@ -457,7 +476,7 @@ nc localhost 30000
 `8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
 
 ??? example "لقطة شاشة"
-    ![المستوى 14 ← المستوى 15](/career-development/Workshops/cybersecurity-crash-course/pics/Level-14-→-Level-15.png)
+![المستوى 14 ← المستوى 15](/career-development/Workshops/cybersecurity-crash-course/pics/Level-14-→-Level-15.png)
 
 ---
 
@@ -467,6 +486,7 @@ nc localhost 30000
 استرجاع كلمة مرور المستوى 16 بإرسال كلمة المرور الحالية إلى المنفذ 30001 باستخدام تشفير SSL/TLS.
 
 **الأوامر المستخدمة**
+
 ```bash
 cat /etc/bandit_pass/bandit15
 openssl s_client -connect localhost:30001
@@ -480,13 +500,14 @@ openssl s_client -connect localhost:30001
 - استلام كلمة مرور المستوى التالي
 
 **أخطاء شائعة**
+
 - استخدام netcat العادي (التشفير مطلوب على هذا المنفذ)
 
 **كلمة المرور للمستوى التالي**
 `kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 15 ← المستوى 16](/career-development/Workshops/cybersecurity-crash-course/pics/Level-15-→-Level-16.png)
+![المستوى 15 ← المستوى 16](/career-development/Workshops/cybersecurity-crash-course/pics/Level-15-→-Level-16.png)
 
 ---
 
@@ -496,6 +517,7 @@ openssl s_client -connect localhost:30001
 إيجاد المنفذ الصحيح الذي يدعم SSL بين 31000 - 32000 وإرسال كلمة المرور لاسترجاع بيانات الدخول لـ bandit17.
 
 **الأوامر المستخدمة**
+
 ```bash
 cat /etc/bandit_pass/bandit16
 nmap -sV -p31000-32000 localhost
@@ -512,19 +534,19 @@ openssl s_client -connect localhost:31790
 
 **نتائج Nmap**
 
-| المنفذ | الحالة | الخدمة |
-|---|---|---|
-| 31046 | مفتوح | echo |
-| 31518 | مفتوح | ssl/echo |
-| 31691 | مفتوح | echo |
-| 31790 | مفتوح | ssl/unknown |
-| 31960 | مفتوح | echo |
+| المنفذ | الحالة | الخدمة      |
+| ------ | ------ | ----------- |
+| 31046  | مفتوح  | echo        |
+| 31518  | مفتوح  | ssl/echo    |
+| 31691  | مفتوح  | echo        |
+| 31790  | مفتوح  | ssl/unknown |
+| 31960  | مفتوح  | echo        |
 
 **كلمة المرور للمستوى التالي**
 مفتاح RSA خاص (يستخدم للدخول عبر SSH)
 
 ??? example "لقطة شاشة"
-    ![المستوى 16 ← المستوى 17](/career-development/Workshops/cybersecurity-crash-course/pics/Level-16-→-Level-17.png)
+![المستوى 16 ← المستوى 17](/career-development/Workshops/cybersecurity-crash-course/pics/Level-16-→-Level-17.png)
 
 ---
 
@@ -534,6 +556,7 @@ openssl s_client -connect localhost:31790
 مقارنة ملفين لإيجاد كلمة المرور التي تغيرت.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls
 diff passwords.old passwords.new
@@ -560,6 +583,7 @@ diff passwords.old passwords.new
 كلمة المرور في ملف اسمه `readme`، لكن تسجيل الدخول العادي يشغل `.bashrc` معدلاً ينهي الجلسة فورًا.
 
 **الأوامر المستخدمة**
+
 ```bash
 ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 ```
@@ -574,7 +598,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 `cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
 
 ??? example "لقطة شاشة"
-    ![المستوى 18 ← المستوى 19](/career-development/Workshops/cybersecurity-crash-course/pics/Level-18-→-Level-19.png)
+![المستوى 18 ← المستوى 19](/career-development/Workshops/cybersecurity-crash-course/pics/Level-18-→-Level-19.png)
 
 ---
 
@@ -584,6 +608,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 استخدام برنامج setuid للوصول لكلمة مرور المستوى التالي.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls -l
 ./bandit20-do cat /etc/bandit_pass/bandit20
@@ -604,7 +629,7 @@ ls -l
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 ??? example "لقطة شاشة"
-    ![المستوى 19 ← المستوى 20](/career-development/Workshops/cybersecurity-crash-course/pics/Level-19-→-Level-20.png)
+![المستوى 19 ← المستوى 20](/career-development/Workshops/cybersecurity-crash-course/pics/Level-19-→-Level-20.png)
 
 ---
 
@@ -614,6 +639,7 @@ ls -l
 استخدام برنامج `suconnect` لاسترجاع كلمة المرور بإعداد مستمع واتصال عميل.
 
 **الأوامر المستخدمة**
+
 ```bash
 # الطرفية 1
 nc -l -p 1234
@@ -631,13 +657,14 @@ nc -l -p 1234
 - بعد إنشاء الاتصال، أرسل كلمة المرور الحالية عبر المستمع لاستقبال كلمة مرور bandit21
 
 **أخطاء شائعة**
+
 - تشغيل `./suconnect <port>` قبل بدء المستمع (يسبب خطأ "Could not connect")
 
 **كلمة المرور للمستوى التالي**
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
 ??? example "لقطة شاشة"
-    ![المستوى 20 ← المستوى 21](/career-development/Workshops/cybersecurity-crash-course/pics/Level-20-→-Level-21.png)
+![المستوى 20 ← المستوى 21](/career-development/Workshops/cybersecurity-crash-course/pics/Level-20-→-Level-21.png)
 
 ---
 
@@ -647,6 +674,7 @@ nc -l -p 1234
 التحقق من مهمة cron تعمل تلقائيًا واسترجاع كلمة المرور التي تكتبها.
 
 **الأوامر المستخدمة**
+
 ```bash
 cd /etc/cron.d
 ls
@@ -665,7 +693,7 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 `tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q`
 
 ??? example "لقطة شاشة"
-    ![المستوى 21 ← المستوى 22](/career-development/Workshops/cybersecurity-crash-course/pics/Level-21-→-Level-22.png)
+![المستوى 21 ← المستوى 22](/career-development/Workshops/cybersecurity-crash-course/pics/Level-21-→-Level-22.png)
 
 ---
 
@@ -675,6 +703,7 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 فهم سكريبت cron يستخدم تشفير MD5 لإنشاء أسماء ملفات ديناميكية، ثم استرجاع كلمة المرور.
 
 **الأوامر المستخدمة**
+
 ```bash
 cd /etc/cron.d
 cat cronjob_bandit23
@@ -690,6 +719,7 @@ cat /tmp/<hash>
 - توليد التجزئة يدويًا لـ "I am user bandit23" وقراءة الملف المقابل يظهر كلمة المرور
 
 **أخطاء شائعة**
+
 - البحث عن ملف ثابت في `/tmp/` بدلاً من توليد اسم التجزئة
 - مسافات غير صحيحة في أمر echo (المسافات مهمة لـ MD5)
 
@@ -697,7 +727,7 @@ cat /tmp/<hash>
 `0Zf11ioIjMVN551jX3CmStKLYqjk54Ga`
 
 ??? example "لقطة شاشة"
-    ![المستوى 22 ← المستوى 23](/career-development/Workshops/cybersecurity-crash-course/pics/Level-22-→-Level-23.png)
+![المستوى 22 ← المستوى 23](/career-development/Workshops/cybersecurity-crash-course/pics/Level-22-→-Level-23.png)
 
 ---
 
@@ -707,6 +737,7 @@ cat /tmp/<hash>
 استغلال مهمة cron تنفذ وتحذف السكريبتات من مجلد محدد.
 
 **الأوامر المستخدمة**
+
 ```bash
 cd /etc/cron.d
 cat cronjob_bandit24
@@ -728,6 +759,7 @@ cat /tmp/b24pass
 - قراءة ملف المخرجات للحصول على كلمة المرور
 
 **أخطاء شائعة**
+
 - وضع السكريبتات في مجلد خاطئ (يجب أن يكون في `/var/spool/bandit24/foo/`)
 - عدم الانتظار كافيًا لتنفيذ cron
 - عدم التحقق من ملكية الملف
@@ -736,7 +768,7 @@ cat /tmp/b24pass
 `gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8`
 
 ??? example "لقطة شاشة"
-    ![المستوى 23 ← المستوى 24](/career-development/Workshops/cybersecurity-crash-course/pics/Level-23-→-Level-24.png)
+![المستوى 23 ← المستوى 24](/career-development/Workshops/cybersecurity-crash-course/pics/Level-23-→-Level-24.png)
 
 ---
 
@@ -746,6 +778,7 @@ cat /tmp/b24pass
 تخمين رمز PIN من 4 أرقام بإرسال تركيبات كلمة المرور والرقم السري لخدمة على المنفذ 30002.
 
 **الأوامر المستخدمة**
+
 ```bash
 PW="gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8"
 for i in $(seq -w 0000 9999); do
@@ -761,6 +794,7 @@ done | nc localhost 30002
 - في النهاية استلام: "Correct! The password of user bandit25 is..."
 
 **أخطاء شائعة**
+
 - محاولة التجربة والخطأ يدويًا (10,000 تركيبة)
 - بدء اتصال جديد لكل PIN (غير فعال)
 - نسيان تعبئة الأصفار (الخدمة تتوقع 4 أرقام بالضبط)
@@ -780,11 +814,12 @@ done | nc localhost 30002
 الوصول لحساب bandit26 الذي يستخدم شل مخصص يخرج فورًا. استغلال حجم الطرفية وسلوك برنامج الصفح (pager) للوصول.
 
 !!! tip "سلسلة استغلال ملحوظة"
-    هذا المستوى يربط ثلاث عمليات هروب معًا:
-    التحكم بحجم الطرفية ← برنامج الصفح `more` ← `vim` ← `bash`.
-    كل خطوة تستغل ميزة شرعية في أداة بطريقة غير مقصودة.
+هذا المستوى يربط ثلاث عمليات هروب معًا:
+التحكم بحجم الطرفية ← برنامج الصفح `more` ← `vim` ← `bash`.
+كل خطوة تستغل ميزة شرعية في أداة بطريقة غير مقصودة.
 
 **الأوامر المستخدمة**
+
 ```bash
 # جعل الطرفية صغيرة جدًا (تصغير حجم النافذة)
 ssh bandit26@bandit.labs.overthewire.org -p 2220 -i bandit26.sshkey
@@ -816,7 +851,7 @@ cat /etc/bandit_pass/bandit26
 `s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ`
 
 ??? example "لقطة شاشة"
-    ![المستوى 25 ← المستوى 26](/career-development/Workshops/cybersecurity-crash-course/pics/Level-25-→-Level-26.png)
+![المستوى 25 ← المستوى 26](/career-development/Workshops/cybersecurity-crash-course/pics/Level-25-→-Level-26.png)
 
 ---
 
@@ -826,6 +861,7 @@ cat /etc/bandit_pass/bandit26
 بعد الهروب من الشل المقيد، استخدام برنامج setuid لاسترجاع كلمة مرور bandit27.
 
 **الأوامر المستخدمة**
+
 ```bash
 ls -la
 ./bandit27-do cat /etc/bandit_pass/bandit27
@@ -841,7 +877,7 @@ ls -la
 `upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB`
 
 ??? example "لقطة شاشة"
-    ![المستوى 26 ← المستوى 27](/career-development/Workshops/cybersecurity-crash-course/pics/Level-26-→-Level-27.png)
+![المستوى 26 ← المستوى 27](/career-development/Workshops/cybersecurity-crash-course/pics/Level-26-→-Level-27.png)
 
 ---
 
@@ -851,6 +887,7 @@ ls -la
 استنساخ مستودع Git واسترجاع كلمة المرور من محتوياته.
 
 **الأوامر المستخدمة**
+
 ```bash
 git clone ssh://bandit27-git@bandit.labs.overthewire.org:2220/home/bandit27-git/repo
 cd repo
@@ -868,7 +905,7 @@ cat README
 `Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN`
 
 ??? example "لقطة شاشة"
-    ![المستوى 27 ← المستوى 28](/career-development/Workshops/cybersecurity-crash-course/pics/Level-27-→-Level-28.png)
+![المستوى 27 ← المستوى 28](/career-development/Workshops/cybersecurity-crash-course/pics/Level-27-→-Level-28.png)
 
 ---
 
@@ -878,9 +915,10 @@ cat README
 استنساخ مستودع Git وتحليل تاريخ التعديلات (commit history) لإيجاد كلمة مرور مسربة.
 
 !!! warning "أهمية واقعية"
-    هذه مشكلة أمنية حقيقية في أنظمة الإنتاج  -  بيانات الدخول التي تُرسل إلى Git ثم تُحذف لا تزال قابلة للاسترجاع بالكامل عبر `git log`. استخدم دائمًا متغيرات البيئة أو أدوات إدارة الأسرار. لا ترسل بيانات الدخول مباشرة أبدًا.
+هذه مشكلة أمنية حقيقية في أنظمة الإنتاج - بيانات الدخول التي تُرسل إلى Git ثم تُحذف لا تزال قابلة للاسترجاع بالكامل عبر `git log`. استخدم دائمًا متغيرات البيئة أو أدوات إدارة الأسرار. لا ترسل بيانات الدخول مباشرة أبدًا.
 
 **الأوامر المستخدمة**
+
 ```bash
 git clone ssh://bandit28-git@bandit.labs.overthewire.org:2220/home/bandit28-git/repo
 cd repo
@@ -899,7 +937,7 @@ git log -p
 `4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7`
 
 ??? example "لقطة شاشة"
-    ![المستوى 28 ← المستوى 29](/career-development/Workshops/cybersecurity-crash-course/pics/Level-28-→-Level-29.png)
+![المستوى 28 ← المستوى 29](/career-development/Workshops/cybersecurity-crash-course/pics/Level-28-→-Level-29.png)
 
 ---
 
@@ -909,6 +947,7 @@ git log -p
 استنساخ مستودع Git وفحص الفروع غير الافتراضية للعثور على كلمة المرور.
 
 **الأوامر المستخدمة**
+
 ```bash
 git clone ssh://bandit29-git@bandit.labs.overthewire.org:2220/home/bandit29-git/repo
 cd repo
@@ -926,6 +965,7 @@ cat README.md
 - README في فرع dev يحتوي على كلمة المرور الفعلية
 
 **أخطاء شائعة**
+
 - فحص الفرع الرئيسي فقط
 - افتراض أن كلمة المرور في تاريخ التعديلات (مثل المستوى 28)
 
@@ -933,7 +973,7 @@ cat README.md
 `qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL`
 
 ??? example "لقطة شاشة"
-    ![المستوى 29 ← المستوى 30](/career-development/Workshops/cybersecurity-crash-course/pics/Level-29-→-Level-30.png)
+![المستوى 29 ← المستوى 30](/career-development/Workshops/cybersecurity-crash-course/pics/Level-29-→-Level-30.png)
 
 ---
 
@@ -943,6 +983,7 @@ cat README.md
 استنساخ مستودع Git وفحص علامات Git (tags) للعثور على كلمة المرور.
 
 **الأوامر المستخدمة**
+
 ```bash
 git clone ssh://bandit30-git@bandit.labs.overthewire.org:2220/home/bandit30-git/repo
 cd repo
@@ -962,7 +1003,7 @@ git show secret
 `fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy`
 
 ??? example "لقطة شاشة"
-    ![المستوى 30 ← المستوى 31](/career-development/Workshops/cybersecurity-crash-course/pics/Level-30-→-Level-31.png)
+![المستوى 30 ← المستوى 31](/career-development/Workshops/cybersecurity-crash-course/pics/Level-30-→-Level-31.png)
 
 ---
 
@@ -972,6 +1013,7 @@ git show secret
 دفع ملف محدد إلى مستودع Git بعيد لتشغيل خطاف تحقق (validation hook) يعيد كلمة المرور.
 
 **الأوامر المستخدمة**
+
 ```bash
 git clone ssh://bandit31-git@bandit.labs.overthewire.org:2220/home/bandit31-git/repo
 cd repo
@@ -990,6 +1032,7 @@ git push origin master
 - الدفع مرفوض بعد التحقق، لكن كلمة المرور ما زالت مطبوعة
 
 **أخطاء شائعة**
+
 - عدم استخدام `-f` عندما يمنع `.gitignore` الملف
 - التوقف عند رؤية رفض الدفع (كلمة المرور لا تزال تظهر)
 
@@ -997,7 +1040,7 @@ git push origin master
 `3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K`
 
 ??? example "لقطة شاشة"
-    ![المستوى 31 ← المستوى 32](/career-development/Workshops/cybersecurity-crash-course/pics/Level-31-→-Level-32.png)
+![المستوى 31 ← المستوى 32](/career-development/Workshops/cybersecurity-crash-course/pics/Level-31-→-Level-32.png)
 
 ---
 
@@ -1007,9 +1050,10 @@ git push origin master
 الهروب من "شل الأحرف الكبيرة" الذي يحول كل الإدخال لأحرف كبيرة، مما يمنع تنفيذ الأوامر العادية.
 
 !!! tip "نقطة أساسية"
-    `$0` يتم توسيعه إلى مسار الشل الحالي قبل معالجة مرشح الأحرف الكبيرة  -  مما يجعله الطريقة الوحيدة للإشارة إلى أمر دون تحويله لأحرف كبيرة إلى صيغة غير صالحة.
+`$0` يتم توسيعه إلى مسار الشل الحالي قبل معالجة مرشح الأحرف الكبيرة - مما يجعله الطريقة الوحيدة للإشارة إلى أمر دون تحويله لأحرف كبيرة إلى صيغة غير صالحة.
 
 **الأوامر المستخدمة**
+
 ```bash
 $0
 whoami
@@ -1026,13 +1070,14 @@ cat /etc/bandit_pass/bandit33
 - من هناك، الأوامر العادية عملت وأصبح ملف كلمة المرور مقروءًا
 
 **أخطاء شائعة**
+
 - محاولة تشغيل أوامر مثل `ls`, `cat`, `sh`, أو `bash` مباشرة (كلها تتحول لأحرف كبيرة)
 
 **كلمة المرور للمستوى التالي**
 `tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0`
 
 ??? example "لقطة شاشة"
-    ![المستوى 32 ← المستوى 33](/career-development/Workshops/cybersecurity-crash-course/pics/Level-32-→-Level-33.png)
+![المستوى 32 ← المستوى 33](/career-development/Workshops/cybersecurity-crash-course/pics/Level-32-→-Level-33.png)
 
 ---
 
@@ -1045,34 +1090,40 @@ cat /etc/bandit_pass/bandit33
 ## ملخص المفاهيم الأساسية
 
 ### أساسيات لينكس
+
 - التنقل في الملفات والتعامل معها
 - الملفات المخفية والأحرف الخاصة في أسماء الملفات
 - صلاحيات الملفات والملكية
 - صلاحيات العمليات وبرامج setuid
 
 ### معالجة النصوص
+
 - البحث عن الأنماط بـ `grep`
 - الترتيب والتصفية بـ `sort` و `uniq`
 - استخراج النصوص من الملفات الثنائية
 - التشفير وفك التشفير (Base64، ROT13)
 
 ### الضغط والأرشفة
+
 - صيغ ضغط متعددة (gzip، bzip2، tar)
 - عكس تفريغ hex
 - فك ضغط متكرر
 
 ### الشبكات
+
 - اتصالات TCP مع netcat
 - اتصالات SSL/TLS مع OpenSSL
 - فحص المنافذ بـ nmap
 - اتصال خادم-عميل
 
 ### الأتمتة والجدولة
+
 - تحليل مهام cron
 - تصعيد الصلاحيات عبر السكريبتات
 - أتمتة التخمين
 
 ### أنظمة التحكم بالنسخ (Git)
+
 - استنساخ المستودعات
 - تحليل تاريخ التعديلات
 - إدارة الفروع
@@ -1080,6 +1131,7 @@ cat /etc/bandit_pass/bandit33
 - التفاعل مع المستودعات البعيدة
 
 ### تصعيد الصلاحيات
+
 - استغلال برامج setuid
 - تقنيات الهروب من الشل
 - تجاوز الشل المقيد

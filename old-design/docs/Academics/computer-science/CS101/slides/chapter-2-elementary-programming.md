@@ -9,7 +9,6 @@ CS101 slides for input, variables, data types, assignment, casting, arithmetic e
 
 - [Open PDF slides](chapter-2.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

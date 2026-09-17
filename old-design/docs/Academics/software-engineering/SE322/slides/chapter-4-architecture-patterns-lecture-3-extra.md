@@ -9,7 +9,6 @@ SE322 slides continuing architecture patterns with additional examples and archi
 
 - [Open PDF slides](chapter-4-architecture-patterns-lecture-3-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

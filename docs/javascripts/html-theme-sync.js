@@ -8,7 +8,7 @@
   var searchState = {
     query: "",
     marks: [],
-    active: -1
+    active: -1,
   };
 
   function normalizeScheme(value) {
@@ -21,9 +21,10 @@
 
   function preferredMode() {
     try {
-      var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+      var saved =
+        localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
       if (saved === DARK || saved === LIGHT) return saved;
-    } catch (e) { }
+    } catch (e) {}
 
     return window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -274,7 +275,7 @@
     document.documentElement.setAttribute("data-theme", mode);
     document.documentElement.setAttribute(
       "data-md-color-scheme",
-      mode === DARK ? "slate" : "default"
+      mode === DARK ? "slate" : "default",
     );
     document.documentElement.classList.toggle("dark", mode === DARK);
     document.documentElement.classList.toggle("light", mode === LIGHT);
@@ -284,7 +285,7 @@
       document.body.setAttribute("data-theme", mode);
       document.body.setAttribute(
         "data-md-color-scheme",
-        mode === DARK ? "slate" : "default"
+        mode === DARK ? "slate" : "default",
       );
       document.body.classList.toggle("dark", mode === DARK);
       document.body.classList.toggle("light", mode === LIGHT);
@@ -313,11 +314,11 @@
             color: {
               scheme: next === DARK ? "slate" : "default",
               primary: "deep-purple",
-              accent: "pink"
-            }
-          })
+              accent: "pink",
+            },
+          }),
         );
-      } catch (e) { }
+      } catch (e) {}
 
       applyMode(next);
     };
@@ -326,7 +327,12 @@
   function installThemeButton() {
     if (!document.body) return;
     if (document.querySelector(".sg-theme-toggle")) return;
-    if (document.querySelector("#themeToggle, #themeBtn, .theme-toggle, .shoug-theme-btn")) return;
+    if (
+      document.querySelector(
+        "#themeToggle, #themeBtn, .theme-toggle, .shoug-theme-btn",
+      )
+    )
+      return;
     if (document.querySelector("[onclick*='toggleTheme']")) return;
 
     var btn = document.createElement("button");
@@ -391,8 +397,8 @@
 
     return Boolean(
       parent.closest(
-        "script, style, noscript, textarea, input, select, option, button, .sg-page-search, .sg-search-mark"
-      )
+        "script, style, noscript, textarea, input, select, option, button, .sg-page-search, .sg-search-mark",
+      ),
     );
   }
 
@@ -415,7 +421,7 @@
     active.scrollIntoView({
       behavior: "smooth",
       block: "center",
-      inline: "nearest"
+      inline: "nearest",
     });
 
     updateSearchCount();
@@ -432,23 +438,31 @@
       return;
     }
 
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode: function (node) {
-        if (shouldSkipSearchNode(node)) return NodeFilter.FILTER_REJECT;
-        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+    var walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: function (node) {
+          if (shouldSkipSearchNode(node)) return NodeFilter.FILTER_REJECT;
+          if (!node.nodeValue || !node.nodeValue.trim())
+            return NodeFilter.FILTER_REJECT;
 
-        return node.nodeValue
-          .toLowerCase()
-          .includes(searchState.query.toLowerCase())
-          ? NodeFilter.FILTER_ACCEPT
-          : NodeFilter.FILTER_REJECT;
-      }
-    });
+          return node.nodeValue
+            .toLowerCase()
+            .includes(searchState.query.toLowerCase())
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        },
+      },
+    );
 
     var nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
 
-    var pattern = new RegExp("(" + safeTextPattern(searchState.query) + ")", "gi");
+    var pattern = new RegExp(
+      "(" + safeTextPattern(searchState.query) + ")",
+      "gi",
+    );
 
     nodes.forEach(function (node) {
       var frag = document.createDocumentFragment();
@@ -457,7 +471,9 @@
 
       text.replace(pattern, function (match, _group, index) {
         if (index > lastIndex) {
-          frag.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+          frag.appendChild(
+            document.createTextNode(text.slice(lastIndex, index)),
+          );
         }
 
         var mark = document.createElement("mark");
@@ -522,7 +538,7 @@
       '<input class="sg-page-search__input" type="search" placeholder="Search page" aria-label="Search this page" autocomplete="off">',
       '<span class="sg-page-search__count" aria-live="polite">0/0</span>',
       '<button class="sg-page-search__button" type="button" data-search-prev aria-label="Previous result">‹</button>',
-      '<button class="sg-page-search__button" type="button" data-search-next aria-label="Next result">›</button>'
+      '<button class="sg-page-search__button" type="button" data-search-next aria-label="Next result">›</button>',
     ].join("");
 
     var host = getSearchHost();
@@ -557,13 +573,17 @@
       focusSearchResult(1);
     });
 
-    form.querySelector("[data-search-prev]").addEventListener("click", function () {
-      focusSearchResult(-1);
-    });
+    form
+      .querySelector("[data-search-prev]")
+      .addEventListener("click", function () {
+        focusSearchResult(-1);
+      });
 
-    form.querySelector("[data-search-next]").addEventListener("click", function () {
-      focusSearchResult(1);
-    });
+    form
+      .querySelector("[data-search-next]")
+      .addEventListener("click", function () {
+        focusSearchResult(1);
+      });
 
     document.addEventListener("keydown", function (event) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
@@ -583,8 +603,8 @@
         body ? body.scrollHeight : 0,
         body ? body.offsetHeight : 0,
         root ? root.scrollHeight : 0,
-        root ? root.offsetHeight : 0
-      )
+        root ? root.offsetHeight : 0,
+      ),
     );
   }
 
@@ -596,11 +616,11 @@
         {
           type: "sg:iframe-height",
           path: window.location.pathname,
-          height: currentHeight()
+          height: currentHeight(),
         },
-        window.location.origin
+        window.location.origin,
       );
-    } catch (e) { }
+    } catch (e) {}
   }
 
   function bindDynamicHeight() {
@@ -618,7 +638,7 @@
         childList: true,
         subtree: true,
         attributes: true,
-        characterData: true
+        characterData: true,
       });
     }
 
@@ -628,16 +648,21 @@
 
   function bindParentObserver() {
     try {
-      if (window.parent === window || !window.parent.document || !window.MutationObserver) return;
+      if (
+        window.parent === window ||
+        !window.parent.document ||
+        !window.MutationObserver
+      )
+        return;
 
       var parentBody = window.parent.document.body;
       if (!parentBody) return;
 
       new MutationObserver(syncTheme).observe(parentBody, {
         attributes: true,
-        attributeFilter: ["data-md-color-scheme", "class"]
+        attributeFilter: ["data-md-color-scheme", "class"],
       });
-    } catch (e) { }
+    } catch (e) {}
   }
 
   function bindSelfAttrObserver() {
@@ -654,7 +679,7 @@
 
           try {
             localStorage.setItem("shoug-theme", theme);
-          } catch (e) { }
+          } catch (e) {}
 
           setButtonState(theme);
         }
@@ -664,7 +689,7 @@
     function attach() {
       observer.observe(document.documentElement, {
         attributes: true,
-        attributeFilter: ["data-theme"]
+        attributeFilter: ["data-theme"],
       });
     }
 
@@ -676,7 +701,7 @@
         function () {
           setTimeout(attach, 200);
         },
-        { once: true }
+        { once: true },
       );
     }
   }
@@ -684,7 +709,10 @@
   function loadPastExamPractice() {
     if (!/\/ethc303\//i.test(location.pathname)) return;
     if (/\/ethc303\/quizez\//i.test(location.pathname)) return;
-    if (document.querySelector('script[src="/javascripts/past-exam-practice.js"]')) return;
+    if (
+      document.querySelector('script[src="/javascripts/past-exam-practice.js"]')
+    )
+      return;
 
     var script = document.createElement("script");
     script.src = "/javascripts/past-exam-practice.js";
@@ -715,7 +743,7 @@
       function () {
         init();
       },
-      { once: true }
+      { once: true },
     );
   } else {
     init();

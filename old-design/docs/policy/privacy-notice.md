@@ -1,6 +1,6 @@
 # :eye: Privacy Notice
 
-*Last updated: 2026*
+_Last updated: 2026_
 
 ---
 
@@ -15,20 +15,20 @@ when you visit and how it is handled.
 
 <div class="grid cards" markdown>
 
--   :cat: **GitHub Pages**
+- :cat: **GitHub Pages**
 
-    ---
+  ***
 
-    This website is hosted on GitHub Pages as a static site. GitHub may
-    process technical data as part of standard hosting operations.
+  This website is hosted on GitHub Pages as a static site. GitHub may
+  process technical data as part of standard hosting operations.
 
--   :cloud: **Cloudflare**
+- :cloud: **Cloudflare**
 
-    ---
+  ***
 
-    Content is delivered and secured via Cloudflare, which provides CDN,
-    DNS, and security services. Cloudflare may process technical data for
-    performance and protection.
+  Content is delivered and secured via Cloudflare, which provides CDN,
+  DNS, and security services. Cloudflare may process technical data for
+  performance and protection.
 
 </div>
 
@@ -40,13 +40,13 @@ When you visit this site, the following technical data may be automatically
 processed by infrastructure providers for content delivery, security
 monitoring, performance optimization, and abuse prevention.
 
-| Data Type | Examples |
-|---|---|
-| **Network** | IP address |
-| **Browser** | Type, version |
-| **Device** | Device type, operating system |
+| Data Type      | Examples                        |
+| -------------- | ------------------------------- |
+| **Network**    | IP address                      |
+| **Browser**    | Type, version                   |
+| **Device**     | Device type, operating system   |
 | **Navigation** | Referring pages, requested URLs |
-| **Timing** | Date and time of access |
+| **Timing**     | Date and time of access         |
 
 I do not personally track individual visitors or build user profiles.
 

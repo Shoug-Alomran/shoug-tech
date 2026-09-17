@@ -9,23 +9,23 @@ operations.
 ---
 
 !!! info "Course project"
-    I created and documented a CS340 full stack database project for this
-    course. You can view the portfolio entry and open the project here:
-    [Project portfolio](/career-development/projects/#cs340-full-stack-database-web-application) ·
-    [Project site](https://database.shoug-tech.com) ·
-    [Repository](https://github.com/Shoug-Alomran/cs340-database-web-application)
+I created and documented a CS340 full stack database project for this
+course. You can view the portfolio entry and open the project here:
+[Project portfolio](/career-development/projects/#cs340-full-stack-database-web-application) ·
+[Project site](https://database.shoug-tech.com) ·
+[Repository](https://github.com/Shoug-Alomran/cs340-database-web-application)
 
 ---
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | CS340 |
-| Course title | Introduction to Database Systems |
-| Credits/contact hours | 3 credits |
-| Prerequisite | CS210 Data Structures |
-| Main textbook | Elmasri and Navathe, *Fundamentals of Database Systems*, 7th ed. |
+| Item                  | Details                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| Course code           | CS340                                                            |
+| Course title          | Introduction to Database Systems                                 |
+| Credits/contact hours | 3 credits                                                        |
+| Prerequisite          | CS210 Data Structures                                            |
+| Main textbook         | Elmasri and Navathe, _Fundamentals of Database Systems_, 7th ed. |
 
 ---
 
@@ -49,69 +49,69 @@ By the end of CS340, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Chapters 1-2 - Database Fundamentals and Architecture**
+- **Chapters 1-2 - Database Fundamentals and Architecture**
 
-    ---
+  ***
 
-    DBMS concepts, database approach characteristics and advantages, database
-    users, data models, schemas, database languages, and architecture.
+  DBMS concepts, database approach characteristics and advantages, database
+  users, data models, schemas, database languages, and architecture.
 
--   **Chapters 3-4 - ER and EER Data Modeling**
+- **Chapters 3-4 - ER and EER Data Modeling**
 
-    ---
+  ***
 
-    Conceptual modeling with Entity-Relationship and Enhanced ER models.
+  Conceptual modeling with Entity-Relationship and Enhanced ER models.
 
--   **Chapter 5 - Relational Data Model and Constraints**
+- **Chapter 5 - Relational Data Model and Constraints**
 
-    ---
+  ***
 
-    Relations, keys, relational constraints, entity integrity, and referential
-    integrity.
+  Relations, keys, relational constraints, entity integrity, and referential
+  integrity.
 
--   **Chapter 9 - ER-to-Relational Mapping**
+- **Chapter 9 - ER-to-Relational Mapping**
 
-    ---
+  ***
 
-    Mapping conceptual ER/EER designs into relational schemas.
+  Mapping conceptual ER/EER designs into relational schemas.
 
--   **Chapter 8 - Relational Algebra**
+- **Chapter 8 - Relational Algebra**
 
-    ---
+  ***
 
-    Algebraic query formulation using relational operators.
+  Algebraic query formulation using relational operators.
 
--   **Chapter 6 - Basic SQL**
+- **Chapter 6 - Basic SQL**
 
-    ---
+  ***
 
-    SQL data definition, constraints, and basic queries.
+  SQL data definition, constraints, and basic queries.
 
--   **Chapter 7 - Advanced SQL**
+- **Chapter 7 - Advanced SQL**
 
-    ---
+  ***
 
-    Complex queries, views, and advanced SQL features.
+  Complex queries, views, and advanced SQL features.
 
--   **Chapters 14-15 - Functional Dependencies and Normalization**
+- **Chapters 14-15 - Functional Dependencies and Normalization**
 
-    ---
+  ***
 
-    Functional dependencies, normal forms, decomposition, and schema quality.
+  Functional dependencies, normal forms, decomposition, and schema quality.
 
--   **Emergent Database Topics**
+- **Emergent Database Topics**
 
-    ---
+  ***
 
-    Object-oriented databases, NoSQL database theory, and MongoDB CRUD lab
-    operations.
+  Object-oriented databases, NoSQL database theory, and MongoDB CRUD lab
+  operations.
 
--   **Final Project**
+- **Final Project**
 
-    ---
+  ***
 
-    Team-based database design, implementation, documentation, and
-    presentation.
+  Team-based database design, implementation, documentation, and
+  presentation.
 
 </div>
 
@@ -119,31 +119,31 @@ By the end of CS340, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| Class assignment | 5% |
-| Two quizzes | 10% |
-| Two major exams | 25% |
-| Project | 15% |
-| Attendance | 5% |
-| Final exam | 40% |
+| Assessment       | Weight |
+| ---------------- | ------ |
+| Class assignment | 5%     |
+| Two quizzes      | 10%    |
+| Two major exams  | 25%    |
+| Project          | 15%    |
+| Attendance       | 5%     |
+| Final exam       | 40%    |
 
 ---
 
 ## Current Site Coverage
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
-| Database fundamentals and architecture | Chapter 1/2 notes and slides | Covered |
-| ER/EER modeling | Chapter 2/3 materials and slides | Covered |
-| Relational model and constraints | Chapter 3/4 materials and slides | Covered |
-| ER-to-relational mapping | Chapter 5/6 materials and slides | Covered |
-| Relational algebra | Covered in study material | Covered |
-| Basic and advanced SQL | Chapter 4/5 notes and Chapter 6/7 slides | Covered |
-| Functional dependencies and normalization | Chapter 6/7 notes and Chapter 9 slides | Covered |
-| Object-oriented and NoSQL databases | Chapter 9 notes and Chapter 10 slides | Covered |
-| MongoDB CRUD lab operations | Covered under emergent database topics | Covered |
-| Final project | Project concepts are supported by modeling, SQL, and design pages | Covered |
+| Syllabus topic                            | Current site material                                             | Status  |
+| ----------------------------------------- | ----------------------------------------------------------------- | ------- |
+| Database fundamentals and architecture    | Chapter 1/2 notes and slides                                      | Covered |
+| ER/EER modeling                           | Chapter 2/3 materials and slides                                  | Covered |
+| Relational model and constraints          | Chapter 3/4 materials and slides                                  | Covered |
+| ER-to-relational mapping                  | Chapter 5/6 materials and slides                                  | Covered |
+| Relational algebra                        | Covered in study material                                         | Covered |
+| Basic and advanced SQL                    | Chapter 4/5 notes and Chapter 6/7 slides                          | Covered |
+| Functional dependencies and normalization | Chapter 6/7 notes and Chapter 9 slides                            | Covered |
+| Object-oriented and NoSQL databases       | Chapter 9 notes and Chapter 10 slides                             | Covered |
+| MongoDB CRUD lab operations               | Covered under emergent database topics                            | Covered |
+| Final project                             | Project concepts are supported by modeling, SQL, and design pages | Covered |
 
 ---
 
@@ -159,5 +159,5 @@ By the end of CS340, students should be able to:
    presentation skills.
 
 !!! note "Source"
-    This overview was updated from the CS340 course syllabus and the current
-    files in the CS340 section of this site.
+This overview was updated from the CS340 course syllabus and the current
+files in the CS340 section of this site.

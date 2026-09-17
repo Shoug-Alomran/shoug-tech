@@ -5,8 +5,8 @@ slide breakdowns, quizzes, or mindmaps.
 
 <div class="grid cards" markdown>
 
--   **Course Summary**
+- **Course Summary**
 
-    [Open summary](summary.md)
+  [Open summary](summary.md)
 
 </div>

@@ -9,7 +9,6 @@ description: شرائح CS102 عن الأصناف العامة، الدوال ا
 
 - [فتح ملف PDF](generic-classes.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

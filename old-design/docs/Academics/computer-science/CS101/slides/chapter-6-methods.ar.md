@@ -9,7 +9,6 @@ description: شرائح CS101 عن الدوال void، المعاملات، قي
 
 - [فتح ملف PDF](chapter-6.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

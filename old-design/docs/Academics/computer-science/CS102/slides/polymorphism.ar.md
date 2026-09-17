@@ -9,7 +9,6 @@ description: شرائح CS102 عن تعدد الأشكال، upcasting، downcas
 
 - [فتح ملف PDF](polymorphism.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

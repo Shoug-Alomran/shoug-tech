@@ -10,15 +10,15 @@ performance considerations.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | CS331 |
-| Course title | Data Communications and Computer Networks |
-| Credits/contact hours | 3 credits |
-| Prerequisite | CS210 & CS175 |
-| Main textbook | Behrouz Forouzan, *Data Communications and Networking, With TCP/IP Protocol Suite*, 6th ed., McGraw Hill, 2021 |
-| Other reference | *Computer Networking: A Top-Down Approach*, 7th ed., Pearson, 2016 |
-| LMS | Moodle |
+| Item                  | Details                                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Course code           | CS331                                                                                                          |
+| Course title          | Data Communications and Computer Networks                                                                      |
+| Credits/contact hours | 3 credits                                                                                                      |
+| Prerequisite          | CS210 & CS175                                                                                                  |
+| Main textbook         | Behrouz Forouzan, _Data Communications and Networking, With TCP/IP Protocol Suite_, 6th ed., McGraw Hill, 2021 |
+| Other reference       | _Computer Networking: A Top-Down Approach_, 7th ed., Pearson, 2016                                             |
+| LMS                   | Moodle                                                                                                         |
 
 ---
 
@@ -42,78 +42,78 @@ By the end of CS331, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Weeks 1-2 - Overview of Data Communications and Networking**
+- **Weeks 1-2 - Overview of Data Communications and Networking**
 
-    ---
+  ***
 
-    Core communication concepts, network characteristics, the Internet,
-    layered network models, OSI, TCP/IP, topologies, and how data
-    communication systems are organized.
+  Core communication concepts, network characteristics, the Internet,
+  layered network models, OSI, TCP/IP, topologies, and how data
+  communication systems are organized.
 
--   **Weeks 3-4 - Physical Layer**
+- **Weeks 3-4 - Physical Layer**
 
-    ---
+  ***
 
-    Physical-layer services and features, signals, transmission concepts,
-    media, and the low-level mechanisms that allow bits to move between
-    devices.
+  Physical-layer services and features, signals, transmission concepts,
+  media, and the low-level mechanisms that allow bits to move between
+  devices.
 
--   **Weeks 5-7 - Data Link Layer 1 and 2**
+- **Weeks 5-7 - Data Link Layer 1 and 2**
 
-    ---
+  ***
 
-    Data link layer services, framing, error detection and correction, flow
-    control, link-level delivery, and data link mechanisms used before packets
-    move across networks.
+  Data link layer services, framing, error detection and correction, flow
+  control, link-level delivery, and data link mechanisms used before packets
+  move across networks.
 
--   **Weeks 7-8 - Data Link Layer 3 and Ethernet**
+- **Weeks 7-8 - Data Link Layer 3 and Ethernet**
 
-    ---
+  ***
 
-    Ethernet and medium access concepts, local network communication, MAC-level
-    behavior, and data link technologies used in LANs.
+  Ethernet and medium access concepts, local network communication, MAC-level
+  behavior, and data link technologies used in LANs.
 
--   **Week 9 - Interconnecting Devices**
+- **Week 9 - Interconnecting Devices**
 
-    ---
+  ***
 
-    Network devices and the layers where they operate, including devices used
-    to connect, forward, segment, and manage communication across networks.
+  Network devices and the layers where they operate, including devices used
+  to connect, forward, segment, and manage communication across networks.
 
--   **Weeks 10-14 - Ramadan and Eid Break**
+- **Weeks 10-14 - Ramadan and Eid Break**
 
-    ---
+  ***
 
-    No regular topic coverage is listed in the syllabus for this period.
+  No regular topic coverage is listed in the syllabus for this period.
 
--   **Weeks 15-17 - Network Layer**
+- **Weeks 15-17 - Network Layer**
 
-    ---
+  ***
 
-    Network-layer services, logical addressing, routing, packet delivery,
-    subnetting, network design decisions, and applying addresses and masks to
-    real networking requirements.
+  Network-layer services, logical addressing, routing, packet delivery,
+  subnetting, network design decisions, and applying addresses and masks to
+  real networking requirements.
 
--   **Week 18 - Transport Layer**
+- **Week 18 - Transport Layer**
 
-    ---
+  ***
 
-    End-to-end communication, segmentation, transport services, reliability,
-    and the role of TCP/IP transport protocols in application communication.
+  End-to-end communication, segmentation, transport services, reliability,
+  and the role of TCP/IP transport protocols in application communication.
 
--   **Week 19 - Application Layer**
+- **Week 19 - Application Layer**
 
-    ---
+  ***
 
-    Application-layer services and protocols, user-facing network applications,
-    and how software uses lower-layer services to communicate.
+  Application-layer services and protocols, user-facing network applications,
+  and how software uses lower-layer services to communicate.
 
--   **Week 20 - Review**
+- **Week 20 - Review**
 
-    ---
+  ***
 
-    Final review of the course content, especially layered models, network
-    devices, subnetting, packet delivery, and applied networking tools.
+  Final review of the course content, especially layered models, network
+  devices, subnetting, packet delivery, and applied networking tools.
 
 </div>
 
@@ -121,14 +121,14 @@ By the end of CS331, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight | Syllabus details |
-|-----------|--------|------------------|
-| Final exam | 40% | Cumulative final assessment |
-| Major exams I and II | 30% | Two major exams during the semester |
-| Quizzes I, II, III | 10% | Average of the best two quizzes |
-| Attendance | 5% | University attendance policy applies; 16 absences may lead to DN |
-| Assignments | 7% | Bi-weekly online or offline LMS-graded assignments |
-| Labs/projects | 8% | One Wireshark lab worth 3 marks and two Packet Tracer projects worth 5 marks |
+| Assessment           | Weight | Syllabus details                                                             |
+| -------------------- | ------ | ---------------------------------------------------------------------------- |
+| Final exam           | 40%    | Cumulative final assessment                                                  |
+| Major exams I and II | 30%    | Two major exams during the semester                                          |
+| Quizzes I, II, III   | 10%    | Average of the best two quizzes                                              |
+| Attendance           | 5%     | University attendance policy applies; 16 absences may lead to DN             |
+| Assignments          | 7%     | Bi-weekly online or offline LMS-graded assignments                           |
+| Labs/projects        | 8%     | One Wireshark lab worth 3 marks and two Packet Tracer projects worth 5 marks |
 
 ---
 
@@ -148,17 +148,17 @@ The applied part of CS331 focuses on:
 Your CS331 section currently covers most of the syllabus topics through slide
 wrappers and summary material.
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
-| Overview of Data Communications and Networking | Chapter 1 Part 1 and Chapter 1 Part 2 slides | Covered |
-| Physical Layer | Physical-layer syllabus unit | Covered |
-| Data Link Layer 1 and 2 | Data Link Layer Part 1 and Part 2 slides | Covered |
-| Data Link Layer 3 / Ethernet | Ethernet slides | Covered |
-| Interconnecting Devices | Interconnecting Devices slides | Covered |
-| Network Layer | Network Layer Part 1 and Part 2 slides | Covered |
-| Transport Layer | Transport Layer slides | Covered |
-| Application Layer | Application Layer slides | Covered |
-| Packet Tracer / Wireshark practice | Practical networking tools listed in the syllabus | Covered |
+| Syllabus topic                                 | Current site material                             | Status  |
+| ---------------------------------------------- | ------------------------------------------------- | ------- |
+| Overview of Data Communications and Networking | Chapter 1 Part 1 and Chapter 1 Part 2 slides      | Covered |
+| Physical Layer                                 | Physical-layer syllabus unit                      | Covered |
+| Data Link Layer 1 and 2                        | Data Link Layer Part 1 and Part 2 slides          | Covered |
+| Data Link Layer 3 / Ethernet                   | Ethernet slides                                   | Covered |
+| Interconnecting Devices                        | Interconnecting Devices slides                    | Covered |
+| Network Layer                                  | Network Layer Part 1 and Part 2 slides            | Covered |
+| Transport Layer                                | Transport Layer slides                            | Covered |
+| Application Layer                              | Application Layer slides                          | Covered |
+| Packet Tracer / Wireshark practice             | Practical networking tools listed in the syllabus | Covered |
 
 ---
 
@@ -175,5 +175,5 @@ wrappers and summary material.
    traffic and network design.
 
 !!! note "Source"
-    This overview was updated from the CS331 course syllabus and the current
-    files in the CS331 section of this site.
+This overview was updated from the CS331 course syllabus and the current
+files in the CS331 section of this site.

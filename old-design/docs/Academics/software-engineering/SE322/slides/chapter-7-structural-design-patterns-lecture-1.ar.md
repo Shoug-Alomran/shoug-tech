@@ -9,7 +9,6 @@ description: شرائح SE322 عن أنماط التصميم الهيكلية و
 
 - [فتح ملف الشرائح](chapter-7-structural-design-patterns-lecture-1.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

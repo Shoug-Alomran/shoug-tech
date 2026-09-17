@@ -9,7 +9,6 @@ CS101 slides for one-dimensional arrays, copying arrays, passing arrays to metho
 
 - [Open PDF slides](chapter-7.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

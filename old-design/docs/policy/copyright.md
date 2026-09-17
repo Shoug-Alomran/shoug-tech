@@ -1,6 +1,6 @@
 # :copyright: Copyright & Usage Policy
 
-*© 2026 Shoug Fawaz Alomran. All rights reserved.*
+_© 2026 Shoug Fawaz Alomran. All rights reserved._
 
 ---
 
@@ -14,21 +14,19 @@ documentation, designs, research, and written content.
 
 <div class="grid cards" markdown>
 
--   :green_circle: **You May**
+- :green_circle: **You May**
 
-    ---
+  ***
+  - View and reference content for personal, educational, and
+    non-commercial purposes
+  - Quote small portions with proper attribution
 
-    - View and reference content for personal, educational, and
-      non-commercial purposes
-    - Quote small portions with proper attribution
+- :red_circle: **You May Not**
 
--   :red_circle: **You May Not**
-
-    ---
-
-    - Reproduce or redistribute full projects
-    - Use content commercially without written permission
-    - Claim authorship of this work
+  ***
+  - Reproduce or redistribute full projects
+  - Use content commercially without written permission
+  - Claim authorship of this work
 
 </div>
 

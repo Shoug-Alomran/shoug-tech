@@ -9,7 +9,6 @@ description: شرائح SE322 التي تكمل سمات الجودة والمف
 
 - [فتح ملف الشرائح](chapter-3-quality-attributes-lecture-2-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

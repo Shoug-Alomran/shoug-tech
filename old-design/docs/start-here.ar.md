@@ -4,7 +4,7 @@ description: مسارات سريعة للطلاب والمحاضرين وأصح�
 ---
 
 !!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
 # ابدأ من هنا
 
@@ -20,35 +20,35 @@ description: مسارات سريعة للطلاب والمحاضرين وأصح�
 
 <div class="grid cards audience-grid" markdown>
 
--   :mortar_board: **أنا طالب/ـة**
+- :mortar_board: **أنا طالب/ـة**
 
-    ---
+  ***
 
-    وصول سريع إلى ملاحظات منظمة، ملخصات الفصول، المراجع السريعة، والاختبارات.
+  وصول سريع إلى ملاحظات منظمة، ملخصات الفصول، المراجع السريعة، والاختبارات.
 
-    - [فتح نظرة عامة أكاديمية](Academics/Intro.md)
-    - [عرض الخطة الأكاديمية](academic-plan-themes/academic-plan.ar.md)
-    - [تصفح ملاحظات الأمن السيبراني](Academics/cyber-security/Intro.md)
+  - [فتح نظرة عامة أكاديمية](Academics/Intro.md)
+  - [عرض الخطة الأكاديمية](academic-plan-themes/academic-plan.ar.md)
+  - [تصفح ملاحظات الأمن السيبراني](Academics/cyber-security/Intro.md)
 
--   :school: **أنا محاضر/ـة**
+- :school: **أنا محاضر/ـة**
 
-    ---
+  ***
 
-    مراجعة جودة التنظيم، تغطية المحتوى الأكاديمي، ومخرجات التعلم.
+  مراجعة جودة التنظيم، تغطية المحتوى الأكاديمي، ومخرجات التعلم.
 
-    - [استعراض هيكل الملاحظات](Academics/Intro.md)
-    - [عرض الورش والعمل التعليمي](career-development/Workshops/index.md)
-    - [فتح إخلاء المسؤولية الأكاديمي](policy/academic-disclaimer.md)
+  - [استعراض هيكل الملاحظات](Academics/Intro.md)
+  - [عرض الورش والعمل التعليمي](career-development/Workshops/index.md)
+  - [فتح إخلاء المسؤولية الأكاديمي](policy/academic-disclaimer.md)
 
--   :briefcase: **أنا صاحب عمل**
+- :briefcase: **أنا صاحب عمل**
 
-    ---
+  ***
 
-    تقييم التنفيذ العملي، التنوع التقني، وجودة التواصل المهني.
+  تقييم التنفيذ العملي، التنوع التقني، وجودة التواصل المهني.
 
-    - [فتح التطوير المهني](career-development/Intro.md)
-    - [عرض المشاريع](career-development/projects.md)
-    - [فتح السيرة الذاتية](/career-development/CV.html)
+  - [فتح التطوير المهني](career-development/Intro.md)
+  - [عرض المشاريع](career-development/projects.md)
+  - [فتح السيرة الذاتية](/career-development/CV.html)
 
 </div>
 
@@ -56,28 +56,28 @@ description: مسارات سريعة للطلاب والمحاضرين وأصح�
 
 <div class="grid cards" markdown>
 
--   :rocket: **أفضل المشاريع**
+- :rocket: **أفضل المشاريع**
 
-    ---
+  ***
 
-    مشاريع مختارة مع سياق واضح ونتائج عملية.
+  مشاريع مختارة مع سياق واضح ونتائج عملية.
 
-    [:octicons-arrow-right-24: الانتقال للمشاريع](career-development/projects.md)
+  [:octicons-arrow-right-24: الانتقال للمشاريع](career-development/projects.md)
 
--   :book: **أهم صفحات الدراسة**
+- :book: **أهم صفحات الدراسة**
 
-    ---
+  ***
 
-    صفحات عالية الفائدة من الملخصات والمراجع السريعة.
+  صفحات عالية الفائدة من الملخصات والمراجع السريعة.
 
-    [:octicons-arrow-right-24: الانتقال للأكاديميات](Academics/Intro.md)
+  [:octicons-arrow-right-24: الانتقال للأكاديميات](Academics/Intro.md)
 
--   :link: **أدوات ومراجع منتقاة**
+- :link: **أدوات ومراجع منتقاة**
 
-    ---
+  ***
 
-    روابط أستخدمها فعليًا أثناء الدراسة والعمل التقني.
+  روابط أستخدمها فعليًا أثناء الدراسة والعمل التقني.
 
-    [:octicons-arrow-right-24: الانتقال للروابط](links.md)
+  [:octicons-arrow-right-24: الانتقال للروابط](links.md)
 
 </div>

@@ -9,7 +9,6 @@ CS102 slides for Comparable, Comparator, interface-based ordering, and object co
 
 - [Open PDF slides](comparable-comparator-and-interfaces.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

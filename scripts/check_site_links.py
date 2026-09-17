@@ -74,7 +74,7 @@ def html_files() -> list[Path]:
 # attribute. Harvest ids written as JS/JSON string values too, otherwise those
 # working in-page links are reported as broken.
 JS_ID = re.compile(
-    r"""(?:\.id\s*=\s*|["']id["']\s*:\s*)["']([A-Za-z0-9_:.-]+)["']"""
+    r"""(?:\.id\s*=\s*|["']?id["']?\s*:\s*)["']([A-Za-z0-9_:.-]+)["']"""
 )
 
 

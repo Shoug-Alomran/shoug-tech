@@ -17,35 +17,35 @@ Choose the path that matches why you are visiting.
 
 <div class="grid cards audience-grid" markdown>
 
--   :mortar_board: **I am a Student**
+- :mortar_board: **I am a Student**
 
-    ---
+  ***
 
-    Get structured notes, chapter summaries, cheat sheets, and quizzes fast.
+  Get structured notes, chapter summaries, cheat sheets, and quizzes fast.
 
-    - [Open Learn Overview](Academics/Intro.md)
-    - [View Academic Plan](academic-plan-themes/academic-plan.md)
-    - [Browse Cybersecurity Notes](Academics/cyber-security/Intro.md)
+  - [Open Learn Overview](Academics/Intro.md)
+  - [View Academic Plan](academic-plan-themes/academic-plan.md)
+  - [Browse Cybersecurity Notes](Academics/cyber-security/Intro.md)
 
--   :school: **I am an Instructor**
+- :school: **I am an Instructor**
 
-    ---
+  ***
 
-    Review the quality of organization, curriculum coverage, and learning output.
+  Review the quality of organization, curriculum coverage, and learning output.
 
-    - [See Course Notes Structure](Academics/Intro.md)
-    - [Read Workshops and Teaching Work](career-development/Workshops/index.md)
-    - [Open Academic Disclaimer](policy/academic-disclaimer.md)
+  - [See Course Notes Structure](Academics/Intro.md)
+  - [Read Workshops and Teaching Work](career-development/Workshops/index.md)
+  - [Open Academic Disclaimer](policy/academic-disclaimer.md)
 
--   :briefcase: **I am an Employer**
+- :briefcase: **I am an Employer**
 
-    ---
+  ***
 
-    Evaluate practical execution, technical range, and communication quality.
+  Evaluate practical execution, technical range, and communication quality.
 
-    - [Open Career Overview](career-development/Intro.md)
-    - [View Projects](career-development/projects.md)
-    - [Open Resume](/career-development/CV.html)
+  - [Open Career Overview](career-development/Intro.md)
+  - [View Projects](career-development/projects.md)
+  - [Open Resume](/career-development/CV.html)
 
 </div>
 
@@ -53,28 +53,28 @@ Choose the path that matches why you are visiting.
 
 <div class="grid cards" markdown>
 
--   :rocket: **Top Projects**
+- :rocket: **Top Projects**
 
-    ---
+  ***
 
-    Focused portfolio items with context and outcomes.
+  Focused portfolio items with context and outcomes.
 
-    [:octicons-arrow-right-24: Go to Projects](career-development/projects.md)
+  [:octicons-arrow-right-24: Go to Projects](career-development/projects.md)
 
--   :book: **Most Useful Study Pages**
+- :book: **Most Useful Study Pages**
 
-    ---
+  ***
 
-    High-utility notes and cheat sheets from major courses.
+  High-utility notes and cheat sheets from major courses.
 
-    [:octicons-arrow-right-24: Go to Learn](Academics/Intro.md)
+  [:octicons-arrow-right-24: Go to Learn](Academics/Intro.md)
 
--   :link: **Curated Tools & References**
+- :link: **Curated Tools & References**
 
-    ---
+  ***
 
-    The external resources I actually use while studying and building.
+  The external resources I actually use while studying and building.
 
-    [:octicons-arrow-right-24: Go to Resources](links.md)
+  [:octicons-arrow-right-24: Go to Resources](links.md)
 
 </div>

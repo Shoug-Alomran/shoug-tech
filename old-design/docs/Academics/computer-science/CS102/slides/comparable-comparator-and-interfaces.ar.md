@@ -9,7 +9,6 @@ description: شرائح CS102 عن Comparable وComparator والترتيب عب
 
 - [فتح ملف PDF](comparable-comparator-and-interfaces.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

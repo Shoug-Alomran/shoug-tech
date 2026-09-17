@@ -7,10 +7,26 @@ const crypto = require("crypto");
 const { execFileSync } = require("child_process");
 
 const SOURCE_URL = "https://psu.edu.sa/en/academiccalendar";
-const OUTPUT = path.join(__dirname, "..", "docs", "javascripts", "psu-academic-calendar.js");
+const OUTPUT = path.join(
+  __dirname,
+  "..",
+  "docs",
+  "javascripts",
+  "psu-academic-calendar.js",
+);
 const MONTHS = {
-  january: "01", february: "02", march: "03", april: "04", may: "05", june: "06",
-  july: "07", august: "08", september: "09", october: "10", november: "11", december: "12"
+  january: "01",
+  february: "02",
+  march: "03",
+  april: "04",
+  may: "05",
+  june: "06",
+  july: "07",
+  august: "08",
+  september: "09",
+  october: "10",
+  november: "11",
+  december: "12",
 };
 
 function decodeEntities(value) {
@@ -43,7 +59,9 @@ function slug(value) {
 }
 
 function parseDateParts(value) {
-  const matches = String(value || "").matchAll(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s+([A-Za-z]+)\s+(\d{4})/g);
+  const matches = String(value || "").matchAll(
+    /(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s+([A-Za-z]+)\s+(\d{4})/g,
+  );
   let match = null;
   for (const candidate of matches) {
     if (MONTHS[candidate[3].toLowerCase()]) match = candidate;
@@ -54,7 +72,7 @@ function parseDateParts(value) {
   const endDay = (match[2] || match[1]).padStart(2, "0");
   return {
     start: `${match[4]}-${month}-${startDay}`,
-    end: `${match[4]}-${month}-${endDay}`
+    end: `${match[4]}-${month}-${endDay}`,
   };
 }
 
@@ -92,11 +110,18 @@ function findRow(rows, phrase) {
 
 function extractEvents(html) {
   const events = [];
-  const headingRegex = /<h4[^>]*>\s*(First|Second|Summer)\s+Semester\s+\d+H\/(\d{4})G\s+\(Term\s+(\d+)\)\s*<\/h4>/gi;
+  const headingRegex =
+    /<h4[^>]*>\s*(First|Second|Summer)\s+Semester\s+\d+H\/(\d{4})G\s+\(Term\s+(\d+)\)\s*<\/h4>/gi;
   const headings = [];
   let match;
   while ((match = headingRegex.exec(html))) {
-    headings.push({ index: match.index, type: match[1], year: match[2], term: match[3], heading: match[0] });
+    headings.push({
+      index: match.index,
+      type: match[1],
+      year: match[2],
+      term: match[3],
+      heading: match[0],
+    });
   }
 
   headings.forEach((heading, index) => {
@@ -107,43 +132,93 @@ function extractEvents(html) {
     let rowMatch;
     while ((rowMatch = rowRegex.exec(section))) {
       const cells = rowCells(rowMatch[0]);
-      if (cells.length >= 3) rows.push({ date: parseDateParts(cells[1]), event: cells.slice(2).join(" ") });
+      if (cells.length >= 3)
+        rows.push({
+          date: parseDateParts(cells[1]),
+          event: cells.slice(2).join(" "),
+        });
     }
     const base = `psu-${heading.term}`;
     const classesBegin = findRow(rows, "Classes begin");
-    const eventYear = classesBegin && classesBegin.date ? classesBegin.date.start.slice(0, 4) : heading.year;
+    const eventYear =
+      classesBegin && classesBegin.date
+        ? classesBegin.date.start.slice(0, 4)
+        : heading.year;
     const label = termLabel(heading.type, eventYear);
 
-    addEvent(events, `${base}-classes-begin`, `PSU Classes Begin - ${label}`, classesBegin && classesBegin.date && classesBegin.date.start);
+    addEvent(
+      events,
+      `${base}-classes-begin`,
+      `PSU Classes Begin - ${label}`,
+      classesBegin && classesBegin.date && classesBegin.date.start,
+    );
 
     const classesEnd = findRow(rows, "Last Day of Classes");
-    addEvent(events, `${base}-classes-end`, `PSU Last Day of Classes - ${label}`, classesEnd && classesEnd.date && classesEnd.date.start);
+    addEvent(
+      events,
+      `${base}-classes-end`,
+      `PSU Last Day of Classes - ${label}`,
+      classesEnd && classesEnd.date && classesEnd.date.start,
+    );
 
-    const finalsStart = findRow(rows, "(?:Final Exams start|Start of University-Level Final Exams)");
+    const finalsStart = findRow(
+      rows,
+      "(?:Final Exams start|Start of University-Level Final Exams)",
+    );
     const finalsEnd = findRow(rows, "Final Exams end");
     addEvent(
       events,
       `${base}-finals`,
       `PSU Final Exams - ${label}`,
       finalsStart && finalsStart.date && finalsStart.date.start,
-      finalsEnd && finalsEnd.date && finalsEnd.date.start
+      finalsEnd && finalsEnd.date && finalsEnd.date.start,
     );
 
     const nationalDay = findRow(rows, "Saudi National Day Holiday");
-    addEvent(events, `${base}-national-day`, "PSU Saudi National Day Holiday", nationalDay && nationalDay.date && nationalDay.date.start, nationalDay && nationalDay.date && nationalDay.date.end);
+    addEvent(
+      events,
+      `${base}-national-day`,
+      "PSU Saudi National Day Holiday",
+      nationalDay && nationalDay.date && nationalDay.date.start,
+      nationalDay && nationalDay.date && nationalDay.date.end,
+    );
 
     const fitrStart = findRow(rows, "Beginning of Eidul-Fitr Holiday");
     const fitrResume = findRow(rows, "Classes resume after Eidul-Fitr");
-    addEvent(events, `${base}-eid-fitr`, "PSU Eidul-Fitr Holiday", fitrStart && fitrStart.date && fitrStart.date.start, dayBefore(fitrResume && fitrResume.date && fitrResume.date.start));
-    addEvent(events, `${base}-classes-resume-fitr`, "PSU Classes Resume after Eidul-Fitr", fitrResume && fitrResume.date && fitrResume.date.start);
+    addEvent(
+      events,
+      `${base}-eid-fitr`,
+      "PSU Eidul-Fitr Holiday",
+      fitrStart && fitrStart.date && fitrStart.date.start,
+      dayBefore(fitrResume && fitrResume.date && fitrResume.date.start),
+    );
+    addEvent(
+      events,
+      `${base}-classes-resume-fitr`,
+      "PSU Classes Resume after Eidul-Fitr",
+      fitrResume && fitrResume.date && fitrResume.date.start,
+    );
 
     const adhaStart = findRow(rows, "Beginning of Eidul-Adha Holiday");
     const adhaResume = findRow(rows, "Classes resume after Eidul-?\\s*Adha");
-    addEvent(events, `${base}-eid-adha`, "PSU Eidul-Adha Holiday", adhaStart && adhaStart.date && adhaStart.date.start, dayBefore(adhaResume && adhaResume.date && adhaResume.date.start));
-    addEvent(events, `${base}-classes-resume-adha`, "PSU Classes Resume after Eidul-Adha", adhaResume && adhaResume.date && adhaResume.date.start);
+    addEvent(
+      events,
+      `${base}-eid-adha`,
+      "PSU Eidul-Adha Holiday",
+      adhaStart && adhaStart.date && adhaStart.date.start,
+      dayBefore(adhaResume && adhaResume.date && adhaResume.date.start),
+    );
+    addEvent(
+      events,
+      `${base}-classes-resume-adha`,
+      "PSU Classes Resume after Eidul-Adha",
+      adhaResume && adhaResume.date && adhaResume.date.start,
+    );
   });
 
-  return events.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  return events.sort(
+    (a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id),
+  );
 }
 
 function render(events) {
@@ -151,34 +226,55 @@ function render(events) {
     const term = (event.id.match(/^psu-(\d+)/) || [])[1] || "";
     return term > latest ? term : latest;
   }, "");
-  const hash = crypto.createHash("sha256").update(JSON.stringify(events)).digest("hex").slice(0, 10);
+  const hash = crypto
+    .createHash("sha256")
+    .update(JSON.stringify(events))
+    .digest("hex")
+    .slice(0, 10);
   const version = latestTerm ? `term-${latestTerm}-${hash}` : hash;
   return `(function(){
   "use strict";
-  window.SHOUG_PSU_ACADEMIC_CALENDAR=${JSON.stringify({
-    sourceUrl: SOURCE_URL,
-    version,
-    events
-  }, null, 2)};
+  window.SHOUG_PSU_ACADEMIC_CALENDAR=${JSON.stringify(
+    {
+      sourceUrl: SOURCE_URL,
+      version,
+      events,
+    },
+    null,
+    2,
+  )};
 })();
 `;
 }
 
 async function main() {
   const events = extractEvents(await fetchCalendarHtml());
-  if (events.length < 6) throw new Error(`Only found ${events.length} PSU calendar events; refusing to overwrite.`);
+  if (events.length < 6)
+    throw new Error(
+      `Only found ${events.length} PSU calendar events; refusing to overwrite.`,
+    );
   fs.writeFileSync(OUTPUT, render(events));
-  console.log(`Wrote ${events.length} PSU calendar events to ${path.relative(process.cwd(), OUTPUT)}`);
+  console.log(
+    `Wrote ${events.length} PSU calendar events to ${path.relative(process.cwd(), OUTPUT)}`,
+  );
 }
 
 async function fetchCalendarHtml() {
   try {
-    const response = await fetch(SOURCE_URL, { headers: { "user-agent": "shoug-tech-calendar-sync/1.0" } });
-    if (!response.ok) throw new Error(`PSU calendar request failed: ${response.status}`);
+    const response = await fetch(SOURCE_URL, {
+      headers: { "user-agent": "shoug-tech-calendar-sync/1.0" },
+    });
+    if (!response.ok)
+      throw new Error(`PSU calendar request failed: ${response.status}`);
     return response.text();
   } catch (error) {
-    console.warn(`Node fetch failed (${error.cause && error.cause.code ? error.cause.code : error.message}); retrying with curl.`);
-    return execFileSync("curl", ["-fsSL", SOURCE_URL], { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
+    console.warn(
+      `Node fetch failed (${error.cause && error.cause.code ? error.cause.code : error.message}); retrying with curl.`,
+    );
+    return execFileSync("curl", ["-fsSL", SOURCE_URL], {
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024,
+    });
   }
 }
 

@@ -6,63 +6,64 @@
   window.__shougArabicLocalizationLoaded = true;
 
   var exact = {
-    "SYSTEM_DIRECTORY": "دليل_النظام",
-    "WORKSHOP_DIRECTORY": "دليل_الورش",
+    SYSTEM_DIRECTORY: "دليل_النظام",
+    WORKSHOP_DIRECTORY: "دليل_الورش",
     "ACADEMICS/": "الدراسة/",
     "WORKSHOPS/": "الورش/",
-    "Workshops": "الورش",
+    Workshops: "الورش",
     "ACADEMIC PLAN": "الخطة الدراسية",
     "COMPUTER SCIENCE/": "علوم الحاسب/",
     "COMPUTER SCIENCE": "علوم الحاسب",
     "SOFTWARE ENGINEERING/": "هندسة البرمجيات/",
     "SOFTWARE ENGINEERING": "هندسة البرمجيات",
     "CYBERSECURITY/": "الأمن السيبراني/",
-    "CYBERSECURITY": "الأمن السيبراني",
+    CYBERSECURITY: "الأمن السيبراني",
     "OTHER COURSES/": "مواد أخرى/",
     "OTHER COURSES": "مواد أخرى",
-    "OVERVIEW": "نظرة عامة",
+    OVERVIEW: "نظرة عامة",
     "SLIDE BREAKDOWNS": "تفكيك الشرائح",
-    "SLIDES": "الشرائح",
+    SLIDES: "الشرائح",
     "SLIDES WITH NOTES": "شرائح مع ملاحظات",
-    "SYLLABUS": "الخطة الدراسية",
+    SYLLABUS: "الخطة الدراسية",
     "STUDY MATERIAL": "المواد الدراسية",
-    "Exams": "الاختبارات",
-    "EXAMS": "الاختبارات",
+    Exams: "الاختبارات",
+    EXAMS: "الاختبارات",
     "EXTRA RESOURCES": "موارد إضافية",
     "WRITING RESOURCES": "موارد الكتابة",
-    "MINDMAP": "الخريطة الذهنية",
-    "MINDMAPS": "الخرائط الذهنية",
-    "SUMMARY": "الملخص",
-    "TOPICS": "الموضوعات",
-    "SEQ": "الترتيب",
-    "DESCRIPTOR": "الوصف",
-    "SYS_STATE": "الحالة",
-    "SYS_TIME": "وقت_النظام",
-    "AVAILABLE": "متاح",
+    MINDMAP: "الخريطة الذهنية",
+    MINDMAPS: "الخرائط الذهنية",
+    SUMMARY: "الملخص",
+    TOPICS: "الموضوعات",
+    SEQ: "الترتيب",
+    DESCRIPTOR: "الوصف",
+    SYS_STATE: "الحالة",
+    SYS_TIME: "وقت_النظام",
+    AVAILABLE: "متاح",
     "IN PROGRESS": "قيد التنفيذ",
-    "COMPLETE": "مكتمل",
+    COMPLETE: "مكتمل",
     "COMING SOON": "قريبا",
-    "Content for this section is being prepared and will be available soon.": "يتم تجهيز محتوى هذا القسم وسيكون متاحا قريبا.",
-    "PDF": "ملف",
-    "Overview": "نظرة عامة",
+    "Content for this section is being prepared and will be available soon.":
+      "يتم تجهيز محتوى هذا القسم وسيكون متاحا قريبا.",
+    PDF: "ملف",
+    Overview: "نظرة عامة",
     "Slide Breakdowns": "تفكيك الشرائح",
-    "Slides": "الشرائح",
+    Slides: "الشرائح",
     "Slides With Notes": "شرائح مع ملاحظات",
     "Slides with Notes": "شرائح مع ملاحظات",
-    "Syllabus": "الخطة الدراسية",
+    Syllabus: "الخطة الدراسية",
     "Study Material": "المواد الدراسية",
-    "Quizzes": "الاختبارات",
-    "Exams": "الاختبارات",
+    Quizzes: "الاختبارات",
+    Exams: "الاختبارات",
     "Extra Resources": "موارد إضافية",
     "Writing Resources": "موارد الكتابة",
-    "Summary": "الملخص",
-    "Topics": "الموضوعات",
-    "Mindmap": "الخريطة الذهنية",
-    "Mindmaps": "الخرائط الذهنية",
-    "Academics": "الدراسة",
+    Summary: "الملخص",
+    Topics: "الموضوعات",
+    Mindmap: "الخريطة الذهنية",
+    Mindmaps: "الخرائط الذهنية",
+    Academics: "الدراسة",
     "Computer Science": "علوم الحاسب",
     "Software Engineering": "هندسة البرمجيات",
-    "Cybersecurity": "الأمن السيبراني",
+    Cybersecurity: "الأمن السيبراني",
     "Other Courses": "مواد أخرى",
     "[ OPEN IN NEW TAB -> ]": "[ فتح في تبويب جديد ← ]",
     "[ VIEW CONTENT -> ]": "[ عرض المحتوى ← ]",
@@ -73,12 +74,12 @@
     "No slide breakdowns uploaded yet": "لم ترفع تفكيكات الشرائح بعد",
     "No slides uploaded yet": "لم ترفع الشرائح بعد",
     "Quizzes coming soon": "الاختبارات قريبا",
-    "Introduction": "المقدمة",
-    "Quality": "الجودة",
-    "Recursion": "الاستدعاء الذاتي",
-    "Lists": "القوائم",
-    "Trees": "الأشجار",
-    "Heaps": "الأكوام",
+    Introduction: "المقدمة",
+    Quality: "الجودة",
+    Recursion: "الاستدعاء الذاتي",
+    Lists: "القوائم",
+    Trees: "الأشجار",
+    Heaps: "الأكوام",
     "Hash Tables": "جداول التجزئة",
     "Quick Sort": "الترتيب السريع",
     "Merge Sort": "الترتيب بالدمج",
@@ -97,29 +98,30 @@
     "Data Link Layer MAC Protocols": "بروتوكولات MAC في طبقة ربط البيانات",
     "DNS and Application Layer": "نظام DNS وطبقة التطبيقات",
     "Ethernet and LANs": "إيثرنت والشبكات المحلية",
-    "Interconnecting Devices and VLANs": "أجهزة الربط والشبكات المحلية الافتراضية",
+    "Interconnecting Devices and VLANs":
+      "أجهزة الربط والشبكات المحلية الافتراضية",
     "Network Layer Data Transfer": "نقل البيانات في طبقة الشبكة",
     "Network Layer Routing": "التوجيه في طبقة الشبكة",
     "Protocol Layering and Network Models": "طبقات البروتوكولات ونماذج الشبكات",
     "Transport Layer": "طبقة النقل",
     "Application Layer": "طبقة التطبيقات",
-    "Ethernet": "إيثرنت",
+    Ethernet: "إيثرنت",
     "Interconnecting Devices": "أجهزة الربط",
     "Cheat Sheet": "ورقة المراجعة",
     "Full Cheat Sheet": "ورقة المراجعة الكاملة",
     "Final Cheat Sheet": "ورقة مراجعة الاختبار النهائي",
     "Midterm Cheat Sheet": "ورقة مراجعة الاختبار النصفي",
     "Final Mindmap": "الخريطة الذهنية النهائية",
-    "Symbols": "الرموز",
-    "Formulas": "القوانين",
+    Symbols: "الرموز",
+    Formulas: "القوانين",
     "Computer Components": "مكونات الحاسب",
     "Compiled MCQs": "أسئلة الاختيار من متعدد المجمعة",
     "Compiled Mcqs": "أسئلة الاختيار من متعدد المجمعة",
     "Midterm Exam": "الاختبار النصفي",
     "Final Exam 251 Practice": "تدريب الاختبار النهائي 251",
     "Business Ethics": "أخلاقيات الأعمال",
-    "Kantianism": "الفلسفة الكانطية",
-    "Utilitarianism": "النفعية",
+    Kantianism: "الفلسفة الكانطية",
+    Utilitarianism: "النفعية",
     "Social Contract Theory": "نظرية العقد الاجتماعي",
     "Social Engineering": "الهندسة الاجتماعية",
     "Cyber Laws in Saudi Arabia": "الأنظمة السيبرانية في السعودية",
@@ -132,222 +134,457 @@
     "Thesis Statement Guide": "دليل جملة الأطروحة",
     "Transition Signals": "إشارات الانتقال",
     "Grammar Cheat Sheet": "ورقة مراجعة القواعد",
-    "Self Editing Checklist": "قائمة المراجعة الذاتية"
-    , "Chapter 1 Software Engineering Practices and Ethics": "الفصل الأول: ممارسات هندسة البرمجيات وأخلاقياتها"
-    , "WORKSHOP // MY JOURNEY AS A STUDENT TUTOR": "ورشة // رحلتي كمدرسة مساندة للطلاب"
-    , "WORKSHOP // CYBERSECURITY CRASH COURSE": "ورشة // دورة مكثفة في الأمن السيبراني"
-    , "My Journey As A Student Tutor": "رحلتي كمدرسة مساندة للطلاب"
-    , "My Journey as a Student Tutor": "رحلتي كمدرسة مساندة للطلاب"
-    , "Cybersecurity Crash Course": "دورة مكثفة في الأمن السيبراني"
-    , "Schedule & Agenda": "الجدول والمحاور"
-    , "Topics & Learning Outcomes": "الموضوعات ومخرجات التعلم"
-    , "Handouts": "المذكرات"
-    , "Labs & Bandit Notes": "المختبرات وملاحظات بانديت"
-    , "Reflection & Impact": "التأمل والأثر"
-    , "Agenda": "المحاور"
-    , "Timeline": "الخط الزمني"
-    , "Skills": "المهارات"
-    , "Growth": "التطور"
-    , "Feedback": "التغذية الراجعة"
-    , "Tips": "النصائح"
-    , "Reflection": "التأمل"
-    , "Video": "الفيديو"
-    , "Home": "الرئيسية"
-    , "My Profile": "ملفي الشخصي"
-    , "Calendar": "التقويم"
-    , "Bookmarks": "المحفوظات"
-    , "My Progress": "تقدمي"
-    , "Community": "المجتمع"
-    , "Today": "اليوم"
-    , "Add Exam": "إضافة اختبار"
-    , "Add Event": "إضافة حدث"
-    , "Clear Items": "مسح العناصر"
-    , "Export": "تصدير"
-    , "Month View": "عرض الشهر"
-    , "View Focus": "تركيز العرض"
-    , "Hide calendar layers without deleting anything": "إخفاء طبقات التقويم بدون حذف أي شيء"
-    , "Classes": "المحاضرات"
-    , "Study": "الدراسة"
-    , "Personal": "شخصي"
-    , "PSU": "جامعة الأمير سلطان"
-    , "Add Class Schedule": "إضافة جدول محاضرة"
-    , "Repeats weekly until you remove it": "يتكرر أسبوعيا حتى تحذفيه"
-    , "Class name": "اسم المقرر"
-    , "Start": "البداية"
-    , "End": "النهاية"
-    , "Location": "الموقع"
-    , "Online Meeting Link": "رابط المحاضرة الإلكترونية"
-    , "Used for Tuesday online classes": "يستخدم لمحاضرات الثلاثاء الإلكترونية"
-    , "Add Class": "إضافة محاضرة"
-    , "Add Study Session": "إضافة جلسة مذاكرة"
-    , "Block time before an exam": "حددي وقتا للمذاكرة قبل الاختبار"
-    , "Exam": "الاختبار"
-    , "Template": "النموذج"
-    , "Focus": "التركيز"
-    , "Date": "التاريخ"
-    , "Choose study date": "اختاري تاريخ المذاكرة"
-    , "Choose start date": "اختاري تاريخ البداية"
-    , "Choose end date": "اختاري تاريخ النهاية"
-    , "Travel, tutoring, appointments, anything": "سفر، دروس، مواعيد، أو أي شيء"
-    , "Title": "العنوان"
-    , "Starts": "يبدأ"
-    , "Ends": "ينتهي"
-    , "Type": "النوع"
-    , "Travel": "سفر"
-    , "Unavailable": "غير متاحة"
-    , "Academic calendar": "التقويم الأكاديمي"
-    , "Saved Items": "العناصر المحفوظة"
-    , "Class schedules and custom events": "جداول المحاضرات والأحداث المخصصة"
-    , "Absence Tracker": "متابعة الغياب"
-    , "Skipped and cancelled class meetings": "محاضرات متغيبة أو ملغاة"
-    , "Upcoming Exams": "الاختبارات القادمة"
-    , "Loaded from your profile or added here": "تظهر من ملفك أو تضيفينها هنا"
-    , "Edit": "تعديل"
-    , "Delete Schedule": "حذف الجدول"
-    , "Delete Event": "حذف الحدث"
-    , "Edit Exam": "تعديل الاختبار"
-    , "Save Exam": "حفظ الاختبار"
-    , "Add an exam date without leaving the calendar": "أضيفي موعد اختبار بدون مغادرة التقويم"
-    , "Update the course, type, date, time, and location": "حدثي المقرر والنوع والتاريخ والوقت والموقع"
-    , "Course": "المقرر"
-    , "Quiz": "اختبار قصير"
-    , "Midterm": "اختبار نصفي"
-    , "Final": "اختبار نهائي"
-    , "Project": "مشروع"
-    , "Room, building, or online": "قاعة، مبنى، أو إلكتروني"
-    , "Save Event": "حفظ الحدث"
-    , "Add travel, unavailable time, or a personal event": "أضيفي سفرا أو وقتا غير متاح أو حدثا شخصيا"
-    , "Edit Class": "تعديل المحاضرة"
-    , "Change this meeting or the recurring schedule.": "عدلي هذه المحاضرة أو الجدول المتكرر."
-    , "Apply Change To": "تطبيق التعديل على"
-    , "This date only": "هذا التاريخ فقط"
-    , "Entire schedule": "الجدول كامل"
-    , "Save Class": "حفظ المحاضرة"
-    , "Remove Class": "إزالة المحاضرة"
-    , "Tell the calendar what happened so your absence tracker stays useful.": "حددي ما حدث حتى يبقى تتبع الغياب مفيدا."
-    , "I Skipped It": "تغيبت عنها"
-    , "Completed Required Part": "أنهيت الجزء المطلوب"
-    , "There Was An Exam": "كان هناك اختبار"
-    , "It Was Cancelled": "كانت ملغاة"
-    , "Nothing scheduled on this day.": "لا يوجد شيء مجدول في هذا اليوم."
-    , "Sign in to view your calendar": "سجلي الدخول لعرض التقويم"
-    , "Your calendar syncs with your saved exam dates and personal schedule.": "يتزامن التقويم مع مواعيد اختباراتك وجدولك الشخصي."
-    , "Sign In": "تسجيل الدخول"
-    , "Loading your calendar": "جار تحميل التقويم"
-    , "Your exams appear from your profile, and you can add exam dates here too.": "تظهر اختباراتك من ملفك، ويمكنك إضافة مواعيد الاختبارات هنا أيضا."
-    , "PSU semester dates, holidays, class endings, and finals are applied automatically.": "تضاف تواريخ الفصل والإجازات ونهاية المحاضرات والاختبارات النهائية تلقائيا."
-    , "Software Engineering and Cybersecurity portfolio. Documenting projects, study systems, workshops, and technical resources.": "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية."
-    , "Navigate": "التنقل"
-    , "Connect": "التواصل"
-    , "System": "النظام"
-    , "Projects": "المشاريع"
-    , "Resources": "الموارد"
-    , "Email": "البريد الإلكتروني"
-    , "Blueprint Studio": "استوديو بلوبرنت"
-    , "Status: Operational": "الحالة: يعمل"
-    , "Protocol: HTTPS": "البروتوكول: HTTPS"
-    , "Copyright & Policy": "حقوق النشر والسياسة"
-    , "Academic Disclaimer": "إخلاء المسؤولية الأكاديمية"
-    , "Privacy Notice": "إشعار الخصوصية"
-    , "Made by": "من تنفيذ"
-    , "Blueprint": "بلوبرنت"
+    "Self Editing Checklist": "قائمة المراجعة الذاتية",
+    "Chapter 1 Software Engineering Practices and Ethics":
+      "الفصل الأول: ممارسات هندسة البرمجيات وأخلاقياتها",
+    "WORKSHOP // MY JOURNEY AS A STUDENT TUTOR":
+      "ورشة // رحلتي كمدرسة مساندة للطلاب",
+    "WORKSHOP // CYBERSECURITY CRASH COURSE":
+      "ورشة // دورة مكثفة في الأمن السيبراني",
+    "My Journey As A Student Tutor": "رحلتي كمدرسة مساندة للطلاب",
+    "My Journey as a Student Tutor": "رحلتي كمدرسة مساندة للطلاب",
+    "Cybersecurity Crash Course": "دورة مكثفة في الأمن السيبراني",
+    "Schedule & Agenda": "الجدول والمحاور",
+    "Topics & Learning Outcomes": "الموضوعات ومخرجات التعلم",
+    Handouts: "المذكرات",
+    "Labs & Bandit Notes": "المختبرات وملاحظات بانديت",
+    "Reflection & Impact": "التأمل والأثر",
+    Agenda: "المحاور",
+    Timeline: "الخط الزمني",
+    Skills: "المهارات",
+    Growth: "التطور",
+    Feedback: "التغذية الراجعة",
+    Tips: "النصائح",
+    Reflection: "التأمل",
+    Video: "الفيديو",
+    Home: "الرئيسية",
+    "My Profile": "ملفي الشخصي",
+    Calendar: "التقويم",
+    Bookmarks: "المحفوظات",
+    "My Progress": "تقدمي",
+    Community: "المجتمع",
+    Today: "اليوم",
+    "Add Exam": "إضافة اختبار",
+    "Add Event": "إضافة حدث",
+    "Clear Items": "مسح العناصر",
+    Export: "تصدير",
+    "Month View": "عرض الشهر",
+    "View Focus": "تركيز العرض",
+    "Hide calendar layers without deleting anything":
+      "إخفاء طبقات التقويم بدون حذف أي شيء",
+    Classes: "المحاضرات",
+    Study: "الدراسة",
+    Personal: "شخصي",
+    PSU: "جامعة الأمير سلطان",
+    "Add Class Schedule": "إضافة جدول محاضرة",
+    "Repeats weekly until you remove it": "يتكرر أسبوعيا حتى تحذفيه",
+    "Class name": "اسم المقرر",
+    Start: "البداية",
+    End: "النهاية",
+    Location: "الموقع",
+    "Online Meeting Link": "رابط المحاضرة الإلكترونية",
+    "Used for Tuesday online classes": "يستخدم لمحاضرات الثلاثاء الإلكترونية",
+    "Add Class": "إضافة محاضرة",
+    "Add Study Session": "إضافة جلسة مذاكرة",
+    "Block time before an exam": "حددي وقتا للمذاكرة قبل الاختبار",
+    Exam: "الاختبار",
+    Template: "النموذج",
+    Focus: "التركيز",
+    Date: "التاريخ",
+    "Choose study date": "اختاري تاريخ المذاكرة",
+    "Choose start date": "اختاري تاريخ البداية",
+    "Choose end date": "اختاري تاريخ النهاية",
+    "Travel, tutoring, appointments, anything": "سفر، دروس، مواعيد، أو أي شيء",
+    Title: "العنوان",
+    Starts: "يبدأ",
+    Ends: "ينتهي",
+    Type: "النوع",
+    Travel: "سفر",
+    Unavailable: "غير متاحة",
+    "Academic calendar": "التقويم الأكاديمي",
+    "Saved Items": "العناصر المحفوظة",
+    "Class schedules and custom events": "جداول المحاضرات والأحداث المخصصة",
+    "Absence Tracker": "متابعة الغياب",
+    "Skipped and cancelled class meetings": "محاضرات متغيبة أو ملغاة",
+    "Upcoming Exams": "الاختبارات القادمة",
+    "Loaded from your profile or added here": "تظهر من ملفك أو تضيفينها هنا",
+    Edit: "تعديل",
+    "Delete Schedule": "حذف الجدول",
+    "Delete Event": "حذف الحدث",
+    "Edit Exam": "تعديل الاختبار",
+    "Save Exam": "حفظ الاختبار",
+    "Add an exam date without leaving the calendar":
+      "أضيفي موعد اختبار بدون مغادرة التقويم",
+    "Update the course, type, date, time, and location":
+      "حدثي المقرر والنوع والتاريخ والوقت والموقع",
+    Course: "المقرر",
+    Quiz: "اختبار قصير",
+    Midterm: "اختبار نصفي",
+    Final: "اختبار نهائي",
+    Project: "مشروع",
+    "Room, building, or online": "قاعة، مبنى، أو إلكتروني",
+    "Save Event": "حفظ الحدث",
+    "Add travel, unavailable time, or a personal event":
+      "أضيفي سفرا أو وقتا غير متاح أو حدثا شخصيا",
+    "Edit Class": "تعديل المحاضرة",
+    "Change this meeting or the recurring schedule.":
+      "عدلي هذه المحاضرة أو الجدول المتكرر.",
+    "Apply Change To": "تطبيق التعديل على",
+    "This date only": "هذا التاريخ فقط",
+    "Entire schedule": "الجدول كامل",
+    "Save Class": "حفظ المحاضرة",
+    "Remove Class": "إزالة المحاضرة",
+    "Tell the calendar what happened so your absence tracker stays useful.":
+      "حددي ما حدث حتى يبقى تتبع الغياب مفيدا.",
+    "I Skipped It": "تغيبت عنها",
+    "Completed Required Part": "أنهيت الجزء المطلوب",
+    "There Was An Exam": "كان هناك اختبار",
+    "It Was Cancelled": "كانت ملغاة",
+    "Nothing scheduled on this day.": "لا يوجد شيء مجدول في هذا اليوم.",
+    "Sign in to view your calendar": "سجلي الدخول لعرض التقويم",
+    "Your calendar syncs with your saved exam dates and personal schedule.":
+      "يتزامن التقويم مع مواعيد اختباراتك وجدولك الشخصي.",
+    "Sign In": "تسجيل الدخول",
+    "Loading your calendar": "جار تحميل التقويم",
+    "Your exams appear from your profile, and you can add exam dates here too.":
+      "تظهر اختباراتك من ملفك، ويمكنك إضافة مواعيد الاختبارات هنا أيضا.",
+    "PSU semester dates, holidays, class endings, and finals are applied automatically.":
+      "تضاف تواريخ الفصل والإجازات ونهاية المحاضرات والاختبارات النهائية تلقائيا.",
+    "Software Engineering and Cybersecurity portfolio. Documenting projects, study systems, workshops, and technical resources.":
+      "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية.",
+    Navigate: "التنقل",
+    Connect: "التواصل",
+    System: "النظام",
+    Projects: "المشاريع",
+    Resources: "الموارد",
+    Email: "البريد الإلكتروني",
+    "Blueprint Studio": "استوديو بلوبرنت",
+    "Status: Operational": "الحالة: يعمل",
+    "Protocol: HTTPS": "البروتوكول: HTTPS",
+    "Copyright & Policy": "حقوق النشر والسياسة",
+    "Academic Disclaimer": "إخلاء المسؤولية الأكاديمية",
+    "Privacy Notice": "إشعار الخصوصية",
+    "Made by": "من تنفيذ",
+    Blueprint: "بلوبرنت",
   };
 
   var words = {
-    "Chapter": "الفصل", "Ch": "الفصل", "Part": "الجزء", "Lecture": "المحاضرة",
-    "Introduction": "مقدمة", "Foundations": "أساسيات", "Fundamentals": "أساسيات",
-    "Basics": "أساسيات", "Advanced": "متقدم", "Extra": "إضافي", "Supplement": "ملحق",
-    "Handouts": "ملخصات", "Guide": "دليل", "Notes": "ملاحظات", "Practice": "تدريب",
-    "Quiz": "اختبار", "Exam": "اختبار", "Midterm": "نصفي", "Final": "نهائي",
-    "Cheat": "مراجعة", "Sheet": "ورقة", "Mind": "ذهنية", "Map": "خريطة",
-    "Communications": "اتصالات", "Communication": "اتصال", "Data": "بيانات",
-    "Networking": "شبكات", "Network": "شبكة", "Layer": "طبقة", "Control": "تحكم",
-    "Protocols": "بروتوكولات", "Protocol": "بروتوكول", "Application": "تطبيقات",
-    "Applications": "تطبيقات", "Transport": "نقل", "Routing": "توجيه",
-    "Transfer": "نقل", "Devices": "أجهزة", "Models": "نماذج",
-    "Systems": "أنظمة", "System": "نظام", "Architecture": "معمارية",
-    "Design": "تصميم", "Patterns": "أنماط", "Pattern": "نمط", "Principles": "مبادئ",
-    "Requirements": "متطلبات", "Requirement": "متطلب", "Engineering": "هندسة",
-    "Software": "برمجيات", "Processes": "عمليات", "Process": "عملية",
-    "Agile": "رشيقة", "Project": "مشروع", "Management": "إدارة",
-    "Construction": "بناء", "Implementation": "تنفيذ", "Testing": "اختبار",
-    "Test": "اختبار", "Quality": "جودة", "Metrics": "مقاييس", "Tools": "أدوات",
-    "Techniques": "تقنيات", "Coverage": "تغطية", "Regression": "انحدار",
-    "Unit": "وحدة", "Code": "شفرة", "Throughout": "خلال", "Development": "تطوير",
-    "Approach": "منهج", "Scheduling": "جدولة", "Tracking": "تتبع",
-    "Change": "تغيير", "Team": "فريق", "Risk": "مخاطر", "Estimation": "تقدير",
-    "Stakeholders": "أصحاب المصلحة", "Performance": "أداء", "Domains": "مجالات",
-    "Methods": "أساليب", "Artifacts": "مخرجات", "Tailoring": "تخصيص",
-    "Documentation": "توثيق", "Standards": "معايير", "Inception": "بدء",
-    "Elicitation": "استنباط", "Analysis": "تحليل", "Specification": "مواصفات",
-    "Validation": "تحقق", "Prioritization": "تحديد الأولويات", "Nonfunctional": "غير وظيفية",
-    "Writing": "كتابة", "Excellent": "ممتازة", "Domain": "مجال", "Modeling": "نمذجة",
-    "Database": "قواعد البيانات", "Databases": "قواعد البيانات", "Relational": "علائقي",
-    "Normalization": "تطبيع", "Mapping": "تحويل", "Concepts": "مفاهيم",
-    "Conceptual": "مفاهيمي", "Objects": "كائنات", "Object": "كائن",
-    "Oriented": "موجه", "Basic": "أساسي", "Fundamentals": "أساسيات",
-    "Cryptography": "تشفير", "Asymmetric": "غير متماثل", "Authentication": "مصادقة",
-    "Access": "وصول", "Security": "أمن", "Cybersecurity": "أمن سيبراني",
-    "Threat": "تهديد", "Threats": "تهديدات", "Vulnerabilities": "ثغرات",
-    "Countermeasures": "إجراءات مضادة", "Protection": "حماية", "Information": "معلومات",
-    "Assets": "أصول", "Capabilities": "قدرات", "Computer": "حاسب",
-    "Operating": "تشغيل", "Services": "خدمات", "Threads": "خيوط",
-    "Scheduling": "جدولة", "Synchronization": "تزامن", "Memory": "ذاكرة",
-    "Virtual": "افتراضية", "Mass": "ضخم", "Storage": "تخزين", "File": "ملفات",
-    "Interface": "واجهة", "Deadlocks": "تعطل متبادل", "Textbook": "الكتاب",
-    "Logic": "منطق", "Proof": "برهان", "Proofs": "براهين", "Sets": "مجموعات",
-    "Functions": "دوال", "Sequences": "متتاليات", "Sums": "مجاميع",
-    "Number": "أعداد", "Theory": "نظرية", "Mathematical": "رياضي",
-    "Induction": "استقراء", "Counting": "عد", "Relations": "علاقات",
-    "Classes": "فئات", "Comparable": "قابل للمقارنة", "Comparator": "مقارن",
-    "Interfaces": "واجهات", "Files": "ملفات", "Generic": "عامة",
-    "Inheritance": "وراثة", "Polymorphism": "تعدد الأشكال", "Collection": "تجميع",
-    "Framework": "إطار عمل", "Linked": "مرتبطة", "Lists": "قوائم",
-    "Circular": "دائرية", "Directed": "موجهة", "Undirected": "غير موجهة",
-    "Graphs": "رسوم بيانية", "Elementary": "أساسية", "Sorting": "ترتيب",
-    "Algorithms": "خوارزميات", "Priority": "أولوية", "Queues": "طوابير",
-    "Stacks": "مكدسات", "Search": "بحث", "Trees": "أشجار", "Quick": "سريع",
-    "Merge": "دمج", "Hash": "تجزئة", "Heaps": "أكوام", "Recursion": "استدعاء ذاتي",
-    "Ethical": "أخلاقية", "Ethics": "أخلاقيات", "Moral": "أخلاقية",
-    "Practices": "ممارسات", "Practice": "تدريب", "Learning": "تعلم",
-    "Outcomes": "مخرجات", "Schedule": "جدول", "Agenda": "محاور",
-    "Labs": "مختبرات", "Notes": "ملاحظات", "Reflection": "تأمل",
-    "Impact": "أثر", "Timeline": "خط زمني", "Skills": "مهارات",
-    "Growth": "تطور", "Feedback": "تغذية راجعة", "Tips": "نصائح",
-    "Video": "فيديو", "Journey": "رحلة", "Student": "طالب", "Tutor": "مدرس",
-    "Workshop": "ورشة", "Crash": "مكثفة", "Course": "دورة",
-    "Privacy": "خصوصية", "Cloud": "سحابية", "Computing": "حوسبة",
-    "Legal": "قانونية", "Laws": "أنظمة", "Saudi": "السعودية", "Arabia": "",
-    "Media": "إعلام", "Business": "أعمال", "Contract": "عقد", "Theory": "نظرية",
-    "Intellectual": "فكرية", "Property": "ملكية", "Hacking": "اختراق",
-    "Essay": "مقالة", "Compare": "مقارنة", "Contrast": "مقابلة", "Cause": "سبب",
-    "Effect": "نتيجة", "Classification": "تصنيف", "Argumentative": "جدلية",
-    "Punctuation": "ترقيم", "Transition": "انتقال", "Transitions": "انتقالات",
-    "Thesis": "أطروحة", "Statement": "جملة", "Worksheet": "ورقة عمل",
-    "Assignment": "واجب", "Overview": "نظرة عامة", "Materials": "مواد",
-    "Electric": "كهربائية", "Charge": "شحنة", "Fields": "مجالات", "Potential": "جهد",
-    "Capacitance": "سعة", "Current": "تيار", "Resistance": "مقاومة",
-    "Circuits": "دوائر", "Magnetic": "مغناطيسية", "Induction": "حث",
-    "and": "و", "And": "و", "of": "ل", "Of": "ل", "to": "إلى", "To": "إلى",
-    "in": "في", "In": "في", "the": "", "The": "", "for": "ل", "For": "ل",
-    "Using": "باستخدام", "Throughout": "خلال", "with": "مع", "Without": "بدون"
+    Chapter: "الفصل",
+    Ch: "الفصل",
+    Part: "الجزء",
+    Lecture: "المحاضرة",
+    Introduction: "مقدمة",
+    Foundations: "أساسيات",
+    Fundamentals: "أساسيات",
+    Basics: "أساسيات",
+    Advanced: "متقدم",
+    Extra: "إضافي",
+    Supplement: "ملحق",
+    Handouts: "ملخصات",
+    Guide: "دليل",
+    Notes: "ملاحظات",
+    Practice: "تدريب",
+    Quiz: "اختبار",
+    Exam: "اختبار",
+    Midterm: "نصفي",
+    Final: "نهائي",
+    Cheat: "مراجعة",
+    Sheet: "ورقة",
+    Mind: "ذهنية",
+    Map: "خريطة",
+    Communications: "اتصالات",
+    Communication: "اتصال",
+    Data: "بيانات",
+    Networking: "شبكات",
+    Network: "شبكة",
+    Layer: "طبقة",
+    Control: "تحكم",
+    Protocols: "بروتوكولات",
+    Protocol: "بروتوكول",
+    Application: "تطبيقات",
+    Applications: "تطبيقات",
+    Transport: "نقل",
+    Routing: "توجيه",
+    Transfer: "نقل",
+    Devices: "أجهزة",
+    Models: "نماذج",
+    Systems: "أنظمة",
+    System: "نظام",
+    Architecture: "معمارية",
+    Design: "تصميم",
+    Patterns: "أنماط",
+    Pattern: "نمط",
+    Principles: "مبادئ",
+    Requirements: "متطلبات",
+    Requirement: "متطلب",
+    Engineering: "هندسة",
+    Software: "برمجيات",
+    Processes: "عمليات",
+    Process: "عملية",
+    Agile: "رشيقة",
+    Project: "مشروع",
+    Management: "إدارة",
+    Construction: "بناء",
+    Implementation: "تنفيذ",
+    Testing: "اختبار",
+    Test: "اختبار",
+    Quality: "جودة",
+    Metrics: "مقاييس",
+    Tools: "أدوات",
+    Techniques: "تقنيات",
+    Coverage: "تغطية",
+    Regression: "انحدار",
+    Unit: "وحدة",
+    Code: "شفرة",
+    Throughout: "خلال",
+    Development: "تطوير",
+    Approach: "منهج",
+    Scheduling: "جدولة",
+    Tracking: "تتبع",
+    Change: "تغيير",
+    Team: "فريق",
+    Risk: "مخاطر",
+    Estimation: "تقدير",
+    Stakeholders: "أصحاب المصلحة",
+    Performance: "أداء",
+    Domains: "مجالات",
+    Methods: "أساليب",
+    Artifacts: "مخرجات",
+    Tailoring: "تخصيص",
+    Documentation: "توثيق",
+    Standards: "معايير",
+    Inception: "بدء",
+    Elicitation: "استنباط",
+    Analysis: "تحليل",
+    Specification: "مواصفات",
+    Validation: "تحقق",
+    Prioritization: "تحديد الأولويات",
+    Nonfunctional: "غير وظيفية",
+    Writing: "كتابة",
+    Excellent: "ممتازة",
+    Domain: "مجال",
+    Modeling: "نمذجة",
+    Database: "قواعد البيانات",
+    Databases: "قواعد البيانات",
+    Relational: "علائقي",
+    Normalization: "تطبيع",
+    Mapping: "تحويل",
+    Concepts: "مفاهيم",
+    Conceptual: "مفاهيمي",
+    Objects: "كائنات",
+    Object: "كائن",
+    Oriented: "موجه",
+    Basic: "أساسي",
+    Fundamentals: "أساسيات",
+    Cryptography: "تشفير",
+    Asymmetric: "غير متماثل",
+    Authentication: "مصادقة",
+    Access: "وصول",
+    Security: "أمن",
+    Cybersecurity: "أمن سيبراني",
+    Threat: "تهديد",
+    Threats: "تهديدات",
+    Vulnerabilities: "ثغرات",
+    Countermeasures: "إجراءات مضادة",
+    Protection: "حماية",
+    Information: "معلومات",
+    Assets: "أصول",
+    Capabilities: "قدرات",
+    Computer: "حاسب",
+    Operating: "تشغيل",
+    Services: "خدمات",
+    Threads: "خيوط",
+    Scheduling: "جدولة",
+    Synchronization: "تزامن",
+    Memory: "ذاكرة",
+    Virtual: "افتراضية",
+    Mass: "ضخم",
+    Storage: "تخزين",
+    File: "ملفات",
+    Interface: "واجهة",
+    Deadlocks: "تعطل متبادل",
+    Textbook: "الكتاب",
+    Logic: "منطق",
+    Proof: "برهان",
+    Proofs: "براهين",
+    Sets: "مجموعات",
+    Functions: "دوال",
+    Sequences: "متتاليات",
+    Sums: "مجاميع",
+    Number: "أعداد",
+    Theory: "نظرية",
+    Mathematical: "رياضي",
+    Induction: "استقراء",
+    Counting: "عد",
+    Relations: "علاقات",
+    Classes: "فئات",
+    Comparable: "قابل للمقارنة",
+    Comparator: "مقارن",
+    Interfaces: "واجهات",
+    Files: "ملفات",
+    Generic: "عامة",
+    Inheritance: "وراثة",
+    Polymorphism: "تعدد الأشكال",
+    Collection: "تجميع",
+    Framework: "إطار عمل",
+    Linked: "مرتبطة",
+    Lists: "قوائم",
+    Circular: "دائرية",
+    Directed: "موجهة",
+    Undirected: "غير موجهة",
+    Graphs: "رسوم بيانية",
+    Elementary: "أساسية",
+    Sorting: "ترتيب",
+    Algorithms: "خوارزميات",
+    Priority: "أولوية",
+    Queues: "طوابير",
+    Stacks: "مكدسات",
+    Search: "بحث",
+    Trees: "أشجار",
+    Quick: "سريع",
+    Merge: "دمج",
+    Hash: "تجزئة",
+    Heaps: "أكوام",
+    Recursion: "استدعاء ذاتي",
+    Ethical: "أخلاقية",
+    Ethics: "أخلاقيات",
+    Moral: "أخلاقية",
+    Practices: "ممارسات",
+    Practice: "تدريب",
+    Learning: "تعلم",
+    Outcomes: "مخرجات",
+    Schedule: "جدول",
+    Agenda: "محاور",
+    Labs: "مختبرات",
+    Notes: "ملاحظات",
+    Reflection: "تأمل",
+    Impact: "أثر",
+    Timeline: "خط زمني",
+    Skills: "مهارات",
+    Growth: "تطور",
+    Feedback: "تغذية راجعة",
+    Tips: "نصائح",
+    Video: "فيديو",
+    Journey: "رحلة",
+    Student: "طالب",
+    Tutor: "مدرس",
+    Workshop: "ورشة",
+    Crash: "مكثفة",
+    Course: "دورة",
+    Privacy: "خصوصية",
+    Cloud: "سحابية",
+    Computing: "حوسبة",
+    Legal: "قانونية",
+    Laws: "أنظمة",
+    Saudi: "السعودية",
+    Arabia: "",
+    Media: "إعلام",
+    Business: "أعمال",
+    Contract: "عقد",
+    Theory: "نظرية",
+    Intellectual: "فكرية",
+    Property: "ملكية",
+    Hacking: "اختراق",
+    Essay: "مقالة",
+    Compare: "مقارنة",
+    Contrast: "مقابلة",
+    Cause: "سبب",
+    Effect: "نتيجة",
+    Classification: "تصنيف",
+    Argumentative: "جدلية",
+    Punctuation: "ترقيم",
+    Transition: "انتقال",
+    Transitions: "انتقالات",
+    Thesis: "أطروحة",
+    Statement: "جملة",
+    Worksheet: "ورقة عمل",
+    Assignment: "واجب",
+    Overview: "نظرة عامة",
+    Materials: "مواد",
+    Electric: "كهربائية",
+    Charge: "شحنة",
+    Fields: "مجالات",
+    Potential: "جهد",
+    Capacitance: "سعة",
+    Current: "تيار",
+    Resistance: "مقاومة",
+    Circuits: "دوائر",
+    Magnetic: "مغناطيسية",
+    Induction: "حث",
+    and: "و",
+    And: "و",
+    of: "ل",
+    Of: "ل",
+    to: "إلى",
+    To: "إلى",
+    in: "في",
+    In: "في",
+    the: "",
+    The: "",
+    for: "ل",
+    For: "ل",
+    Using: "باستخدام",
+    Throughout: "خلال",
+    with: "مع",
+    Without: "بدون",
   };
 
   var selectors = [
-    ".sidebar .sidebar-title", ".sidebar .tree-course-link", ".sidebar .tree-file",
-    ".academic-sidebar .sidebar-title", ".academic-sidebar .tree-file",
-    ".breadcrumb a", ".breadcrumb .current", ".type-label", ".tab", ".sub-nav-item",
-    ".quick-link-btn", ".dir-header span", ".dir-title", ".status-tag", ".ch-label",
-    ".ch-title", ".action-buttons .btn", ".nav-strip .nav-link", ".hero-label",
-    ".section-label", ".data-block-label", ".meta-key", ".coming-soon-title",
-    ".coming-soon-text", ".title", ".sub", ".btn", ".panel-title", ".panel-sub",
-    ".field label", ".filter-toggle", ".item-title", ".item-meta", ".empty",
-    ".day-sheet-title", ".day-sheet-sub", ".day-card-title", ".day-card-meta",
-    ".exam-form-title", ".exam-conflict", ".today-card-title", ".today-card-meta",
-    ".legend-chip", ".event-title", ".event-meta", ".more", ".mini-date-trigger",
-    ".shoug-app-tab", ".shoug-footer-text", ".shoug-footer-label",
-    ".shoug-footer-link", ".shoug-footer-meta", "#shoug-blueprint-bar",
-    "#shoug-blueprint-bar a", "option"
+    ".sidebar .sidebar-title",
+    ".sidebar .tree-course-link",
+    ".sidebar .tree-file",
+    ".academic-sidebar .sidebar-title",
+    ".academic-sidebar .tree-file",
+    ".breadcrumb a",
+    ".breadcrumb .current",
+    ".type-label",
+    ".tab",
+    ".sub-nav-item",
+    ".quick-link-btn",
+    ".dir-header span",
+    ".dir-title",
+    ".status-tag",
+    ".ch-label",
+    ".ch-title",
+    ".action-buttons .btn",
+    ".nav-strip .nav-link",
+    ".hero-label",
+    ".section-label",
+    ".data-block-label",
+    ".meta-key",
+    ".coming-soon-title",
+    ".coming-soon-text",
+    ".title",
+    ".sub",
+    ".btn",
+    ".panel-title",
+    ".panel-sub",
+    ".field label",
+    ".filter-toggle",
+    ".item-title",
+    ".item-meta",
+    ".empty",
+    ".day-sheet-title",
+    ".day-sheet-sub",
+    ".day-card-title",
+    ".day-card-meta",
+    ".exam-form-title",
+    ".exam-conflict",
+    ".today-card-title",
+    ".today-card-meta",
+    ".legend-chip",
+    ".event-title",
+    ".event-meta",
+    ".more",
+    ".mini-date-trigger",
+    ".shoug-app-tab",
+    ".shoug-footer-text",
+    ".shoug-footer-label",
+    ".shoug-footer-link",
+    ".shoug-footer-meta",
+    "#shoug-blueprint-bar",
+    "#shoug-blueprint-bar a",
+    "option",
   ].join(",");
 
   var placeholderMap = {
@@ -355,16 +592,19 @@
     "Review weak topics": "مراجعة المواضيع الصعبة",
     "Library, home, online": "المكتبة، المنزل، إلكتروني",
     "Travel day": "يوم سفر",
-    "Optional": "اختياري",
+    Optional: "اختياري",
     "Choose exam date": "اختاري تاريخ الاختبار",
-    "Travel": "سفر",
+    Travel: "سفر",
     "Room, building, or online": "قاعة، مبنى، أو إلكتروني",
     "Used for Tuesday online classes": "يستخدم لمحاضرات الثلاثاء الإلكترونية",
-    "Room or building for in-person days": "القاعة أو المبنى للمحاضرات الحضورية"
+    "Room or building for in-person days":
+      "القاعة أو المبنى للمحاضرات الحضورية",
   };
 
   function normalize(value) {
-    return String(value || "").replace(/\s+/g, " ").trim();
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function transliterate(word) {
@@ -374,20 +614,56 @@
       return word.toUpperCase();
     }
     var pairs = {
-      "sh": "ش", "ch": "تش", "th": "ث", "ph": "ف", "kh": "خ", "gh": "غ",
-      "ck": "ك", "qu": "كو", "tion": "شن", "ing": "ينغ"
+      sh: "ش",
+      ch: "تش",
+      th: "ث",
+      ph: "ف",
+      kh: "خ",
+      gh: "غ",
+      ck: "ك",
+      qu: "كو",
+      tion: "شن",
+      ing: "ينغ",
     };
     var output = word.toLowerCase();
-    Object.keys(pairs).sort(function (a, b) { return b.length - a.length; }).forEach(function (key) {
-      output = output.split(key).join(pairs[key]);
-    });
+    Object.keys(pairs)
+      .sort(function (a, b) {
+        return b.length - a.length;
+      })
+      .forEach(function (key) {
+        output = output.split(key).join(pairs[key]);
+      });
     var letters = {
-      a: "ا", b: "ب", c: "ك", d: "د", e: "ي", f: "ف", g: "ج", h: "ه",
-      i: "ي", j: "ج", k: "ك", l: "ل", m: "م", n: "ن", o: "و", p: "ب",
-      q: "ق", r: "ر", s: "س", t: "ت", u: "و", v: "ف", w: "و", x: "كس",
-      y: "ي", z: "ز"
+      a: "ا",
+      b: "ب",
+      c: "ك",
+      d: "د",
+      e: "ي",
+      f: "ف",
+      g: "ج",
+      h: "ه",
+      i: "ي",
+      j: "ج",
+      k: "ك",
+      l: "ل",
+      m: "م",
+      n: "ن",
+      o: "و",
+      p: "ب",
+      q: "ق",
+      r: "ر",
+      s: "س",
+      t: "ت",
+      u: "و",
+      v: "ف",
+      w: "و",
+      x: "كس",
+      y: "ي",
+      z: "ز",
     };
-    return output.replace(/[a-z]/g, function (letter) { return letters[letter] || letter; });
+    return output.replace(/[a-z]/g, function (letter) {
+      return letters[letter] || letter;
+    });
   }
 
   function translate(value) {
@@ -395,16 +671,36 @@
     if (!text || !/[A-Za-z]/.test(text)) return text;
     var marker = text.match(/^(\[[+-]\]\s*)?(.*?)(\/)?$/);
     var core = marker ? marker[2] : text;
-    var exactKey = Object.keys(exact).find(function (key) { return key.toLowerCase() === core.toLowerCase(); });
-    if (exactKey) return (marker && marker[1] ? marker[1] : "") + exact[exactKey] + (marker && marker[3] && !exact[exactKey].endsWith("/") ? "/" : "");
-    text = text.replace(/^ITEM_(\d+)\s*\/\/\s*(.+)$/i, function (_, n, section) {
-      return "العنصر_" + n + " // " + translate(section);
+    var exactKey = Object.keys(exact).find(function (key) {
+      return key.toLowerCase() === core.toLowerCase();
     });
+    if (exactKey)
+      return (
+        (marker && marker[1] ? marker[1] : "") +
+        exact[exactKey] +
+        (marker && marker[3] && !exact[exactKey].endsWith("/") ? "/" : "")
+      );
+    text = text.replace(
+      /^ITEM_(\d+)\s*\/\/\s*(.+)$/i,
+      function (_, n, section) {
+        return "العنصر_" + n + " // " + translate(section);
+      },
+    );
     text = text.replace(/\b(Chapter|Ch)\s*(\d+)\b/gi, "الفصل $2");
     text = text.replace(/\b(Quiz)\s*(\d+)\b/gi, "الاختبار $2");
-    Object.keys(words).sort(function (a, b) { return b.length - a.length; }).forEach(function (word) {
-      text = text.replace(new RegExp("\\b" + word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"), words[word]);
-    });
+    Object.keys(words)
+      .sort(function (a, b) {
+        return b.length - a.length;
+      })
+      .forEach(function (word) {
+        text = text.replace(
+          new RegExp(
+            "\\b" + word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b",
+            "g",
+          ),
+          words[word],
+        );
+      });
     text = text.replace(/[A-Za-z]+(?:[.-][A-Za-z]+)*\d*/g, transliterate);
     return normalize(text);
   }
@@ -421,41 +717,72 @@
     document.querySelectorAll(selectors).forEach(function (node) {
       var textNode = node.children.length ? findTrailingTextNode(node) : null;
       if (textNode) {
-        if (!node.dataset.arOriginal) node.dataset.arOriginal = textNode.textContent;
+        if (!node.dataset.arOriginal)
+          node.dataset.arOriginal = textNode.textContent;
         textNode.textContent = translate(node.dataset.arOriginal);
       } else {
-        if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
+        if (!node.dataset.arOriginal)
+          node.dataset.arOriginal = node.textContent;
         node.textContent = translate(node.dataset.arOriginal);
       }
     });
-    document.querySelectorAll('[data-ar-text]').forEach(function (node) {
-      if (!node.dataset.arOriginalHtml) node.dataset.arOriginalHtml = node.innerHTML;
-      node.textContent = node.getAttribute('data-ar-text');
+    document.querySelectorAll("[data-ar-text]").forEach(function (node) {
+      if (!node.dataset.arOriginalHtml)
+        node.dataset.arOriginalHtml = node.innerHTML;
+      node.textContent = node.getAttribute("data-ar-text");
     });
     var footerLabels = ["التنقل", "التواصل", "النظام"];
-    var footerLinks = ["الدراسة", "المشاريع", "الورش", "الموارد", "لينكدإن", "جيت هب", "البريد الإلكتروني", "استوديو بلوبرنت", "حقوق النشر والسياسة", "إخلاء المسؤولية الأكاديمية", "إشعار الخصوصية"];
-    document.querySelectorAll(".shoug-footer-label").forEach(function (node, index) {
-      if (footerLabels[index]) node.textContent = footerLabels[index];
-    });
-    document.querySelectorAll(".shoug-footer-link").forEach(function (node, index) {
-      if (footerLinks[index]) node.textContent = footerLinks[index];
-    });
+    var footerLinks = [
+      "الدراسة",
+      "المشاريع",
+      "الورش",
+      "الموارد",
+      "لينكدإن",
+      "جيت هب",
+      "البريد الإلكتروني",
+      "استوديو بلوبرنت",
+      "حقوق النشر والسياسة",
+      "إخلاء المسؤولية الأكاديمية",
+      "إشعار الخصوصية",
+    ];
+    document
+      .querySelectorAll(".shoug-footer-label")
+      .forEach(function (node, index) {
+        if (footerLabels[index]) node.textContent = footerLabels[index];
+      });
+    document
+      .querySelectorAll(".shoug-footer-link")
+      .forEach(function (node, index) {
+        if (footerLinks[index]) node.textContent = footerLinks[index];
+      });
     var footerMeta = document.querySelectorAll(".shoug-footer-meta");
     if (footerMeta[0]) footerMeta[0].textContent = "الحالة: يعمل";
     if (footerMeta[1]) footerMeta[1].textContent = "البروتوكول: HTTPS";
-    var footerDescription = document.querySelector(".shoug-footer-text:not(.shoug-footer-copyright)");
-    if (footerDescription) footerDescription.textContent = "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية.";
+    var footerDescription = document.querySelector(
+      ".shoug-footer-text:not(.shoug-footer-copyright)",
+    );
+    if (footerDescription)
+      footerDescription.textContent =
+        "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية.";
     var blueprintBar = document.getElementById("shoug-blueprint-bar");
     if (blueprintBar) {
       var blueprintLink = blueprintBar.querySelector("a");
-      if (blueprintBar.firstChild && blueprintBar.firstChild.nodeType === 3) blueprintBar.firstChild.textContent = "من تنفيذ ";
+      if (blueprintBar.firstChild && blueprintBar.firstChild.nodeType === 3)
+        blueprintBar.firstChild.textContent = "من تنفيذ ";
       if (blueprintLink) blueprintLink.textContent = "بلوبرنت";
     }
-    document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(function (node) {
-      if (!node.dataset.arPlaceholderOriginal) node.dataset.arPlaceholderOriginal = node.getAttribute("placeholder") || "";
-      var original = node.dataset.arPlaceholderOriginal;
-      node.setAttribute("placeholder", placeholderMap[original] || translate(original));
-    });
+    document
+      .querySelectorAll("input[placeholder], textarea[placeholder]")
+      .forEach(function (node) {
+        if (!node.dataset.arPlaceholderOriginal)
+          node.dataset.arPlaceholderOriginal =
+            node.getAttribute("placeholder") || "";
+        var original = node.dataset.arPlaceholderOriginal;
+        node.setAttribute(
+          "placeholder",
+          placeholderMap[original] || translate(original),
+        );
+      });
     document.querySelectorAll(".sys-time").forEach(function (node) {
       if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
       node.textContent = node.textContent.replace("SYS_TIME", "وقت_النظام");
@@ -463,9 +790,11 @@
   }
 
   function restoreEnglish() {
-    document.querySelectorAll("[data-ar-original-html]").forEach(function (node) {
-      node.innerHTML = node.dataset.arOriginalHtml;
-    });
+    document
+      .querySelectorAll("[data-ar-original-html]")
+      .forEach(function (node) {
+        node.innerHTML = node.dataset.arOriginalHtml;
+      });
     document.querySelectorAll("[data-ar-original]").forEach(function (node) {
       if (node.dataset.arOriginalHtml) return;
       var textNode = node.children.length ? findTrailingTextNode(node) : null;
@@ -475,9 +804,14 @@
         node.textContent = node.dataset.arOriginal;
       }
     });
-    document.querySelectorAll("[data-ar-placeholder-original]").forEach(function (node) {
-      node.setAttribute("placeholder", node.dataset.arPlaceholderOriginal || "");
-    });
+    document
+      .querySelectorAll("[data-ar-placeholder-original]")
+      .forEach(function (node) {
+        node.setAttribute(
+          "placeholder",
+          node.dataset.arPlaceholderOriginal || "",
+        );
+      });
   }
 
   function requestedLanguage() {
@@ -489,13 +823,18 @@
     } catch (error) {
       // Ignore storage/query failures and fall back to the document language.
     }
-    return String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0 ? "ar" : "en";
+    return String(document.documentElement.lang || "")
+      .toLowerCase()
+      .indexOf("ar") === 0
+      ? "ar"
+      : "en";
   }
 
   function setDocumentLanguage(lang) {
     document.documentElement.lang = lang === "ar" ? "ar-SA" : "en";
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    if (document.body) document.body.classList.toggle("shoug-arabic-mode", lang === "ar");
+    if (document.body)
+      document.body.classList.toggle("shoug-arabic-mode", lang === "ar");
   }
 
   function ensureLanguageToggle() {
@@ -505,16 +844,23 @@
   function syncToggleLabel() {
     var toggle = ensureLanguageToggle();
     if (!toggle) return;
-    var isArabic = String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+    var isArabic =
+      String(document.documentElement.lang || "")
+        .toLowerCase()
+        .indexOf("ar") === 0;
     toggle.textContent = isArabic ? "EN" : "AR";
-    toggle.setAttribute("aria-label", isArabic ? "حوّل إلى الإنجليزية" : "Switch to Arabic");
+    toggle.setAttribute(
+      "aria-label",
+      isArabic ? "حوّل إلى الإنجليزية" : "Switch to Arabic",
+    );
   }
 
   function showAiWarning() {
     if (!document.body) return;
     try {
-      if (sessionStorage.getItem("shoug-ar-disclosure-dismissed") === "true") return;
-    } catch (error) { }
+      if (sessionStorage.getItem("shoug-ar-disclosure-dismissed") === "true")
+        return;
+    } catch (error) {}
     var banner = document.getElementById("shoug-ar-ai-warning");
     if (!banner) {
       banner = document.createElement("div");
@@ -522,20 +868,37 @@
       banner.setAttribute("dir", "rtl");
       banner.setAttribute("lang", "ar");
       banner.setAttribute("role", "status");
-      banner.innerHTML = '<span>تنبيه: تمت ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.</span><button type="button" aria-label="إغلاق تنبيه الترجمة">×</button>';
+      banner.innerHTML =
+        '<span>تنبيه: تمت ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.</span><button type="button" aria-label="إغلاق تنبيه الترجمة">×</button>';
       banner.style.cssText = [
-        "position:fixed", "bottom:16px", "right:16px", "z-index:99999",
-        "background:#ff2e2e", "color:#fff", "font-family:'JetBrains Mono',monospace",
-        "font-weight:700", "font-size:12px", "letter-spacing:0.01em", "line-height:1.6",
-        "padding:10px 12px 10px 16px", "border-radius:6px", "max-width:320px",
-        "box-shadow:0 8px 24px rgba(255,46,46,0.45)", "display:flex",
-        "align-items:flex-start", "gap:12px", "text-align:right"
+        "position:fixed",
+        "bottom:16px",
+        "right:16px",
+        "z-index:99999",
+        "background:#ff2e2e",
+        "color:#fff",
+        "font-family:'JetBrains Mono',monospace",
+        "font-weight:700",
+        "font-size:12px",
+        "letter-spacing:0.01em",
+        "line-height:1.6",
+        "padding:10px 12px 10px 16px",
+        "border-radius:6px",
+        "max-width:320px",
+        "box-shadow:0 8px 24px rgba(255,46,46,0.45)",
+        "display:flex",
+        "align-items:flex-start",
+        "gap:12px",
+        "text-align:right",
       ].join(";");
       var closeButton = banner.querySelector("button");
-      closeButton.style.cssText = "border:0;background:transparent;color:#fff;font:700 22px/1 sans-serif;padding:0 2px;cursor:pointer;flex:0 0 auto;";
+      closeButton.style.cssText =
+        "border:0;background:transparent;color:#fff;font:700 22px/1 sans-serif;padding:0 2px;cursor:pointer;flex:0 0 auto;";
       closeButton.addEventListener("click", function () {
         banner.style.display = "none";
-        try { sessionStorage.setItem("shoug-ar-disclosure-dismissed", "true"); } catch (error) { }
+        try {
+          sessionStorage.setItem("shoug-ar-disclosure-dismissed", "true");
+        } catch (error) {}
       });
       document.body.appendChild(banner);
     }
@@ -548,7 +911,11 @@
   }
 
   function sync() {
-    if (String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0) {
+    if (
+      String(document.documentElement.lang || "")
+        .toLowerCase()
+        .indexOf("ar") === 0
+    ) {
       applyArabic();
       showAiWarning();
     } else {
@@ -559,10 +926,14 @@
   }
 
   function applyLanguage(lang) {
-    try { localStorage.setItem("shoug-lang", lang); } catch (error) { }
+    try {
+      localStorage.setItem("shoug-lang", lang);
+    } catch (error) {}
     setDocumentLanguage(lang);
     sync();
-    window.dispatchEvent(new CustomEvent("shoug:language-change", { detail: { lang: lang } }));
+    window.dispatchEvent(
+      new CustomEvent("shoug:language-change", { detail: { lang: lang } }),
+    );
   }
 
   function bindToggle() {
@@ -576,7 +947,10 @@
     toggle = cleanToggle;
     toggle.dataset.langBound = "true";
     toggle.addEventListener("click", function () {
-      var isArabic = String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+      var isArabic =
+        String(document.documentElement.lang || "")
+          .toLowerCase()
+          .indexOf("ar") === 0;
       applyLanguage(isArabic ? "en" : "ar");
     });
     syncToggleLabel();
@@ -584,7 +958,12 @@
 
   var syncTimer = null;
   function scheduleSync() {
-    if (String(document.documentElement.lang || "").toLowerCase().indexOf("ar") !== 0) return;
+    if (
+      String(document.documentElement.lang || "")
+        .toLowerCase()
+        .indexOf("ar") !== 0
+    )
+      return;
     clearTimeout(syncTimer);
     syncTimer = setTimeout(sync, 60);
   }
@@ -596,7 +975,10 @@
     sync();
     bindToggle();
     if (document.body) {
-      new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
+      new MutationObserver(scheduleSync).observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
     }
   });
   window.addEventListener("storage", function (event) {
@@ -606,11 +988,18 @@
     }
   });
   new MutationObserver(function (mutations) {
-    if (mutations.some(function (mutation) { return mutation.attributeName === "lang"; })) {
+    if (
+      mutations.some(function (mutation) {
+        return mutation.attributeName === "lang";
+      })
+    ) {
       setTimeout(sync, 0);
       setTimeout(bindToggle, 0);
     }
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["lang"],
+  });
   setTimeout(bindToggle, 0);
   window.__shougSetLanguage = applyLanguage;
   window.__shougTranslateArabic = translate;

@@ -9,7 +9,6 @@ description: شرائح متابعة في CS102 عن عمليات مجموعات
 
 - [فتح ملف PDF](java-collection-framework-part-2.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

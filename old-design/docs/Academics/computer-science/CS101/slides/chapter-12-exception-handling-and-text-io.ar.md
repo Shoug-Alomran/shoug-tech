@@ -9,7 +9,6 @@ description: شرائح CS101 عن أساسيات معالجة الاستثنا�
 
 - [فتح ملف PDF](chapter-12.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

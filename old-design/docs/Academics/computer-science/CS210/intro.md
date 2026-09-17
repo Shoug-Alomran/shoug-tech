@@ -9,25 +9,25 @@ modern programming languages.
 ---
 
 !!! info "Course project"
-    I created and documented a CS210 linked-list implementation and runtime
-    analysis project for this course. You can view the portfolio entry and open
-    the project here:
-    [Project portfolio](/career-development/projects/#cs210-linked-list-implementation-and-runtime-analysis) ·
-    [Project site](https://linkedlist.shoug-tech.com) ·
-    [Repository](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
+I created and documented a CS210 linked-list implementation and runtime
+analysis project for this course. You can view the portfolio entry and open
+the project here:
+[Project portfolio](/career-development/projects/#cs210-linked-list-implementation-and-runtime-analysis) ·
+[Project site](https://linkedlist.shoug-tech.com) ·
+[Repository](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
 
 ---
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | CS210 |
-| Course title | Data Structures and Algorithms |
-| Credits/contact hours | 3 credits and 4 contact hours: lectures 3, tutorials 1 |
-| Prerequisite | CS102 Programming II |
-| Main textbook | Goodrich and Tamassia, *Data Structures and Algorithms in Java*, 6th ed. |
-| Course role | Required core course for CS, IS, and SE programs |
+| Item                  | Details                                                                  |
+| --------------------- | ------------------------------------------------------------------------ |
+| Course code           | CS210                                                                    |
+| Course title          | Data Structures and Algorithms                                           |
+| Credits/contact hours | 3 credits and 4 contact hours: lectures 3, tutorials 1                   |
+| Prerequisite          | CS102 Programming II                                                     |
+| Main textbook         | Goodrich and Tamassia, _Data Structures and Algorithms in Java_, 6th ed. |
+| Course role           | Required core course for CS, IS, and SE programs                         |
 
 ---
 
@@ -49,69 +49,69 @@ By the end of CS210, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Linked Objects and Data Structures**
+- **Linked Objects and Data Structures**
 
-    ---
+  ***
 
-    Object references, linked structures, and the foundations of dynamic data
-    representation.
+  Object references, linked structures, and the foundations of dynamic data
+  representation.
 
--   **Linked Lists**
+- **Linked Lists**
 
-    ---
+  ***
 
-    Singly linked lists, doubly linked lists, circular linked lists, traversal,
-    insertion, and deletion.
+  Singly linked lists, doubly linked lists, circular linked lists, traversal,
+  insertion, and deletion.
 
--   **Algorithm Analysis**
+- **Algorithm Analysis**
 
-    ---
+  ***
 
-    Iterative and recursive algorithm analysis, asymptotic reasoning, and
-    complexity comparison.
+  Iterative and recursive algorithm analysis, asymptotic reasoning, and
+  complexity comparison.
 
--   **Sorting Algorithms**
+- **Sorting Algorithms**
 
-    ---
+  ***
 
-    Selection sort, insertion sort, merge sort, and quick sort.
+  Selection sort, insertion sort, merge sort, and quick sort.
 
--   **Stacks and Queues**
+- **Stacks and Queues**
 
-    ---
+  ***
 
-    Basic linear structures, LIFO/FIFO behavior, operations, and applications.
+  Basic linear structures, LIFO/FIFO behavior, operations, and applications.
 
--   **Binary Trees and Binary Search Trees**
+- **Binary Trees and Binary Search Trees**
 
-    ---
+  ***
 
-    Tree terminology, traversal, search, insertion, deletion, and BST behavior.
+  Tree terminology, traversal, search, insertion, deletion, and BST behavior.
 
--   **AVL Trees**
+- **AVL Trees**
 
-    ---
+  ***
 
-    Self-balancing search trees, height balance, and rotations.
+  Self-balancing search trees, height balance, and rotations.
 
--   **Heaps and Priority Queues**
+- **Heaps and Priority Queues**
 
-    ---
+  ***
 
-    Heap structure, priority queue operations, heap insertion/removal, and
-    heap-based applications.
+  Heap structure, priority queue operations, heap insertion/removal, and
+  heap-based applications.
 
--   **Hashing**
+- **Hashing**
 
-    ---
+  ***
 
-    Hash functions, hash tables, chaining, probing, and collision handling.
+  Hash functions, hash tables, chaining, probing, and collision handling.
 
--   **Directed and Undirected Graphs**
+- **Directed and Undirected Graphs**
 
-    ---
+  ***
 
-    Graph representation, traversal, and basic graph-processing ideas.
+  Graph representation, traversal, and basic graph-processing ideas.
 
 </div>
 
@@ -119,29 +119,29 @@ By the end of CS210, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| Midterm exam | 20% |
-| Two quizzes | 20% |
-| Projects | 15% |
-| Attendance and participation | 5% |
-| Final exam | 40% |
+| Assessment                   | Weight |
+| ---------------------------- | ------ |
+| Midterm exam                 | 20%    |
+| Two quizzes                  | 20%    |
+| Projects                     | 15%    |
+| Attendance and participation | 5%     |
+| Final exam                   | 40%    |
 
 ---
 
 ## Current Site Coverage
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
-| Linked objects and linked lists | Lists and circular linked-list slides | Covered |
-| Algorithm analysis | Algorithm analysis slides and topic notes | Covered |
-| Sorting algorithms | Elementary sorting, merge sort, and quick sort materials | Covered |
-| Stacks and queues | Topic notes and slides | Covered |
-| Binary trees and BSTs | Trees and BST materials | Covered |
-| AVL trees | Topic notes and slides | Covered |
-| Heaps and priority queues | Heaps and priority queue slides | Covered |
-| Hashing | Hash tables materials | Covered |
-| Directed and undirected graphs | Graph slides | Covered |
+| Syllabus topic                  | Current site material                                    | Status  |
+| ------------------------------- | -------------------------------------------------------- | ------- |
+| Linked objects and linked lists | Lists and circular linked-list slides                    | Covered |
+| Algorithm analysis              | Algorithm analysis slides and topic notes                | Covered |
+| Sorting algorithms              | Elementary sorting, merge sort, and quick sort materials | Covered |
+| Stacks and queues               | Topic notes and slides                                   | Covered |
+| Binary trees and BSTs           | Trees and BST materials                                  | Covered |
+| AVL trees                       | Topic notes and slides                                   | Covered |
+| Heaps and priority queues       | Heaps and priority queue slides                          | Covered |
+| Hashing                         | Hash tables materials                                    | Covered |
+| Directed and undirected graphs  | Graph slides                                             | Covered |
 
 ---
 
@@ -155,5 +155,5 @@ By the end of CS210, students should be able to:
    by hand.
 
 !!! note "Source"
-    This overview was updated from the CS210 course syllabus and the current
-    files in the CS210 section of this site.
+This overview was updated from the CS210 course syllabus and the current
+files in the CS210 section of this site.

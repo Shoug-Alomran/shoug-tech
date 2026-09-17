@@ -14,18 +14,18 @@ image formation.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | PHY205 |
-| Course title | Physics II |
-| Credit hours | 4 |
-| Department | Mathematics and Sciences |
-| College | College of Sciences and Humanities |
-| University | Prince Sultan University |
-| Prerequisite | PHY105 |
-| Corequisite | None |
-| Main textbook | Halliday, Resnick, and Jearl Walker, *Fundamentals of Physics*, 12th ed., Wiley |
-| LMS | Moodle |
+| Item          | Details                                                                         |
+| ------------- | ------------------------------------------------------------------------------- |
+| Course code   | PHY205                                                                          |
+| Course title  | Physics II                                                                      |
+| Credit hours  | 4                                                                               |
+| Department    | Mathematics and Sciences                                                        |
+| College       | College of Sciences and Humanities                                              |
+| University    | Prince Sultan University                                                        |
+| Prerequisite  | PHY105                                                                          |
+| Corequisite   | None                                                                            |
+| Main textbook | Halliday, Resnick, and Jearl Walker, _Fundamentals of Physics_, 12th ed., Wiley |
+| LMS           | Moodle                                                                          |
 
 ---
 
@@ -57,80 +57,80 @@ By the end of PHY205, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Weeks 1-2 - Chapter 21: Electric Charge**
+- **Weeks 1-2 - Chapter 21: Electric Charge**
 
-    ---
+  ***
 
-    Charge quantization, conservation of charge, and the foundations of
-    electric charge behavior.
+  Charge quantization, conservation of charge, and the foundations of
+  electric charge behavior.
 
--   **Weeks 3-4 - Chapter 22: Electric Fields**
+- **Weeks 3-4 - Chapter 22: Electric Fields**
 
-    ---
+  ***
 
-    Electric fields, fields due to charged particles, and the behavior of a
-    point charge in an electric field.
+  Electric fields, fields due to charged particles, and the behavior of a
+  point charge in an electric field.
 
--   **Weeks 4-5 - Chapter 23: Gauss' Law**
+- **Weeks 4-5 - Chapter 23: Gauss' Law**
 
-    ---
+  ***
 
-    Electric flux, Gauss' law, and charged isolated conductors.
+  Electric flux, Gauss' law, and charged isolated conductors.
 
--   **Weeks 5-6 - Chapter 24: Electric Potential**
+- **Weeks 5-6 - Chapter 24: Electric Potential**
 
-    ---
+  ***
 
-    Electric potential, equipotential surfaces, potential from charged
-    particles, field calculation from potential, potential energy, and
-    conductors.
+  Electric potential, equipotential surfaces, potential from charged
+  particles, field calculation from potential, potential energy, and
+  conductors.
 
--   **Week 7 - Chapter 25: Capacitance**
+- **Week 7 - Chapter 25: Capacitance**
 
-    ---
+  ***
 
-    Capacitance, capacitors in series and parallel, stored electric-field
-    energy, and capacitors with dielectrics.
+  Capacitance, capacitors in series and parallel, stored electric-field
+  energy, and capacitors with dielectrics.
 
--   **Week 8 - Chapter 26: Current and Resistance**
+- **Week 8 - Chapter 26: Current and Resistance**
 
-    ---
+  ***
 
-    Electric current, resistance, resistivity, Ohm's law, power,
-    semiconductors, and superconductors.
+  Electric current, resistance, resistivity, Ohm's law, power,
+  semiconductors, and superconductors.
 
--   **Weeks 9-10 - Chapter 27: Circuits**
+- **Weeks 9-10 - Chapter 27: Circuits**
 
-    ---
+  ***
 
-    Single-loop circuits, multiloop circuits, ammeters, voltmeters, and RC
-    circuits.
+  Single-loop circuits, multiloop circuits, ammeters, voltmeters, and RC
+  circuits.
 
--   **Week 11 - Chapter 28: Magnetic Fields**
+- **Week 11 - Chapter 28: Magnetic Fields**
 
-    ---
+  ***
 
-    Magnetic fields, definition of magnetic force, and magnetic force on a
-    current-carrying wire.
+  Magnetic fields, definition of magnetic force, and magnetic force on a
+  current-carrying wire.
 
--   **Weeks 12-13 - Chapter 29: Magnetic Fields Due to Currents**
+- **Weeks 12-13 - Chapter 29: Magnetic Fields Due to Currents**
 
-    ---
+  ***
 
-    Magnetic fields created by currents and the force between two parallel
-    currents.
+  Magnetic fields created by currents and the force between two parallel
+  currents.
 
--   **Weeks 13-14 - Chapter 30: Induction and Inductance**
+- **Weeks 13-14 - Chapter 30: Induction and Inductance**
 
-    ---
+  ***
 
-    Induction fundamentals.
+  Induction fundamentals.
 
--   **Week 15 - Chapter 34: Images**
+- **Week 15 - Chapter 34: Images**
 
-    ---
+  ***
 
-    Images, plane mirrors, and spherical mirrors.
+  Images, plane mirrors, and spherical mirrors.
 
 </div>
 
@@ -138,23 +138,23 @@ By the end of PHY205, students should be able to:
 
 ## Assessments
 
-| Assessment | Week / Timing | Weight |
-|------------|---------------|--------|
-| Quiz 1 | Week 5 | 4% |
-| Midterm exam | Week 8 | 20% |
-| Quiz 2 | Week 12 | 4% |
-| Quiz 3 | Week 14, makeup only | - |
-| Participation and attendance | Throughout the term | 3% |
-| Homework | Throughout the term | 4% |
-| Lab reports | Weekly | 10% |
-| Lab final exam | Weeks 13-15, TBA | 15% |
-| Final exam | TBA | 40% |
+| Assessment                   | Week / Timing        | Weight |
+| ---------------------------- | -------------------- | ------ |
+| Quiz 1                       | Week 5               | 4%     |
+| Midterm exam                 | Week 8               | 20%    |
+| Quiz 2                       | Week 12              | 4%     |
+| Quiz 3                       | Week 14, makeup only | -      |
+| Participation and attendance | Throughout the term  | 3%     |
+| Homework                     | Throughout the term  | 4%     |
+| Lab reports                  | Weekly               | 10%    |
+| Lab final exam               | Weeks 13-15, TBA     | 15%    |
+| Final exam                   | TBA                  | 40%    |
 
 ---
 
 ## Learning Resources and Tools
 
-- Main reference: *Fundamentals of Physics*, 12th ed., by Halliday, Resnick,
+- Main reference: _Fundamentals of Physics_, 12th ed., by Halliday, Resnick,
   and Jearl Walker.
 - Moodle is used for course materials, assignments, rubrics, and
   announcements.
@@ -169,20 +169,20 @@ By the end of PHY205, students should be able to:
 
 <div class="grid cards" markdown>
 
--   :page_facing_up: **Slides**
+- :page_facing_up: **Slides**
 
-    ---
+  ***
 
-    Chapter-based PHY205 slide PDFs organized for fast access.
+  Chapter-based PHY205 slide PDFs organized for fast access.
 
-    [Open slides](slides/overview.md)
+  [Open slides](slides/overview.md)
 
 </div>
 
 !!! note "Credit"
-    The PHY205 slides are course materials from Prince Sultan University. The
-    notes and organization were done by Yara Faris Albugami.
+The PHY205 slides are course materials from Prince Sultan University. The
+notes and organization were done by Yara Faris Albugami.
 
 !!! note "Source"
-    This overview was updated from the PHY205 term 252 course syllabus and the
-    current files in the PHY205 section of this site.
+This overview was updated from the PHY205 term 252 course syllabus and the
+current files in the PHY205 section of this site.

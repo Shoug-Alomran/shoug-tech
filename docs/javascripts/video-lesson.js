@@ -22,17 +22,22 @@
   if (!root) return;
 
   var PROJECT = "shoug-tech";
-  var API = "https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/(default)/documents/";
+  var API =
+    "https://firestore.googleapis.com/v1/projects/" +
+    PROJECT +
+    "/databases/(default)/documents/";
   var reactionKey = root.getAttribute("data-reaction-key");
-  var pending = null;   // a vote clicked while signed out, applied after sign-in
-  var authReady = false;  // Firebase has reported an auth state at least once
+  var pending = null; // a vote clicked while signed out, applied after sign-in
+  var authReady = false; // Firebase has reported an auth state at least once
   var myVote = 0;
   var counts = { up: 0, down: 0 };
 
   function esc(s) {
     return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   /**
@@ -42,8 +47,11 @@
    * asking someone who is already signed in to sign in.
    */
   function wasSignedIn() {
-    try { return localStorage.getItem("shoug-was-signed-in") === "1"; }
-    catch (e) { return false; }
+    try {
+      return localStorage.getItem("shoug-was-signed-in") === "1";
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -53,7 +61,7 @@
    */
   function sdk() {
     var fb = window.__shoug_fb || window.firebase;
-    return (fb && fb.auth) ? fb : null;
+    return fb && fb.auth ? fb : null;
   }
 
   function commentSlug() {
@@ -68,7 +76,8 @@
   function paint() {
     root.querySelectorAll("[data-vote]").forEach(function (btn) {
       var dir = btn.getAttribute("data-vote");
-      var mine = (dir === "up" && myVote === 1) || (dir === "down" && myVote === -1);
+      var mine =
+        (dir === "up" && myVote === 1) || (dir === "down" && myVote === -1);
       btn.classList.toggle("is-active", mine);
       btn.setAttribute("aria-pressed", mine ? "true" : "false");
       var out = btn.querySelector("[data-count]");
@@ -84,38 +93,58 @@
 
   function readCounts() {
     if (!reactionKey) return;
-    var url = API + "pageReactions/" + encodeURIComponent(reactionKey) + "/votes?pageSize=300";
-    fetch(url).then(function (r) {
-      if (!r.ok) throw new Error(String(r.status));
-      return r.json();
-    }).then(function (data) {
-      var docs = data.documents || [];
-      counts = { up: 0, down: 0 };
-      docs.forEach(function (doc) {
-        var value = doc.fields && doc.fields.value && Number(doc.fields.value.integerValue);
-        if (value === 1) counts.up += 1;
-        else if (value === -1) counts.down += 1;
+    var url =
+      API +
+      "pageReactions/" +
+      encodeURIComponent(reactionKey) +
+      "/votes?pageSize=300";
+    fetch(url)
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then(function (data) {
+        var docs = data.documents || [];
+        counts = { up: 0, down: 0 };
+        docs.forEach(function (doc) {
+          var value =
+            doc.fields &&
+            doc.fields.value &&
+            Number(doc.fields.value.integerValue);
+          if (value === 1) counts.up += 1;
+          else if (value === -1) counts.down += 1;
+        });
+        paint();
+      })
+      .catch(function () {
+        // Rules not in place yet, or offline. The buttons stay usable for
+        // anyone signed in; the tallies simply have nothing to show.
+        paint();
       });
-      paint();
-    }).catch(function () {
-      // Rules not in place yet, or offline. The buttons stay usable for
-      // anyone signed in; the tallies simply have nothing to show.
-      paint();
-    });
   }
 
   function watchMyVote(user) {
-    if (!user || !reactionKey) { myVote = 0; paint(); return; }
-    voteDoc(user.uid).onSnapshot(function (doc) {
-      myVote = doc.exists ? Number(doc.data().value) || 0 : 0;
+    if (!user || !reactionKey) {
+      myVote = 0;
       paint();
-    }, function () { });
+      return;
+    }
+    voteDoc(user.uid).onSnapshot(
+      function (doc) {
+        myVote = doc.exists ? Number(doc.data().value) || 0 : 0;
+        paint();
+      },
+      function () {},
+    );
   }
 
   function voteDoc(uid) {
-    return sdk().firestore()
-      .collection("pageReactions").doc(reactionKey)
-      .collection("votes").doc(uid);
+    return sdk()
+      .firestore()
+      .collection("pageReactions")
+      .doc(reactionKey)
+      .collection("votes")
+      .doc(uid);
   }
 
   function applyVote(dir) {
@@ -142,20 +171,29 @@
     paint();
 
     var ref = voteDoc(user.uid);
-    var write = next === 0 ? ref.delete() : ref.set({
-      value: next,
-      page: window.location.pathname,
-      updatedAt: fb.firestore.FieldValue.serverTimestamp()
-    });
-    write.then(function () { setHint(""); }).catch(function () {
-      setHint("Could not save your vote.");
-      readCounts();
-    });
+    var write =
+      next === 0
+        ? ref.delete()
+        : ref.set({
+            value: next,
+            page: window.location.pathname,
+            updatedAt: fb.firestore.FieldValue.serverTimestamp(),
+          });
+    write
+      .then(function () {
+        setHint("");
+      })
+      .catch(function () {
+        setHint("Could not save your vote.");
+        readCounts();
+      });
   }
 
   if (widget) {
     root.querySelectorAll("[data-vote]").forEach(function (btn) {
-      btn.addEventListener("click", function () { applyVote(btn.getAttribute("data-vote")); });
+      btn.addEventListener("click", function () {
+        applyVote(btn.getAttribute("data-vote"));
+      });
     });
     readCounts();
   }
@@ -171,7 +209,9 @@
       window.__shougOpenAuthModal();
       return;
     }
-    window.dispatchEvent(new CustomEvent("shoug:load-account", { detail: { open: true } }));
+    window.dispatchEvent(
+      new CustomEvent("shoug:load-account", { detail: { open: true } }),
+    );
   }
 
   // Hide the sign-in prompt before the first paint when a session is being
@@ -195,59 +235,111 @@
     if (!adoptCommentSection()) {
       // firebase-auth.js appends the section to the end of <main>.
       var host = document.querySelector("main") || document.body;
-      new MutationObserver(function () { adoptCommentSection(); })
-        .observe(host, { childList: true });
+      new MutationObserver(function () {
+        adoptCommentSection();
+      }).observe(host, { childList: true });
     }
   }
 
   /** Read-only rendering of the thread for visitors who are not signed in. */
   function renderPreview() {
     if (!preview) return;
-    var url = API + "pageComments/" + encodeURIComponent(commentSlug()) + "/comments?pageSize=100";
-    fetch(url).then(function (r) {
-      if (!r.ok) throw new Error(String(r.status));
-      return r.json();
-    }).then(function (data) {
-      if (document.getElementById("shoug-page-comments")) return;
-      var docs = (data.documents || []).map(function (doc) {
-        var f = doc.fields || {};
-        return {
-          id: (doc.name || "").split("/").pop(),
-          text: f.text && f.text.stringValue,
-          author: (f.displayName && f.displayName.stringValue) || (f.username && f.username.stringValue),
-          username: f.username && f.username.stringValue,
-          color: (f.avatarColor && f.avatarColor.stringValue) || "#b829ea",
-          replyTo: f.replyTo && f.replyTo.stringValue,
-          at: f.createdAt && f.createdAt.timestampValue
-        };
-      }).filter(function (c) { return c.text; });
+    var url =
+      API +
+      "pageComments/" +
+      encodeURIComponent(commentSlug()) +
+      "/comments?pageSize=100";
+    fetch(url)
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then(function (data) {
+        if (document.getElementById("shoug-page-comments")) return;
+        var docs = (data.documents || [])
+          .map(function (doc) {
+            var f = doc.fields || {};
+            return {
+              id: (doc.name || "").split("/").pop(),
+              text: f.text && f.text.stringValue,
+              author:
+                (f.displayName && f.displayName.stringValue) ||
+                (f.username && f.username.stringValue),
+              username: f.username && f.username.stringValue,
+              color: (f.avatarColor && f.avatarColor.stringValue) || "#b829ea",
+              replyTo: f.replyTo && f.replyTo.stringValue,
+              at: f.createdAt && f.createdAt.timestampValue,
+            };
+          })
+          .filter(function (c) {
+            return c.text;
+          });
 
-      if (!docs.length) { preview.hidden = true; return; }
-      docs.sort(function (a, b) { return String(a.at).localeCompare(String(b.at)); });
+        if (!docs.length) {
+          preview.hidden = true;
+          return;
+        }
+        docs.sort(function (a, b) {
+          return String(a.at).localeCompare(String(b.at));
+        });
 
-      var replies = {};
-      docs.forEach(function (c) {
-        if (!c.replyTo) return;
-        (replies[c.replyTo] = replies[c.replyTo] || []).push(c);
-      });
+        var replies = {};
+        docs.forEach(function (c) {
+          if (!c.replyTo) return;
+          (replies[c.replyTo] = replies[c.replyTo] || []).push(c);
+        });
 
-      function item(c, isReply) {
-        var when = c.at ? new Date(c.at).toLocaleDateString("en-US",
-          { month: "short", day: "numeric", year: "numeric" }) : "";
-        return '<li class="video-comment' + (isReply ? " video-comment--reply" : "") + '">'
-          + '<div class="video-comment-meta">'
-          + '<span class="video-comment-author" style="color:' + esc(c.color) + '">' + esc(c.author || "Unknown") + '</span>'
-          + (c.username ? '<span class="video-comment-user">@' + esc(c.username) + '</span>' : "")
-          + '<span class="video-comment-time">' + esc(when) + '</span>'
-          + '</div><p class="video-comment-text">' + esc(c.text) + '</p></li>';
-      }
+        function item(c, isReply) {
+          var when = c.at
+            ? new Date(c.at).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "";
+          return (
+            '<li class="video-comment' +
+            (isReply ? " video-comment--reply" : "") +
+            '">' +
+            '<div class="video-comment-meta">' +
+            '<span class="video-comment-author" style="color:' +
+            esc(c.color) +
+            '">' +
+            esc(c.author || "Unknown") +
+            "</span>" +
+            (c.username
+              ? '<span class="video-comment-user">@' +
+                esc(c.username) +
+                "</span>"
+              : "") +
+            '<span class="video-comment-time">' +
+            esc(when) +
+            "</span>" +
+            '</div><p class="video-comment-text">' +
+            esc(c.text) +
+            "</p></li>"
+          );
+        }
 
-      var html = docs.filter(function (c) { return !c.replyTo; }).map(function (c) {
-        return item(c, false) + (replies[c.id] || []).map(function (r) { return item(r, true); }).join("");
-      }).join("");
-      preview.innerHTML = '<ul class="video-comment-list">' + html + '</ul>';
-      preview.hidden = false;
-    }).catch(function () { });
+        var html = docs
+          .filter(function (c) {
+            return !c.replyTo;
+          })
+          .map(function (c) {
+            return (
+              item(c, false) +
+              (replies[c.id] || [])
+                .map(function (r) {
+                  return item(r, true);
+                })
+                .join("")
+            );
+          })
+          .join("");
+        preview.innerHTML = '<ul class="video-comment-list">' + html + "</ul>";
+        preview.hidden = false;
+      })
+      .catch(function () {});
   }
 
   renderPreview();
@@ -264,7 +356,11 @@
       // a profile read, and until then the prompt would be telling someone who
       // is already signed in to sign in.
       if (prompt) prompt.hidden = true;
-      if (pending) { var dir = pending; pending = null; applyVote(dir); }
+      if (pending) {
+        var dir = pending;
+        pending = null;
+        applyVote(dir);
+      }
     } else {
       myVote = 0;
       paint();
@@ -274,7 +370,11 @@
       if (prompt) prompt.hidden = false;
       // A vote held while the session was restoring, on a session that turned
       // out to be gone: now the sign-in ask is the right one.
-      if (pending) { pending = null; setHint("Sign in to vote."); openAccount(); }
+      if (pending) {
+        pending = null;
+        setHint("Sign in to vote.");
+        openAccount();
+      }
       renderPreview();
     }
   }
@@ -295,7 +395,8 @@
     return true;
   }
 
-  if (!hookAuth()) window.addEventListener("shoug:fb", hookAuth, { once: true });
+  if (!hookAuth())
+    window.addEventListener("shoug:fb", hookAuth, { once: true });
 
   /**
    * The SDK is loaded lazily and its events are easy to miss, so don't depend
@@ -313,15 +414,16 @@
   function syncWithHeader() {
     if (!headerSaysSignedIn()) return false;
     if (prompt) prompt.hidden = true;
-    hookAuth();     // in case the SDK arrived without us noticing
+    hookAuth(); // in case the SDK arrived without us noticing
     return true;
   }
 
   if (!syncWithHeader()) {
     var actions = document.querySelector(".shoug-header-actions");
     if (actions) {
-      new MutationObserver(function () { syncWithHeader(); })
-        .observe(actions, { childList: true, subtree: true });
+      new MutationObserver(function () {
+        syncWithHeader();
+      }).observe(actions, { childList: true, subtree: true });
     }
     // Last resort for the case where even the header never re-renders: a few
     // cheap checks over the first ten seconds, then stop.
@@ -346,7 +448,7 @@
       commentsAdopted: !!(slot && slot.querySelector("#shoug-page-comments")),
       commentsAnywhere: !!document.getElementById("shoug-page-comments"),
       myVote: myVote,
-      counts: counts
+      counts: counts,
     };
   };
 })();

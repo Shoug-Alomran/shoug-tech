@@ -9,23 +9,23 @@ description: Course map for software engineering, computer science, cybersecurit
 
 <div class="grid cards" markdown>
 
--  ### **SE201  -  Software Engineering**
+- ### **SE201 - Software Engineering**
 
-    Processes, design, testing, project management. Includes UML guide, cheat sheets, and quizzes.
+  Processes, design, testing, project management. Includes UML guide, cheat sheets, and quizzes.
 
-    [:octicons-arrow-right-24: SE201 Overview](software-engineering/SE201/intro.md)
+  [:octicons-arrow-right-24: SE201 Overview](software-engineering/SE201/intro.md)
 
--  ### **SE311  -  Requirements Engineering**
+- ### **SE311 - Requirements Engineering**
 
-    Elicitation, analysis, specification, validation. Includes cheat sheet and practice quizzes.
+  Elicitation, analysis, specification, validation. Includes cheat sheet and practice quizzes.
 
-    [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/intro.md)
+  [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/intro.md)
 
--  ### **SE322  -  Software Design and Architecture**
+- ### **SE322 - Software Design and Architecture**
 
-    Architecture foundations, quality attributes, architecture patterns, detailed design, and structural design patterns.
+  Architecture foundations, quality attributes, architecture patterns, detailed design, and structural design patterns.
 
-    [:octicons-arrow-right-24: SE322 Overview](software-engineering/SE322/intro.md)
+  [:octicons-arrow-right-24: SE322 Overview](software-engineering/SE322/intro.md)
 
 </div>
 
@@ -33,48 +33,48 @@ description: Course map for software engineering, computer science, cybersecurit
 
 <div class="grid cards" markdown>
 
--  ### **CS101  -  Computer Programming 1**
+- ### **CS101 - Computer Programming 1**
 
-    Java foundations: variables, control flow, methods, arrays, files, and debugging. Includes course slides.
+  Java foundations: variables, control flow, methods, arrays, files, and debugging. Includes course slides.
 
-    [:octicons-arrow-right-24: CS101 Overview](computer-science/CS101/intro.md)
+  [:octicons-arrow-right-24: CS101 Overview](computer-science/CS101/intro.md)
 
--  ### **CS102  -  Computer Programming II**
+- ### **CS102 - Computer Programming II**
 
-    Object-oriented Java, inheritance, polymorphism, collections, generics, recursion, files, and project work.
+  Object-oriented Java, inheritance, polymorphism, collections, generics, recursion, files, and project work.
 
-    [:octicons-arrow-right-24: CS102 Overview](computer-science/CS102/intro.md)
+  [:octicons-arrow-right-24: CS102 Overview](computer-science/CS102/intro.md)
 
--  ### **CS210  -  Data Structures**
+- ### **CS210 - Data Structures**
 
-    Lists, trees, hashing, sorting, recursion. Topic-based notes and cheat sheets.
+  Lists, trees, hashing, sorting, recursion. Topic-based notes and cheat sheets.
 
-    [:octicons-arrow-right-24: CS210 Overview](computer-science/CS210/intro.md)
+  [:octicons-arrow-right-24: CS210 Overview](computer-science/CS210/intro.md)
 
--  ### **CS285  -  Discrete Mathematics**
+- ### **CS285 - Discrete Mathematics**
 
-    Logic, proofs, relations, counting, cryptography. Notes and concise cheat sheet.
+  Logic, proofs, relations, counting, cryptography. Notes and concise cheat sheet.
 
-    [:octicons-arrow-right-24: CS285 Overview](computer-science/CS285/intro.md)
+  [:octicons-arrow-right-24: CS285 Overview](computer-science/CS285/intro.md)
 
--  ### **CS330  -  Operating Systems**
+- ### **CS330 - Operating Systems**
 
-    Processes, scheduling, memory, synchronization. Notes, summaries, and quizzes.
+  Processes, scheduling, memory, synchronization. Notes, summaries, and quizzes.
 
-    [:octicons-arrow-right-24: CS330 Overview](computer-science/CS330/intro.md)
+  [:octicons-arrow-right-24: CS330 Overview](computer-science/CS330/intro.md)
 
--  ### **CS331  -  Data Communications and Networks**
+- ### **CS331 - Data Communications and Networks**
 
-    Layered models, subnetting, protocols, and network devices. Includes a
-    course overview and study material.
+  Layered models, subnetting, protocols, and network devices. Includes a
+  course overview and study material.
 
-    [:octicons-arrow-right-24: CS331 Overview](computer-science/CS331/intro.md)
+  [:octicons-arrow-right-24: CS331 Overview](computer-science/CS331/intro.md)
 
-- ###  **CS340  -  Database Systems**
+- ### **CS340 - Database Systems**
 
-    SQL, relational model, transactions, NoSQL. Notes, mind maps, cheat sheets, quizzes.
+  SQL, relational model, transactions, NoSQL. Notes, mind maps, cheat sheets, quizzes.
 
-    [:octicons-arrow-right-24: CS340 Overview](computer-science/CS340/intro.md)
+  [:octicons-arrow-right-24: CS340 Overview](computer-science/CS340/intro.md)
 
 </div>
 
@@ -82,11 +82,11 @@ description: Course map for software engineering, computer science, cybersecurit
 
 <div class="grid cards" markdown>
 
--  ### **CYS401  -  Cyber Security**
+- ### **CYS401 - Cyber Security**
 
-    Foundations, principles, and core concepts. Chapter notes and practice quizzes.
+  Foundations, principles, and core concepts. Chapter notes and practice quizzes.
 
-    [:octicons-arrow-right-24: CYS401 Overview](cyber-security/CYS401/intro.md)
+  [:octicons-arrow-right-24: CYS401 Overview](cyber-security/CYS401/intro.md)
 
 </div>
 
@@ -94,28 +94,28 @@ description: Course map for software engineering, computer science, cybersecurit
 
 <div class="grid cards" markdown>
 
--  ### **ETHCS 303  -  Ethics and Cybersecurity**
+- ### **ETHCS 303 - Ethics and Cybersecurity**
 
-    Ethical reasoning, privacy, cyber law, professional responsibility, and security issues. Includes slide breakdowns, quizzes, slides, and mind maps.
+  Ethical reasoning, privacy, cyber law, professional responsibility, and security issues. Includes slide breakdowns, quizzes, slides, and mind maps.
 
-    [:octicons-arrow-right-24: ETHCS 303 Overview](other/ethc303/overview.md)
+  [:octicons-arrow-right-24: ETHCS 303 Overview](other/ethc303/overview.md)
 
--  ### **English  -  Writing Resources**
+- ### **English - Writing Resources**
 
-    ENG101, ENG103, academic writing, grammar, APA referencing, assignment guides, and exam preparation.
+  ENG101, ENG103, academic writing, grammar, APA referencing, assignment guides, and exam preparation.
 
-    [:octicons-arrow-right-24: English Overview](other/english/overview.md)
+  [:octicons-arrow-right-24: English Overview](other/english/overview.md)
 
--  ### **PHY205  -  Physics II**
+- ### **PHY205 - Physics II**
 
-    Electricity, circuits, magnetism, and Halliday chapter slides for Physics II review.
+  Electricity, circuits, magnetism, and Halliday chapter slides for Physics II review.
 
-    [:octicons-arrow-right-24: PHY205 Overview](other/phy205/overview.md)
+  [:octicons-arrow-right-24: PHY205 Overview](other/phy205/overview.md)
 
--  ### **ISC113  -  Islamic Economic System**
+- ### **ISC113 - Islamic Economic System**
 
-    Islamic economy, public finance, production, consumption, markets, pricing, and exam revision material.
+  Islamic economy, public finance, production, consumption, markets, pricing, and exam revision material.
 
-    [:octicons-arrow-right-24: ISC113 Overview](other/Islamic/Islamic-113/Intro.md)
+  [:octicons-arrow-right-24: ISC113 Overview](other/Islamic/Islamic-113/Intro.md)
 
 </div>

@@ -9,7 +9,6 @@ CS102 continuation slides for Java collection operations, implementation choices
 
 - [Open PDF slides](java-collection-framework-part-2.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

@@ -9,7 +9,6 @@ SE322 slides on structural design patterns and reusable object-oriented design s
 
 - [Open PDF slides](chapter-7-structural-design-patterns-lecture-1.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

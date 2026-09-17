@@ -9,7 +9,6 @@ description: شرائح CS101 عن الإدخال، المتغيرات، أنو�
 
 - [فتح ملف PDF](chapter-2.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

@@ -151,8 +151,8 @@ def listing_page(url, course, code, type_label, trail, body, meta_title):
                   '<div class="type-label">%s</div>' % type_label, html, count=1, flags=re.S)
     html = re.sub(r'<nav class="content-tabs">.*?</nav>',
                   tabs(course, TABS[course][3][2]), html, count=1, flags=re.S)
-    html = re.sub(r'<div class="directory-container">.*?\n            </div>\n        </main>',
-                  body + '\n        </main>', html, count=1, flags=re.S)
+    html = re.sub(r'<div class="directory-container">.*?</div>\s*</main>',
+                  body + '\n      </main>', html, count=1, flags=re.S)
     write(url, html)
 
 

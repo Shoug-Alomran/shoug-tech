@@ -9,7 +9,6 @@ CS101 slides for Boolean logic, if statements, nested selection, if-else, switch
 
 - [Open PDF slides](chapter-3.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

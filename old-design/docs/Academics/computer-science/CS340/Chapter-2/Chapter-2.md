@@ -1,10 +1,10 @@
-  # Chapter 2 Database System Concepts and Architecture
+# Chapter 2 Database System Concepts and Architecture
 
-  This page contains the Chapter 2 material. Use it for revision of database system concepts, data models, schemas, and DBMS architecture.
+This page contains the Chapter 2 material. Use it for revision of database system concepts, data models, schemas, and DBMS architecture.
 
-  If the embedded view does not load properly, open the chapter directly.
+If the embedded view does not load properly, open the chapter directly.
 
-  - [Open Chapter 2 in a new tab](/Academics/computer-science/CS340/Chapter-2/Chapter-2.html)
+- [Open Chapter 2 in a new tab](/Academics/computer-science/CS340/Chapter-2/Chapter-2.html)
 
   <div class="iframe-wrap">
     <iframe

@@ -9,7 +9,6 @@ description: شرائح SE322 عن مبادئ التصميم التفصيلي و
 
 - [فتح ملف الشرائح](chapter-5-principles-of-detailed-design-lecture-1.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

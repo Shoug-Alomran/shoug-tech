@@ -9,7 +9,6 @@ SE322 slides continuing architecture patterns and design trade-offs.
 
 - [Open PDF slides](chapter-4-architecture-patterns-lecture-2-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

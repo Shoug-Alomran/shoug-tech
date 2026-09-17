@@ -9,7 +9,6 @@ CS102 slides for lists, sets, maps, queues, iterators, and choosing collection t
 
 - [Open PDF slides](java-collection-framework.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

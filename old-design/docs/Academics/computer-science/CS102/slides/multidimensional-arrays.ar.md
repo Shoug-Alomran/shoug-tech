@@ -9,7 +9,6 @@ description: شرائح CS102 عن المصفوفات ثنائية الأبعا�
 
 - [فتح ملف الشرائح](chapter-8.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

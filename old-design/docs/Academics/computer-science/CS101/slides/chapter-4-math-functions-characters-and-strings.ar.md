@@ -9,7 +9,6 @@ description: شرائح CS101 عن مكتبة Math، معالجة المحارف
 
 - [فتح ملف PDF](chapter-4.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

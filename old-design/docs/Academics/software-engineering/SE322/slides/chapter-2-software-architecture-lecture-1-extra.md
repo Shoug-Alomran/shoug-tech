@@ -9,7 +9,6 @@ SE322 slides covering software architecture foundations and architectural views.
 
 - [Open PDF slides](chapter-2-software-architecture-lecture-1-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

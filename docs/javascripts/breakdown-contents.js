@@ -2,11 +2,15 @@
 (function () {
   "use strict";
   function init() {
-    var selector = ".toc, .table-of-contents, .chapter-toc, .toc-rail, .toc-bar, .toc-strip, .toc-pills, .toc-grid";
+    var selector =
+      ".toc, .table-of-contents, .chapter-toc, .toc-rail, .toc-bar, .toc-strip, .toc-pills, .toc-grid";
     document.querySelectorAll(selector).forEach(function (toc) {
-      if (toc.closest("details, .bd-contents, .bdx-toc") ||
-          toc.querySelector("button[aria-expanded], .toc-toggle") ||
-          (toc.parentElement && toc.parentElement.closest(selector))) return;
+      if (
+        toc.closest("details, .bd-contents, .bdx-toc") ||
+        toc.querySelector("button[aria-expanded], .toc-toggle") ||
+        (toc.parentElement && toc.parentElement.closest(selector))
+      )
+        return;
       var links = toc.querySelectorAll('a[href^="#"]');
       if (links.length < 5) return;
       var rect = toc.getBoundingClientRect();
@@ -15,11 +19,15 @@
       if (style.position === "fixed") return;
       var details = document.createElement("details");
       details.className = "bd-contents";
-      details.style.setProperty("--bd-contents-display", style.display === "none" ? "block" : style.display);
+      details.style.setProperty(
+        "--bd-contents-display",
+        style.display === "none" ? "block" : style.display,
+      );
       var summary = document.createElement("summary");
       summary.className = "bd-contents-summary";
       summary.textContent = "Contents · " + links.length + " topics";
-      details.open = rect.height > 0 && rect.height <= 160 && window.innerWidth > 768;
+      details.open =
+        rect.height > 0 && rect.height <= 160 && window.innerWidth > 768;
       toc.replaceWith(details);
       details.appendChild(summary);
       details.appendChild(toc);
@@ -39,6 +47,7 @@
       });
     });
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

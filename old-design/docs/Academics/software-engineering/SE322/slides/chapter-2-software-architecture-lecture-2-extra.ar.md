@@ -9,7 +9,6 @@ description: شرائح SE322 التي تكمل مفاهيم المعمارية�
 
 - [فتح ملف الشرائح](chapter-2-software-architecture-lecture-2-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

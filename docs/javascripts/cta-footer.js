@@ -18,21 +18,25 @@
 
   function isSinglePageTopNav() {
     const path = location.pathname.replace(/\/+$/, "/");
-    return path === "/links/"
-      || path === "/ar/links/"
-      || path === "/policy/copyright/"
-      || path === "/ar/policy/copyright/";
+    return (
+      path === "/links/" ||
+      path === "/ar/links/" ||
+      path === "/policy/copyright/" ||
+      path === "/ar/policy/copyright/"
+    );
   }
 
   function hasEmbeddedHtmlPage() {
-    return !!document.querySelector('.md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]');
+    return !!document.querySelector(
+      '.md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]',
+    );
   }
 
   function getBase() {
     // MkDocs Material base path (GitHub Pages subpath safe)
     try {
       if (typeof __md_get === "function") return __md_get("__base") || "";
-    } catch (e) { }
+    } catch (e) {}
     return "";
   }
 
@@ -60,9 +64,18 @@
     // Sidebar toggles
     const leftToggle = document.createElement("button");
     leftToggle.type = "button";
-    leftToggle.className = "header-icon-btn header-toggle-btn header-toggle-left";
-    leftToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار-القائمة-الجانبية-اليسرى" : "Toggle left sidebar");
-    leftToggle.setAttribute("title", isArabic() ? "القائمة اليسرى" : "Left sidebar");
+    leftToggle.className =
+      "header-icon-btn header-toggle-btn header-toggle-left";
+    leftToggle.setAttribute(
+      "aria-label",
+      isArabic()
+        ? "إخفاء/إظهار-القائمة-الجانبية-اليسرى"
+        : "Toggle left sidebar",
+    );
+    leftToggle.setAttribute(
+      "title",
+      isArabic() ? "القائمة اليسرى" : "Left sidebar",
+    );
     leftToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M3 4h18v16H3V4zm2 2v12h4V6H5zm6 0v2h8V6h-8zm0 4v2h8v-2h-8zm0 4v2h8v-2h-8z"/>
@@ -71,9 +84,16 @@
 
     const rightToggle = document.createElement("button");
     rightToggle.type = "button";
-    rightToggle.className = "header-icon-btn header-toggle-btn header-toggle-right";
-    rightToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار-جدول-المحتويات" : "Toggle table of contents");
-    rightToggle.setAttribute("title", isArabic() ? "جدول المحتويات" : "Table of contents");
+    rightToggle.className =
+      "header-icon-btn header-toggle-btn header-toggle-right";
+    rightToggle.setAttribute(
+      "aria-label",
+      isArabic() ? "إخفاء/إظهار-جدول-المحتويات" : "Toggle table of contents",
+    );
+    rightToggle.setAttribute(
+      "title",
+      isArabic() ? "جدول المحتويات" : "Table of contents",
+    );
     rightToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M3 4h18v16H3V4zm2 2v12h8V6H5zm10 0v2h4V6h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4z"/>
@@ -133,49 +153,53 @@
 
     const t = isArabic()
       ? {
-        brand: "حديقة شوق الرقمية",
-        title: "ملاحظات جديدة وتحديثات",
-        subtitle: "مساحة شخصية أجمع فيها ملاحظات المواد والملخصات والروابط والمشاريع.",
-        placeholder: "البريد الإلكتروني",
-        subscribe: "اشتراك",
-        note: "بإدخال بريدك، أنت توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
-        explore: "استكشف",
-        policies: "السياسات",
-        contact: "التواصل",
-        home: "الرئيسية",
-        academics: "المسار الأكاديمي",
-        career: "التطوير المهني",
-        links: "الروابط",
-        privacy: "إشعار الخصوصية",
-        disclaimer: "إخلاء مسؤولية أكاديمي",
-        copyright: "حقوق النشر",
-        linkedin: "LinkedIn",
-        github: "GitHub",
-      }
+          brand: "حديقة شوق الرقمية",
+          title: "ملاحظات جديدة وتحديثات",
+          subtitle:
+            "مساحة شخصية أجمع فيها ملاحظات المواد والملخصات والروابط والمشاريع.",
+          placeholder: "البريد الإلكتروني",
+          subscribe: "اشتراك",
+          note: "بإدخال بريدك، أنت توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
+          explore: "استكشف",
+          policies: "السياسات",
+          contact: "التواصل",
+          home: "الرئيسية",
+          academics: "المسار الأكاديمي",
+          career: "التطوير المهني",
+          links: "الروابط",
+          privacy: "إشعار الخصوصية",
+          disclaimer: "إخلاء مسؤولية أكاديمي",
+          copyright: "حقوق النشر",
+          linkedin: "LinkedIn",
+          github: "GitHub",
+        }
       : {
-        brand: "Shoug’s Digital Garden",
-        title: "New notes & updates",
-        subtitle: "A personal knowledge base for course notes, summaries, links, and projects.",
-        placeholder: "Email address",
-        subscribe: "Subscribe",
-        note: "By entering your email, you agree to be contacted when new notes or updates are published.",
-        explore: "Explore",
-        policies: "Policies",
-        contact: "Contact",
-        home: "Home",
-        academics: "Academics",
-        career: "Career Development",
-        links: "Links",
-        privacy: "Privacy Notice",
-        disclaimer: "Academic Disclaimer",
-        copyright: "Copyright",
-        linkedin: "LinkedIn",
-        github: "GitHub",
-      };
+          brand: "Shoug’s Digital Garden",
+          title: "New notes & updates",
+          subtitle:
+            "A personal knowledge base for course notes, summaries, links, and projects.",
+          placeholder: "Email address",
+          subscribe: "Subscribe",
+          note: "By entering your email, you agree to be contacted when new notes or updates are published.",
+          explore: "Explore",
+          policies: "Policies",
+          contact: "Contact",
+          home: "Home",
+          academics: "Academics",
+          career: "Career Development",
+          links: "Links",
+          privacy: "Privacy Notice",
+          disclaimer: "Academic Disclaimer",
+          copyright: "Copyright",
+          linkedin: "LinkedIn",
+          github: "GitHub",
+        };
 
     // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
-    const academicsHref = isArabic() ? url("ar/Academics/Intro/") : url("Academics/Intro/");
+    const academicsHref = isArabic()
+      ? url("ar/Academics/Intro/")
+      : url("Academics/Intro/");
     const careerHref = isArabic()
       ? url("ar/career-development/me/")
       : url("career-development/me/");
@@ -259,11 +283,13 @@
       }
       input.classList.remove("is-invalid");
 
-      const subject = encodeURIComponent(isArabic() ? "اشتراك بالتحديثات" : "Subscribe to updates");
+      const subject = encodeURIComponent(
+        isArabic() ? "اشتراك بالتحديثات" : "Subscribe to updates",
+      );
       const body = encodeURIComponent(
         isArabic()
           ? `مرحبا،\n\nأرغب بالاشتراك بالتحديثات.\n\nالبريد: ${value}\n`
-          : `Hi,\n\nI’d like to subscribe to updates.\n\nEmail: ${value}\n`
+          : `Hi,\n\nI’d like to subscribe to updates.\n\nEmail: ${value}\n`,
       );
 
       window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
@@ -290,10 +316,16 @@
   }
 
   function normalizeInternalMarkdownLinks() {
-    document.querySelectorAll('a[href]').forEach((a) => {
+    document.querySelectorAll("a[href]").forEach((a) => {
       const raw = a.getAttribute("href");
       if (!raw) return;
-      if (raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:") || raw.startsWith("javascript:")) return;
+      if (
+        raw.startsWith("#") ||
+        raw.startsWith("mailto:") ||
+        raw.startsWith("tel:") ||
+        raw.startsWith("javascript:")
+      )
+        return;
 
       let parsed;
       try {
@@ -311,9 +343,10 @@
         .replace(/\/index\/$/i, "/");
 
       const normalized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
-      const relative = parsed.origin === window.location.origin
-        ? normalized.replace(window.location.origin, "")
-        : normalized;
+      const relative =
+        parsed.origin === window.location.origin
+          ? normalized.replace(window.location.origin, "")
+          : normalized;
 
       a.setAttribute("href", relative);
     });
@@ -323,20 +356,27 @@
     const content = document.querySelector(".md-content__inner.md-typeset");
     if (!content) return;
 
-    content.querySelectorAll('a[href]').forEach((a) => {
+    content.querySelectorAll("a[href]").forEach((a) => {
       if (a.classList.contains("open-resource-card__link")) return;
 
       const label = a.textContent.replace(/\s+/g, " ").trim();
       const href = a.getAttribute("href") || "";
       const isEnglishOpenLink = /\bopen\b.*\bnew tab\b/i.test(label);
-      const isArabicOpenLink = /افتح|افتحي/.test(label) && /تبويب|صفحة/.test(label) && /جديد|جديدة/.test(label);
+      const isArabicOpenLink =
+        /افتح|افتحي/.test(label) &&
+        /تبويب|صفحة/.test(label) &&
+        /جديد|جديدة/.test(label);
       const isEnglishPdfOpenLink = /\bopen\b.*\b(pdf|slides?)\b/i.test(label);
       const isArabicPdfOpenLink = /فتح/.test(label) && /pdf|ملف/i.test(label);
       const isEmbeddableResource = /\.(html?|pdf|pptx?)([#?].*)?$/i.test(href);
       if (
-        (!isEnglishOpenLink && !isArabicOpenLink && !isEnglishPdfOpenLink && !isArabicPdfOpenLink) ||
+        (!isEnglishOpenLink &&
+          !isArabicOpenLink &&
+          !isEnglishPdfOpenLink &&
+          !isArabicPdfOpenLink) ||
         !isEmbeddableResource
-      ) return;
+      )
+        return;
 
       const container = a.parentElement;
       if (!container || !/^(LI|P)$/i.test(container.tagName)) return;
@@ -372,7 +412,8 @@
 
   function resourceLabel(href) {
     if (/\.pdf([#?].*)?$/i.test(href)) return isArabic() ? "ملف PDF" : "PDF";
-    if (/\.pptx?([#?].*)?$/i.test(href)) return isArabic() ? "العرض" : "slide deck";
+    if (/\.pptx?([#?].*)?$/i.test(href))
+      return isArabic() ? "العرض" : "slide deck";
     return isArabic() ? "المورد" : "resource";
   }
 
@@ -396,9 +437,9 @@
     const copyrightText = highlight
       ? highlight.innerHTML.trim()
       : copyright.textContent
-        .replace(/\s*Made with\s*/i, " ")
-        .replace(/\s*Material for MkDocs\s*/i, " ")
-        .trim();
+          .replace(/\s*Made with\s*/i, " ")
+          .replace(/\s*Material for MkDocs\s*/i, " ")
+          .trim();
 
     copyright.innerHTML = `
       <div class="custom-footer-meta">
@@ -416,40 +457,52 @@
     if (!content) return;
     if (content.querySelector(".quick-links-widget")) return;
     const p = location.pathname.replace(/\/+$/, "/");
-    if (p === "/" || p === "/ar/" || p === "/start-here/" || p === "/ar/start-here/") return;
-    if (p === "/career-development/services/" || p === "/ar/career-development/services/") return;
+    if (
+      p === "/" ||
+      p === "/ar/" ||
+      p === "/start-here/" ||
+      p === "/ar/start-here/"
+    )
+      return;
+    if (
+      p === "/career-development/services/" ||
+      p === "/ar/career-development/services/"
+    )
+      return;
 
     const links = isArabic()
       ? [
-        ["الرئيسية", url("ar/")],
-        ["ابدأ من هنا", url("ar/start-here/")],
-        ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
-        ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
-        ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
-        ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
-        ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
-        ["التطوير المهني", url("ar/career-development/Intro/")],
-        ["خدمات Blueprint", url("ar/career-development/services/")],
-        ["Blueprint", "https://blueprint.shoug-tech.com/"]
-      ]
+          ["الرئيسية", url("ar/")],
+          ["ابدأ من هنا", url("ar/start-here/")],
+          ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
+          ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
+          ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
+          ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
+          ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
+          ["التطوير المهني", url("ar/career-development/Intro/")],
+          ["خدمات Blueprint", url("ar/career-development/services/")],
+          ["Blueprint", "https://blueprint.shoug-tech.com/"],
+        ]
       : [
-        ["Home", url("")],
-        ["Start Here", url("start-here/")],
-        ["Academics Overview", url("Academics/Intro/")],
-        ["Academic Plan", url("academic-plan-themes/academic-plan/")],
-        ["SE201", url("Academics/software-engineering/SE201/intro/")],
-        ["CS340", url("Academics/computer-science/CS340/intro/")],
-        ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
-        ["Career Development", url("career-development/Intro/")],
-        ["Blueprint Services", url("career-development/services/")],
-        ["Blueprint", "https://blueprint.shoug-tech.com/"]
-      ];
+          ["Home", url("")],
+          ["Start Here", url("start-here/")],
+          ["Academics Overview", url("Academics/Intro/")],
+          ["Academic Plan", url("academic-plan-themes/academic-plan/")],
+          ["SE201", url("Academics/software-engineering/SE201/intro/")],
+          ["CS340", url("Academics/computer-science/CS340/intro/")],
+          ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
+          ["Career Development", url("career-development/Intro/")],
+          ["Blueprint Services", url("career-development/services/")],
+          ["Blueprint", "https://blueprint.shoug-tech.com/"],
+        ];
 
     const block = document.createElement("details");
     block.className = "quick-links-widget";
 
     const summary = document.createElement("summary");
-    summary.textContent = isArabic() ? "وصول سريع (أكثر 10 صفحات)" : "Quick Access (Top 10 pages)";
+    summary.textContent = isArabic()
+      ? "وصول سريع (أكثر 10 صفحات)"
+      : "Quick Access (Top 10 pages)";
     block.appendChild(summary);
 
     const list = document.createElement("div");
@@ -475,10 +528,16 @@
     const leftBtn = document.querySelector(".header-toggle-left");
     const rightBtn = document.querySelector(".header-toggle-right");
     if (leftBtn) {
-      leftBtn.classList.toggle("is-active", document.body.classList.contains("sg-hide-left-sidebar"));
+      leftBtn.classList.toggle(
+        "is-active",
+        document.body.classList.contains("sg-hide-left-sidebar"),
+      );
     }
     if (rightBtn) {
-      rightBtn.classList.toggle("is-active", document.body.classList.contains("sg-hide-right-sidebar"));
+      rightBtn.classList.toggle(
+        "is-active",
+        document.body.classList.contains("sg-hide-right-sidebar"),
+      );
     }
   }
 
@@ -496,7 +555,7 @@
           if (isStartHerePage()) {
             localStorage.setItem(LS_START_LEFT_OPEN_KEY, hide ? "0" : "1");
           }
-        } catch (e) { }
+        } catch (e) {}
         setToggleVisualState();
       });
     }
@@ -511,7 +570,7 @@
           if (hasEmbeddedHtmlPage()) {
             localStorage.setItem(LS_HTML_TOC_OPEN_KEY, hide ? "0" : "1");
           }
-        } catch (e) { }
+        } catch (e) {}
         setToggleVisualState();
       });
     }
@@ -519,7 +578,10 @@
     try {
       let hideLeft = false;
       let hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
-      if (isStartHerePage() && localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1") {
+      if (
+        isStartHerePage() &&
+        localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1"
+      ) {
         hideLeft = true;
       }
       if (isSinglePageTopNav()) {
@@ -527,19 +589,22 @@
         hideRight = false;
         localStorage.setItem(LS_RIGHT_KEY, "0");
       }
-      if (hasEmbeddedHtmlPage() && localStorage.getItem(LS_HTML_TOC_OPEN_KEY) !== "1") {
+      if (
+        hasEmbeddedHtmlPage() &&
+        localStorage.getItem(LS_HTML_TOC_OPEN_KEY) !== "1"
+      ) {
         hideRight = true;
       }
       document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
       document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
-    } catch (e) { }
+    } catch (e) {}
 
     // Always keep TOC visible in Arabic pages.
     if (isArabic() && !hasEmbeddedHtmlPage()) {
       document.body.classList.remove("sg-hide-right-sidebar");
       try {
         localStorage.setItem(LS_RIGHT_KEY, "0");
-      } catch (e) { }
+      } catch (e) {}
     }
 
     setToggleVisualState();
@@ -830,7 +895,10 @@
       const doc = iframe.contentDocument;
       if (!doc || !doc.documentElement) return;
 
-      doc.documentElement.setAttribute("data-parent-theme", dark ? "dark" : "light");
+      doc.documentElement.setAttribute(
+        "data-parent-theme",
+        dark ? "dark" : "light",
+      );
 
       if (doc.body) {
         doc.body.classList.toggle("parent-dark", dark);
@@ -850,7 +918,9 @@
   }
 
   function embeddedIframes() {
-    return document.querySelectorAll('.md-content-iframe, .md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]');
+    return document.querySelectorAll(
+      '.md-content-iframe, .md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]',
+    );
   }
 
   function syncEmbeddedIframesTheme() {
@@ -876,7 +946,7 @@
       embeddedIframes().forEach((iframe) => applyThemeToIframe(iframe));
     }).observe(target, {
       attributes: true,
-      attributeFilter: ["data-md-color-scheme"]
+      attributeFilter: ["data-md-color-scheme"],
     });
   }
 
@@ -884,7 +954,10 @@
     try {
       return new URL(value, window.location.href).pathname.replace(/\/+$/, "");
     } catch (e) {
-      return String(value || "").split("#")[0].split("?")[0].replace(/\/+$/, "");
+      return String(value || "")
+        .split("#")[0]
+        .split("?")[0]
+        .replace(/\/+$/, "");
     }
   }
 
@@ -903,12 +976,15 @@
       const doc = iframe.contentDocument;
       if (!doc || !doc.documentElement) return;
       const body = doc.body;
-      resizeIframe(iframe, Math.max(
-        body ? body.scrollHeight : 0,
-        body ? body.offsetHeight : 0,
-        doc.documentElement.scrollHeight,
-        doc.documentElement.offsetHeight
-      ));
+      resizeIframe(
+        iframe,
+        Math.max(
+          body ? body.scrollHeight : 0,
+          body ? body.offsetHeight : 0,
+          doc.documentElement.scrollHeight,
+          doc.documentElement.offsetHeight,
+        ),
+      );
     } catch (e) {
       // The postMessage path handles same-origin pages when direct access is blocked.
     }
@@ -936,7 +1012,12 @@
     bindDynamicIframeResizing.messageBound = true;
 
     window.addEventListener("message", (event) => {
-      if (event.origin !== window.location.origin || !event.data || event.data.type !== "sg:iframe-height") return;
+      if (
+        event.origin !== window.location.origin ||
+        !event.data ||
+        event.data.type !== "sg:iframe-height"
+      )
+        return;
       const sourcePath = normalizedPath(event.data.path);
       embeddedIframes().forEach((iframe) => {
         if (normalizedPath(iframe.getAttribute("src")) === sourcePath) {
@@ -976,17 +1057,20 @@
       ".quick-links-widget",
       ".open-resource-card",
       ".custom-footer__left",
-      ".custom-footer__right .footer-col"
+      ".custom-footer__right .footer-col",
     ];
 
     const content = document.querySelector(".md-content__inner.md-typeset");
-    const nodes = Array.from(document.querySelectorAll(selectors.join(",")))
-      .filter((el) => {
-        if (!el || el.dataset.motionReady === "1") return false;
-        if (content && !content.contains(el) && !el.closest(".custom-footer")) return false;
-        if (el.closest(".md-content-iframe, .iframe-wrap, .highlight, pre, code")) return false;
-        return true;
-      });
+    const nodes = Array.from(
+      document.querySelectorAll(selectors.join(",")),
+    ).filter((el) => {
+      if (!el || el.dataset.motionReady === "1") return false;
+      if (content && !content.contains(el) && !el.closest(".custom-footer"))
+        return false;
+      if (el.closest(".md-content-iframe, .iframe-wrap, .highlight, pre, code"))
+        return false;
+      return true;
+    });
     if (!nodes.length) return;
 
     nodes.forEach((el, index) => {
@@ -995,17 +1079,23 @@
       el.style.setProperty("--sg-stagger", String(Math.min(index % 8, 7)));
 
       if (
-        el.matches(".home-hero__text, .overview-hero, .resource-link-hero, .career-hub-hero__content")
+        el.matches(
+          ".home-hero__text, .overview-hero, .resource-link-hero, .career-hub-hero__content",
+        )
       ) {
         el.dataset.motion = "scale";
-      } else if (el.matches(".md-typeset > h1, .md-typeset > h2, .md-typeset > h3")) {
+      } else if (
+        el.matches(".md-typeset > h1, .md-typeset > h2, .md-typeset > h3")
+      ) {
         el.dataset.motion = "fade";
       } else {
         el.dataset.motion = "rise";
       }
     });
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
       nodes.forEach((el) => el.classList.add("is-visible"));
       return;
@@ -1022,8 +1112,8 @@
       },
       {
         rootMargin: "0px 0px 12% 0px",
-        threshold: 0.01
-      }
+        threshold: 0.01,
+      },
     );
 
     nodes.forEach((el) => {
@@ -1047,13 +1137,13 @@
     if (!isArabic()) return;
 
     const map = {
-      "Home": "الرئيسية",
+      Home: "الرئيسية",
       "Start Here": "ابدأ من هنا",
-      "Learn": "تعلم",
-      "Career": "المسار المهني",
+      Learn: "تعلم",
+      Career: "المسار المهني",
       "Career Development": "المسار المهني",
-      "Resources": "الموارد",
-      "About": "حول"
+      Resources: "الموارد",
+      About: "حول",
     };
 
     document.querySelectorAll(".md-tabs__link").forEach((a) => {
@@ -1066,7 +1156,7 @@
     if (!isArabic()) return;
 
     const map = {
-      "Services": "الخدمات"
+      Services: "الخدمات",
     };
 
     document.querySelectorAll(".md-nav-primary.md-nav__link").forEach((a) => {
@@ -1074,5 +1164,4 @@
       if (map[t]) a.textContent = map[t];
     });
   }
-
 })();

@@ -8,29 +8,37 @@
 
 "use strict";
 
-const fs   = require("fs");
+const fs = require("fs");
 const path = require("path");
 
-const ROOT      = path.resolve(__dirname, "..");
-const DOCS      = path.join(ROOT, "docs");
-const OUT       = path.join(DOCS, "search-index.json");
+const ROOT = path.resolve(__dirname, "..");
+const DOCS = path.join(ROOT, "docs");
+const OUT = path.join(DOCS, "search-index.json");
 
 // First-level directories inside docs/ to skip entirely
-const SKIP_DIRS = new Set(["assets", "javascripts", "stylesheets", "fonts", ".git", "__pycache__", "node_modules"]);
+const SKIP_DIRS = new Set([
+  "assets",
+  "javascripts",
+  "stylesheets",
+  "fonts",
+  ".git",
+  "__pycache__",
+  "node_modules",
+]);
 
 // Exact URLs to exclude
 const SKIP_URLS = new Set(["/account/"]);
 
 // Map first URL segment → section key used by the search UI
 const SECTION_MAP = {
-  "academics":            "academics",
+  academics: "academics",
   "academic-plan-themes": "academic-plan-themes",
-  "work":                 "work",
-  "workshops":            "workshops",
-  "resources":            "resources",
-  "about":                "about",
-  "policy":               "policy",
-  "career-development":   "career-development",
+  work: "work",
+  workshops: "workshops",
+  resources: "resources",
+  about: "about",
+  policy: "policy",
+  "career-development": "career-development",
 };
 
 /** Recursively collect all .html file paths under a directory, skipping SKIP_DIRS. */
@@ -89,16 +97,25 @@ function extract(html) {
 
   // Description: from original html <meta name="description">
   let desc = "";
-  let descM = html.match(/<meta\b[^>]*\bname=["']description["'][^>]*\bcontent=["']([^"']*)["']/i);
+  let descM = html.match(
+    /<meta\b[^>]*\bname=["']description["'][^>]*\bcontent=["']([^"']*)["']/i,
+  );
   if (!descM) {
-    descM = html.match(/<meta\b[^>]*\bcontent=["']([^"']*)["'][^>]*\bname=["']description["']/i);
+    descM = html.match(
+      /<meta\b[^>]*\bcontent=["']([^"']*)["'][^>]*\bname=["']description["']/i,
+    );
   }
   if (descM) {
     desc = decodeEntities(descM[1].trim());
   } else {
     const pM = stripped.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
     if (pM) {
-      desc = decodeEntities(pM[1].replace(/<[^>]+>/g, "").trim().slice(0, 160));
+      desc = decodeEntities(
+        pM[1]
+          .replace(/<[^>]+>/g, "")
+          .trim()
+          .slice(0, 160),
+      );
     }
   }
 
@@ -108,7 +125,7 @@ function extract(html) {
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 500)
+      .slice(0, 500),
   );
 
   return { title, desc, body };
@@ -117,7 +134,8 @@ function extract(html) {
 /** Extract individual external resource cards so tools are searchable by name, description, and tags. */
 function extractResourceCards(html) {
   const cards = [];
-  const cardRe = /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*\bclass=["'][^"']*\bcard\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+  const cardRe =
+    /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*\bclass=["'][^"']*\bcard\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
   let match;
 
   while ((match = cardRe.exec(html)) !== null) {
@@ -126,15 +144,27 @@ function extractResourceCards(html) {
     if (!titleMatch) continue;
 
     const descriptionMatch = cardHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-    const tagMatches = [...cardHtml.matchAll(/<div[^>]*class=["'][^"']*card-tags[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)];
+    const tagMatches = [
+      ...cardHtml.matchAll(
+        /<div[^>]*class=["'][^"']*card-tags[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi,
+      ),
+    ];
     const tags = tagMatches
       .map((tagMatch) => tagMatch[1].replace(/<[^>]+>/g, " "))
       .join(" ");
-    const clean = (value) => decodeEntities(value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+    const clean = (value) =>
+      decodeEntities(
+        value
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim(),
+      );
 
     cards.push({
       title: clean(titleMatch[1]),
-      description: clean(`${descriptionMatch ? descriptionMatch[1] : ""} ${tags}`),
+      description: clean(
+        `${descriptionMatch ? descriptionMatch[1] : ""} ${tags}`,
+      ),
       url: decodeEntities(match[1]),
       section: "resources",
       body: "",
@@ -146,8 +176,8 @@ function extractResourceCards(html) {
 
 /** Convert an absolute file path under DOCS to a URL path. */
 function fileToUrl(filePath) {
-  const rel = path.relative(DOCS, filePath);          // e.g. "academics/cs285/index.html"
-  const parts = rel.split(path.sep);                  // split on OS separator
+  const rel = path.relative(DOCS, filePath); // e.g. "academics/cs285/index.html"
+  const parts = rel.split(path.sep); // split on OS separator
 
   if (parts[parts.length - 1] === "index.html") {
     // Strip "index.html" → trailing slash
@@ -193,7 +223,7 @@ function build() {
 
     const urlParts = url.split("/").filter(Boolean);
     const firstSeg = urlParts[0] || "";
-    const section  = SECTION_MAP[firstSeg] || firstSeg || "home";
+    const section = SECTION_MAP[firstSeg] || firstSeg || "home";
 
     entries.push({ title, description: desc, url, section, body });
 
@@ -203,7 +233,7 @@ function build() {
   }
 
   // Sort by URL for stable output
-  entries.sort((a, b) => a.url < b.url ? -1 : a.url > b.url ? 1 : 0);
+  entries.sort((a, b) => (a.url < b.url ? -1 : a.url > b.url ? 1 : 0));
 
   return { entries, offlinePlaceholders };
 }
@@ -213,7 +243,9 @@ function main() {
   fs.writeFileSync(OUT, JSON.stringify(entries), "utf8");
   console.log(`[ok] search-index.json → ${entries.length} pages`);
   if (offlinePlaceholders.length) {
-    console.log(`[warn] search index skipped ${offlinePlaceholders.length} offline filesystem placeholders`);
+    console.log(
+      `[warn] search index skipped ${offlinePlaceholders.length} offline filesystem placeholders`,
+    );
   }
 }
 

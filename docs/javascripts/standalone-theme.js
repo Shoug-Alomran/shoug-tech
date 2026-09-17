@@ -5,7 +5,7 @@
   function isMkDocsPage() {
     var body = document.body;
     return !!(
-      body && body.hasAttribute("data-md-color-scheme") ||
+      (body && body.hasAttribute("data-md-color-scheme")) ||
       document.querySelector("[data-md-component='container']")
     );
   }
@@ -24,22 +24,29 @@
 
   function parsePalette(raw) {
     if (!raw) return null;
-    try { return JSON.parse(raw); } catch (e) { return null; }
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
   }
 
   function readParentScheme() {
     try {
-      if (!window.parent || window.parent === window || !window.parent.document) return null;
+      if (!window.parent || window.parent === window || !window.parent.document)
+        return null;
       var pdoc = window.parent.document;
       var pbody = pdoc.body;
       var proot = pdoc.documentElement;
       if (pbody && pbody.classList.contains("shoug-light-mode")) return "light";
-      var scheme = (pbody && pbody.getAttribute("data-md-color-scheme")) ||
+      var scheme =
+        (pbody && pbody.getAttribute("data-md-color-scheme")) ||
         (proot && proot.getAttribute("data-md-color-scheme"));
       var fromScheme = schemeToTheme(scheme);
       if (fromScheme) return fromScheme;
 
-      var parentTheme = (pbody && pbody.getAttribute("data-theme")) ||
+      var parentTheme =
+        (pbody && pbody.getAttribute("data-theme")) ||
         (proot && proot.getAttribute("data-theme"));
       var fromTheme = schemeToTheme(parentTheme);
       if (fromTheme) return fromTheme;
@@ -48,20 +55,24 @@
       if (pbody && pbody.classList.contains("light")) return "light";
       if (proot && proot.classList.contains("dark")) return "dark";
       if (proot && proot.classList.contains("light")) return "light";
-    } catch (e) { }
+    } catch (e) {}
     return null;
   }
 
   function readSystemTheme() {
-    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   }
 
   function readStoredScheme() {
     try {
-      var shougTheme = window.localStorage && window.localStorage.getItem("shoug-theme");
+      var shougTheme =
+        window.localStorage && window.localStorage.getItem("shoug-theme");
       if (shougTheme === "light") return "light";
       if (shougTheme === "dark") return "dark";
-    } catch (e) { }
+    } catch (e) {}
 
     try {
       if (window.parent && typeof window.parent.__md_get === "function") {
@@ -69,7 +80,7 @@
         var parentTheme = paletteToTheme(parentPalette);
         if (parentTheme) return parentTheme;
       }
-    } catch (e) { }
+    } catch (e) {}
 
     try {
       if (typeof window.__md_get === "function") {
@@ -77,19 +88,25 @@
         var theme = paletteToTheme(palette);
         if (theme) return theme;
       }
-    } catch (e) { }
+    } catch (e) {}
 
     try {
-      var direct = paletteToTheme(parsePalette(window.localStorage && window.localStorage.getItem("__palette")));
+      var direct = paletteToTheme(
+        parsePalette(
+          window.localStorage && window.localStorage.getItem("__palette"),
+        ),
+      );
       if (direct) return direct;
 
       for (var i = 0; i < window.localStorage.length; i += 1) {
         var key = window.localStorage.key(i);
         if (!paletteKeyPattern.test(key)) continue;
-        var scoped = paletteToTheme(parsePalette(window.localStorage.getItem(key)));
+        var scoped = paletteToTheme(
+          parsePalette(window.localStorage.getItem(key)),
+        );
         if (scoped) return scoped;
       }
-    } catch (e) { }
+    } catch (e) {}
 
     return null;
   }
@@ -168,7 +185,7 @@
       "html[data-theme='dark'] .question.incorrect, html[data-theme='dark'] .wrong, html[data-theme='dark'] .incorrect, html[data-theme='dark'] .incorrect-answer { background: rgba(127, 29, 29, 0.38) !important; color: #fee2e2 !important; border-color: #ef4444 !important; }",
       "html[data-theme='dark'] input, html[data-theme='dark'] textarea, html[data-theme='dark'] select, html[data-theme='dark'] button { background: #1f2937 !important; color: #f8fafc !important; border-color: #4b5563 !important; }",
       "html[data-theme='dark'] hr { border-color: #374151 !important; }",
-      "html[data-theme='dark'] svg text { fill: #e5e7eb !important; }"
+      "html[data-theme='dark'] svg text { fill: #e5e7eb !important; }",
     ].join("\n");
   }
 
@@ -208,14 +225,21 @@
     document.addEventListener("DOMContentLoaded", queueSync);
   }
 
-  var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  var media = window.matchMedia
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
   if (media) {
     if (media.addEventListener) media.addEventListener("change", queueSync);
     else if (media.addListener) media.addListener(queueSync);
   }
 
   window.addEventListener("storage", function (event) {
-    if (!event.key || event.key === "__palette" || paletteKeyPattern.test(event.key)) queueSync();
+    if (
+      !event.key ||
+      event.key === "__palette" ||
+      paletteKeyPattern.test(event.key)
+    )
+      queueSync();
   });
 
   if (window.MutationObserver) {
@@ -227,10 +251,10 @@
         if (!target) return;
         new MutationObserver(queueSync).observe(target, {
           attributes: true,
-          attributeFilter: ["data-md-color-scheme", "data-theme", "class"]
+          attributeFilter: ["data-md-color-scheme", "data-theme", "class"],
         });
       });
-    } catch (e) { }
+    } catch (e) {}
   }
 })();
 
@@ -239,8 +263,16 @@
     var courses = window.__ACADEMIC_PLAN_COURSES__;
     if (!Array.isArray(courses) || !courses.length) return;
 
-    var byId = new Map(courses.map(function (course) { return [course.id, course]; }));
-    var nextLevelDependents = new Map(courses.map(function (course) { return [course.id, []]; }));
+    var byId = new Map(
+      courses.map(function (course) {
+        return [course.id, course];
+      }),
+    );
+    var nextLevelDependents = new Map(
+      courses.map(function (course) {
+        return [course.id, []];
+      }),
+    );
 
     courses.forEach(function (course) {
       (course.prereqs || []).forEach(function (prereqId) {
@@ -256,7 +288,7 @@
       if (course.level === 8 || unlocks.length) {
         critical.set(course.id, {
           course: course,
-          unlocks: unlocks
+          unlocks: unlocks,
         });
       }
     });
@@ -279,13 +311,15 @@
       ".controls.no-course-search{justify-content:flex-end!important}",
       ".controls.no-course-search .filter-group,.controls.no-course-search .level-filter{margin-left:auto}",
       ".nav-center.no-course-search,.search-box.no-course-search,.search-wrap.no-course-search{display:none!important}",
-      "@media(max-width:640px){.critical-path-notice{padding:10px;gap:9px}.critical-path-notice__count{display:none}.critical-path-badge{font-size:8px!important;white-space:normal!important}}"
+      "@media(max-width:640px){.critical-path-notice{padding:10px;gap:9px}.critical-path-notice__count{display:none}.critical-path-badge{font-size:8px!important;white-space:normal!important}}",
     ].join("\n");
     document.head.appendChild(style);
 
     function placeNotice() {
       if (document.querySelector(".critical-path-notice")) return;
-      var anchor = document.querySelector(".filter-strip, .controls, .choice-section, .choice-row, .board, #courseList, #roadmap");
+      var anchor = document.querySelector(
+        ".filter-strip, .controls, .choice-section, .choice-row, .board, #courseList, #roadmap",
+      );
       if (!anchor || !anchor.parentNode) return;
 
       var notice = document.createElement("aside");
@@ -296,8 +330,10 @@
         '<div class="critical-path-notice__copy">' +
         '<div class="critical-path-notice__title" data-ar-text="المسار الحرج · لا تؤجل">Critical path · do not delay</div>' +
         '<div class="critical-path-notice__text" data-ar-text="المقررات المحددة مطلوبة في المستوى الموضح للحفاظ على تسلسل الخطة. تأجيلها قد يمنع مقررات المستوى التالي ويؤخر التخرج.">Highlighted courses must be taken in the level shown to stay on sequence. Delaying one can block next-level courses and delay graduation.</div>' +
-        '</div>' +
-        '<div class="critical-path-notice__count">' + critical.size + ' COURSES</div>';
+        "</div>" +
+        '<div class="critical-path-notice__count">' +
+        critical.size +
+        " COURSES</div>";
       anchor.parentNode.insertBefore(notice, anchor);
     }
 
@@ -308,20 +344,32 @@
         if (!item) return;
 
         card.classList.add("is-critical-path");
-        var unlockedIds = item.unlocks.map(function (course) { return course.id; });
-        var message = item.course.level === 8
-          ? "Graduation-critical: complete in Level 8."
-          : "Take in Level " + item.course.level + ". Delaying blocks " + unlockedIds.join(", ") + " in Level " + (item.course.level + 1) + ".";
+        var unlockedIds = item.unlocks.map(function (course) {
+          return course.id;
+        });
+        var message =
+          item.course.level === 8
+            ? "Graduation-critical: complete in Level 8."
+            : "Take in Level " +
+              item.course.level +
+              ". Delaying blocks " +
+              unlockedIds.join(", ") +
+              " in Level " +
+              (item.course.level + 1) +
+              ".";
 
         if (card.querySelector(".critical-path-badge")) return;
         card.setAttribute("aria-label", item.course.id + ". " + message);
         var badge = document.createElement("span");
         badge.className = "critical-path-badge";
-        badge.textContent = item.course.level === 8
-          ? "Critical · Graduate L8"
-          : "Critical · Take L" + item.course.level;
+        badge.textContent =
+          item.course.level === 8
+            ? "Critical · Graduate L8"
+            : "Critical · Take L" + item.course.level;
 
-        var target = card.querySelector(".cc-name, .c-name, .cr-name-cell, .course-name, .course-info, .course-code");
+        var target = card.querySelector(
+          ".cc-name, .c-name, .cr-name-cell, .course-name, .course-info, .course-code",
+        );
         if (target) target.appendChild(badge);
         else card.appendChild(badge);
       });
@@ -349,7 +397,10 @@
 
     removeCourseSearch();
     enhanceCards();
-    new MutationObserver(queueEnhance).observe(document.body, { childList: true, subtree: true });
+    new MutationObserver(queueEnhance).observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   if (document.readyState === "loading") {

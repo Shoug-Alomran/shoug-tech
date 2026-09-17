@@ -1,4 +1,4 @@
-# Cybersecurity Crash Course  -  Offensive Security
+# Cybersecurity Crash Course - Offensive Security
 
 ← [Back to Workshops](../index.md)
 
@@ -6,10 +6,10 @@
 
 **Host:** Automated Systems and Computing Lab (ASCL), Prince Sultan University  
 **Type:** 3-day intensive, in-person workshop  
-**Focus:** Offensive security  -  understanding the attacker's mindset to design 
+**Focus:** Offensive security - understanding the attacker's mindset to design
 more effective defenses.
 
-This workshop introduced the fundamentals of offensive cybersecurity by walking 
+This workshop introduced the fundamentals of offensive cybersecurity by walking
 through the steps an attacker might take against a system or network.
 
 ---
@@ -25,14 +25,14 @@ through the steps an attacker might take against a system or network.
 
 ## Workshop Details
 
-| | |
-|---|---|
-| **Host** | Automated Systems and Computing Lab (ASCL), Prince Sultan University |
-| **Instructor** | Mahmoud Khalifa |
-| **Format** | 3-day intensive, in-person |
-| **Day 1** | January 18, 2026 · 12:00 PM  -  1:30 PM |
-| **Day 2** | January 21, 2026 · 12:00 PM  -  1:30 PM |
-| **Day 3** | January 22, 2026 · 12:00 PM  -  1:30 PM |
+|                |                                                                      |
+| -------------- | -------------------------------------------------------------------- |
+| **Host**       | Automated Systems and Computing Lab (ASCL), Prince Sultan University |
+| **Instructor** | Mahmoud Khalifa                                                      |
+| **Format**     | 3-day intensive, in-person                                           |
+| **Day 1**      | January 18, 2026 · 12:00 PM - 1:30 PM                                |
+| **Day 2**      | January 21, 2026 · 12:00 PM - 1:30 PM                                |
+| **Day 3**      | January 22, 2026 · 12:00 PM - 1:30 PM                                |
 
 ---
 
@@ -40,35 +40,35 @@ through the steps an attacker might take against a system or network.
 
 <div class="grid cards" markdown>
 
--   :calendar: **Schedule & Agenda**
+- :calendar: **Schedule & Agenda**
 
-    Full session breakdown and daily schedule.
+  Full session breakdown and daily schedule.
 
-    [:octicons-arrow-right-24: View Agenda](agenda.md)
+  [:octicons-arrow-right-24: View Agenda](agenda.md)
 
--   :bookmark_tabs: **Topics & Learning Outcomes**
+- :bookmark_tabs: **Topics & Learning Outcomes**
 
-    All topics covered across the three sessions with learning outcomes.
+  All topics covered across the three sessions with learning outcomes.
 
-    [:octicons-arrow-right-24: View Topics](topics.md)
+  [:octicons-arrow-right-24: View Topics](topics.md)
 
--   :open_book: **Handouts**
+- :open_book: **Handouts**
 
-    Download the workshop PDFs, including the session handout and Bandit notes.
+  Download the workshop PDFs, including the session handout and Bandit notes.
 
-    [:octicons-arrow-right-24: View Handouts](handouts.md)
+  [:octicons-arrow-right-24: View Handouts](handouts.md)
 
--  :computer: **Labs & Bandit Notes**
+- :computer: **Labs & Bandit Notes**
 
-    Hands-on lab work and full Bandit walkthrough notes.
+  Hands-on lab work and full Bandit walkthrough notes.
 
-    [:octicons-arrow-right-24: View Labs](bandit-notes.md)
+  [:octicons-arrow-right-24: View Labs](bandit-notes.md)
 
--   :bulb: **Reflection & Impact**
+- :bulb: **Reflection & Impact**
 
-    Personal reflection on what I took from this workshop and how it shaped 
-    my thinking.
+  Personal reflection on what I took from this workshop and how it shaped
+  my thinking.
 
-    [:octicons-arrow-right-24: View Reflection](reflection.md)
+  [:octicons-arrow-right-24: View Reflection](reflection.md)
 
 </div>

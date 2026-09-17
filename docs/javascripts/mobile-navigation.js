@@ -15,7 +15,9 @@
   // mutually-exclusive open/close mechanism instead of each having its own.
   function setProfile(open) {
     document.body.classList.toggle("profile-open", open);
-    document.dispatchEvent(new CustomEvent("shoug:profile-toggle", { detail: { open: open } }));
+    document.dispatchEvent(
+      new CustomEvent("shoug:profile-toggle", { detail: { open: open } }),
+    );
   }
 
   function setMobileMenu(open) {
@@ -23,7 +25,10 @@
     if (open) setProfile(false);
     if (mobileMenuButton) {
       mobileMenuButton.setAttribute("aria-expanded", open ? "true" : "false");
-      mobileMenuButton.setAttribute("aria-label", open ? "Close site menu" : "Open site menu");
+      mobileMenuButton.setAttribute(
+        "aria-label",
+        open ? "Close site menu" : "Open site menu",
+      );
     }
   }
 
@@ -32,14 +37,18 @@
     if (open) setProfile(false);
     if (directoryButton) {
       directoryButton.setAttribute("aria-expanded", open ? "true" : "false");
-      directoryButton.setAttribute("aria-label", open ? "Close academic directory" : "Open academic directory");
+      directoryButton.setAttribute(
+        "aria-label",
+        open ? "Close academic directory" : "Open academic directory",
+      );
     }
   }
 
   document.addEventListener("click", function (event) {
     var target = event.target;
     var profileBtn = target.closest && target.closest("#shoug-fb-user");
-    var insideDropdown = target.closest && target.closest(".shoug-user-dropdown");
+    var insideDropdown =
+      target.closest && target.closest(".shoug-user-dropdown");
     if (profileBtn && !insideDropdown) {
       var next = !document.body.classList.contains("profile-open");
       setMobileMenu(false);
@@ -87,12 +96,14 @@
     }
   });
 
-  document.querySelectorAll(".shoug-header-nav a, .academic-sidebar a").forEach(function (link) {
-    link.addEventListener("click", function () {
-      setMobileMenu(false);
-      setDirectory(false);
+  document
+    .querySelectorAll(".shoug-header-nav a, .academic-sidebar a")
+    .forEach(function (link) {
+      link.addEventListener("click", function () {
+        setMobileMenu(false);
+        setDirectory(false);
+      });
     });
-  });
 
   var sidebarCollapseBtn = document.querySelector("[data-sidebar-collapse]");
   if (sidebarCollapseBtn) {
@@ -126,7 +137,10 @@
 
   var notice = document.createElement("span");
   notice.className = "shoug-footer-text shoug-footer-copyright";
-  notice.setAttribute("data-ar-text", "© 2026 شوق العمران. جميع الحقوق محفوظة.");
+  notice.setAttribute(
+    "data-ar-text",
+    "© 2026 شوق العمران. جميع الحقوق محفوظة.",
+  );
   notice.textContent = noticeText;
 
   brandText.insertAdjacentElement("afterend", notice);
@@ -142,7 +156,11 @@
 
 // Load Arabic localization on every page that uses the shared shell.
 (function () {
-  if (window.__shougArabicLocalizationLoaded || document.getElementById("shoug-arabic-localization-script")) return;
+  if (
+    window.__shougArabicLocalizationLoaded ||
+    document.getElementById("shoug-arabic-localization-script")
+  )
+    return;
   var loading = false;
   function loadArabicLocalization(callback) {
     if (window.__shougArabicLocalizationLoaded) {
@@ -160,7 +178,9 @@
   }
 
   var storedArabic = false;
-  try { storedArabic = localStorage.getItem("shoug-lang") === "ar"; } catch (error) { }
+  try {
+    storedArabic = localStorage.getItem("shoug-lang") === "ar";
+  } catch (error) {}
   if (storedArabic || document.documentElement.lang.indexOf("ar") === 0) {
     loadArabicLocalization();
     return;
@@ -168,14 +188,19 @@
 
   var toggle = document.querySelector("[data-lang-toggle]");
   if (toggle) {
-    toggle.addEventListener("click", function (event) {
-      if (window.__shougArabicLocalizationLoaded) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      loadArabicLocalization(function () {
-        if (typeof window.__shougSetLanguage === "function") window.__shougSetLanguage("ar");
-      });
-    }, true);
+    toggle.addEventListener(
+      "click",
+      function (event) {
+        if (window.__shougArabicLocalizationLoaded) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        loadArabicLocalization(function () {
+          if (typeof window.__shougSetLanguage === "function")
+            window.__shougSetLanguage("ar");
+        });
+      },
+      true,
+    );
   }
 })();
 
@@ -190,26 +215,38 @@
         if (typeof window.__shougOpenAuthModal === "function") {
           window.__shougOpenAuthModal();
         } else {
-          window.addEventListener("shoug:fb", function () {
-            if (typeof window.__shougOpenAuthModal === "function") window.__shougOpenAuthModal();
-          }, { once: true });
+          window.addEventListener(
+            "shoug:fb",
+            function () {
+              if (typeof window.__shougOpenAuthModal === "function")
+                window.__shougOpenAuthModal();
+            },
+            { once: true },
+          );
         }
       }
       return;
     }
     loaded = true;
-    try { localStorage.setItem("shoug-account-activated", "true"); } catch (error) { }
+    try {
+      localStorage.setItem("shoug-account-activated", "true");
+    } catch (error) {}
     if (openWhenReady) {
-      window.addEventListener("shoug:fb", function () {
-        setTimeout(function () {
-          if (typeof window.__shougOpenAuthModal === "function") {
-            window.__shougOpenAuthModal();
-            return;
-          }
-          var readyButton = document.getElementById("shoug-fb-user");
-          if (readyButton && !readyButton.hasAttribute("data-account-loader")) readyButton.click();
-        }, 0);
-      }, { once: true });
+      window.addEventListener(
+        "shoug:fb",
+        function () {
+          setTimeout(function () {
+            if (typeof window.__shougOpenAuthModal === "function") {
+              window.__shougOpenAuthModal();
+              return;
+            }
+            var readyButton = document.getElementById("shoug-fb-user");
+            if (readyButton && !readyButton.hasAttribute("data-account-loader"))
+              readyButton.click();
+          }, 0);
+        },
+        { once: true },
+      );
     }
     var s = document.createElement("script");
     s.src = "/javascripts/firebase-auth.js?v=61";
@@ -223,17 +260,26 @@
 
   var actions = document.querySelector(".shoug-header-actions");
   if (!actions) {
-    if (/^\/(?:account|community|bookmarks)(?:\/|$)/.test(window.location.pathname)) loadFirebase(false);
+    if (
+      /^\/(?:account|community|bookmarks)(?:\/|$)/.test(
+        window.location.pathname,
+      )
+    )
+      loadFirebase(false);
     return;
   }
   var accountActivated = false;
-  try { accountActivated = localStorage.getItem("shoug-account-activated") === "true"; } catch (error) { }
+  try {
+    accountActivated =
+      localStorage.getItem("shoug-account-activated") === "true";
+  } catch (error) {}
 
   var style = document.getElementById("shoug-auth-placeholder-style");
   if (!style) {
     style = document.createElement("style");
     style.id = "shoug-auth-placeholder-style";
-    style.textContent = ".shoug-auth-btn{height:34px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid rgba(184,41,234,.5);background:transparent;color:#c940f5;font-family:'SFMono-Regular',Consolas,monospace;font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}";
+    style.textContent =
+      ".shoug-auth-btn{height:34px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid rgba(184,41,234,.5);background:transparent;color:#c940f5;font-family:'SFMono-Regular',Consolas,monospace;font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}";
     document.head.appendChild(style);
   }
 
@@ -248,12 +294,32 @@
   }
   accountButton.setAttribute("data-account-loader", "");
 
-  accountButton.addEventListener("click", function () { loadFirebase(true); }, { once: true });
-  actions.addEventListener("pointerover", function () { loadFirebase(false); }, { once: true, passive: true });
-  actions.addEventListener("focusin", function () { loadFirebase(false); }, { once: true });
+  accountButton.addEventListener(
+    "click",
+    function () {
+      loadFirebase(true);
+    },
+    { once: true },
+  );
+  actions.addEventListener(
+    "pointerover",
+    function () {
+      loadFirebase(false);
+    },
+    { once: true, passive: true },
+  );
+  actions.addEventListener(
+    "focusin",
+    function () {
+      loadFirebase(false);
+    },
+    { once: true },
+  );
   if (accountActivated) {
     loadFirebase(false);
   } else {
-    setTimeout(function () { loadFirebase(false); }, 15000);
+    setTimeout(function () {
+      loadFirebase(false);
+    }, 15000);
   }
 })();

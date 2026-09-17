@@ -5,7 +5,7 @@ description: Software engineering coursework, slides, notes, projects, requireme
 
 # :wrench: Software Engineering
 
-This section focuses on software engineering as a structured discipline  -  from
+This section focuses on software engineering as a structured discipline - from
 requirements and planning to design, implementation, testing, and project
 management. It documents my learning and applied work in building software
 systems in a deliberate, organized, and requirements-driven way.
@@ -22,34 +22,34 @@ quality.
 
 <div class="grid cards" markdown>
 
--   :pencil: **SE201  -  Introduction to Software Engineering**
+- :pencil: **SE201 - Introduction to Software Engineering**
 
-    ---
+  ***
 
-    Software processes, requirements engineering, system modeling, design
-    principles, and testing fundamentals. Includes structured notes,
-    summaries, and cheat sheets.
+  Software processes, requirements engineering, system modeling, design
+  principles, and testing fundamentals. Includes structured notes,
+  summaries, and cheat sheets.
 
-    [:octicons-arrow-right-24: View SE201](SE201/intro.md)
+  [:octicons-arrow-right-24: View SE201](SE201/intro.md)
 
--   :triangular_ruler: **SE311  -  Requirements Engineering**
+- :triangular_ruler: **SE311 - Requirements Engineering**
 
-    ---
+  ***
 
-    Requirements elicitation, analysis, specification, validation, and
-    traceability. Includes notes, quizzes, and supporting material.
+  Requirements elicitation, analysis, specification, validation, and
+  traceability. Includes notes, quizzes, and supporting material.
 
-    [:octicons-arrow-right-24: View SE311](SE311/intro.md)
+  [:octicons-arrow-right-24: View SE311](SE311/intro.md)
 
--   :building_construction: **SE322  -  Software Design and Architecture**
+- :building_construction: **SE322 - Software Design and Architecture**
 
-    ---
+  ***
 
-    Software architecture, quality attributes, architecture patterns, detailed
-    design principles, and structural design patterns. Includes course
-    overview pages and lecture slide access.
+  Software architecture, quality attributes, architecture patterns, detailed
+  design principles, and structural design patterns. Includes course
+  overview pages and lecture slide access.
 
-    [:octicons-arrow-right-24: View SE322](SE322/intro.md)
+  [:octicons-arrow-right-24: View SE322](SE322/intro.md)
 
 </div>
 
@@ -67,19 +67,19 @@ That distinction is what this section is built around. The courses here pushed
 me to think about software not just as something that runs, but as something
 that has to be planned, communicated, tested, and sustained over time. Those
 habits of thinking carry directly into my work in cybersecurity and systems
-design  -  where structure and precision matter just as much.
+design - where structure and precision matter just as much.
 
 ---
 
 ## :notepad_spiral: Supporting Material
 
 Across these courses, this section includes summaries, cheat sheets, quizzes,
-and documentation related to diagrams, modeling, and system structure  -  all
+and documentation related to diagrams, modeling, and system structure - all
 designed to support both conceptual understanding and practical application.
 
 ---
 
 !!! note "About This Section"
-    All material is based on my own coursework and personal study at Prince
-    Sultan University. The focus is on clarity, depth, and practical
-    understanding. Content will continue to be refined and expanded over time.
+All material is based on my own coursework and personal study at Prince
+Sultan University. The focus is on clarity, depth, and practical
+understanding. Content will continue to be refined and expanded over time.

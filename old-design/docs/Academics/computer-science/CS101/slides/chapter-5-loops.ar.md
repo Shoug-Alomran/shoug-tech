@@ -9,7 +9,6 @@ description: شرائح CS101 عن حلقات while وdo-while وfor، الحل�
 
 - [فتح ملف PDF](chapter-5.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

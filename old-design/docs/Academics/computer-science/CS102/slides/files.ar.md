@@ -9,7 +9,6 @@ description: شرائح CS102 عن معالجة الملفات، القراءة�
 
 - [فتح ملف PDF](files.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

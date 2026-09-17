@@ -9,7 +9,6 @@ SE322 slides on architecture patterns and recurring high-level software design s
 
 - [Open PDF slides](chapter-4-architecture-patterns-lecture-1-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

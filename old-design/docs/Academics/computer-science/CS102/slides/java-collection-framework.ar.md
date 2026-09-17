@@ -9,7 +9,6 @@ description: شرائح CS102 عن القوائم، المجموعات، الخ�
 
 - [فتح ملف PDF](java-collection-framework.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

@@ -9,7 +9,6 @@ CS102 slides for class design, fields, methods, constructors, encapsulation, and
 
 - [Open PDF slides](classes.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

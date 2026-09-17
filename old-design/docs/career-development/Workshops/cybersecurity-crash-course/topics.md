@@ -7,7 +7,7 @@
 ## Main Themes
 
 - **Fundamental cyber-attack methodologies**  
-  Basic phases of an attack  -  reconnaissance, scanning, exploitation, 
+  Basic phases of an attack - reconnaissance, scanning, exploitation,
   post-exploitation.
 
 - **Adopting an attacker's perspective**  
@@ -32,21 +32,21 @@
 - Describe the basic steps an attacker takes during a typical compromise
 - Explain the difference between offensive testing and malicious hacking
 - Read high-level vulnerability descriptions and understand why they matter
-- Connect offensive techniques with defensive controls such as hardening 
+- Connect offensive techniques with defensive controls such as hardening
   and monitoring
 
 ---
 
 ## Tools Introduced
 
-| Tool | Purpose |
-|---|---|
-| **Kali Linux** | Primary penetration testing OS and lab environment |
-| **VirtualBox** | Isolated virtual lab setup |
-| **Nmap** | Network scanning and host discovery |
-| **Burp Suite** | Web application testing and traffic interception |
-| **Gobuster / FFUF** | Directory and endpoint enumeration |
-| **Maltego** | OSINT and reconnaissance mapping |
-| **Legion** | Automated network scanning and enumeration |
-| **Aircrack-ng** | Wireless network security testing |
+| Tool                   | Purpose                                            |
+| ---------------------- | -------------------------------------------------- |
+| **Kali Linux**         | Primary penetration testing OS and lab environment |
+| **VirtualBox**         | Isolated virtual lab setup                         |
+| **Nmap**               | Network scanning and host discovery                |
+| **Burp Suite**         | Web application testing and traffic interception   |
+| **Gobuster / FFUF**    | Directory and endpoint enumeration                 |
+| **Maltego**            | OSINT and reconnaissance mapping                   |
+| **Legion**             | Automated network scanning and enumeration         |
+| **Aircrack-ng**        | Wireless network security testing                  |
 | **OverTheWire Bandit** | Hands-on Linux and privilege escalation challenges |

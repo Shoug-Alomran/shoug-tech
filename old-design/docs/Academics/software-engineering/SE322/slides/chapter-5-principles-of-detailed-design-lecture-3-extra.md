@@ -9,7 +9,6 @@ SE322 slides continuing detailed design principles and design-level reasoning.
 
 - [Open PDF slides](chapter-5-principles-of-detailed-design-lecture-3-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

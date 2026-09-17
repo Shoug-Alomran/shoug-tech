@@ -17,11 +17,6 @@ console.log(msg2);
 // 69
 let day = 2;
 
-
-
-
-
-
 // const foo= [12, 24, 34];
 // let bar= [23, 45]
 // foo=bar; //error
@@ -30,7 +25,6 @@ let day = 2;
 // person.age=12;
 // console.log(person)
 // person={} //error
-
 
 // const twoWeeks = [
 //     ["Mon","Tue","Wed","Thu","Fri"],
@@ -42,5 +36,3 @@ let day = 2;
 // for (let yr of years) {
 // 	console.log(yr);
 // }
-
-

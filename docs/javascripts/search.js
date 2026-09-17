@@ -31,7 +31,9 @@
 
   function searchHint() {
     var count = Array.isArray(index) ? index.length : null;
-    return count ? "Type to search " + count + " pages&hellip;" : "Type to search pages&hellip;";
+    return count
+      ? "Type to search " + count + " pages&hellip;"
+      : "Type to search pages&hellip;";
   }
 
   function injectStyles() {
@@ -85,14 +87,14 @@
       '    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
       '    <input id="shoug-search-input" type="text" placeholder="Search pages, courses, projects..." autocomplete="off" spellcheck="false" aria-label="Search query">',
       '    <span id="shoug-search-kbd">ESC</span>',
-      '  </div>',
+      "  </div>",
       '  <div id="shoug-search-results" role="listbox" aria-label="Search results"></div>',
       '  <div id="shoug-search-footer">',
       '    <span><kbd class="shoug-search-key">↑↓</kbd> navigate</span>',
       '    <span><kbd class="shoug-search-key">↵</kbd> open</span>',
       '    <span><kbd class="shoug-search-key">ESC</kbd> close</span>',
-      '  </div>',
-      '</div>',
+      "  </div>",
+      "</div>",
     ].join("");
 
     document.body.appendChild(modal);
@@ -117,7 +119,7 @@
     var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return escHtml(text).replace(
       new RegExp("(" + escaped + ")", "gi"),
-      '<mark class="shoug-hl">$1</mark>'
+      '<mark class="shoug-hl">$1</mark>',
     );
   }
 
@@ -154,7 +156,9 @@
     var title = item.t.toLowerCase();
     if (title.includes(lq)) return 55;
 
-    var words = lq.split(/\s+/).filter(function (w) { return w.length > 2; });
+    var words = lq.split(/\s+/).filter(function (w) {
+      return w.length > 2;
+    });
     if (!words.length) return -1;
 
     var terms = item.k;
@@ -170,9 +174,15 @@
   function searchPdfs(q) {
     if (!Array.isArray(pdfIndex)) return [];
     return pdfIndex
-      .map(function (item) { return { item: item, s: scorePdf(item, q) }; })
-      .filter(function (x) { return x.s > 0; })
-      .sort(function (a, b) { return b.s - a.s; })
+      .map(function (item) {
+        return { item: item, s: scorePdf(item, q) };
+      })
+      .filter(function (x) {
+        return x.s > 0;
+      })
+      .sort(function (a, b) {
+        return b.s - a.s;
+      })
       .slice(0, 8)
       .map(function (x) {
         return {
@@ -188,7 +198,9 @@
     if (pdfIndexState !== "idle") return;
     pdfIndexState = "loading";
     fetch(PDF_INDEX_URL)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        return r.json();
+      })
       .then(function (data) {
         pdfIndex = data;
         pdfIndexState = "ready";
@@ -203,20 +215,32 @@
   function search(q) {
     if (!q || q.length < 2) return [];
     var scored = index
-      .map(function (item) { return { item: item, s: score(item, q) }; })
-      .filter(function (x) { return x.s > 0; })
-      .sort(function (a, b) { return b.s - a.s; });
-    return scored.slice(0, 24).map(function (x) { return x.item; });
+      .map(function (item) {
+        return { item: item, s: score(item, q) };
+      })
+      .filter(function (x) {
+        return x.s > 0;
+      })
+      .sort(function (a, b) {
+        return b.s - a.s;
+      });
+    return scored.slice(0, 24).map(function (x) {
+      return x.item;
+    });
   }
 
   function renderResults(q) {
     if (!q || q.length < 2) {
-      results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
+      results.innerHTML =
+        '<div class="shoug-sr-empty">' + searchHint() + "</div>";
       return;
     }
     var matches = search(q).concat(searchPdfs(q));
     if (!matches.length) {
-      results.innerHTML = '<div class="shoug-sr-empty">No results for &ldquo;' + escHtml(q) + '&rdquo;</div>';
+      results.innerHTML =
+        '<div class="shoug-sr-empty">No results for &ldquo;' +
+        escHtml(q) +
+        "&rdquo;</div>";
       return;
     }
 
@@ -224,21 +248,37 @@
     var order = [];
     matches.forEach(function (item) {
       var s = item.section || "other";
-      if (!grouped[s]) { grouped[s] = []; order.push(s); }
+      if (!grouped[s]) {
+        grouped[s] = [];
+        order.push(s);
+      }
       grouped[s].push(item);
     });
 
     var html = "";
     var itemIdx = 0;
     order.forEach(function (section) {
-      html += '<div class="shoug-sr-section">' + escHtml(sectionLabel(section)) + '</div>';
+      html +=
+        '<div class="shoug-sr-section">' +
+        escHtml(sectionLabel(section)) +
+        "</div>";
       grouped[section].forEach(function (item) {
         html += [
-          '<a class="shoug-sr-item" href="' + escHtml(item.url) + '" data-idx="' + itemIdx + '" role="option">',
-          '  <span class="shoug-sr-title">' + highlight(item.title, q) + '</span>',
-          item.description ? '  <span class="shoug-sr-desc">' + highlight(item.description.slice(0, 120), q) + '</span>' : '',
-          '  <span class="shoug-sr-url">' + escHtml(item.url) + '</span>',
-          '</a>',
+          '<a class="shoug-sr-item" href="' +
+            escHtml(item.url) +
+            '" data-idx="' +
+            itemIdx +
+            '" role="option">',
+          '  <span class="shoug-sr-title">' +
+            highlight(item.title, q) +
+            "</span>",
+          item.description
+            ? '  <span class="shoug-sr-desc">' +
+              highlight(item.description.slice(0, 120), q) +
+              "</span>"
+            : "",
+          '  <span class="shoug-sr-url">' + escHtml(item.url) + "</span>",
+          "</a>",
         ].join("");
         itemIdx++;
       });
@@ -289,7 +329,8 @@
     requestAnimationFrame(function () {
       modal.classList.add("is-open");
     });
-    results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
+    results.innerHTML =
+      '<div class="shoug-sr-empty">' + searchHint() + "</div>";
     input.value = "";
     activeIdx = -1;
     input.focus();
@@ -297,10 +338,14 @@
 
     if (!index) {
       fetch(INDEX_URL, { cache: "no-store" })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          return r.json();
+        })
         .then(function (data) {
           index = data;
-          if (input.value.trim().length < 2) results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
+          if (input.value.trim().length < 2)
+            results.innerHTML =
+              '<div class="shoug-sr-empty">' + searchHint() + "</div>";
           if (input.value.trim().length >= 2) renderResults(input.value.trim());
           loadPdfIndex(function () {
             var current = input.value.trim();
@@ -308,7 +353,8 @@
           });
         })
         .catch(function () {
-          results.innerHTML = '<div class="shoug-sr-empty">Search index unavailable.</div>';
+          results.innerHTML =
+            '<div class="shoug-sr-empty">Search index unavailable.</div>';
         });
     }
   }
@@ -337,10 +383,7 @@
       var tag = document.activeElement && document.activeElement.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-      if (
-        e.key === "/" ||
-        ((e.ctrlKey || e.metaKey) && e.key === "k")
-      ) {
+      if (e.key === "/" || ((e.ctrlKey || e.metaKey) && e.key === "k")) {
         e.preventDefault();
         openSearch();
       }

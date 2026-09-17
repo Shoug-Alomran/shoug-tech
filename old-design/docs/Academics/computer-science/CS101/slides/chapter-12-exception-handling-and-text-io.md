@@ -9,7 +9,6 @@ CS101 slides for basic exception handling and reading from or writing to text fi
 
 - [Open PDF slides](chapter-12.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

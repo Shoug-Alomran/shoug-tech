@@ -41,13 +41,13 @@ By the end of this course, you should be able to:
 The exact timing will be updated once the syllabus is received. For now, the
 material is organized in a practical study order:
 
-| Phase | Focus |
-|------|-------|
-| 1 | Foundations: ethical hacking, privacy, network security, and basic cyber risks |
-| 2 | Ethical reasoning: moral systems, Kantianism, utilitarianism, and social contract theory |
-| 3 | Law and responsibility: Saudi cyber law, professional codes, and software engineering ethics |
-| 4 | Applied issues: business ethics, social engineering, social media, and organizational dilemmas |
-| 5 | Exam preparation: past-exam style questions, written scenarios, quizzes, and model answers |
+| Phase | Focus                                                                                          |
+| ----- | ---------------------------------------------------------------------------------------------- |
+| 1     | Foundations: ethical hacking, privacy, network security, and basic cyber risks                 |
+| 2     | Ethical reasoning: moral systems, Kantianism, utilitarianism, and social contract theory       |
+| 3     | Law and responsibility: Saudi cyber law, professional codes, and software engineering ethics   |
+| 4     | Applied issues: business ethics, social engineering, social media, and organizational dilemmas |
+| 5     | Exam preparation: past-exam style questions, written scenarios, quizzes, and model answers     |
 
 ---
 
@@ -65,36 +65,36 @@ feedback so your responses include the concepts instructors usually look for.
 
 <div class="grid cards" markdown>
 
--   :page_facing_up: **Slide Breakdowns**
+- :page_facing_up: **Slide Breakdowns**
 
-    ---
+  ***
 
-    Quick access to the interactive HTML breakdowns for each lecture topic.
+  Quick access to the interactive HTML breakdowns for each lecture topic.
 
-    [Open slide breakdowns](slide-breakdowns/slide-breakdowns-overview.md)
+  [Open slide breakdowns](slide-breakdowns/slide-breakdowns-overview.md)
 
--   :file_folder: **Original Slides**
+- :file_folder: **Original Slides**
 
-    ---
+  ***
 
-    The original ETHCS 303 lecture PDFs, renamed by topic for easier reference.
+  The original ETHCS 303 lecture PDFs, renamed by topic for easier reference.
 
-    [Open slides](slides/overview.md)
+  [Open slides](slides/overview.md)
 
--   :white_check_mark: **Quizzes**
+- :white_check_mark: **Quizzes**
 
-    ---
+  ***
 
-    Interactive exam-style quizzes with explanations, model answers, and
-    keyword checks for written responses.
+  Interactive exam-style quizzes with explanations, model answers, and
+  keyword checks for written responses.
 
-    [Open quizzes](quizez/overview.md)
+  [Open quizzes](quizez/overview.md)
 
 </div>
 
 ---
 
 !!! note "Syllabus Status"
-    The official syllabus has not been added yet. When it is available, this
-    overview should be updated with the exact weekly timeline, required
-    chapters, exam schedule, and grading details.
+The official syllabus has not been added yet. When it is available, this
+overview should be updated with the exact weekly timeline, required
+chapters, exam schedule, and grading details.

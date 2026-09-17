@@ -9,24 +9,24 @@ requirements management through change, traceability, and feature interaction.
 ---
 
 !!! info "Course project"
-    I created and documented a SE311 requirements analysis project for this
-    course. You can view the portfolio entry and open the project here:
-    [Project portfolio](/career-development/projects/#se311-software-requirements-analysis-sillah) ·
-    [Project site](https://software-requirements-analysis.shoug-tech.com) ·
-    [Repository](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
+I created and documented a SE311 requirements analysis project for this
+course. You can view the portfolio entry and open the project here:
+[Project portfolio](/career-development/projects/#se311-software-requirements-analysis-sillah) ·
+[Project site](https://software-requirements-analysis.shoug-tech.com) ·
+[Repository](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
 
 ---
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | SE311 |
-| Course title | Software Requirements Engineering |
-| Credits/contact hours | 3 credits |
-| Prerequisites | SE201 for SE students; CS225 for CS students |
-| Main textbook | Karl Wiegers and Joy Beatty, *Software Requirements*, 3rd ed. |
-| Course role | Required for SE students; elective for CS students |
+| Item                  | Details                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| Course code           | SE311                                                         |
+| Course title          | Software Requirements Engineering                             |
+| Credits/contact hours | 3 credits                                                     |
+| Prerequisites         | SE201 for SE students; CS225 for CS students                  |
+| Main textbook         | Karl Wiegers and Joy Beatty, _Software Requirements_, 3rd ed. |
+| Course role           | Required for SE students; elective for CS students            |
 
 ---
 
@@ -54,79 +54,79 @@ By the end of SE311, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Basics of Requirements Engineering**
+- **Basics of Requirements Engineering**
 
-    ---
+  ***
 
-    Definitions, importance of requirements, requirement types, the
-    requirements engineering process, and main activities.
+  Definitions, importance of requirements, requirement types, the
+  requirements engineering process, and main activities.
 
--   **Documentation Standards**
+- **Documentation Standards**
 
-    ---
+  ***
 
-    IEEE 830-1998 and the relationship between IEEE 830 and ISO/IEC 12207.
+  IEEE 830-1998 and the relationship between IEEE 830 and ISO/IEC 12207.
 
--   **Requirements Inception and Problem Analysis**
+- **Requirements Inception and Problem Analysis**
 
-    ---
+  ***
 
-    Business requirements, problem analysis steps, vision and scope documents,
-    and project viability.
+  Business requirements, problem analysis steps, vision and scope documents,
+  and project viability.
 
--   **Requirements Elicitation**
+- **Requirements Elicitation**
 
-    ---
+  ***
 
-    Elicitation goals, risks, challenges, sources of requirements, tasks,
-    problems, and techniques.
+  Elicitation goals, risks, challenges, sources of requirements, tasks,
+  problems, and techniques.
 
--   **Requirements Analysis and Specification**
+- **Requirements Analysis and Specification**
 
-    ---
+  ***
 
-    Analysis stages, analysis methods, tools, and specification preparation.
+  Analysis stages, analysis methods, tools, and specification preparation.
 
--   **Requirements Modeling**
+- **Requirements Modeling**
 
-    ---
+  ***
 
-    Data modeling, scenario-based modeling, use case diagrams, class-based
-    modeling, CRC models, collaboration diagrams, activity diagrams, and state
-    charts.
+  Data modeling, scenario-based modeling, use case diagrams, class-based
+  modeling, CRC models, collaboration diagrams, activity diagrams, and state
+  charts.
 
--   **Goal Modeling**
+- **Goal Modeling**
 
-    ---
+  ***
 
-    URN and GRL goal modeling with workshop-style practice.
+  URN and GRL goal modeling with workshop-style practice.
 
--   **Requirements Verification and Validation**
+- **Requirements Verification and Validation**
 
-    ---
+  ***
 
-    Checking correctness, consistency, completeness, feasibility, and agreement
-    with stakeholder needs.
+  Checking correctness, consistency, completeness, feasibility, and agreement
+  with stakeholder needs.
 
--   **Requirements Prioritization and Negotiation**
+- **Requirements Prioritization and Negotiation**
 
-    ---
+  ***
 
-    Prioritizing requirements, managing scope, and negotiating trade-offs.
+  Prioritizing requirements, managing scope, and negotiating trade-offs.
 
--   **Requirements Management**
+- **Requirements Management**
 
-    ---
+  ***
 
-    Traceability, baselines, change management, requirements management tools,
-    and DOORS-style tool practice.
+  Traceability, baselines, change management, requirements management tools,
+  and DOORS-style tool practice.
 
--   **Requirements in Development Processes**
+- **Requirements in Development Processes**
 
-    ---
+  ***
 
-    Requirements approaches in software process engineering frameworks and
-    agile methods, with project presentations.
+  Requirements approaches in software process engineering frameworks and
+  agile methods, with project presentations.
 
 </div>
 
@@ -134,30 +134,30 @@ By the end of SE311, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| Assignments, participation, and attendance | 5% |
-| Two quizzes | 10% |
-| Midterm exam | 30% |
-| Project and presentation | 15% |
-| Final exam | 40% |
+| Assessment                                 | Weight |
+| ------------------------------------------ | ------ |
+| Assignments, participation, and attendance | 5%     |
+| Two quizzes                                | 10%    |
+| Midterm exam                               | 30%    |
+| Project and presentation                   | 15%    |
+| Final exam                                 | 40%    |
 
 ---
 
 ## Current Site Coverage
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
-| Requirements engineering basics | Chapter 1 notes, slides, and quiz | Covered |
-| Documentation standards | Covered across early chapters and specification materials | Covered |
-| Requirements inception/problem analysis | Chapters 2 and 4 materials | Covered |
-| Requirements elicitation | Chapter 3/4 materials and quizzes | Covered |
-| Requirements analysis/specification | Chapters 5-8 materials | Covered |
-| Requirements modeling, UML, and GRL | Chapter materials, UML cheat sheet, and final mindmap | Covered |
-| Verification and validation | Existing quizzes and chapter materials cover related quality checks | Covered |
-| Prioritization and negotiation | Chapter 10 materials | Covered |
-| Requirements management, traceability, baselines, tools | Covered in final and mindmap materials | Covered |
-| Agile/process requirements approaches | Covered in final and mindmap materials | Covered |
+| Syllabus topic                                          | Current site material                                               | Status  |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
+| Requirements engineering basics                         | Chapter 1 notes, slides, and quiz                                   | Covered |
+| Documentation standards                                 | Covered across early chapters and specification materials           | Covered |
+| Requirements inception/problem analysis                 | Chapters 2 and 4 materials                                          | Covered |
+| Requirements elicitation                                | Chapter 3/4 materials and quizzes                                   | Covered |
+| Requirements analysis/specification                     | Chapters 5-8 materials                                              | Covered |
+| Requirements modeling, UML, and GRL                     | Chapter materials, UML cheat sheet, and final mindmap               | Covered |
+| Verification and validation                             | Existing quizzes and chapter materials cover related quality checks | Covered |
+| Prioritization and negotiation                          | Chapter 10 materials                                                | Covered |
+| Requirements management, traceability, baselines, tools | Covered in final and mindmap materials                              | Covered |
+| Agile/process requirements approaches                   | Covered in final and mindmap materials                              | Covered |
 
 ---
 
@@ -170,5 +170,5 @@ By the end of SE311, students should be able to:
 5. Use the cheat sheets, quizzes, UML guide, and mindmap for final review.
 
 !!! note "Source"
-    This overview was updated from the SE311 course syllabus and the current
-    files in the SE311 section of this site.
+This overview was updated from the SE311 course syllabus and the current
+files in the SE311 section of this site.

@@ -3,45 +3,45 @@
 This section collects the SE201 lecture slides as SEO-friendly PDF files for quick chapter review.
 
 !!! note "Slide Source"
-    The files in this slides section are university-provided course materials.
-    Rights remain with the university, course instructors, and original authors.
+The files in this slides section are university-provided course materials.
+Rights remain with the university, course instructors, and original authors.
 
 <div class="grid cards" markdown>
 
--   **Chapter 1: Software Engineering Practices and Ethics**
+- **Chapter 1: Software Engineering Practices and Ethics**
 
-    [Open slides](chapter-1-software-engineering-practices-and-ethics.md)
+  [Open slides](chapter-1-software-engineering-practices-and-ethics.md)
 
--   **Chapter 2: Software Processes**
+- **Chapter 2: Software Processes**
 
-    [Open slides](chapter-2-software-processes.md)
+  [Open slides](chapter-2-software-processes.md)
 
--   **Chapter 3: Agile Software Engineering**
+- **Chapter 3: Agile Software Engineering**
 
-    [Open slides](chapter-3-agile-software-engineering.md)
+  [Open slides](chapter-3-agile-software-engineering.md)
 
--   **Chapter 4: Software Project Management**
+- **Chapter 4: Software Project Management**
 
-    [Open slides](chapter-4-software-project-management.md)
+  [Open slides](chapter-4-software-project-management.md)
 
--   **Chapter 5.1: Requirements Engineering**
+- **Chapter 5.1: Requirements Engineering**
 
-    [Open slides](chapter-5-1-requirements-engineering.md)
+  [Open slides](chapter-5-1-requirements-engineering.md)
 
--   **Chapter 5.2: System Modeling**
+- **Chapter 5.2: System Modeling**
 
-    [Open slides](chapter-5-2-system-modeling.md)
+  [Open slides](chapter-5-2-system-modeling.md)
 
--   **Chapter 6: Software Design**
+- **Chapter 6: Software Design**
 
-    [Open slides](chapter-6-software-design.md)
+  [Open slides](chapter-6-software-design.md)
 
--   **Chapter 7: Software Construction and Implementation**
+- **Chapter 7: Software Construction and Implementation**
 
-    [Open slides](chapter-7-software-construction-implementation.md)
+  [Open slides](chapter-7-software-construction-implementation.md)
 
--   **Chapter 8: Software Testing**
+- **Chapter 8: Software Testing**
 
-    [Open slides](chapter-8-software-testing.md)
+  [Open slides](chapter-8-software-testing.md)
 
 </div>

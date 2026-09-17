@@ -35,17 +35,17 @@ This digital garden is both a **portfolio** and a **living knowledge base**: fea
 
 <div class="grid cards" markdown>
 
--   :trophy: **Proof, Not Just Claims**
+- :trophy: **Proof, Not Just Claims**
 
-    I publish real project sites, technical writeups, study systems, and workshop material so visitors can evaluate execution quality directly.
+  I publish real project sites, technical writeups, study systems, and workshop material so visitors can evaluate execution quality directly.
 
--   :test_tube: **Hands-On Technical Range**
+- :test_tube: **Hands-On Technical Range**
 
-    My work spans software engineering, cybersecurity, databases, systems, and structured academic documentation.
+  My work spans software engineering, cybersecurity, databases, systems, and structured academic documentation.
 
--   :speaking_head: **Clear Technical Communication**
+- :speaking_head: **Clear Technical Communication**
 
-    I care about making complex work readable, teachable, and usable for students, instructors, and employers.
+  I care about making complex work readable, teachable, and usable for students, instructors, and employers.
 
 </div>
 
@@ -53,23 +53,23 @@ This digital garden is both a **portfolio** and a **living knowledge base**: fea
 
 <div class="grid cards" markdown>
 
--   :rocket: **SE311 Requirements Analysis**
+- :rocket: **SE311 Requirements Analysis**
 
-    A formal software requirements engineering project with modeling, traceability, and structured release planning.
+  A formal software requirements engineering project with modeling, traceability, and structured release planning.
 
-    [:octicons-arrow-right-24: View Project Work](career-development/projects.md)
+  [:octicons-arrow-right-24: View Project Work](career-development/projects.md)
 
--   :lock: **Cybersecurity Track**
+- :lock: **Cybersecurity Track**
 
-    Security-focused notes, labs, and workshop documentation that show both technical curiosity and disciplined structure.
+  Security-focused notes, labs, and workshop documentation that show both technical curiosity and disciplined structure.
 
-    [:octicons-arrow-right-24: Explore Security Work](Academics/cyber-security/Intro.md)
+  [:octicons-arrow-right-24: Explore Security Work](Academics/cyber-security/Intro.md)
 
--   :microphone: **Workshops and Teaching**
+- :microphone: **Workshops and Teaching**
 
-    Public-facing evidence of how I explain technical ideas, mentor others, and turn learning into useful artifacts.
+  Public-facing evidence of how I explain technical ideas, mentor others, and turn learning into useful artifacts.
 
-    [:octicons-arrow-right-24: See Workshops](career-development/Workshops/index.md)
+  [:octicons-arrow-right-24: See Workshops](career-development/Workshops/index.md)
 
 </div>
 
@@ -77,62 +77,62 @@ This digital garden is both a **portfolio** and a **living knowledge base**: fea
 
 <div class="grid cards" markdown>
 
--   :books: **Learn Hub (Academics)**
+- :books: **Learn Hub (Academics)**
 
-    ---
+  ***
 
-    Structured notes and study assets across Software Engineering, Computer Science, and Cybersecurity.
+  Structured notes and study assets across Software Engineering, Computer Science, and Cybersecurity.
 
-    [:octicons-arrow-right-24: Open Learn Hub](Academics/Intro.md)
+  [:octicons-arrow-right-24: Open Learn Hub](Academics/Intro.md)
 
--   :shield: **Cybersecurity Track**
+- :shield: **Cybersecurity Track**
 
-    ---
+  ***
 
-    Security labs, threat-analysis notes, and practical cybersecurity references.
+  Security labs, threat-analysis notes, and practical cybersecurity references.
 
-    [:octicons-arrow-right-24: Open Cybersecurity](Academics/cyber-security/Intro.md)
+  [:octicons-arrow-right-24: Open Cybersecurity](Academics/cyber-security/Intro.md)
 
--   :briefcase: **Career Portfolio**
+- :briefcase: **Career Portfolio**
 
-    ---
+  ***
 
-    Selected projects, workshops, and professional documentation.
+  Selected projects, workshops, and professional documentation.
 
-    [:octicons-arrow-right-24: Open Career](career-development/Intro.md)
+  [:octicons-arrow-right-24: Open Career](career-development/Intro.md)
 
--   :rocket: **Blueprint Studio**
+- :rocket: **Blueprint Studio**
 
-    ---
+  ***
 
-    Explore the services page and visit the Blueprint website for static website packages and project inquiries.
+  Explore the services page and visit the Blueprint website for static website packages and project inquiries.
 
-    [:octicons-arrow-right-24: View Services](career-development/services.md)
-    [:octicons-link-external-24: Visit Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
+  [:octicons-arrow-right-24: View Services](career-development/services.md)
+  [:octicons-link-external-24: Visit Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
 
--   :compass: **Academic Plan**
+- :compass: **Academic Plan**
 
-    ---
+  ***
 
-    View the roadmap of your learning flow through multiple plan formats.
+  View the roadmap of your learning flow through multiple plan formats.
 
-    [:octicons-arrow-right-24: View Academic Plan](academic-plan-themes/academic-plan.md)
+  [:octicons-arrow-right-24: View Academic Plan](academic-plan-themes/academic-plan.md)
 
--   :link: **Resources**
+- :link: **Resources**
 
-    ---
+  ***
 
-    High-value tools, references, and links for daily technical learning.
+  High-value tools, references, and links for daily technical learning.
 
-    [:octicons-arrow-right-24: Open Resources](links.md)
+  [:octicons-arrow-right-24: Open Resources](links.md)
 
--   :sparkles: **Quick Start by Audience**
+- :sparkles: **Quick Start by Audience**
 
-    ---
+  ***
 
-    Not sure where to begin? Use the guided audience-based paths.
+  Not sure where to begin? Use the guided audience-based paths.
 
-    [:octicons-arrow-right-24: Start Here](start-here.md)
+  [:octicons-arrow-right-24: Start Here](start-here.md)
 
 </div>
 

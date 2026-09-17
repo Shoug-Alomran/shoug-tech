@@ -9,7 +9,6 @@ description: شرائح SE322 التي تكمل الأنماط المعماري�
 
 - [فتح ملف الشرائح](chapter-4-architecture-patterns-lecture-2-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

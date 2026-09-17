@@ -9,7 +9,6 @@ CS102 slides for superclass/subclass relationships, extends, super, protected me
 
 - [Open PDF slides](inheritance.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

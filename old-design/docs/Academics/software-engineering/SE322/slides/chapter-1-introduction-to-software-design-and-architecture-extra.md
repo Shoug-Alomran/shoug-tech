@@ -9,7 +9,6 @@ SE322 slides introducing software design and architecture concepts, course frami
 
 - [Open PDF slides](chapter-1-introduction-to-software-design-and-architecture-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

@@ -9,7 +9,6 @@ SE322 slides continuing detailed design principles, modularity, and design clari
 
 - [Open PDF slides](chapter-5-principles-of-detailed-design-lecture-2-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

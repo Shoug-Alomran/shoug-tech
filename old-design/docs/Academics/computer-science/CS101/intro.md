@@ -15,15 +15,15 @@ and Java practice.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | CS101 |
-| Course title | Computer Programming 1 |
-| Credit hours | 4 credits |
-| Contact hours | 3 lecture hours, 1 tutorial hour, and 2 lab hours |
-| Prerequisite | None |
-| Main textbook | Y. Daniel Liang, *Introduction to Java Programming: Global Edition*, 10th ed. |
-| Course role | Required |
+| Item          | Details                                                                       |
+| ------------- | ----------------------------------------------------------------------------- |
+| Course code   | CS101                                                                         |
+| Course title  | Computer Programming 1                                                        |
+| Credit hours  | 4 credits                                                                     |
+| Contact hours | 3 lecture hours, 1 tutorial hour, and 2 lab hours                             |
+| Prerequisite  | None                                                                          |
+| Main textbook | Y. Daniel Liang, _Introduction to Java Programming: Global Edition_, 10th ed. |
+| Course role   | Required                                                                      |
 
 ---
 
@@ -50,57 +50,57 @@ By the end of CS101, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Introduction to Computers, Programs, and Java**
+- **Introduction to Computers, Programs, and Java**
 
-    ---
+  ***
 
-    Programming basics, Java programs, compilation, execution, and using an IDE.
+  Programming basics, Java programs, compilation, execution, and using an IDE.
 
--   **Input, Variables, and Data Types**
+- **Input, Variables, and Data Types**
 
-    ---
+  ***
 
-    Input, variables, naming conventions, assignment, type casting, arithmetic
-    operations, operator precedence, and numeric expressions.
+  Input, variables, naming conventions, assignment, type casting, arithmetic
+  operations, operator precedence, and numeric expressions.
 
--   **Selection**
+- **Selection**
 
-    ---
+  ***
 
-    Boolean values, `if` statements, nested selection, `if-else`, logical
-    operations, and `switch` statements.
+  Boolean values, `if` statements, nested selection, `if-else`, logical
+  operations, and `switch` statements.
 
--   **Strings, Characters, and Math**
+- **Strings, Characters, and Math**
 
-    ---
+  ***
 
-    Math library functions, character data, string data, and common operations.
+  Math library functions, character data, string data, and common operations.
 
--   **Loops**
+- **Loops**
 
-    ---
+  ***
 
-    `for`, `while`, and `do-while` loops, nested loops, `break`, and `continue`.
+  `for`, `while`, and `do-while` loops, nested loops, `break`, and `continue`.
 
--   **Methods**
+- **Methods**
 
-    ---
+  ***
 
-    Void methods, parameters, return values, method overloading, and variable
-    scope.
+  Void methods, parameters, return values, method overloading, and variable
+  scope.
 
--   **Arrays**
+- **Arrays**
 
-    ---
+  ***
 
-    One-dimensional arrays, copying arrays, passing arrays as parameters,
-    returning arrays, searching, and sorting.
+  One-dimensional arrays, copying arrays, passing arrays as parameters,
+  returning arrays, searching, and sorting.
 
--   **Exceptions and Text Files**
+- **Exceptions and Text Files**
 
-    ---
+  ***
 
-    Basic exception handling and file input/output using text files.
+  Basic exception handling and file input/output using text files.
 
 </div>
 
@@ -108,15 +108,15 @@ By the end of CS101, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| Final exam | 40% |
-| Major exam | 20% |
-| Three quizzes | 15% |
-| Lab exam | 10% |
-| Two assignments | 5% |
-| Lab work | 5% |
-| Attendance | 5% |
+| Assessment      | Weight |
+| --------------- | ------ |
+| Final exam      | 40%    |
+| Major exam      | 20%    |
+| Three quizzes   | 15%    |
+| Lab exam        | 10%    |
+| Two assignments | 5%     |
+| Lab work        | 5%     |
+| Attendance      | 5%     |
 
 ---
 
@@ -132,4 +132,4 @@ By the end of CS101, students should be able to:
 6. Finish with file input/output and debugging practice in the Java IDE.
 
 !!! note "Source"
-    This overview was updated from the CS101 course syllabus.
+This overview was updated from the CS101 course syllabus.

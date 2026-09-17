@@ -1,4 +1,4 @@
-# :lock: CYS401  -  Fundamentals of Cybersecurity
+# :lock: CYS401 - Fundamentals of Cybersecurity
 
 This course introduces the core concepts, technologies, and practices of
 cybersecurity in organizational and real-world contexts. It focuses on
@@ -29,70 +29,70 @@ web security, you can jump directly to that topic.
 
 <div class="grid cards" markdown>
 
--   :mag: **Introduction to Cybersecurity**
+- :mag: **Introduction to Cybersecurity**
 
-    ---
+  ***
 
-    Cybersecurity concepts and terminology, objectives and goals, the CIA
-    triad, and critical information characteristics.
+  Cybersecurity concepts and terminology, objectives and goals, the CIA
+  triad, and critical information characteristics.
 
--   :shield: **Security Foundations & Principles**
+- :shield: **Security Foundations & Principles**
 
-    ---
+  ***
 
-    Threats, attacks, vulnerabilities, and countermeasures. Common attack
-    types, threat modeling and STRIDE, layered defenses, and cybersecurity
-    governance.
+  Threats, attacks, vulnerabilities, and countermeasures. Common attack
+  types, threat modeling and STRIDE, layered defenses, and cybersecurity
+  governance.
 
--   :file_cabinet: **Data Security & Information Asset Protection**
+- :file_cabinet: **Data Security & Information Asset Protection**
 
-    ---
+  ***
 
-    Information assets and classification, due care and diligence, data
-    labeling, sanitization techniques, ownership roles, and data protection
-    legislation.
+  Information assets and classification, due care and diligence, data
+  labeling, sanitization techniques, ownership roles, and data protection
+  legislation.
 
--   :key: **Cryptography Fundamentals**
+- :key: **Cryptography Fundamentals**
 
-    ---
+  ***
 
-    Core cryptographic concepts, symmetric and asymmetric cryptography,
-    digital signatures, data integrity, PKI, and digital certificates.
+  Core cryptographic concepts, symmetric and asymmetric cryptography,
+  digital signatures, data integrity, PKI, and digital certificates.
 
--   :triangular_ruler: **Principles of Security Design**
+- :triangular_ruler: **Principles of Security Design**
 
-    ---
+  ***
 
-    Security architecture and design principles, common architecture flaws,
-    and protection mechanisms for confidentiality, integrity, and availability.
+  Security architecture and design principles, common architecture flaws,
+  and protection mechanisms for confidentiality, integrity, and availability.
 
--   :desktop_computer: **Computer Architecture Security**
+- :desktop_computer: **Computer Architecture Security**
 
-    ---
+  ***
 
-    Hardware components, protection rings, memory protection, firmware and OS
-    hardening, input/output security, TEMPEST, and server/client security.
+  Hardware components, protection rings, memory protection, firmware and OS
+  hardening, input/output security, TEMPEST, and server/client security.
 
--   :cloud: **Systems Architecture Security**
+- :cloud: **Systems Architecture Security**
 
-    ---
+  ***
 
-    Database security, cloud and virtualization security, IoT security, web
-    security and OWASP, and mobile device security.
+  Database security, cloud and virtualization security, IoT security, web
+  security and OWASP, and mobile device security.
 
--   :factory: **ICS & SCADA System Security**
+- :factory: **ICS & SCADA System Security**
 
-    ---
+  ***
 
-    ICS and SCADA security landscape, vulnerabilities and threats, security
-    requirements and governance, compliance, and smart grid applications.
+  ICS and SCADA security landscape, vulnerabilities and threats, security
+  requirements and governance, compliance, and smart grid applications.
 
--   :bust_in_silhouette: **Managing Identity & Authentication**
+- :bust_in_silhouette: **Managing Identity & Authentication**
 
-    ---
+  ***
 
-    Access control models and attacks, identification and authentication
-    mechanisms, identity management, and biometric standards.
+  Access control models and attacks, identification and authentication
+  mechanisms, identity management, and biometric standards.
 
 </div>
 
@@ -109,19 +109,19 @@ preparation.
 
 ## :round_pushpin: Recommended Study Path
 
-| Step | Topic |
-|------|-------|
-| 1 | Introduction and security foundations  -  build core concepts first |
-| 2 | Data security and cryptography  -  understand protection mechanisms |
-| 3 | Security design and computer architecture security |
-| 4 | Systems architecture security and specialized domains |
-| 5 | ICS and SCADA systems |
-| 6 | Identity and authentication |
-| 7 | Quizzes to test understanding and identify weak areas |
+| Step | Topic                                                             |
+| ---- | ----------------------------------------------------------------- |
+| 1    | Introduction and security foundations - build core concepts first |
+| 2    | Data security and cryptography - understand protection mechanisms |
+| 3    | Security design and computer architecture security                |
+| 4    | Systems architecture security and specialized domains             |
+| 5    | ICS and SCADA systems                                             |
+| 6    | Identity and authentication                                       |
+| 7    | Quizzes to test understanding and identify weak areas             |
 
 ---
 
 !!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+These notes are based on my own coursework and personal study. The focus
+is on clarity, structure, and practical understanding. Content will
+continue to be refined and expanded over time.

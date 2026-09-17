@@ -9,7 +9,6 @@ description: شرائح CS101 عن المنطق البولياني، جمل if،
 
 - [فتح ملف PDF](chapter-3.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

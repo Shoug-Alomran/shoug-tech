@@ -9,7 +9,6 @@ description: شرائح CS101 عن المصفوفات أحادية البعد، 
 
 - [فتح ملف PDF](chapter-7.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

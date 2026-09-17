@@ -10,13 +10,13 @@ economic systems.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | ISC113 |
+| Item         | Details         |
+| ------------ | --------------- |
+| Course code  | ISC113          |
 | Course title | Islamic Economy |
-| Credit hours | 2 |
-| Prerequisite | None |
-| Co-requisite | None |
+| Credit hours | 2               |
+| Prerequisite | None            |
+| Co-requisite | None            |
 
 ---
 
@@ -38,79 +38,79 @@ By the end of ISC113, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Introduction and Definition of Islamic Economy**
+- **Introduction and Definition of Islamic Economy**
 
-    ---
+  ***
 
-    What Islamic economy means and why it matters as a practical system of
-    life.
+  What Islamic economy means and why it matters as a practical system of
+  life.
 
--   **Economics and Islamic Legislation**
+- **Economics and Islamic Legislation**
 
-    ---
+  ***
 
-    The relationship between economics, Sharia, and other sciences.
+  The relationship between economics, Sharia, and other sciences.
 
--   **Islamic, Capitalist, and Socialist Economic Systems**
+- **Islamic, Capitalist, and Socialist Economic Systems**
 
-    ---
+  ***
 
-    Characteristics of the Islamic economy and comparison with capitalist and
-    socialist approaches.
+  Characteristics of the Islamic economy and comparison with capitalist and
+  socialist approaches.
 
--   **Prime Economic Terms**
+- **Prime Economic Terms**
 
-    ---
+  ***
 
-    Money, production, capital, work, resources, scarcity, savings, and
-    hoarding.
+  Money, production, capital, work, resources, scarcity, savings, and
+  hoarding.
 
--   **Islamic State Budget and Revenues**
+- **Islamic State Budget and Revenues**
 
-    ---
+  ***
 
-    State budget revenues and public revenues in Islamic and non-Islamic
-    systems.
+  State budget revenues and public revenues in Islamic and non-Islamic
+  systems.
 
--   **Public Expenditure in Islam**
+- **Public Expenditure in Islam**
 
-    ---
+  ***
 
-    Public spending principles, priorities, and responsibility in Islamic
-    economic thought.
+  Public spending principles, priorities, and responsibility in Islamic
+  economic thought.
 
--   **Islam and the Economic Dilemma**
+- **Islam and the Economic Dilemma**
 
-    ---
+  ***
 
-    How Islam approaches economic problems and balances production,
-    distribution, and consumption.
+  How Islam approaches economic problems and balances production,
+  distribution, and consumption.
 
--   **Production**
+- **Production**
 
-    ---
+  ***
 
-    Production, work, resources, and lawful economic activity.
+  Production, work, resources, and lawful economic activity.
 
--   **Consumption and Consumer Conduct**
+- **Consumption and Consumer Conduct**
 
-    ---
+  ***
 
-    Responsible consumption, moderation, and ethical consumer behavior.
+  Responsible consumption, moderation, and ethical consumer behavior.
 
--   **Market and Pricing in Islam**
+- **Market and Pricing in Islam**
 
-    ---
+  ***
 
-    The market in Islamic economic thought, market ethics, regulation, and
-    pricing.
+  The market in Islamic economic thought, market ethics, regulation, and
+  pricing.
 
--   **Money in Islam**
+- **Money in Islam**
 
-    ---
+  ***
 
-    The role of money, its limits, and its connection to justice and lawful
-    transactions.
+  The role of money, its limits, and its connection to justice and lawful
+  transactions.
 
 </div>
 
@@ -118,31 +118,29 @@ By the end of ISC113, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| First major exam | 25% |
-| Second major exam | 25% |
-| Participation and assignments | 10% |
-| Written final exam | 40% |
+| Assessment                    | Weight |
+| ----------------------------- | ------ |
+| First major exam              | 25%    |
+| Second major exam             | 25%    |
+| Participation and assignments | 10%    |
+| Written final exam            | 40%    |
 
 ---
 
 ## Current Site Coverage
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
-| Introduction and definition of Islamic economy | Lecture material | Covered |
-| Relationship with Sharia and other sciences | Lecture material | Covered |
-| Islamic, capitalist, and socialist systems | Lecture material and revision pages | Covered |
-| Prime economic terms | Lecture and exam-review material | Covered |
-| State budget and revenues | Lecture and review material | Covered |
-| Public expenditure in Islam | Lecture and review material | Covered |
-| Economic dilemma and production | Lecture and review material | Covered |
-| Consumption and consumer conduct | Lecture and review material | Covered |
-| Market ethics and pricing | Major 2 material and mindmap | Covered |
-| Money in Islam | Final/lecture material | Covered |
-
-
+| Syllabus topic                                 | Current site material               | Status  |
+| ---------------------------------------------- | ----------------------------------- | ------- |
+| Introduction and definition of Islamic economy | Lecture material                    | Covered |
+| Relationship with Sharia and other sciences    | Lecture material                    | Covered |
+| Islamic, capitalist, and socialist systems     | Lecture material and revision pages | Covered |
+| Prime economic terms                           | Lecture and exam-review material    | Covered |
+| State budget and revenues                      | Lecture and review material         | Covered |
+| Public expenditure in Islam                    | Lecture and review material         | Covered |
+| Economic dilemma and production                | Lecture and review material         | Covered |
+| Consumption and consumer conduct               | Lecture and review material         | Covered |
+| Market ethics and pricing                      | Major 2 material and mindmap        | Covered |
+| Money in Islam                                 | Final/lecture material              | Covered |
 
 ---
 
@@ -156,5 +154,5 @@ By the end of ISC113, students should be able to:
    pages for revision.
 
 !!! note "Source"
-    This overview was updated from the ISC113 course syllabus and the current
-    files in the Islamic Economy section of this site.
+This overview was updated from the ISC113 course syllabus and the current
+files in the Islamic Economy section of this site.

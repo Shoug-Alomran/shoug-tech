@@ -9,7 +9,6 @@ CS102 slides for polymorphism, upcasting, downcasting, dynamic binding, and reus
 
 - [Open PDF slides](polymorphism.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

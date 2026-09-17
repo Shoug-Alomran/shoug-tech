@@ -9,7 +9,6 @@ CS102 slides for file processing, reading, writing, and using Java file APIs saf
 
 - [Open PDF slides](files.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

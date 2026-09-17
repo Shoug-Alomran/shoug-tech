@@ -14,4 +14,3 @@ If the embedded view does not load properly, open the chapter directly.
     referrerpolicy="no-referrer"
   ></iframe>
 </div>
-    

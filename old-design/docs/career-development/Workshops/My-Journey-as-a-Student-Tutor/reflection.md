@@ -1,15 +1,16 @@
 # :compass: Personal Reflection
+
 ← [Back to Workshops](../index.md)
 
 ---
 
 This journey as a student tutor has been one of the most meaningful parts of
-my time at university  -  and one I didn't fully anticipate when I started.
+my time at university - and one I didn't fully anticipate when I started.
 
 ---
 
-> :thought_balloon: *"You can't explain something clearly unless you truly
-> understand it yourself."*
+> :thought_balloon: _"You can't explain something clearly unless you truly
+> understand it yourself."_
 
 ---
 
@@ -23,40 +24,40 @@ prepared and communicated. Tutoring has a way of holding you accountable.
 
 Balancing tutoring alongside my studies, cybersecurity training, and leadership
 responsibilities wasn't easy. But that balance is where the real growth
-happened. It pushed me to develop discipline I wouldn't have found otherwise  - 
+happened. It pushed me to develop discipline I wouldn't have found otherwise -
 to prioritize without losing quality, to show up consistently, and to support
 others not just academically but as a person.
 
 The most rewarding moments were never about the content. They were the moments
-when a student who had been struggling finally got it  -  when their confidence
+when a student who had been struggling finally got it - when their confidence
 visibly shifted. That's what made every session worth it.
 
 ---
 
 <div class="grid cards" markdown>
 
--   :brain: **Sharper Thinking**
+- :brain: **Sharper Thinking**
 
-    ---
+  ***
 
-    Teaching forced deeper understanding  -  not just enough to pass, but enough
-    to explain clearly to someone else.
+  Teaching forced deeper understanding - not just enough to pass, but enough
+  to explain clearly to someone else.
 
--   :handshake: **Stronger Relationships**
+- :handshake: **Stronger Relationships**
 
-    ---
+  ***
 
-    I learned to meet students where they were  -  academically and emotionally.
+  I learned to meet students where they were - academically and emotionally.
 
--   :rocket: **Professional Foundation**
+- :rocket: **Professional Foundation**
 
-    ---
+  ***
 
-    The discipline, communication, and reliability I built here carry directly
-    into my professional work.
+  The discipline, communication, and reliability I built here carry directly
+  into my professional work.
 
 </div>
 
 ---
 
-*Written by Shoug Fawaz Alomran  -  Prince Sultan University, 2025.*
+_Written by Shoug Fawaz Alomran - Prince Sultan University, 2025._

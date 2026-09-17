@@ -2,7 +2,7 @@
 
 This section focuses on cybersecurity from both a defensive and an
 attacker-minded perspective. It documents my learning in protecting systems,
-networks, and data  -  while also understanding how those systems can be
+networks, and data - while also understanding how those systems can be
 analyzed, tested, and broken in a controlled and ethical way.
 
 My primary interest in this area is penetration testing and security analysis.
@@ -15,15 +15,15 @@ how weaknesses can be identified and mitigated.
 
 <div class="grid cards" markdown>
 
--   :lock: **CYS401  -  Cybersecurity Fundamentals**
+- :lock: **CYS401 - Cybersecurity Fundamentals**
 
-    ---
+  ***
 
-    Security principles, threats, attacks, and protection mechanisms.
-    Covers cryptography, system security, web security, and
-    architecture-level security. Includes structured notes and quizzes.
+  Security principles, threats, attacks, and protection mechanisms.
+  Covers cryptography, system security, web security, and
+  architecture-level security. Includes structured notes and quizzes.
 
-    [:octicons-arrow-right-24: View CYS401](CYS401/intro.md)
+  [:octicons-arrow-right-24: View CYS401](CYS401/intro.md)
 
 </div>
 
@@ -31,7 +31,7 @@ how weaknesses can be identified and mitigated.
 
 ## :brain: What This Section Is About
 
-Cybersecurity is not just about defense  -  it is about understanding systems
+Cybersecurity is not just about defense - it is about understanding systems
 deeply enough to know where they break. That mindset shapes how I approach
 everything in this section.
 
@@ -50,12 +50,12 @@ security analysis.
 
 Across this section, you will find structured notes, quizzes, and study
 material designed to reinforce both conceptual understanding and practical
-application  -  covering everything from core security principles to hands-on
+application - covering everything from core security principles to hands-on
 attack and defense scenarios.
 
 ---
 
 !!! note "About This Section"
-    All material is based on my own coursework and personal study at Prince
-    Sultan University. The focus is on clarity, depth, and practical
-    understanding. Content will continue to be refined and expanded over time.
+All material is based on my own coursework and personal study at Prince
+Sultan University. The focus is on clarity, depth, and practical
+understanding. Content will continue to be refined and expanded over time.

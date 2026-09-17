@@ -9,7 +9,6 @@ CS101 slides for Java basics, program structure, compilation, execution, and IDE
 
 - [Open PDF slides](chapter-1.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

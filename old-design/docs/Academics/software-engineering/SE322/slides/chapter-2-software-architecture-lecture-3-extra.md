@@ -9,7 +9,6 @@ SE322 slides continuing software architecture topics and architecture reasoning 
 
 - [Open PDF slides](chapter-2-software-architecture-lecture-3-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

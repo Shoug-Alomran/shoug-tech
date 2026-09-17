@@ -9,7 +9,6 @@ description: شرائح CS102 عن مفاهيم القوائم المرتبطة�
 
 - [فتح ملف PDF](linked-lists.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

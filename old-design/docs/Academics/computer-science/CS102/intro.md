@@ -13,25 +13,25 @@ arrays, and object-oriented project work.
 ---
 
 !!! info "Course project"
-    I created and documented a CS102 school course enrollment system for this
-    course. You can view the portfolio entry and open the project here:
-    [Project portfolio](/career-development/projects/#cs102-school-course-enrollment-system) ·
-    [Project site](https://school-course-enrolment-system.shoug-tech.com) ·
-    [Repository](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
+I created and documented a CS102 school course enrollment system for this
+course. You can view the portfolio entry and open the project here:
+[Project portfolio](/career-development/projects/#cs102-school-course-enrollment-system) ·
+[Project site](https://school-course-enrolment-system.shoug-tech.com) ·
+[Repository](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
 
 ---
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | CS102 |
-| Course title | Computer Programming II |
-| Credit hours | 3 credits |
-| Contact format | 3 lecture hours and 1 tutorial hour |
-| Prerequisite | CS101 Computer Programming I |
-| Main textbook | Y. Daniel Liang, *Introduction to Java Programming and Data Structures, Comprehensive Version*, Global Edition, 11th ed. |
-| Course role | Required core course |
+| Item           | Details                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Course code    | CS102                                                                                                                    |
+| Course title   | Computer Programming II                                                                                                  |
+| Credit hours   | 3 credits                                                                                                                |
+| Contact format | 3 lecture hours and 1 tutorial hour                                                                                      |
+| Prerequisite   | CS101 Computer Programming I                                                                                             |
+| Main textbook  | Y. Daniel Liang, _Introduction to Java Programming and Data Structures, Comprehensive Version_, Global Edition, 11th ed. |
+| Course role    | Required core course                                                                                                     |
 
 ---
 
@@ -57,60 +57,60 @@ By the end of CS102, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **CS101 Review, Files, and Two-Dimensional Arrays**
+- **CS101 Review, Files, and Two-Dimensional Arrays**
 
-    ---
+  ***
 
-    Review of earlier Java programming concepts, file processing, and 2D
-    arrays.
+  Review of earlier Java programming concepts, file processing, and 2D
+  arrays.
 
--   **Class Design**
+- **Class Design**
 
-    ---
+  ***
 
-    Fields, methods, constructors, constructor overloading, `this`, setters,
-    getters, `toString`, `equals`, encapsulation, privacy, objects, classes,
-    abstract classes, access modifiers, and class members.
+  Fields, methods, constructors, constructor overloading, `this`, setters,
+  getters, `toString`, `equals`, encapsulation, privacy, objects, classes,
+  abstract classes, access modifiers, and class members.
 
--   **Inheritance**
+- **Inheritance**
 
-    ---
+  ***
 
-    `Object`, `extends`, single inheritance, interface-based multiple
-    inheritance, `super`, superclass/subclass relationships, UML inheritance,
-    superclass references, `instanceof`, protected access, and type checking.
+  `Object`, `extends`, single inheritance, interface-based multiple
+  inheritance, `super`, superclass/subclass relationships, UML inheritance,
+  superclass references, `instanceof`, protected access, and type checking.
 
--   **Polymorphism and Interfaces**
+- **Polymorphism and Interfaces**
 
-    ---
+  ***
 
-    Superclass references, upcasting, downcasting, `getClass`, interfaces,
-    abstract methods, and single abstract method interfaces.
+  Superclass references, upcasting, downcasting, `getClass`, interfaces,
+  abstract methods, and single abstract method interfaces.
 
--   **Java Collection Framework**
+- **Java Collection Framework**
 
-    ---
+  ***
 
-    Dynamic arrays, `ArrayList`, `Arrays`, `LinkedList`, `HashSet`, `HashMap`,
-    `PriorityQueue`, searching, sorting, and iterators.
+  Dynamic arrays, `ArrayList`, `Arrays`, `LinkedList`, `HashSet`, `HashMap`,
+  `PriorityQueue`, searching, sorting, and iterators.
 
--   **Generics**
+- **Generics**
 
-    ---
+  ***
 
-    Generic types, generic methods, generic interfaces, and generic classes.
+  Generic types, generic methods, generic interfaces, and generic classes.
 
--   **Recursion**
+- **Recursion**
 
-    ---
+  ***
 
-    Recursive methods, base cases, recursive calls, and stack overflow risks.
+  Recursive methods, base cases, recursive calls, and stack overflow risks.
 
--   **Final Project**
+- **Final Project**
 
-    ---
+  ***
 
-    Team-based object-oriented design, implementation, and presentation.
+  Team-based object-oriented design, implementation, and presentation.
 
 </div>
 
@@ -118,14 +118,14 @@ By the end of CS102, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| Weekly lab assignments | 7% |
-| Computer-based quizzes | 8% |
-| Attendance | 5% |
-| Two major exams | 30% |
-| Project | 10% |
-| Computer-based final exam | 40% |
+| Assessment                | Weight |
+| ------------------------- | ------ |
+| Weekly lab assignments    | 7%     |
+| Computer-based quizzes    | 8%     |
+| Attendance                | 5%     |
+| Two major exams           | 30%    |
+| Project                   | 10%    |
+| Computer-based final exam | 40%    |
 
 ---
 
@@ -141,4 +141,4 @@ By the end of CS102, students should be able to:
 6. Use the project to connect class design, reuse, collections, and teamwork.
 
 !!! note "Source"
-    This overview was updated from the CS102 course syllabus.
+This overview was updated from the CS102 course syllabus.

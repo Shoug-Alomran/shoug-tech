@@ -23,29 +23,26 @@ description: Curated technical resources for learning, development, cybersecurit
 
 <div class="grid cards resource-feature-grid" markdown>
 
--   :books: **Start Learning**
+- :books: **Start Learning**
 
+  Documentation, tutorials, architecture writing, and references for building
+  foundations fast.
 
-    Documentation, tutorials, architecture writing, and references for building
-    foundations fast.
+  [:octicons-arrow-right-24: Open Learning](#learning-documentation)
 
-    [:octicons-arrow-right-24: Open Learning](#learning-documentation)
+- :hammer_and_wrench: **Build Faster**
 
--   :hammer_and_wrench: **Build Faster**
+  Editors, AI helpers, package managers, containers, and practical developer
+  utilities.
 
+  [:octicons-arrow-right-24: Open Dev Tools](#editors-dev-tools)
 
-    Editors, AI helpers, package managers, containers, and practical developer
-    utilities.
+- :shield: **Investigate Safely**
 
-    [:octicons-arrow-right-24: Open Dev Tools](#editors-dev-tools)
+  OSINT, defensive references, security frameworks, scanners, and research
+  tooling.
 
--   :shield: **Investigate Safely**
-
-
-    OSINT, defensive references, security frameworks, scanners, and research
-    tooling.
-
-    [:octicons-arrow-right-24: Open Security Tools](#cybersecurity-osint-tools)
+  [:octicons-arrow-right-24: Open Security Tools](#cybersecurity-osint-tools)
 
 </div>
 
@@ -53,79 +50,77 @@ A curated collection of tools, references, and links I consistently use for
 study, development, and technical work, organized by category with tags for
 quick scanning.
 
-
 ## :mag: Jump to Section
 
 <div class="grid cards resource-section-grid" markdown>
 
--   :books: **Learning & Documentation**
+- :books: **Learning & Documentation**
 
-    `#learning` `#reference` `#dev` `#videos` `#articles`
+  `#learning` `#reference` `#dev` `#videos` `#articles`
 
-    [:octicons-arrow-right-24: Open](#learning-documentation)
+  [:octicons-arrow-right-24: Open](#learning-documentation)
 
--   :hammer_and_wrench: **Editors & Dev Tools**
+- :hammer_and_wrench: **Editors & Dev Tools**
 
-    `#editor` `#ai` `#automation`
+  `#editor` `#ai` `#automation`
 
-    [:octicons-arrow-right-24: Open](#editors-dev-tools)
+  [:octicons-arrow-right-24: Open](#editors-dev-tools)
 
--   :whale: **Containers, VMs & Package Managers**
+- :whale: **Containers, VMs & Package Managers**
 
-    `#containers` `#docker` `#vm` `#os`
+  `#containers` `#docker` `#vm` `#os`
 
-    [:octicons-arrow-right-24: Open](#containers-vms-package-managers)
+  [:octicons-arrow-right-24: Open](#containers-vms-package-managers)
 
--   :bar_chart: **Visualization & Problem-Solving**
+- :bar_chart: **Visualization & Problem-Solving**
 
-    `#algorithms` `#visualization` `#regex`
+  `#algorithms` `#visualization` `#regex`
 
-    [:octicons-arrow-right-24: Open](#visualization-problem-solving)
+  [:octicons-arrow-right-24: Open](#visualization-problem-solving)
 
--   :shield: **Cybersecurity & OSINT Tools**
+- :shield: **Cybersecurity & OSINT Tools**
 
-    `#cybersec` `#osint` `#tools` `#scanning`
+  `#cybersec` `#osint` `#tools` `#scanning`
 
-    [:octicons-arrow-right-24: Open](#cybersecurity-osint-tools)
+  [:octicons-arrow-right-24: Open](#cybersecurity-osint-tools)
 
--   :lock_with_ink_pen: **Security Research & Offensive Tools**
+- :lock_with_ink_pen: **Security Research & Offensive Tools**
 
-    `#pentest` `#phishing` `#metasploit`
+  `#pentest` `#phishing` `#metasploit`
 
-    [:octicons-arrow-right-24: Open](#security-research-offensive-tools)
+  [:octicons-arrow-right-24: Open](#security-research-offensive-tools)
 
--   :globe_with_meridians: **Web, HTTP & DevOps**
+- :globe_with_meridians: **Web, HTTP & DevOps**
 
-    `#web` `#server` `#devops` `#ci`
+  `#web` `#server` `#devops` `#ci`
 
-    [:octicons-arrow-right-24: Open](#web-http-devops)
+  [:octicons-arrow-right-24: Open](#web-http-devops)
 
--   :gear: **Servers, Configs & Formats**
+- :gear: **Servers, Configs & Formats**
 
-    `#config` `#certs` `#docs`
+  `#config` `#certs` `#docs`
 
-    [:octicons-arrow-right-24: Open](#servers-configs-formats)
+  [:octicons-arrow-right-24: Open](#servers-configs-formats)
 
--   :satellite: **Observability & Ops**
+- :satellite: **Observability & Ops**
 
-    `#monitoring` `#ops`
+  `#monitoring` `#ops`
 
-    [:octicons-arrow-right-24: Open](#observability-ops)
+  [:octicons-arrow-right-24: Open](#observability-ops)
 
--   :bank: **Banking & Local Resources**
+- :bank: **Banking & Local Resources**
 
-    `#banking` `#saudi`
+  `#banking` `#saudi`
 
-    [:octicons-arrow-right-24: Open](#banking-local-resources)
+  [:octicons-arrow-right-24: Open](#banking-local-resources)
 
--   :art: **Creative / Demoscene / Fun**
+- :art: **Creative / Demoscene / Fun**
 
-    `#art` `#culture` `#demoscene`
+  `#art` `#culture` `#demoscene`
 
-    [:octicons-arrow-right-24: Open](#creative-demoscene-fun)
+  [:octicons-arrow-right-24: Open](#creative-demoscene-fun)
 
 </div>
-
 
 ## :books: Learning & Documentation
 
@@ -168,7 +163,6 @@ quick scanning.
 [Tuwaiq Academy Bootcamps](https://tuwaiq.edu.sa/bootcamps?category=c616115c-5cf8-426d-9f70-42eb370ca37d&type=NORMAL): Saudi technical bootcamps and training programs.
 `#learning` `#bootcamps` `#training` `#saudi`
 
-
 ## :hammer_and_wrench: Editors & Dev Tools
 
 [Neovim](https://neovim.io/): extensible modal editor.
@@ -182,7 +176,6 @@ quick scanning.
 
 [LMarena AI](https://lmarena.ai/): model testing and comparison.
 `#ai` `#research`
-
 
 ## :whale: Containers, VMs & Package Managers
 
@@ -210,7 +203,6 @@ quick scanning.
 [Mosh](https://mosh.org/): resilient remote shell.
 `#ssh` `#ops`
 
-
 ## :bar_chart: Visualization & Problem-Solving
 
 [DSA Visualizer](https://dsa-visualizer-delta.vercel.app/): visualize data structures and algorithms.
@@ -231,9 +223,8 @@ quick scanning.
 [CoderHub](https://coderhub.tuwaiq.edu.sa/): Arabic coding challenges and programming competitions.
 `#learning` `#coding-challenges` `#problem-solving` `#saudi`
 
-[Darwin (OS)](https://en.wikipedia.org/wiki/Darwin_(operating_system)): Apple OS core overview.
+[Darwin (OS)](<https://en.wikipedia.org/wiki/Darwin_(operating_system)>): Apple OS core overview.
 `#os` `#reference`
-
 
 ## :shield: Cybersecurity & OSINT Tools
 
@@ -270,13 +261,12 @@ quick scanning.
 [Flagyard](https://flagyard.com/): hands-on cybersecurity training and CTF challenges.
 `#cybersec` `#ctf` `#training` `#practice`
 
-
 ## :lock_with_ink_pen: Security Research & Offensive Tools
 
 !!! warning "Authorized Use Only"
-    The tools in this section are documented for research, education, and
-    authorized penetration testing only. Always ensure you have explicit
-    permission before using any offensive security tooling.
+The tools in this section are documented for research, education, and
+authorized penetration testing only. Always ensure you have explicit
+permission before using any offensive security tooling.
 
 [Evilginx2](https://github.com/kgretzky/evilginx2): phishing and transparent proxy framework for research.
 `#pentest` `#phishing` `#research`
@@ -292,7 +282,6 @@ quick scanning.
 
 [Hacking the Cloud](https://hackingthe.cloud/): cloud security research and techniques.
 `#cloud` `#security`
-
 
 ## :globe_with_meridians: Web, HTTP & DevOps
 
@@ -320,7 +309,6 @@ quick scanning.
 [Plane](https://plane.so): open-source project management and issue tracking platform.
 `#devops` `#project-management` `#planning`
 
-
 ## :gear: Servers, Configs & Formats
 
 [TOML](https://toml.io/en/): configuration format spec.
@@ -335,12 +323,10 @@ quick scanning.
 [Pandoc](https://pandoc.org/): universal document converter.
 `#docs` `#formats`
 
-
 ## :satellite: Observability & Ops
 
 [Netdata: Swap & Memory](https://www.netdata.cloud/blog/swap-memory-when-and-how-to-use-it-on-your-production-systems-or-cloud-provided-vms/): memory guidance for production VMs.
 `#ops` `#monitoring`
-
 
 ## :bank: Banking & Local Resources
 
@@ -349,7 +335,6 @@ quick scanning.
 
 [Open Banking Saudi](https://openbanking.sa/index-en.html): open banking initiative hub.
 `#banking` `#saudi`
-
 
 ## :art: Creative / Demoscene / Fun
 
@@ -361,7 +346,6 @@ quick scanning.
 
 [Ninjio](https://ninjio.com/): security awareness training content.
 `#training` `#cybersec`
-
 
 ## :mailbox: Misc / Community / Reference
 

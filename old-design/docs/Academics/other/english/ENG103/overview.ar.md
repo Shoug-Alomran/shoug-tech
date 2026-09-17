@@ -9,13 +9,13 @@ and final research writing review.
 
 ## Course Information
 
-| Item | Details |
-|------|---------|
-| Course code | ENG103 |
-| Course title | Research Writing Techniques |
-| Credit hours | 3 |
-| Prerequisite | ENG101 |
-| Required text | *Research Methods: A Practical Guide for the Social Sciences* |
+| Item          | Details                                                       |
+| ------------- | ------------------------------------------------------------- |
+| Course code   | ENG103                                                        |
+| Course title  | Research Writing Techniques                                   |
+| Credit hours  | 3                                                             |
+| Prerequisite  | ENG101                                                        |
+| Required text | _Research Methods: A Practical Guide for the Social Sciences_ |
 
 ---
 
@@ -35,60 +35,60 @@ By the end of ENG103, students should be able to:
 
 <div class="grid cards" markdown>
 
--   **Research Terminology and Concepts**
+- **Research Terminology and Concepts**
 
-    ---
+  ***
 
-    Purpose, scope, significance, research definitions, research in the social
-    sciences, and core research terminology.
+  Purpose, scope, significance, research definitions, research in the social
+  sciences, and core research terminology.
 
--   **APA Referencing and Source Use**
+- **APA Referencing and Source Use**
 
-    ---
+  ***
 
-    APA documentation, paraphrasing, synthesis, source credibility, library
-    resources, and database research.
+  APA documentation, paraphrasing, synthesis, source credibility, library
+  resources, and database research.
 
--   **Annotated Bibliography**
+- **Annotated Bibliography**
 
-    ---
+  ***
 
-    Topic selection, introduction writing, annotation writing, conclusion
-    writing, practical drafting, review, and revision.
+  Topic selection, introduction writing, annotation writing, conclusion
+  writing, practical drafting, review, and revision.
 
--   **Midterm Research Writing Review**
+- **Midterm Research Writing Review**
 
-    ---
+  ***
 
-    Research definitions, source use, referencing, annotated bibliography
-    concepts, and practical research-writing knowledge.
+  Research definitions, source use, referencing, annotated bibliography
+  concepts, and practical research-writing knowledge.
 
--   **Participant-Oriented Research**
+- **Participant-Oriented Research**
 
-    ---
+  ***
 
-    Paragraph research writing, research ethics, samples, surveys, and
-    participant-centered research design.
+  Paragraph research writing, research ethics, samples, surveys, and
+  participant-centered research design.
 
--   **Methodology and Results**
+- **Methodology and Results**
 
-    ---
+  ***
 
-    Title, introduction, research objectives, research questions, research
-    methods, survey development, ethics, results, discussion, and conclusion.
+  Title, introduction, research objectives, research questions, research
+  methods, survey development, ethics, results, discussion, and conclusion.
 
--   **Research Poster and Exhibition**
+- **Research Poster and Exhibition**
 
-    ---
+  ***
 
-    Group research poster preparation, presentation practice, exhibition, and
-    reporting research findings verbally.
+  Group research poster preparation, presentation practice, exhibition, and
+  reporting research findings verbally.
 
--   **Final Exam Review**
+- **Final Exam Review**
 
-    ---
+  ***
 
-    Comprehensive review of research writing theory and practical application.
+  Comprehensive review of research writing theory and practical application.
 
 </div>
 
@@ -96,27 +96,27 @@ By the end of ENG103, students should be able to:
 
 ## Assessments
 
-| Assessment | Weight |
-|-----------|--------|
-| LMS assignments based on taught content | 5% |
-| AS1 Annotated Bibliography | 10% |
-| Midterm exam | 20% |
-| AS2 Methodology and Results | 15% |
-| AS3 Group Research Poster and Exhibition | 10% |
-| Final exam | 40% |
+| Assessment                               | Weight |
+| ---------------------------------------- | ------ |
+| LMS assignments based on taught content  | 5%     |
+| AS1 Annotated Bibliography               | 10%    |
+| Midterm exam                             | 20%    |
+| AS2 Methodology and Results              | 15%    |
+| AS3 Group Research Poster and Exhibition | 10%    |
+| Final exam                               | 40%    |
 
 ---
 
 ## Current Site Coverage
 
-| Syllabus topic | Current site material | Status |
-|----------------|-----------------------|--------|
+| Syllabus topic                           | Current site material              | Status  |
+| ---------------------------------------- | ---------------------------------- | ------- |
 | Research terminology and APA referencing | Assignment and exam-prep materials | Covered |
-| Annotated bibliography | Assignment 1 section | Covered |
-| Midterm preparation | Exam preparation section | Covered |
-| Participant research, ethics, surveys | Assignment 2 section | Covered |
-| Methodology and results | Assignment 2 section | Covered |
-| Final exam preparation | Exam preparation section | Covered |
+| Annotated bibliography                   | Assignment 1 section               | Covered |
+| Midterm preparation                      | Exam preparation section           | Covered |
+| Participant research, ethics, surveys    | Assignment 2 section               | Covered |
+| Methodology and results                  | Assignment 2 section               | Covered |
+| Final exam preparation                   | Exam preparation section           | Covered |
 
 ---
 
@@ -133,5 +133,5 @@ By the end of ENG103, students should be able to:
 7. Use the final guide for comprehensive research writing practice.
 
 !!! note "Source"
-    This overview was updated from the ENG103 course syllabus and the current
-    files in the ENG103 section of this site.
+This overview was updated from the ENG103 course syllabus and the current
+files in the ENG103 section of this site.

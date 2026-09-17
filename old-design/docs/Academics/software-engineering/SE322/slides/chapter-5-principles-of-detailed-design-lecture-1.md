@@ -9,7 +9,6 @@ SE322 slides on detailed design principles and lower-level design quality.
 
 - [Open PDF slides](chapter-5-principles-of-detailed-design-lecture-1.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

@@ -9,7 +9,6 @@ CS102 slides for generic classes, generic methods, type parameters, and reusable
 
 - [Open PDF slides](generic-classes.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

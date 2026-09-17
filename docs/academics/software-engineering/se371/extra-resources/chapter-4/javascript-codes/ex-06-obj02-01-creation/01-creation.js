@@ -2,7 +2,7 @@
 const transportMethodA = {
   id: "001",
   name: "Plane",
-}
+};
 
 console.log(transportMethodA);
 
@@ -17,11 +17,8 @@ const photo = {
   id: 1,
   title: "Central Library",
   location: {
-      country: "Canada",
-      city: "Calgary"
+    country: "Canada",
+    city: "Calgary",
   },
-  arr: [1,2,3,4]
+  arr: [1, 2, 3, 4],
 };
-
-
-

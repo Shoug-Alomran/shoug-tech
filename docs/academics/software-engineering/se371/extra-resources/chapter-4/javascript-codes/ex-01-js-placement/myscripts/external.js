@@ -1,2 +1,1 @@
-alert('I am external Js');
-
+alert("I am external Js");

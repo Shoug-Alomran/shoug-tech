@@ -6,7 +6,7 @@ hide:
 ---
 
 !!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
 <div class="home-hero" markdown>
 <div class="home-hero__text" markdown>
@@ -38,62 +38,62 @@ hide:
 
 <div class="grid cards" markdown>
 
--   :books: **Learn Hub (قسم الأكاديمي)**
+- :books: **Learn Hub (قسم الأكاديمي)**
 
-    ---
+  ***
 
-    ملاحظات منظمة وملخصات دراسة في هندسة البرمجيات، علوم الحاسب، والأمن السيبراني.
+  ملاحظات منظمة وملخصات دراسة في هندسة البرمجيات، علوم الحاسب، والأمن السيبراني.
 
-    [:octicons-arrow-right-24: ادخل على Learn Hub](Academics/Intro.md)
+  [:octicons-arrow-right-24: ادخل على Learn Hub](Academics/Intro.md)
 
--   :shield: **مسار الأمن السيبراني**
+- :shield: **مسار الأمن السيبراني**
 
-    ---
+  ***
 
-    تجارب عملية في الأمن السيبراني، ملاحظات تحليل التهديدات، ومراجع عملية.
+  تجارب عملية في الأمن السيبراني، ملاحظات تحليل التهديدات، ومراجع عملية.
 
-    [:octicons-arrow-right-24: ادخل على مسار الأمن السيبراني](Academics/cyber-security/Intro.md)
+  [:octicons-arrow-right-24: ادخل على مسار الأمن السيبراني](Academics/cyber-security/Intro.md)
 
--   :briefcase: **ملفي المهني**
+- :briefcase: **ملفي المهني**
 
-    ---
+  ***
 
-    مشاريعي المختارة، ورش العمل، والوثائق المهنية.
+  مشاريعي المختارة، ورش العمل، والوثائق المهنية.
 
-    [:octicons-arrow-right-24: شوف ملفي المهني](career-development/Intro.md)
+  [:octicons-arrow-right-24: شوف ملفي المهني](career-development/Intro.md)
 
--   :rocket: **Blueprint Studio**
+- :rocket: **Blueprint Studio**
 
-    ---
+  ***
 
-    تصفح صفحة الخدمات وادخل موقع Blueprint إذا كنت تبحث عن باقات مواقع ثابتة أو تريد تبدأ مشروع.
+  تصفح صفحة الخدمات وادخل موقع Blueprint إذا كنت تبحث عن باقات مواقع ثابتة أو تريد تبدأ مشروع.
 
-    [:octicons-arrow-right-24: شوف الخدمات](career-development/services.md)
-    [:octicons-link-external-24: ادخل موقع Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
+  [:octicons-arrow-right-24: شوف الخدمات](career-development/services.md)
+  [:octicons-link-external-24: ادخل موقع Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
 
--   :compass: **الخطة الأكاديمية**
+- :compass: **الخطة الأكاديمية**
 
-    ---
+  ***
 
-    شوف خارطة طريق تعلمك بعدة صيغ.
+  شوف خارطة طريق تعلمك بعدة صيغ.
 
-    [:octicons-arrow-right-24: شوف الخطة الأكاديمية](academic-plan-themes/academic-plan.ar.md)
+  [:octicons-arrow-right-24: شوف الخطة الأكاديمية](academic-plan-themes/academic-plan.ar.md)
 
--   :link: **روابط مفيدة**
+- :link: **روابط مفيدة**
 
-    ---
+  ***
 
-    أدوات، مراجع، وروابط مهمة للتعلم التقني اليومي.
+  أدوات، مراجع، وروابط مهمة للتعلم التقني اليومي.
 
-    [:octicons-arrow-right-24: تصفح الروابط](links.md)
+  [:octicons-arrow-right-24: تصفح الروابط](links.md)
 
--   :sparkles: **بداية سريعة حسب اهتمامك**
+- :sparkles: **بداية سريعة حسب اهتمامك**
 
-    ---
+  ***
 
-    مو عارف من وين تبدأ؟ استخدم المسارات الموجهة.
+  مو عارف من وين تبدأ؟ استخدم المسارات الموجهة.
 
-    [:octicons-arrow-right-24: ابدأ من هنا](start-here.md)
+  [:octicons-arrow-right-24: ابدأ من هنا](start-here.md)
 
 </div>
 

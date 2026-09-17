@@ -5,8 +5,8 @@ slide breakdowns, quizzes, or mindmaps.
 
 <div class="grid cards" markdown>
 
--   **ملخص المقرر**
+- **ملخص المقرر**
 
-    [فتح summary](summary.md)
+  [فتح summary](summary.md)
 
 </div>

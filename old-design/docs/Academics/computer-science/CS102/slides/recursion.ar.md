@@ -9,7 +9,6 @@ description: شرائح CS102 عن التفكير العودي، حالات ال
 
 - [فتح ملف PDF](recursion.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

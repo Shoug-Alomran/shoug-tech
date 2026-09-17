@@ -9,7 +9,6 @@ CS101 slides for void methods, parameters, return values, overloading, scope, an
 
 - [Open PDF slides](chapter-6.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

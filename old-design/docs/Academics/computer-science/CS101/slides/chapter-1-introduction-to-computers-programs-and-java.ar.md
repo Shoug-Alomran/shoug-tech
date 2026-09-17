@@ -9,7 +9,6 @@ description: شرائح CS101 عن أساسيات Java، بنية البرنام
 
 - [فتح ملف PDF](chapter-1.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

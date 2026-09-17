@@ -9,7 +9,6 @@ description: شرائح SE322 التمهيدية عن مفاهيم تصميم و
 
 - [فتح ملف الشرائح](chapter-1-introduction-to-software-design-and-architecture-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

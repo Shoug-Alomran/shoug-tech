@@ -1,70 +1,70 @@
 !!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
 # شرائح ETHCS 303
 
 يجمع هذا القسم شرائح محاضرات ETHCS 303 بصيغة PDF.
 
 !!! note "مصدر الشرائح"
-    الملفات الموجودة في قسم الشرائح هي مواد مقررات مقدمة من الجامعة.
-    تبقى حقوقها محفوظة للجامعة، ومحاضري المقرر، والمؤلفين الأصليين.
+الملفات الموجودة في قسم الشرائح هي مواد مقررات مقدمة من الجامعة.
+تبقى حقوقها محفوظة للجامعة، ومحاضري المقرر، والمؤلفين الأصليين.
 
 <div class="grid cards" markdown>
 
--   **قضايا الخصوصية في الفضاء السيبراني**
+- **قضايا الخصوصية في الفضاء السيبراني**
 
-    [افتح الشرائح](privacy-issues-in-cyberspace.pdf)
+  [افتح الشرائح](privacy-issues-in-cyberspace.pdf)
 
--   **أمن الشبكات والخصوصية في السحابة**
+- **أمن الشبكات والخصوصية في السحابة**
 
-    [افتح الشرائح](network-security-and-privacy-in-the-cloud.pdf)
+  [افتح الشرائح](network-security-and-privacy-in-the-cloud.pdf)
 
--   **أخلاقيات الأعمال**
+- **أخلاقيات الأعمال**
 
-    [افتح الشرائح](business-ethics.pdf)
+  [افتح الشرائح](business-ethics.pdf)
 
--   **القضايا التقنية والأخلاقية في تحليل وتصميم النظم**
+- **القضايا التقنية والأخلاقية في تحليل وتصميم النظم**
 
-    [افتح الشرائح](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
+  [افتح الشرائح](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
 
--   **الأنظمة السيبرانية في السعودية**
+- **الأنظمة السيبرانية في السعودية**
 
-    [افتح الشرائح](cyber-laws-in-saudi-arabia.pdf)
+  [افتح الشرائح](cyber-laws-in-saudi-arabia.pdf)
 
--   **الكانطية**
+- **الكانطية**
 
-    [افتح الشرائح](kantianism.pdf)
+  [افتح الشرائح](kantianism.pdf)
 
--   **النفعية**
+- **النفعية**
 
-    [افتح الشرائح](utilitarianism.pdf)
+  [افتح الشرائح](utilitarianism.pdf)
 
--   **نظرية العقد الاجتماعي**
+- **نظرية العقد الاجتماعي**
 
-    [افتح الشرائح](social-contract-theory.pdf)
+  [افتح الشرائح](social-contract-theory.pdf)
 
--   **أنظمة الملكية الفكرية**
+- **أنظمة الملكية الفكرية**
 
-    [افتح الشرائح](intellectual-property-laws.pdf)
+  [افتح الشرائح](intellectual-property-laws.pdf)
 
--   **مقدمة في الاختراق الأخلاقي**
+- **مقدمة في الاختراق الأخلاقي**
 
-    [افتح الشرائح](introduction-to-ethical-hacking.pdf)
+  [افتح الشرائح](introduction-to-ethical-hacking.pdf)
 
--   **النظم الأخلاقية والمفاهيم والنظريات الأخلاقية**
+- **النظم الأخلاقية والمفاهيم والنظريات الأخلاقية**
 
-    [افتح الشرائح](moral-systems-ethical-concepts-and-theories.pdf)
+  [افتح الشرائح](moral-systems-ethical-concepts-and-theories.pdf)
 
--   **أمن الشبكات والخصوصية**
+- **أمن الشبكات والخصوصية**
 
-    [افتح الشرائح](network-security-and-privacy.pdf)
+  [افتح الشرائح](network-security-and-privacy.pdf)
 
--   **الهندسة الاجتماعية**
+- **الهندسة الاجتماعية**
 
-    [افتح الشرائح](social-engineering.pdf)
+  [افتح الشرائح](social-engineering.pdf)
 
--   **القضايا الأخلاقية والقانونية والأمنية في وسائل التواصل الاجتماعي**
+- **القضايا الأخلاقية والقانونية والأمنية في وسائل التواصل الاجتماعي**
 
-    [افتح الشرائح](social-media-ethical-legal-security-issues.pdf)
+  [افتح الشرائح](social-media-ethical-legal-security-issues.pdf)
 
 </div>

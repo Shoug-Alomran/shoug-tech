@@ -1,20 +1,20 @@
 # :scroll: Academic Disclaimer
 
-*Last updated: 2026*
+_Last updated: 2026_
 
 ---
 
 Shoug's Digital Garden is a personal academic documentation platform. The
 materials published here are created as part of my personal learning process
-and knowledge organization  -  intended for educational and reference purposes
+and knowledge organization - intended for educational and reference purposes
 only.
 
 ---
 
 ## :notepad_spiral: Purpose of This Website
 
-The content in the Academics section  -  including notes, summaries, diagrams,
-quizzes, cheat sheets, and reflections  -  reflects my personal understanding
+The content in the Academics section - including notes, summaries, diagrams,
+quizzes, cheat sheets, and reflections - reflects my personal understanding
 and interpretation of course material. It may simplify, reorganize, or
 rephrase official material for clarity, and should not be considered a
 substitute for lectures, textbooks, or official course documentation.
@@ -52,20 +52,18 @@ are my own intellectual work unless otherwise stated.
 
 <div class="grid cards" markdown>
 
--   :green_circle: **You May**
+- :green_circle: **You May**
 
-    ---
+  ***
+  - Use materials for personal study
+  - Reference concepts with proper attribution
 
-    - Use materials for personal study
-    - Reference concepts with proper attribution
+- :red_circle: **You May Not**
 
--   :red_circle: **You May Not**
-
-    ---
-
-    - Reproduce content commercially
-    - Redistribute materials without appropriate credit
-    - Present the work as official institutional documentation
+  ***
+  - Reproduce content commercially
+  - Redistribute materials without appropriate credit
+  - Present the work as official institutional documentation
 
 </div>
 

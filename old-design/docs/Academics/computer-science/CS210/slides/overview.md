@@ -3,73 +3,73 @@
 This section collects the CS210 lecture slides as topic-based PDF files.
 
 !!! note "Slide Source"
-    The files in this slides section are university-provided course materials.
-    Rights remain with the university, course instructors, and original authors.
+The files in this slides section are university-provided course materials.
+Rights remain with the university, course instructors, and original authors.
 
 <div class="grid cards" markdown>
 
--   **Lists**
+- **Lists**
 
-    [Open slides](lists.pdf)
+  [Open slides](lists.pdf)
 
--   **Circular Linked Lists**
+- **Circular Linked Lists**
 
-    [Open slides](circular-linked-lists.pdf)
+  [Open slides](circular-linked-lists.pdf)
 
--   **Algorithm Analysis**
+- **Algorithm Analysis**
 
-    [Open slides](algorithm-analysis.pdf)
+  [Open slides](algorithm-analysis.pdf)
 
--   **Recursion**
+- **Recursion**
 
-    [Open slides](recursion.pdf)
+  [Open slides](recursion.pdf)
 
--   **Elementary Sorting Algorithms**
+- **Elementary Sorting Algorithms**
 
-    [Open slides](elementary-sorting-algorithms.pdf)
+  [Open slides](elementary-sorting-algorithms.pdf)
 
--   **Merge Sort**
+- **Merge Sort**
 
-    [Open slides](merge-sort.pdf)
+  [Open slides](merge-sort.pdf)
 
--   **Quick Sort**
+- **Quick Sort**
 
-    [Open slides](quick-sort.pdf)
+  [Open slides](quick-sort.pdf)
 
--   **Stacks and Queues**
+- **Stacks and Queues**
 
-    [Open slides](stacks-and-queues.pdf)
+  [Open slides](stacks-and-queues.pdf)
 
--   **Trees**
+- **Trees**
 
-    [Open slides](trees.pdf)
+  [Open slides](trees.pdf)
 
--   **Binary Search Trees**
+- **Binary Search Trees**
 
-    [Open slides](binary-search-trees.pdf)
+  [Open slides](binary-search-trees.pdf)
 
--   **AVL Trees**
+- **AVL Trees**
 
-    [Open slides](avl-trees.pdf)
+  [Open slides](avl-trees.pdf)
 
--   **Heaps and Priority Queues**
+- **Heaps and Priority Queues**
 
-    [Open slides](heaps-and-priority-queues.pdf)
+  [Open slides](heaps-and-priority-queues.pdf)
 
--   **Heaps**
+- **Heaps**
 
-    [Open slides](heaps.pdf)
+  [Open slides](heaps.pdf)
 
--   **Hash Tables**
+- **Hash Tables**
 
-    [Open slides](hash-tables.pdf)
+  [Open slides](hash-tables.pdf)
 
--   **Undirected Graphs**
+- **Undirected Graphs**
 
-    [Open slides](undirected-graphs.pdf)
+  [Open slides](undirected-graphs.pdf)
 
--   **Directed Graphs**
+- **Directed Graphs**
 
-    [Open slides](directed-graphs.pdf)
+  [Open slides](directed-graphs.pdf)
 
 </div>

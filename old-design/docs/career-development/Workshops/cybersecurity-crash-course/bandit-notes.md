@@ -1,4 +1,4 @@
-# OverTheWire Bandit  -  Complete Walkthrough (Level 0 → 33)
+# OverTheWire Bandit - Complete Walkthrough (Level 0 → 33)
 
 ← [Back to Workshop Overview](overview.md)
 
@@ -13,22 +13,22 @@
 
 <div class="grid cards" markdown>
 
--   :joystick: **Wargame**
+- :joystick: **Wargame**
 
-    [OverTheWire Bandit](https://overthewire.org/wargames/bandit/)
+  [OverTheWire Bandit](https://overthewire.org/wargames/bandit/)
 
--   :calendar: **Completed**
+- :calendar: **Completed**
 
-    January 2026
+  January 2026
 
--   :material-shield-check-outline: **Coverage**
+- :material-shield-check-outline: **Coverage**
 
-    Levels 0 → 33
+  Levels 0 → 33
 
--   :material-console-line: **Core Objective**
+- :material-console-line: **Core Objective**
 
-    Build fluency in Linux, networking, file permissions, Git, and privilege
-    escalation through hands-on problem solving.
+  Build fluency in Linux, networking, file permissions, Git, and privilege
+  escalation through hands-on problem solving.
 
 </div>
 
@@ -36,65 +36,65 @@
 
 <div class="grid cards" markdown>
 
--   :material-console-line: **Levels 0  -  3**
+- :material-console-line: **Levels 0 - 3**
 
-    SSH, basic file reading, hidden files
+  SSH, basic file reading, hidden files
 
-    [Jump to early levels](#phase-1)
+  [Jump to early levels](#phase-1)
 
--   :material-file-search: **Levels 4  -  6**
+- :material-file-search: **Levels 4 - 6**
 
-    File types, `find`, filesystem-wide search
+  File types, `find`, filesystem-wide search
 
-    [Jump to filesystem levels](#phase-2)
+  [Jump to filesystem levels](#phase-2)
 
--   :material-filter-outline: **Levels 7  -  9**
+- :material-filter-outline: **Levels 7 - 9**
 
-    `grep`, `sort`, `uniq`, `strings`
+  `grep`, `sort`, `uniq`, `strings`
 
-    [Jump to text-hunting levels](#phase-3)
+  [Jump to text-hunting levels](#phase-3)
 
--   :material-lock-open-variant-outline: **Levels 10  -  12**
+- :material-lock-open-variant-outline: **Levels 10 - 12**
 
-    Base64, ROT13, layered compression
+  Base64, ROT13, layered compression
 
-    [Jump to decoding levels](#phase-4)
+  [Jump to decoding levels](#phase-4)
 
--   :material-lan-connect: **Levels 13  -  16**
+- :material-lan-connect: **Levels 13 - 16**
 
-    SSH keys, `nc`, SSL/TLS, port scanning
+  SSH keys, `nc`, SSL/TLS, port scanning
 
-    [Jump to networking levels](#phase-5)
+  [Jump to networking levels](#phase-5)
 
--   :material-key-chain-variant: **Levels 17  -  20**
+- :material-key-chain-variant: **Levels 17 - 20**
 
-    `diff`, `.bashrc` bypass, setuid binaries
+  `diff`, `.bashrc` bypass, setuid binaries
 
-    [Jump to access-control levels](#phase-6)
+  [Jump to access-control levels](#phase-6)
 
--   :material-clock-outline: **Levels 21  -  24**
+- :material-clock-outline: **Levels 21 - 24**
 
-    Cron jobs, MD5-derived paths, brute force
+  Cron jobs, MD5-derived paths, brute force
 
-    [Jump to automation levels](#phase-7)
+  [Jump to automation levels](#phase-7)
 
--   :material-open-in-app: **Levels 25  -  27**
+- :material-open-in-app: **Levels 25 - 27**
 
-    Restricted shell escape, `vim` exploit, SUID
+  Restricted shell escape, `vim` exploit, SUID
 
-    [Jump to escape levels](#phase-8)
+  [Jump to escape levels](#phase-8)
 
--   :material-source-branch: **Levels 27  -  31**
+- :material-source-branch: **Levels 27 - 31**
 
-    Git history, branches, tags, hooks
+  Git history, branches, tags, hooks
 
-    [Jump to Git levels](#phase-9)
+  [Jump to Git levels](#phase-9)
 
--   :material-arrow-expand-up: **Levels 32  -  33**
+- :material-arrow-expand-up: **Levels 32 - 33**
 
-    Uppercase shell bypass
+  Uppercase shell bypass
 
-    [Jump to final levels](#phase-10)
+  [Jump to final levels](#phase-10)
 
 </div>
 
@@ -104,20 +104,20 @@
 
 <div class="grid cards" markdown>
 
--   :material-target-account: **Why This Matters**
+- :material-target-account: **Why This Matters**
 
-    These notes show not just the final answers, but the reasoning path:
-    enumeration, validation, exploitation, and proof of access.
+  These notes show not just the final answers, but the reasoning path:
+  enumeration, validation, exploitation, and proof of access.
 
--   :material-tools: **Tooling Spectrum**
+- :material-tools: **Tooling Spectrum**
 
-    The walkthrough spans `ssh`, `cat`, `find`, `grep`, `strings`, `base64`,
-    `tr`, `xxd`, `nc`, `openssl`, `nmap`, cron inspection, and Git forensics.
+  The walkthrough spans `ssh`, `cat`, `find`, `grep`, `strings`, `base64`,
+  `tr`, `xxd`, `nc`, `openssl`, `nmap`, cron inspection, and Git forensics.
 
--   :material-school: **Workshop Value**
+- :material-school: **Workshop Value**
 
-    Bandit turns command-line theory into repeatable habits for CTF work,
-    systems troubleshooting, and secure engineering.
+  Bandit turns command-line theory into repeatable habits for CTF work,
+  systems troubleshooting, and secure engineering.
 
 </div>
 
@@ -138,6 +138,7 @@
 Connect to the Bandit server using SSH and retrieve the password for the next level.
 
 **Commands Used**
+
 ```bash
 ssh bandit0@bandit.labs.overthewire.org -p 2220
 ```
@@ -153,11 +154,10 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 `bandit0`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-0.png" alt="Level 0 Screenshot">
-      <figcaption>Initial SSH access into the Bandit environment.</figcaption>
-    </figure>
-
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-0.png" alt="Level 0 Screenshot">
+<figcaption>Initial SSH access into the Bandit environment.</figcaption>
+</figure>
 
 ---
 
@@ -167,6 +167,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 Locate the file containing the password for the next level and use it to authenticate as bandit1.
 
 **Commands Used**
+
 ```bash
 ls
 cat readme
@@ -178,16 +179,17 @@ cat readme
 - The `cat readme` command printed the contents of the readme file to the terminal, revealing the password
 
 **Common Mistakes**
+
 - Attempting to use `cd readme` (treating it as a directory instead of a file)
 
 **Password for Next Level**
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-0-→-Level-1.png" alt="Level 0 to Level 1 Screenshot">
-      <figcaption>Reading the `readme` file to capture the next credential.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-0-→-Level-1.png" alt="Level 0 to Level 1 Screenshot">
+<figcaption>Reading the `readme` file to capture the next credential.</figcaption>
+</figure>
 
 ---
 
@@ -197,6 +199,7 @@ cat readme
 Read a file named `-` which requires special handling due to the special character.
 
 **Commands Used**
+
 ```bash
 ls
 cat ./-
@@ -212,10 +215,10 @@ cat ./-
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-1-→-Level-2.png" alt="Level 1 to Level 2 Screenshot">
-      <figcaption>Using `./-` so the filename is treated as a real path.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-1-→-Level-2.png" alt="Level 1 to Level 2 Screenshot">
+<figcaption>Using `./-` so the filename is treated as a real path.</figcaption>
+</figure>
 
 ---
 
@@ -225,6 +228,7 @@ cat ./-
 Read a file containing spaces in its name that also begins with dashes.
 
 **Commands Used**
+
 ```bash
 ls
 cat -- "--spaces in this filename--"
@@ -242,10 +246,10 @@ cat -- "--spaces in this filename--"
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-2-→Level-3.png" alt="Level 2 to Level 3 Screenshot">
-      <figcaption>Handling a filename that begins with dashes and contains spaces.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-2-→Level-3.png" alt="Level 2 to Level 3 Screenshot">
+<figcaption>Handling a filename that begins with dashes and contains spaces.</figcaption>
+</figure>
 
 ---
 
@@ -255,6 +259,7 @@ cat -- "--spaces in this filename--"
 Locate and read a hidden file inside the `inhere` directory.
 
 **Commands Used**
+
 ```bash
 ls
 cd inhere
@@ -291,6 +296,7 @@ cat "...Hiding-From-You"
 Locate and read the password from the only human-readable file among several files in the `inhere` directory.
 
 **Commands Used**
+
 ```bash
 cd inhere
 ls
@@ -309,10 +315,10 @@ cat ./-file07
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-4-→-Level-5.png" alt="Level 4 to Level 5 Screenshot">
-      <figcaption>Using `file` output to isolate the only human-readable target.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-4-→-Level-5.png" alt="Level 4 to Level 5 Screenshot">
+<figcaption>Using `file` output to isolate the only human-readable target.</figcaption>
+</figure>
 
 ---
 
@@ -322,6 +328,7 @@ cat ./-file07
 Find the password stored in a file with specific properties: human-readable, 1033 bytes in size, not executable.
 
 **Commands Used**
+
 ```bash
 cd inhere
 ls
@@ -340,10 +347,10 @@ cat ./maybehere07/.file2
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-5-→-Level-6.png" alt="Level 5 to Level 6 Screenshot">
-      <figcaption>Searching recursively for the one file matching the required size.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-5-→-Level-6.png" alt="Level 5 to Level 6 Screenshot">
+<figcaption>Searching recursively for the one file matching the required size.</figcaption>
+</figure>
 
 ---
 
@@ -353,6 +360,7 @@ cat ./maybehere07/.file2
 Locate a file anywhere on the system owned by user `bandit7`, group `bandit6`, and exactly 33 bytes in size.
 
 **Commands Used**
+
 ```bash
 find / -type f -user bandit7 -group bandit6 -size 33c 2>/dev/null
 cat /var/lib/dpkg/info/bandit7.password
@@ -369,10 +377,10 @@ cat /var/lib/dpkg/info/bandit7.password
 `z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-6-→-Level-7.png" alt="Level 6 to Level 7 Screenshot">
-      <figcaption>Finding the system-owned password file with constrained search filters.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-6-→-Level-7.png" alt="Level 6 to Level 7 Screenshot">
+<figcaption>Finding the system-owned password file with constrained search filters.</figcaption>
+</figure>
 
 ---
 
@@ -391,6 +399,7 @@ cat /var/lib/dpkg/info/bandit7.password
 Find the password stored in `data.txt` next to the word "millionth".
 
 **Commands Used**
+
 ```bash
 ls
 grep "millionth" data.txt
@@ -406,10 +415,10 @@ grep "millionth" data.txt
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-7-→-Level-8.png" alt="Level 7 to Level 8 Screenshot">
-      <figcaption>Pinpointing the keyword match inside `data.txt` with `grep`.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-7-→-Level-8.png" alt="Level 7 to Level 8 Screenshot">
+<figcaption>Pinpointing the keyword match inside `data.txt` with `grep`.</figcaption>
+</figure>
 
 ---
 
@@ -419,6 +428,7 @@ grep "millionth" data.txt
 Find the password in `data.txt` that is the only line occurring exactly once.
 
 **Commands Used**
+
 ```bash
 sort data.txt | uniq -u
 ```
@@ -433,10 +443,10 @@ sort data.txt | uniq -u
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-8-→-Level-9.png" alt="Level 8 to Level 9 Screenshot">
-      <figcaption>Sorting the file so `uniq -u` can expose the only unique line.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-8-→-Level-9.png" alt="Level 8 to Level 9 Screenshot">
+<figcaption>Sorting the file so `uniq -u` can expose the only unique line.</figcaption>
+</figure>
 
 ---
 
@@ -446,6 +456,7 @@ sort data.txt | uniq -u
 Extract the password from a binary file. The password is human-readable and preceded by several `=` characters.
 
 **Commands Used**
+
 ```bash
 ls
 strings data.txt | grep '='
@@ -462,10 +473,10 @@ strings data.txt | grep '='
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-9-→-Level-10.png" alt="Level 9 to Level 10 Screenshot">
-      <figcaption>Extracting readable strings from binary content before filtering them.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-9-→-Level-10.png" alt="Level 9 to Level 10 Screenshot">
+<figcaption>Extracting readable strings from binary content before filtering them.</figcaption>
+</figure>
 
 ---
 
@@ -484,6 +495,7 @@ strings data.txt | grep '='
 Extract the password from a file containing Base64 encoded data.
 
 **Commands Used**
+
 ```bash
 cat data.txt
 cat data.txt | base64 -d
@@ -496,16 +508,17 @@ cat data.txt | base64 -d
 - The decoded output reveals the password
 
 **Common Mistakes**
+
 - Assuming the Base64 output is already the password (it still needs to be decoded)
 
 **Password for Next Level**
 `dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-10-→-Level-11.png" alt="Level 10 to Level 11 Screenshot">
-      <figcaption>Decoding Base64 content back into human-readable output.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-10-→-Level-11.png" alt="Level 10 to Level 11 Screenshot">
+<figcaption>Decoding Base64 content back into human-readable output.</figcaption>
+</figure>
 
 ---
 
@@ -515,6 +528,7 @@ cat data.txt | base64 -d
 Decode text stored in `data.txt` that is encoded using ROT13.
 
 **Commands Used**
+
 ```bash
 cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 ```
@@ -526,16 +540,17 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 - This reveals the password
 
 **Common Mistakes**
+
 - Attempting to use `sort` which does not decode ROT13
 
 **Password for Next Level**
 `7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-11-→-Level-12.png" alt="Level 11 to Level 12 Screenshot">
-      <figcaption>Applying ROT13 with `tr` to recover the original text.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-11-→-Level-12.png" alt="Level 11 to Level 12 Screenshot">
+<figcaption>Applying ROT13 with `tr` to recover the original text.</figcaption>
+</figure>
 
 ---
 
@@ -545,6 +560,7 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 Extract the password from a repeatedly compressed hex-dumped file.
 
 **Commands Used**
+
 ```bash
 xxd -r data.txt > data.bin
 file data.bin
@@ -559,14 +575,15 @@ file data.bin
 
 **Command Mapping**
 
-| If `file` shows... | Then do... |
-|---|---|
-| ASCII text | Display using `cat` |
-| gzip compressed data | Rename to `.gz` and decompress with `gzip -d` |
+| If `file` shows...    | Then do...                                      |
+| --------------------- | ----------------------------------------------- |
+| ASCII text            | Display using `cat`                             |
+| gzip compressed data  | Rename to `.gz` and decompress with `gzip -d`   |
 | bzip2 compressed data | Rename to `.bz2` and decompress with `bzip2 -d` |
-| POSIX tar archive | Rename to `.tar` and extract with `tar -xf` |
+| POSIX tar archive     | Rename to `.tar` and extract with `tar -xf`     |
 
 **Common Mistakes**
+
 - Attempting decompression without identifying the file type first
 - Renaming to incorrect extensions
 
@@ -574,10 +591,10 @@ file data.bin
 `FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-12-→-Level-13.png" alt="Level 12 to Level 13 Screenshot">
-      <figcaption>Peeling back compression layers one format at a time.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-12-→-Level-13.png" alt="Level 12 to Level 13 Screenshot">
+<figcaption>Peeling back compression layers one format at a time.</figcaption>
+</figure>
 
 ---
 
@@ -597,6 +614,7 @@ file data.bin
 Use the provided private SSH key to log in as bandit14.
 
 **Commands Used**
+
 ```bash
 ls -l
 chmod 600 sshkey.private
@@ -611,7 +629,7 @@ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
 - Note: connecting to localhost is blocked, so the remote hostname must be used
 
 **Password for Next Level**
-No password required  -  access to the bandit14 account is the goal.
+No password required - access to the bandit14 account is the goal.
 
 ---
 
@@ -621,6 +639,7 @@ No password required  -  access to the bandit14 account is the goal.
 Retrieve the password for bandit15 by sending the current level's password to port 30000 on localhost.
 
 **Commands Used**
+
 ```bash
 cat /etc/bandit_pass/bandit14
 nc localhost 30000
@@ -637,10 +656,10 @@ nc localhost 30000
 `8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-14-→-Level-15.png" alt="Level 14 to Level 15 Screenshot">
-      <figcaption>Submitting the current password over a local netcat session.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-14-→-Level-15.png" alt="Level 14 to Level 15 Screenshot">
+<figcaption>Submitting the current password over a local netcat session.</figcaption>
+</figure>
 
 ---
 
@@ -650,6 +669,7 @@ nc localhost 30000
 Retrieve the Level 16 password by submitting the current password to port 30001 using SSL/TLS encryption.
 
 **Commands Used**
+
 ```bash
 cat /etc/bandit_pass/bandit15
 openssl s_client -connect localhost:30001
@@ -663,16 +683,17 @@ openssl s_client -connect localhost:30001
 - Received the next level password
 
 **Common Mistakes**
+
 - Using plain netcat (encryption is required on this port)
 
 **Password for Next Level**
 `kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-15-→-Level-16.png" alt="Level 15 to Level 16 Screenshot">
-      <figcaption>Using an SSL/TLS session instead of plain TCP for the next secret.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-15-→-Level-16.png" alt="Level 15 to Level 16 Screenshot">
+<figcaption>Using an SSL/TLS session instead of plain TCP for the next secret.</figcaption>
+</figure>
 
 ---
 
@@ -682,6 +703,7 @@ openssl s_client -connect localhost:30001
 Find the correct SSL-enabled port between 31000 - 32000 and submit the password to retrieve credentials for bandit17.
 
 **Commands Used**
+
 ```bash
 cat /etc/bandit_pass/bandit16
 nmap -sV -p31000-32000 localhost
@@ -698,22 +720,22 @@ openssl s_client -connect localhost:31790
 
 **Nmap Results**
 
-| Port | Status | Service |
-|---|---|---|
-| 31046 | open | echo |
-| 31518 | open | ssl/echo |
-| 31691 | open | echo |
-| 31790 | open | ssl/unknown |
-| 31960 | open | echo |
+| Port  | Status | Service     |
+| ----- | ------ | ----------- |
+| 31046 | open   | echo        |
+| 31518 | open   | ssl/echo    |
+| 31691 | open   | echo        |
+| 31790 | open   | ssl/unknown |
+| 31960 | open   | echo        |
 
 **Password for Next Level**
 RSA Private Key (used for SSH authentication)
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-16-→-Level-17.png" alt="Level 16 to Level 17 Screenshot">
-      <figcaption>Recon results leading to the SSL-enabled port that returns the SSH key.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-16-→-Level-17.png" alt="Level 16 to Level 17 Screenshot">
+<figcaption>Recon results leading to the SSL-enabled port that returns the SSH key.</figcaption>
+</figure>
 
 ---
 
@@ -733,6 +755,7 @@ RSA Private Key (used for SSH authentication)
 Compare two files to find the password that has changed.
 
 **Commands Used**
+
 ```bash
 ls
 diff passwords.old passwords.new
@@ -767,6 +790,7 @@ diff passwords.old passwords.new
 The password is in a file named `readme`, but logging in normally triggers a modified `.bashrc` that immediately terminates the session.
 
 **Commands Used**
+
 ```bash
 ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 ```
@@ -781,10 +805,10 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 `cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-18-→-Level-19.png" alt="Level 18 to Level 19 Screenshot">
-      <figcaption>Bypassing the sabotaged interactive shell with a direct SSH command.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-18-→-Level-19.png" alt="Level 18 to Level 19 Screenshot">
+<figcaption>Bypassing the sabotaged interactive shell with a direct SSH command.</figcaption>
+</figure>
 
 ---
 
@@ -794,6 +818,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 Use a setuid binary to access the next level password.
 
 **Commands Used**
+
 ```bash
 ls -l
 ./bandit20-do cat /etc/bandit_pass/bandit20
@@ -814,10 +839,10 @@ ls -l
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-19-→-Level-20.png" alt="Level 19 to Level 20 Screenshot">
-      <figcaption>Using the setuid helper to read the next password file safely.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-19-→-Level-20.png" alt="Level 19 to Level 20 Screenshot">
+<figcaption>Using the setuid helper to read the next password file safely.</figcaption>
+</figure>
 
 ---
 
@@ -827,6 +852,7 @@ ls -l
 Use the `suconnect` binary to retrieve the password by setting up a listener and client connection.
 
 **Commands Used**
+
 ```bash
 # Terminal 1
 nc -l -p 1234
@@ -844,16 +870,17 @@ nc -l -p 1234
 - After connection is established, send the current password through the listener to receive bandit21's password
 
 **Common Mistakes**
+
 - Running `./suconnect <port>` before starting a listener (results in "Could not connect" error)
 
 **Password for Next Level**
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-20-→-Level-21.png" alt="Level 20 to Level 21 Screenshot">
-      <figcaption>Listener and client coordination to validate the current credential.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-20-→-Level-21.png" alt="Level 20 to Level 21 Screenshot">
+<figcaption>Listener and client coordination to validate the current credential.</figcaption>
+</figure>
 
 ---
 
@@ -873,6 +900,7 @@ nc -l -p 1234
 Investigate a cron job that runs automatically and retrieve the password it writes.
 
 **Commands Used**
+
 ```bash
 cd /etc/cron.d
 ls
@@ -891,10 +919,10 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 `tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-21-→-Level-22.png" alt="Level 21 to Level 22 Screenshot">
-      <figcaption>Tracing the cron job output file to the leaked password.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-21-→-Level-22.png" alt="Level 21 to Level 22 Screenshot">
+<figcaption>Tracing the cron job output file to the leaked password.</figcaption>
+</figure>
 
 ---
 
@@ -904,6 +932,7 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 Understand a cron script that uses MD5 hashing to create dynamic filenames, then retrieve the password.
 
 **Commands Used**
+
 ```bash
 cd /etc/cron.d
 cat cronjob_bandit23
@@ -919,6 +948,7 @@ cat /tmp/<hash>
 - Manually generating the hash for "I am user bandit23" and reading the corresponding file reveals the password
 
 **Common Mistakes**
+
 - Looking for a static file in `/tmp/` instead of generating the hash name
 - Incorrect spacing in the echo command (spacing matters for MD5)
 
@@ -926,10 +956,10 @@ cat /tmp/<hash>
 `0Zf11ioIjMVN551jX3CmStKLYqjk54Ga`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-22-→-Level-23.png" alt="Level 22 to Level 23 Screenshot">
-      <figcaption>Reproducing the MD5-based filename used by the scheduled script.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-22-→-Level-23.png" alt="Level 22 to Level 23 Screenshot">
+<figcaption>Reproducing the MD5-based filename used by the scheduled script.</figcaption>
+</figure>
 
 ---
 
@@ -939,6 +969,7 @@ cat /tmp/<hash>
 Exploit a cron job that executes and deletes scripts from a specific directory.
 
 **Commands Used**
+
 ```bash
 cd /etc/cron.d
 cat cronjob_bandit24
@@ -960,6 +991,7 @@ cat /tmp/b24pass
 - Read the output file to get the password
 
 **Common Mistakes**
+
 - Placing scripts in wrong directory (must be in `/var/spool/bandit24/foo/`)
 - Not waiting long enough for cron to run
 - Not verifying file ownership
@@ -968,10 +1000,10 @@ cat /tmp/b24pass
 `gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-23-→-Level-24.png" alt="Level 23 to Level 24 Screenshot">
-      <figcaption>Dropping an executable payload into the watched spool directory.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-23-→-Level-24.png" alt="Level 23 to Level 24 Screenshot">
+<figcaption>Dropping an executable payload into the watched spool directory.</figcaption>
+</figure>
 
 ---
 
@@ -981,6 +1013,7 @@ cat /tmp/b24pass
 Brute-force a 4-digit PIN by submitting password and PIN combinations to a daemon on port 30002.
 
 **Commands Used**
+
 ```bash
 PW="gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8"
 for i in $(seq -w 0000 9999); do
@@ -996,6 +1029,7 @@ done | nc localhost 30002
 - Eventually received: "Correct! The password of user bandit25 is..."
 
 **Common Mistakes**
+
 - Trying manual trial and error (10,000 combinations)
 - Starting a new connection for each PIN (inefficient)
 - Forgetting zero-padding (daemon expects exactly 4 digits)
@@ -1033,11 +1067,12 @@ done | nc localhost 30002
 Access the bandit26 account which uses a custom shell that immediately logs out. Exploit terminal size and pager behavior to gain access.
 
 !!! tip "Notable Exploit Chain"
-    This level chains three separate escapes together:
-    terminal size manipulation → `more` pager → `vim` → `bash`.
-    Each step exploits a legitimate tool's feature in an unintended way.
+This level chains three separate escapes together:
+terminal size manipulation → `more` pager → `vim` → `bash`.
+Each step exploits a legitimate tool's feature in an unintended way.
 
 **Commands Used**
+
 ```bash
 # Make terminal very small (resize window)
 ssh bandit26@bandit.labs.overthewire.org -p 2220 -i bandit26.sshkey
@@ -1069,10 +1104,10 @@ cat /etc/bandit_pass/bandit26
 `s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-25-→-Level-26.png" alt="Level 25 to Level 26 Screenshot">
-      <figcaption>Triggering the pager path that leads from `more` into `vim` and then a shell.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-25-→-Level-26.png" alt="Level 25 to Level 26 Screenshot">
+<figcaption>Triggering the pager path that leads from `more` into `vim` and then a shell.</figcaption>
+</figure>
 
 ---
 
@@ -1082,6 +1117,7 @@ cat /etc/bandit_pass/bandit26
 Having escaped the restricted shell, use a setuid binary to retrieve the bandit27 password.
 
 **Commands Used**
+
 ```bash
 ls -la
 ./bandit27-do cat /etc/bandit_pass/bandit27
@@ -1097,10 +1133,10 @@ ls -la
 `upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-26-→-Level-27.png" alt="Level 26 to Level 27 Screenshot">
-      <figcaption>Using the setuid helper after escaping the restricted environment.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-26-→-Level-27.png" alt="Level 26 to Level 27 Screenshot">
+<figcaption>Using the setuid helper after escaping the restricted environment.</figcaption>
+</figure>
 
 ---
 
@@ -1120,6 +1156,7 @@ ls -la
 Clone a Git repository and retrieve the password from its contents.
 
 **Commands Used**
+
 ```bash
 git clone ssh://bandit27-git@bandit.labs.overthewire.org:2220/home/bandit27-git/repo
 cd repo
@@ -1137,10 +1174,10 @@ cat README
 `Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-27-→-Level-28.png" alt="Level 27 to Level 28 Screenshot">
-      <figcaption>Cloning the repository and reading the exposed secret from its contents.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-27-→-Level-28.png" alt="Level 27 to Level 28 Screenshot">
+<figcaption>Cloning the repository and reading the exposed secret from its contents.</figcaption>
+</figure>
 
 ---
 
@@ -1150,11 +1187,12 @@ cat README
 Clone a Git repository and analyze its commit history to find a leaked password.
 
 !!! warning "Real-World Relevance"
-    This is a genuine security issue in production systems  -  credentials committed 
-    to Git and later removed are still fully recoverable via `git log`. Always use 
-    environment variables or secrets managers. Never commit credentials directly.
+This is a genuine security issue in production systems - credentials committed
+to Git and later removed are still fully recoverable via `git log`. Always use
+environment variables or secrets managers. Never commit credentials directly.
 
 **Commands Used**
+
 ```bash
 git clone ssh://bandit28-git@bandit.labs.overthewire.org:2220/home/bandit28-git/repo
 cd repo
@@ -1173,10 +1211,10 @@ git log -p
 `4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-28-→-Level-29.png" alt="Level 28 to Level 29 Screenshot">
-      <figcaption>Using commit history and diffs to recover redacted credentials.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-28-→-Level-29.png" alt="Level 28 to Level 29 Screenshot">
+<figcaption>Using commit history and diffs to recover redacted credentials.</figcaption>
+</figure>
 
 ---
 
@@ -1186,6 +1224,7 @@ git log -p
 Clone a Git repository and check non-default branches to find the password.
 
 **Commands Used**
+
 ```bash
 git clone ssh://bandit29-git@bandit.labs.overthewire.org:2220/home/bandit29-git/repo
 cd repo
@@ -1203,6 +1242,7 @@ cat README.md
 - The README on the dev branch contained the actual password
 
 **Common Mistakes**
+
 - Only checking the master branch
 - Assuming password was in commit history (like Level 28)
 
@@ -1210,10 +1250,10 @@ cat README.md
 `qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-29-→-Level-30.png" alt="Level 29 to Level 30 Screenshot">
-      <figcaption>Switching away from the default branch to locate the real password.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-29-→-Level-30.png" alt="Level 29 to Level 30 Screenshot">
+<figcaption>Switching away from the default branch to locate the real password.</figcaption>
+</figure>
 
 ---
 
@@ -1223,6 +1263,7 @@ cat README.md
 Clone a Git repository and examine Git tags to find the password.
 
 **Commands Used**
+
 ```bash
 git clone ssh://bandit30-git@bandit.labs.overthewire.org:2220/home/bandit30-git/repo
 cd repo
@@ -1242,10 +1283,10 @@ git show secret
 `fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-30-→-Level-31.png" alt="Level 30 to Level 31 Screenshot">
-      <figcaption>Inspecting the `secret` tag to reveal hidden repository data.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-30-→-Level-31.png" alt="Level 30 to Level 31 Screenshot">
+<figcaption>Inspecting the `secret` tag to reveal hidden repository data.</figcaption>
+</figure>
 
 ---
 
@@ -1255,6 +1296,7 @@ git show secret
 Push a specific file to a remote Git repository to trigger a validation hook that returns the password.
 
 **Commands Used**
+
 ```bash
 git clone ssh://bandit31-git@bandit.labs.overthewire.org:2220/home/bandit31-git/repo
 cd repo
@@ -1273,6 +1315,7 @@ git push origin master
 - The push is rejected after validation, but the password is still printed
 
 **Common Mistakes**
+
 - Not using `-f` flag when `.gitignore` blocks the file
 - Stopping when seeing the push rejection (password is still displayed)
 
@@ -1280,10 +1323,10 @@ git push origin master
 `3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-31-→-Level-32.png" alt="Level 31 to Level 32 Screenshot">
-      <figcaption>Force-adding the required file so the remote validation hook executes.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-31-→-Level-32.png" alt="Level 31 to Level 32 Screenshot">
+<figcaption>Force-adding the required file so the remote validation hook executes.</figcaption>
+</figure>
 
 ---
 
@@ -1303,11 +1346,12 @@ git push origin master
 Escape the "uppercase shell" that converts all input to uppercase, preventing normal command execution.
 
 !!! tip "Key Insight"
-    `$0` expands to the current shell's binary path before the uppercase filter 
-    processes it  -  making it the only way to reference a command without it 
-    being uppercased into an invalid form.
+`$0` expands to the current shell's binary path before the uppercase filter
+processes it - making it the only way to reference a command without it
+being uppercased into an invalid form.
 
 **Commands Used**
+
 ```bash
 $0
 whoami
@@ -1324,16 +1368,17 @@ cat /etc/bandit_pass/bandit33
 - From there, standard commands worked and the password file became readable
 
 **Common Mistakes**
+
 - Trying to run commands like `ls`, `cat`, `sh`, or `bash` directly (all get uppercased)
 
 **Password for Next Level**
 `tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0`
 
 ??? example "Screenshot"
-    <figure class="report-shot">
-      <img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-32-→-Level-33.png" alt="Level 32 to Level 33 Screenshot">
-      <figcaption>Escaping the uppercase shell by expanding `$0` into a normal shell path.</figcaption>
-    </figure>
+<figure class="report-shot">
+<img src="/career-development/Workshops/cybersecurity-crash-course/pics/Level-32-→-Level-33.png" alt="Level 32 to Level 33 Screenshot">
+<figcaption>Escaping the uppercase shell by expanding `$0` into a normal shell path.</figcaption>
+</figure>
 
 ---
 
@@ -1341,18 +1386,18 @@ cat /etc/bandit_pass/bandit33
 
 <div class="grid cards" markdown>
 
--   :material-trophy-outline: **Levels Completed**
+- :material-trophy-outline: **Levels Completed**
 
-    0 → 33
+  0 → 33
 
--   :material-check-decagram-outline: **Status**
+- :material-check-decagram-outline: **Status**
 
-    Complete
+  Complete
 
--   :material-notebook-check-outline: **Outcome**
+- :material-notebook-check-outline: **Outcome**
 
-    Full walkthrough documented with commands, explanations, screenshots, and
-    next-level credentials.
+  Full walkthrough documented with commands, explanations, screenshots, and
+  next-level credentials.
 
 </div>
 
@@ -1362,53 +1407,53 @@ cat /etc/bandit_pass/bandit33
 
 <div class="grid cards" markdown>
 
--   :material-folder-cog-outline: **Linux Fundamentals**
+- :material-folder-cog-outline: **Linux Fundamentals**
 
-    - File navigation and manipulation
-    - Hidden files and special characters in filenames
-    - File permissions and ownership
-    - Process privileges and setuid binaries
+  - File navigation and manipulation
+  - Hidden files and special characters in filenames
+  - File permissions and ownership
+  - Process privileges and setuid binaries
 
--   :material-text-search: **Text Processing**
+- :material-text-search: **Text Processing**
 
-    - Pattern matching with `grep`
-    - Sorting and filtering with `sort` and `uniq`
-    - Extracting strings from binary files
-    - Encoding and decoding (Base64, ROT13)
+  - Pattern matching with `grep`
+  - Sorting and filtering with `sort` and `uniq`
+  - Extracting strings from binary files
+  - Encoding and decoding (Base64, ROT13)
 
--   :material-archive-outline: **Compression & Archiving**
+- :material-archive-outline: **Compression & Archiving**
 
-    - Multiple compression formats (`gzip`, `bzip2`, `tar`)
-    - Hex dump reversal
-    - Iterative decompression
+  - Multiple compression formats (`gzip`, `bzip2`, `tar`)
+  - Hex dump reversal
+  - Iterative decompression
 
--   :material-access-point-network: **Networking**
+- :material-access-point-network: **Networking**
 
-    - TCP connections with `netcat`
-    - SSL/TLS connections with OpenSSL
-    - Port scanning with `nmap`
-    - Client-server communication
+  - TCP connections with `netcat`
+  - SSL/TLS connections with OpenSSL
+  - Port scanning with `nmap`
+  - Client-server communication
 
--   :material-timer-cog-outline: **Automation & Scheduling**
+- :material-timer-cog-outline: **Automation & Scheduling**
 
-    - Cron job analysis
-    - Script-based privilege escalation
-    - Brute-force automation
+  - Cron job analysis
+  - Script-based privilege escalation
+  - Brute-force automation
 
--   :material-git: **Version Control (Git)**
+- :material-git: **Version Control (Git)**
 
-    - Repository cloning
-    - Commit history analysis
-    - Branch management
-    - Tag inspection
-    - Remote repository interaction
+  - Repository cloning
+  - Commit history analysis
+  - Branch management
+  - Tag inspection
+  - Remote repository interaction
 
--   :material-lock-open-check-outline: **Privilege Escalation**
+- :material-lock-open-check-outline: **Privilege Escalation**
 
-    - Setuid binary exploitation
-    - Shell escaping techniques
-    - Restricted shell bypass
-    - Pager and editor abuse
+  - Setuid binary exploitation
+  - Shell escaping techniques
+  - Restricted shell bypass
+  - Pager and editor abuse
 
 </div>
 

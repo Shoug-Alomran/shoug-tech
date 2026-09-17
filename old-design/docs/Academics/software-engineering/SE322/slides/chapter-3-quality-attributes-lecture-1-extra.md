@@ -9,7 +9,6 @@ SE322 slides on quality attributes and how architectural decisions shape softwar
 
 - [Open PDF slides](chapter-3-quality-attributes-lecture-1-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

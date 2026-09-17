@@ -9,7 +9,6 @@ CS102 slides for recursive thinking, base cases, recursive calls, tracing, and c
 
 - [Open PDF slides](recursion.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

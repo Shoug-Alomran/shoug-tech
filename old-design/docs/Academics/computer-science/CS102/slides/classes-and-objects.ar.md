@@ -9,7 +9,6 @@ description: شرائح CS102 عن تصميم الأصناف، الحقول، ا
 
 - [فتح ملف PDF](classes.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

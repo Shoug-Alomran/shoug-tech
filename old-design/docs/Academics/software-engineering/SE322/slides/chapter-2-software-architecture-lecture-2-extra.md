@@ -9,7 +9,6 @@ SE322 slides continuing software architecture concepts, design decisions, and ar
 
 - [Open PDF slides](chapter-2-software-architecture-lecture-2-extra.pdf)
 
-
 ## Preview
 
 <div class="iframe-wrap slide-preview">

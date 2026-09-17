@@ -57,20 +57,20 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 <div class="career-audience-grid" markdown>
 
--   :briefcase: **Employer / Recruiter**
+- :briefcase: **Employer / Recruiter**
 
-    Start with the resume, then inspect projects for evidence of execution:
-    what was built, what role I played, and how the work was delivered.
+  Start with the resume, then inspect projects for evidence of execution:
+  what was built, what role I played, and how the work was delivered.
 
--   :mortar_board: **Instructor / Mentor**
+- :mortar_board: **Instructor / Mentor**
 
-    Look at workshops and documentation quality. This is where my structure,
-    communication, and teaching instincts show most clearly.
+  Look at workshops and documentation quality. This is where my structure,
+  communication, and teaching instincts show most clearly.
 
--   :books: **Student / Peer**
+- :books: **Student / Peer**
 
-    Use this section as a model for turning coursework, learning, and workshop
-    participation into evidence someone else can actually understand.
+  Use this section as a model for turning coursework, learning, and workshop
+  participation into evidence someone else can actually understand.
 
 </div>
 
@@ -80,20 +80,20 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 <div class="career-proof-grid" markdown>
 
--   :shield: **Security-minded engineering**
+- :shield: **Security-minded engineering**
 
-    I approach systems with an attacker-aware mindset: weakness identification,
-    ethical testing, risk thinking, and curiosity about how systems fail.
+  I approach systems with an attacker-aware mindset: weakness identification,
+  ethical testing, risk thinking, and curiosity about how systems fail.
 
--   :computer: **Structured software delivery**
+- :computer: **Structured software delivery**
 
-    I care about requirements, system design, databases, backend concepts,
-    deployment, and turning prototypes into something people can use.
+  I care about requirements, system design, databases, backend concepts,
+  deployment, and turning prototypes into something people can use.
 
--   :books: **Documentation as proof**
+- :books: **Documentation as proof**
 
-    I document work so another person can evaluate it: context, decisions,
-    deliverables, screenshots, reflections, and practical next steps.
+  I document work so another person can evaluate it: context, decisions,
+  deliverables, screenshots, reflections, and practical next steps.
 
 </div>
 

@@ -9,7 +9,6 @@ description: شرائح SE322 التي تكمل مبادئ التصميم الت
 
 - [فتح ملف الشرائح](chapter-5-principles-of-detailed-design-lecture-3-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

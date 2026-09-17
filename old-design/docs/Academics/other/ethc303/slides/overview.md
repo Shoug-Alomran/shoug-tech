@@ -3,65 +3,65 @@
 This section collects the ETHCS 303 lecture slides as PDF files.
 
 !!! note "Slide Source"
-    The files in this slides section are university-provided course materials.
-    Rights remain with the university, course instructors, and original authors.
+The files in this slides section are university-provided course materials.
+Rights remain with the university, course instructors, and original authors.
 
 <div class="grid cards" markdown>
 
--   **Privacy Issues in Cyberspace**
+- **Privacy Issues in Cyberspace**
 
-    [Open slides](privacy-issues-in-cyberspace.pdf)
+  [Open slides](privacy-issues-in-cyberspace.pdf)
 
--   **Network Security and Privacy in the Cloud**
+- **Network Security and Privacy in the Cloud**
 
-    [Open slides](network-security-and-privacy-in-the-cloud.pdf)
+  [Open slides](network-security-and-privacy-in-the-cloud.pdf)
 
--   **Business Ethics**
+- **Business Ethics**
 
-    [Open slides](business-ethics.pdf)
+  [Open slides](business-ethics.pdf)
 
--   **Ethical Issues in Systems Analysis and Software Engineering**
+- **Ethical Issues in Systems Analysis and Software Engineering**
 
-    [Open slides](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
+  [Open slides](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
 
--   **Cyber Laws in Saudi Arabia**
+- **Cyber Laws in Saudi Arabia**
 
-    [Open slides](cyber-laws-in-saudi-arabia.pdf)
+  [Open slides](cyber-laws-in-saudi-arabia.pdf)
 
--   **Kantianism**
+- **Kantianism**
 
-    [Open slides](kantianism.pdf)
+  [Open slides](kantianism.pdf)
 
--   **Utilitarianism**
+- **Utilitarianism**
 
-    [Open slides](utilitarianism.pdf)
+  [Open slides](utilitarianism.pdf)
 
--   **Social Contract Theory**
+- **Social Contract Theory**
 
-    [Open slides](social-contract-theory.pdf)
+  [Open slides](social-contract-theory.pdf)
 
--   **Intellectual Property Laws**
+- **Intellectual Property Laws**
 
-    [Open slides](intellectual-property-laws.pdf)
+  [Open slides](intellectual-property-laws.pdf)
 
--   **Introduction to Ethical Hacking**
+- **Introduction to Ethical Hacking**
 
-    [Open slides](introduction-to-ethical-hacking.pdf)
+  [Open slides](introduction-to-ethical-hacking.pdf)
 
--   **Moral Systems, Ethical Concepts, and Theories**
+- **Moral Systems, Ethical Concepts, and Theories**
 
-    [Open slides](moral-systems-ethical-concepts-and-theories.pdf)
+  [Open slides](moral-systems-ethical-concepts-and-theories.pdf)
 
--   **Network Security and Privacy**
+- **Network Security and Privacy**
 
-    [Open slides](network-security-and-privacy.pdf)
+  [Open slides](network-security-and-privacy.pdf)
 
--   **Social Engineering**
+- **Social Engineering**
 
-    [Open slides](social-engineering.pdf)
+  [Open slides](social-engineering.pdf)
 
--   **Social Media Ethical, Legal, and Security Issues**
+- **Social Media Ethical, Legal, and Security Issues**
 
-    [Open slides](social-media-ethical-legal-security-issues.pdf)
+  [Open slides](social-media-ethical-legal-security-issues.pdf)
 
 </div>

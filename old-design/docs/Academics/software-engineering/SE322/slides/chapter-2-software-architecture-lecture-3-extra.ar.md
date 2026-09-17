@@ -9,7 +9,6 @@ description: شرائح SE322 التي تكمل موضوعات معمارية ا
 
 - [فتح ملف الشرائح](chapter-2-software-architecture-lecture-3-extra.pdf)
 
-
 ## المعاينة
 
 <div class="iframe-wrap slide-preview">

@@ -308,8 +308,8 @@ def listing_html(url, ctx, type_label, trail, body, meta_title):
     page = re.sub(r'<div class="type-label">.*?</div>',
                   lambda _m: '<div class="type-label">%s</div>' % type_label, page, count=1, flags=re.S)
     page = re.sub(r'<nav class="content-tabs">.*?</nav>', lambda _m: ctx['tabs'], page, count=1, flags=re.S)
-    return re.sub(r'<div class="directory-container">.*?\n            </div>\n        </main>',
-                  lambda _m: body + '\n        </main>', page, count=1, flags=re.S)
+    return re.sub(r'<div class="directory-container">.*?</div>\s*</main>',
+                  lambda _m: body + '\n      </main>', page, count=1, flags=re.S)
 
 
 def viewer_html(url, ctx, item_label, title, trail, pdf_src, back_url):

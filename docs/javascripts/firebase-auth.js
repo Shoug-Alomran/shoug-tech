@@ -5,14 +5,15 @@
   window.__shougFirebaseAuthBooted = true;
 
   var FB_VERSION = "10.12.0";
-  var FB_BASE = "https://www.gstatic.com/firebasejs/" + FB_VERSION + "/firebase-";
+  var FB_BASE =
+    "https://www.gstatic.com/firebasejs/" + FB_VERSION + "/firebase-";
   var FB_CONFIG = {
     apiKey: "AIzaSyDUklr3u8laDZH2jhHVAO3BPE12GaPpOmI",
     authDomain: "shoug-tech.firebaseapp.com",
     projectId: "shoug-tech",
     storageBucket: "shoug-tech.firebasestorage.app",
     messagingSenderId: "621041999813",
-    appId: "1:621041999813:web:8982befd8b0ccc1d9475ac"
+    appId: "1:621041999813:web:8982befd8b0ccc1d9475ac",
   };
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -20,13 +21,19 @@
   function progressUrl() {
     var path = window.location.pathname;
     if (path === "/academics/math/stat101/viewer/" && window.location.search) {
-      return path + "?" + new URLSearchParams(window.location.search).toString();
+      return (
+        path + "?" + new URLSearchParams(window.location.search).toString()
+      );
     }
     return path;
   }
 
   function pageSlug() {
-    return progressUrl().replace(/\//g, "|").replace(/^\||\ |$/g, "") || "home";
+    return (
+      progressUrl()
+        .replace(/\//g, "|")
+        .replace(/^\||\ |$/g, "") || "home"
+    );
   }
 
   function pageTitle() {
@@ -38,18 +45,30 @@
 
   function isLegalPage() {
     var path = window.location.pathname;
-    if (document.body && document.body.getAttribute("data-legal-document") === "true") return true;
-    return path.indexOf("/policy") === 0 ||
+    if (
+      document.body &&
+      document.body.getAttribute("data-legal-document") === "true"
+    )
+      return true;
+    return (
+      path.indexOf("/policy") === 0 ||
       path.indexOf("/privacy") === 0 ||
       path.indexOf("/copyright") === 0 ||
       path.indexOf("/terms") === 0 ||
-      path.indexOf("/legal") === 0;
+      path.indexOf("/legal") === 0
+    );
   }
 
   function isContentPage() {
     var path = window.location.pathname;
     if (isLegalPage()) return false;
-    if (path === "/" || path.indexOf("/account") === 0 || path.indexOf("/community") === 0 || path.indexOf("/bookmarks") === 0) return false;
+    if (
+      path === "/" ||
+      path.indexOf("/account") === 0 ||
+      path.indexOf("/community") === 0 ||
+      path.indexOf("/bookmarks") === 0
+    )
+      return false;
     // Listing/overview pages (directory indexes) are never content pages, regardless of depth.
     if (document.querySelector(".directory-container")) return false;
     // For academics pages only show on actual leaf content pages, not listing/overview pages.
@@ -59,7 +78,10 @@
         var viewerParams = new URLSearchParams(window.location.search);
         var viewerSection = (viewerParams.get("section") || "").toUpperCase();
         var viewerSource = viewerParams.get("src") || "";
-        return viewerSection !== "SYLLABUS" && viewerSource.indexOf("/syllabus/") === -1;
+        return (
+          viewerSection !== "SYLLABUS" &&
+          viewerSource.indexOf("/syllabus/") === -1
+        );
       }
       return path.split("/").filter(Boolean).length >= 5;
     }
@@ -76,17 +98,52 @@
 
   // ── Avatar presets (shared with /community/profile/) ──────────────────────
   var AVATAR_PRESETS = [
-    'av-f1.webp', 'av-f2.webp', 'av-f3.webp', 'av-f4.webp', 'av-f5.webp', 'av-f6.webp', 'av-f7.webp',
-    'av-m1.webp', 'av-m2.webp', 'av-m3.webp', 'av-m4.webp', 'av-m5.webp', 'av-m6.webp', 'av-m7.webp'
+    "av-f1.webp",
+    "av-f2.webp",
+    "av-f3.webp",
+    "av-f4.webp",
+    "av-f5.webp",
+    "av-f6.webp",
+    "av-f7.webp",
+    "av-m1.webp",
+    "av-m2.webp",
+    "av-m3.webp",
+    "av-m4.webp",
+    "av-m5.webp",
+    "av-m6.webp",
+    "av-m7.webp",
   ];
   function avatarUrl(preset) {
     var i = parseInt(preset, 10);
-    return (!isNaN(i) && AVATAR_PRESETS[i]) ? '/assets/avatars/' + AVATAR_PRESETS[i] : null;
+    return !isNaN(i) && AVATAR_PRESETS[i]
+      ? "/assets/avatars/" + AVATAR_PRESETS[i]
+      : null;
   }
   function avatarBlock(className, preset, color, initial) {
     var url = avatarUrl(preset);
-    if (url) return '<div class="' + className + '" style="padding:0;background:#0d0720;border:1px solid ' + color + '55;"><img src="' + url + '" alt=""></div>';
-    return '<div class="' + className + '" style="background:' + color + '1a;border:1px solid ' + color + '55;color:' + color + '">' + initial + '</div>';
+    if (url)
+      return (
+        '<div class="' +
+        className +
+        '" style="padding:0;background:#0d0720;border:1px solid ' +
+        color +
+        '55;"><img src="' +
+        url +
+        '" alt=""></div>'
+      );
+    return (
+      '<div class="' +
+      className +
+      '" style="background:' +
+      color +
+      "1a;border:1px solid " +
+      color +
+      "55;color:" +
+      color +
+      '">' +
+      initial +
+      "</div>"
+    );
   }
 
   function loadScript(src, cb) {
@@ -337,7 +394,8 @@
     if (!footer) return;
     var bar = document.createElement("div");
     bar.id = "shoug-blueprint-bar";
-    bar.innerHTML = 'Made by&nbsp;<a href="https://blueprint.shoug-tech.com/" target="_blank" rel="noopener">Blueprint</a>';
+    bar.innerHTML =
+      'Made by&nbsp;<a href="https://blueprint.shoug-tech.com/" target="_blank" rel="noopener">Blueprint</a>';
     footer.appendChild(bar);
   }
 
@@ -354,11 +412,11 @@
       '  <div class="auth-head">',
       '    <div><div class="auth-tag">// IDENTITY PROTOCOL</div><div class="auth-title" id="auth-modal-title">Sign In</div></div>',
       '    <button class="auth-close" id="auth-close-btn">✕</button>',
-      '  </div>',
+      "  </div>",
       '  <div class="auth-tabs">',
       '    <button class="auth-tab active" data-tab="signin">Sign In</button>',
       '    <button class="auth-tab" data-tab="signup">Create Account</button>',
-      '  </div>',
+      "  </div>",
       '  <div class="auth-body">',
       '    <button class="auth-oauth" id="auth-google"><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google</button>',
       '    <button class="auth-oauth" id="auth-github"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub</button>',
@@ -368,14 +426,14 @@
       '    <button class="auth-forgot" id="auth-forgot">Forgot password?</button>',
       '    <div class="auth-error" id="auth-error"></div>',
       '    <button class="auth-submit" id="auth-submit">Sign In</button>',
-      '  </div>',
+      "  </div>",
       '  <div class="auth-body" id="auth-reset-body" style="display:none">',
       '    <div class="auth-field"><label class="auth-label">Your Email</label><input class="auth-input" id="auth-reset-email" type="email" placeholder="your@email.com" autocomplete="email"></div>',
       '    <div class="auth-error" id="auth-reset-error"></div>',
       '    <button class="auth-submit" id="auth-reset-submit">Send Reset Link</button>',
       '    <button class="auth-forgot" id="auth-reset-back" style="margin-top:4px">← Back to Sign In</button>',
-      '  </div>',
-      '</div>',
+      "  </div>",
+      "</div>",
     ].join("");
     document.body.appendChild(modal);
 
@@ -385,48 +443,78 @@
     submitEl = document.getElementById("auth-submit");
     currentTab = "signin";
 
-    document.getElementById("auth-close-btn").addEventListener("click", closeModal);
-    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
-    passInput.addEventListener("keydown", function (e) { if (e.key === "Enter") doSubmit(); });
+    document
+      .getElementById("auth-close-btn")
+      .addEventListener("click", closeModal);
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) closeModal();
+    });
+    passInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") doSubmit();
+    });
     submitEl.addEventListener("click", doSubmit);
     document.getElementById("auth-google").addEventListener("click", doGoogle);
     document.getElementById("auth-github").addEventListener("click", doGithub);
-    document.getElementById("auth-forgot").addEventListener("click", showResetView);
-    document.getElementById("auth-reset-back").addEventListener("click", hideResetView);
-    document.getElementById("auth-reset-submit").addEventListener("click", doResetPassword);
-    document.getElementById("auth-reset-email").addEventListener("keydown", function (e) { if (e.key === "Enter") doResetPassword(); });
+    document
+      .getElementById("auth-forgot")
+      .addEventListener("click", showResetView);
+    document
+      .getElementById("auth-reset-back")
+      .addEventListener("click", hideResetView);
+    document
+      .getElementById("auth-reset-submit")
+      .addEventListener("click", doResetPassword);
+    document
+      .getElementById("auth-reset-email")
+      .addEventListener("keydown", function (e) {
+        if (e.key === "Enter") doResetPassword();
+      });
 
     modal.querySelectorAll(".auth-tab").forEach(function (tab) {
       tab.addEventListener("click", function () {
         currentTab = tab.dataset.tab;
-        modal.querySelectorAll(".auth-tab").forEach(function (t) { t.classList.remove("active"); });
+        modal.querySelectorAll(".auth-tab").forEach(function (t) {
+          t.classList.remove("active");
+        });
         tab.classList.add("active");
-        submitEl.textContent = currentTab === "signin" ? "Sign In" : "Create Account";
+        submitEl.textContent =
+          currentTab === "signin" ? "Sign In" : "Create Account";
         errorEl.textContent = "";
         var forgotBtn = document.getElementById("auth-forgot");
-        if (forgotBtn) forgotBtn.style.display = currentTab === "signin" ? "" : "none";
+        if (forgotBtn)
+          forgotBtn.style.display = currentTab === "signin" ? "" : "none";
         hideResetView();
       });
     });
   }
 
   function showResetView() {
-    var main = document.querySelector("#shoug-auth-box .auth-body:not(#auth-reset-body)");
+    var main = document.querySelector(
+      "#shoug-auth-box .auth-body:not(#auth-reset-body)",
+    );
     var reset = document.getElementById("auth-reset-body");
     var tabs = document.querySelector(".auth-tabs");
     if (main) main.style.display = "none";
     if (tabs) tabs.style.display = "none";
-    if (reset) { reset.style.display = "flex"; document.getElementById("auth-reset-email").focus(); }
+    if (reset) {
+      reset.style.display = "flex";
+      document.getElementById("auth-reset-email").focus();
+    }
     document.getElementById("auth-modal-title").textContent = "Reset Password";
   }
 
   function hideResetView() {
-    var main = document.querySelector("#shoug-auth-box .auth-body:not(#auth-reset-body)");
+    var main = document.querySelector(
+      "#shoug-auth-box .auth-body:not(#auth-reset-body)",
+    );
     var reset = document.getElementById("auth-reset-body");
     var tabs = document.querySelector(".auth-tabs");
     if (main) main.style.display = "";
     if (tabs) tabs.style.display = "";
-    if (reset) { reset.style.display = "none"; document.getElementById("auth-reset-error").textContent = ""; }
+    if (reset) {
+      reset.style.display = "none";
+      document.getElementById("auth-reset-error").textContent = "";
+    }
     document.getElementById("auth-modal-title").textContent = "Sign In";
   }
 
@@ -435,10 +523,15 @@
     var errEl = document.getElementById("auth-reset-error");
     var btn = document.getElementById("auth-reset-submit");
     var email = emailEl ? emailEl.value.trim() : "";
-    if (!email) { errEl.textContent = "Enter your email address."; return; }
+    if (!email) {
+      errEl.textContent = "Enter your email address.";
+      return;
+    }
     btn.disabled = true;
     btn.textContent = "Sending…";
-    firebase.auth().sendPasswordResetEmail(email)
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
       .then(function () {
         errEl.style.color = "#22c55e";
         errEl.textContent = "Reset link sent — check your inbox.";
@@ -446,7 +539,8 @@
       })
       .catch(function (err) {
         errEl.style.color = "";
-        errEl.textContent = authError(err.code) || "Could not send reset email.";
+        errEl.textContent =
+          authError(err.code) || "Could not send reset email.";
         btn.disabled = false;
         btn.textContent = "Send Reset Link";
       });
@@ -455,9 +549,13 @@
   function openModal() {
     buildModal();
     modal.style.display = "flex";
-    requestAnimationFrame(function () { modal.classList.add("open"); });
+    requestAnimationFrame(function () {
+      modal.classList.add("open");
+    });
     document.body.style.overflow = "hidden";
-    setTimeout(function () { emailInput && emailInput.focus(); }, 60);
+    setTimeout(function () {
+      emailInput && emailInput.focus();
+    }, 60);
   }
   window.__shougOpenAuthModal = openModal;
   window.addEventListener("shoug:open-auth", openModal);
@@ -466,73 +564,116 @@
     if (!modal) return;
     modal.classList.remove("open");
     document.body.style.overflow = "";
-    setTimeout(function () { modal.style.display = "none"; }, 150);
+    setTimeout(function () {
+      modal.style.display = "none";
+    }, 150);
   }
 
   function doSubmit() {
     var email = emailInput.value.trim();
     var pass = passInput.value;
     errorEl.textContent = "";
-    if (!email || !pass) { errorEl.textContent = "Email and password required."; return; }
+    if (!email || !pass) {
+      errorEl.textContent = "Email and password required.";
+      return;
+    }
     submitEl.disabled = true;
     submitEl.textContent = "Loading…";
-    var fn = currentTab === "signin"
-      ? firebase.auth().signInWithEmailAndPassword(email, pass)
-      : firebase.auth().createUserWithEmailAndPassword(email, pass);
+    var fn =
+      currentTab === "signin"
+        ? firebase.auth().signInWithEmailAndPassword(email, pass)
+        : firebase.auth().createUserWithEmailAndPassword(email, pass);
     fn.then(closeModal).catch(function (err) {
       errorEl.textContent = authError(err.code);
       submitEl.disabled = false;
-      submitEl.textContent = currentTab === "signin" ? "Sign In" : "Create Account";
+      submitEl.textContent =
+        currentTab === "signin" ? "Sign In" : "Create Account";
     });
   }
 
-  var GITHUB_BTN_HTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub';
-  var GOOGLE_BTN_HTML = '<svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google';
+  var GITHUB_BTN_HTML =
+    '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub';
+  var GOOGLE_BTN_HTML =
+    '<svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google';
 
   function doGoogle() {
     var btn = document.getElementById("auth-google");
-    if (btn) { btn.disabled = true; btn.textContent = "Redirecting…"; }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Redirecting…";
+    }
     var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
+    firebase
+      .auth()
+      .signInWithPopup(provider)
       .then(closeModal)
       .catch(function (err) {
-        if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment" || err.code === "auth/cancelled-popup-request") {
+        if (
+          err.code === "auth/popup-blocked" ||
+          err.code === "auth/operation-not-supported-in-this-environment" ||
+          err.code === "auth/cancelled-popup-request"
+        ) {
           firebase.auth().signInWithRedirect(provider);
           return;
         }
-        if (errorEl) errorEl.textContent = err.code === "auth/popup-closed-by-user" ? "" : (err.message || "Google sign-in failed.");
-        if (btn) { btn.disabled = false; btn.innerHTML = GOOGLE_BTN_HTML; }
+        if (errorEl)
+          errorEl.textContent =
+            err.code === "auth/popup-closed-by-user"
+              ? ""
+              : err.message || "Google sign-in failed.";
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = GOOGLE_BTN_HTML;
+        }
       });
   }
 
   function doGithub() {
     var btn = document.getElementById("auth-github");
-    if (btn) { btn.disabled = true; btn.textContent = "Redirecting…"; }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Redirecting…";
+    }
     var provider = new firebase.auth.GithubAuthProvider();
-    firebase.auth().signInWithPopup(provider)
+    firebase
+      .auth()
+      .signInWithPopup(provider)
       .then(closeModal)
       .catch(function (err) {
         // Popups are unreliable on iOS/iPad Safari and in-app browsers — fall back to a full redirect.
-        if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment" || err.code === "auth/cancelled-popup-request") {
+        if (
+          err.code === "auth/popup-blocked" ||
+          err.code === "auth/operation-not-supported-in-this-environment" ||
+          err.code === "auth/cancelled-popup-request"
+        ) {
           firebase.auth().signInWithRedirect(provider);
           return;
         }
-        if (errorEl) errorEl.textContent = err.code === "auth/popup-closed-by-user" ? "" : (err.message || "GitHub sign-in failed.");
-        if (btn) { btn.disabled = false; btn.innerHTML = GITHUB_BTN_HTML; }
+        if (errorEl)
+          errorEl.textContent =
+            err.code === "auth/popup-closed-by-user"
+              ? ""
+              : err.message || "GitHub sign-in failed.";
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = GITHUB_BTN_HTML;
+        }
       });
   }
 
   function authError(code) {
-    return ({
-      "auth/user-not-found": "No account with that email.",
-      "auth/wrong-password": "Incorrect password.",
-      "auth/invalid-credential": "Invalid email or password.",
-      "auth/email-already-in-use": "Email already in use.",
-      "auth/weak-password": "Password must be 6+ characters.",
-      "auth/invalid-email": "Invalid email address.",
-      "auth/too-many-requests": "Too many attempts — try again later.",
-      "auth/requires-recent-login": "Re-enter your password to confirm.",
-    })[code] || "Something went wrong. Try again.";
+    return (
+      {
+        "auth/user-not-found": "No account with that email.",
+        "auth/wrong-password": "Incorrect password.",
+        "auth/invalid-credential": "Invalid email or password.",
+        "auth/email-already-in-use": "Email already in use.",
+        "auth/weak-password": "Password must be 6+ characters.",
+        "auth/invalid-email": "Invalid email address.",
+        "auth/too-many-requests": "Too many attempts — try again later.",
+        "auth/requires-recent-login": "Re-enter your password to confirm.",
+      }[code] || "Something went wrong. Try again."
+    );
   }
 
   // ── Update Email Modal ────────────────────────────────────────────────────
@@ -548,24 +689,28 @@
       '  <div class="auth-head">',
       '    <div><div class="auth-tag">// ACCOUNT SETTINGS</div><div class="auth-title">Update Email</div></div>',
       '    <button class="auth-close" id="ue-close">✕</button>',
-      '  </div>',
+      "  </div>",
       '  <div class="auth-body">',
       '    <div class="auth-field"><label class="auth-label">New Email Address</label><input class="auth-input" id="ue-new-email" type="email" placeholder="new@email.com" autocomplete="email"></div>',
       '    <div class="auth-field"><label class="auth-label">Current Password</label><input class="auth-input" id="ue-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>',
       '    <div class="auth-error" id="ue-error"></div>',
       '    <button class="auth-submit" id="ue-submit">Update Email</button>',
-      '  </div>',
-      '</div>',
+      "  </div>",
+      "</div>",
     ].join("");
     document.body.appendChild(m);
 
     var closeUe = function () {
       m.classList.remove("open");
       document.body.style.overflow = "";
-      setTimeout(function () { m.remove(); }, 150);
+      setTimeout(function () {
+        m.remove();
+      }, 150);
     };
     document.getElementById("ue-close").addEventListener("click", closeUe);
-    m.addEventListener("click", function (e) { if (e.target === m) closeUe(); });
+    m.addEventListener("click", function (e) {
+      if (e.target === m) closeUe();
+    });
 
     var newEmailEl = document.getElementById("ue-new-email");
     var passEl = document.getElementById("ue-pass");
@@ -577,12 +722,18 @@
       var pass = passEl.value;
       errEl.style.color = "";
       errEl.textContent = "";
-      if (!newEmail || !pass) { errEl.textContent = "Fill in both fields."; return; }
+      if (!newEmail || !pass) {
+        errEl.textContent = "Fill in both fields.";
+        return;
+      }
       btn.disabled = true;
       btn.textContent = "Updating…";
       var cred = firebase.auth.EmailAuthProvider.credential(user.email, pass);
-      user.reauthenticateWithCredential(cred)
-        .then(function () { return user.updateEmail(newEmail); })
+      user
+        .reauthenticateWithCredential(cred)
+        .then(function () {
+          return user.updateEmail(newEmail);
+        })
         .then(function () {
           errEl.style.color = "#22c55e";
           errEl.textContent = "Email updated successfully.";
@@ -598,12 +749,18 @@
     }
 
     btn.addEventListener("click", doUpdateEmail);
-    passEl.addEventListener("keydown", function (e) { if (e.key === "Enter") doUpdateEmail(); });
+    passEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") doUpdateEmail();
+    });
 
     m.style.display = "flex";
-    requestAnimationFrame(function () { m.classList.add("open"); });
+    requestAnimationFrame(function () {
+      m.classList.add("open");
+    });
     document.body.style.overflow = "hidden";
-    setTimeout(function () { newEmailEl && newEmailEl.focus(); }, 60);
+    setTimeout(function () {
+      newEmailEl && newEmailEl.focus();
+    }, 60);
   }
 
   // ── Notifications ─────────────────────────────────────────────────────────
@@ -623,65 +780,115 @@
 
   function writeNotif(toUid, data) {
     if (!toUid || !data) return;
-    firebase.firestore()
-      .collection("notifications").doc(toUid).collection("items")
-      .add(Object.assign({ read: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, data))
-      .catch(function () { });
+    firebase
+      .firestore()
+      .collection("notifications")
+      .doc(toUid)
+      .collection("items")
+      .add(
+        Object.assign(
+          {
+            read: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          data,
+        ),
+      )
+      .catch(function () {});
   }
 
   function renderNotifDropdown(docs) {
     var list = document.getElementById("shoug-notif-list");
     if (!list) return;
     if (!docs || !docs.length) {
-      list.innerHTML = '<div class="shoug-notif-empty">No new notifications</div>';
+      list.innerHTML =
+        '<div class="shoug-notif-empty">No new notifications</div>';
       return;
     }
-    list.innerHTML = docs.map(function (d) {
-      var n = d.data();
-      var when = n.createdAt ? timeAgo(n.createdAt.toDate()) : "";
-      var pageLabel = n.pageUrl ? n.pageUrl.replace(/^\/|\/$/g, "").split("/").pop() || "page" : "page";
-      return '<a class="shoug-notif-item unread" href="' + escHtml(n.pageUrl || "/") + '">'
-        + '<span class="shoug-notif-text"><strong>' + escHtml(n.fromDisplayName || n.fromUsername || "Someone") + '</strong>'
-        + ' replied to your comment' + (pageLabel ? ' on <strong>' + escHtml(pageLabel) + '</strong>' : '') + '</span>'
-        + (n.commentPreview ? '<span class="shoug-notif-preview">"' + escHtml(n.commentPreview) + '"</span>' : "")
-        + '<span class="shoug-notif-time">' + when + '</span>'
-        + '</a>';
-    }).join("");
+    list.innerHTML = docs
+      .map(function (d) {
+        var n = d.data();
+        var when = n.createdAt ? timeAgo(n.createdAt.toDate()) : "";
+        var pageLabel = n.pageUrl
+          ? n.pageUrl
+              .replace(/^\/|\/$/g, "")
+              .split("/")
+              .pop() || "page"
+          : "page";
+        return (
+          '<a class="shoug-notif-item unread" href="' +
+          escHtml(n.pageUrl || "/") +
+          '">' +
+          '<span class="shoug-notif-text"><strong>' +
+          escHtml(n.fromDisplayName || n.fromUsername || "Someone") +
+          "</strong>" +
+          " replied to your comment" +
+          (pageLabel ? " on <strong>" + escHtml(pageLabel) + "</strong>" : "") +
+          "</span>" +
+          (n.commentPreview
+            ? '<span class="shoug-notif-preview">"' +
+              escHtml(n.commentPreview) +
+              '"</span>'
+            : "") +
+          '<span class="shoug-notif-time">' +
+          when +
+          "</span>" +
+          "</a>"
+        );
+      })
+      .join("");
   }
 
   function startNotifListener(user) {
-    if (_notifUnsub) { _notifUnsub(); _notifUnsub = null; }
-    _notifUnsub = firebase.firestore()
-      .collection("notifications").doc(user.uid).collection("items")
+    if (_notifUnsub) {
+      _notifUnsub();
+      _notifUnsub = null;
+    }
+    _notifUnsub = firebase
+      .firestore()
+      .collection("notifications")
+      .doc(user.uid)
+      .collection("items")
       .where("read", "==", false)
       .orderBy("createdAt", "desc")
       .limit(20)
-      .onSnapshot(function (snap) {
-        var count = snap.size;
-        var badge = document.getElementById("shoug-notif-badge");
-        if (badge) {
-          badge.textContent = count > 9 ? "9+" : String(count);
-          badge.style.display = count > 0 ? "flex" : "none";
-        }
-        // Don't wipe the visible list while the dropdown is open (happens right after
-        // markNotifsRead fires). The list will clear naturally the next time it opens.
-        var dropdownOpen = document.body.classList.contains("profile-open");
-        if (!dropdownOpen || count > 0) {
-          renderNotifDropdown(snap.docs);
-        }
-      }, function () { });
+      .onSnapshot(
+        function (snap) {
+          var count = snap.size;
+          var badge = document.getElementById("shoug-notif-badge");
+          if (badge) {
+            badge.textContent = count > 9 ? "9+" : String(count);
+            badge.style.display = count > 0 ? "flex" : "none";
+          }
+          // Don't wipe the visible list while the dropdown is open (happens right after
+          // markNotifsRead fires). The list will clear naturally the next time it opens.
+          var dropdownOpen = document.body.classList.contains("profile-open");
+          if (!dropdownOpen || count > 0) {
+            renderNotifDropdown(snap.docs);
+          }
+        },
+        function () {},
+      );
   }
 
   function markNotifsRead(user) {
-    firebase.firestore()
-      .collection("notifications").doc(user.uid).collection("items")
-      .where("read", "==", false).limit(20).get()
+    firebase
+      .firestore()
+      .collection("notifications")
+      .doc(user.uid)
+      .collection("items")
+      .where("read", "==", false)
+      .limit(20)
+      .get()
       .then(function (snap) {
         if (snap.empty) return;
         var batch = firebase.firestore().batch();
-        snap.forEach(function (d) { batch.update(d.ref, { read: true }); });
+        snap.forEach(function (d) {
+          batch.update(d.ref, { read: true });
+        });
         return batch.commit();
-      }).catch(function () { });
+      })
+      .catch(function () {});
   }
 
   // ── Exam reminders ────────────────────────────────────────────────────────
@@ -692,7 +899,7 @@
     midterm: "MIDTERM",
     final: "FINAL",
     assignment: "ASSIGNMENT",
-    project: "PROJECT"
+    project: "PROJECT",
   };
 
   function daysUntilExam(dateStr) {
@@ -712,7 +919,11 @@
   function examDateLabel(dateStr) {
     var date = new Date(dateStr);
     if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   function examWhenLabel(days) {
@@ -735,91 +946,187 @@
     var days = daysUntilExam(exam.date);
     if (days === null || days < 0 || days > 7) return;
 
-    var reminderKind = exam.reminderKind === "assignment" ? "assignment" : "exam";
-    var storageKey = "shoug-" + reminderKind + "-toast:" + user.uid + ":" + exam.id + ":d" + days;
+    var reminderKind =
+      exam.reminderKind === "assignment" ? "assignment" : "exam";
+    var storageKey =
+      "shoug-" +
+      reminderKind +
+      "-toast:" +
+      user.uid +
+      ":" +
+      exam.id +
+      ":d" +
+      days;
     try {
       if (localStorage.getItem(storageKey) === "dismissed") return;
-    } catch (e) { }
+    } catch (e) {}
 
     removeExamToast();
 
     var toast = document.createElement("div");
     toast.id = "shoug-exam-toast";
-    toast.className = reminderKind === "assignment" ? "assignment" : (days <= 1 ? "urgent" : (days <= 3 ? "warn" : "notice"));
+    toast.className =
+      reminderKind === "assignment"
+        ? "assignment"
+        : days <= 1
+          ? "urgent"
+          : days <= 3
+            ? "warn"
+            : "notice";
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
     toast.innerHTML = [
       '<div class="shoug-exam-toast-main">',
-      '  <span class="shoug-exam-toast-icon">' + (reminderKind === "assignment" ? "DUE" : "EXAM") + '</span>',
+      '  <span class="shoug-exam-toast-icon">' +
+        (reminderKind === "assignment" ? "DUE" : "EXAM") +
+        "</span>",
       '  <div class="shoug-exam-toast-text">',
-      '    <div class="shoug-exam-toast-title">' + escHtml(reminderKind === "assignment" ? (exam.title || "Assignment") : ((exam.course || "Exam") + " " + examTypeLabel(exam.type))) + '</div>',
-      '    <div class="shoug-exam-toast-meta">' + escHtml(examDateLabel(exam.date)) + '</div>',
-      '  </div>',
-      '</div>',
-      '<div class="shoug-exam-toast-when">' + escHtml(examWhenLabel(days)) + '</div>',
-      '<button type="button" class="shoug-exam-toast-close" aria-label="Dismiss exam reminder">&times;</button>'
+      '    <div class="shoug-exam-toast-title">' +
+        escHtml(
+          reminderKind === "assignment"
+            ? exam.title || "Assignment"
+            : (exam.course || "Exam") + " " + examTypeLabel(exam.type),
+        ) +
+        "</div>",
+      '    <div class="shoug-exam-toast-meta">' +
+        escHtml(examDateLabel(exam.date)) +
+        "</div>",
+      "  </div>",
+      "</div>",
+      '<div class="shoug-exam-toast-when">' +
+        escHtml(examWhenLabel(days)) +
+        "</div>",
+      '<button type="button" class="shoug-exam-toast-close" aria-label="Dismiss exam reminder">&times;</button>',
     ].join("");
 
     document.body.appendChild(toast);
     var close = toast.querySelector(".shoug-exam-toast-close");
     if (close) {
       close.addEventListener("click", function () {
-        try { localStorage.setItem(storageKey, "dismissed"); } catch (e) { }
+        try {
+          localStorage.setItem(storageKey, "dismissed");
+        } catch (e) {}
         removeExamToast();
       });
     }
-    requestAnimationFrame(function () { toast.classList.add("open"); });
+    requestAnimationFrame(function () {
+      toast.classList.add("open");
+    });
   }
 
   function maybeFireBrowserExamNotification(user, exam) {
-    if (!user || !exam || !("Notification" in window) || Notification.permission !== "granted") return;
+    if (
+      !user ||
+      !exam ||
+      !("Notification" in window) ||
+      Notification.permission !== "granted"
+    )
+      return;
     var days = daysUntilExam(exam.date);
-    var reminderKind = exam.reminderKind === "assignment" ? "assignment" : "exam";
-    var allowedDays = reminderKind === "assignment" && Array.isArray(exam.reminderDays) ? exam.reminderDays : [7, 3, 1, 0];
+    var reminderKind =
+      exam.reminderKind === "assignment" ? "assignment" : "exam";
+    var allowedDays =
+      reminderKind === "assignment" && Array.isArray(exam.reminderDays)
+        ? exam.reminderDays
+        : [7, 3, 1, 0];
     if (allowedDays.indexOf(days) === -1) return;
     var key = reminderKind + "-notif-" + user.uid + "-" + exam.id + "-d" + days;
     try {
       if (localStorage.getItem(key)) return;
       localStorage.setItem(key, "1");
-    } catch (e) { }
-    var title = reminderKind === "assignment" ? (exam.title || "Assignment") : (exam.course || "Exam");
-    new Notification((reminderKind === "assignment" ? "Assignment Due - " : "Exam Reminder - ") + title, {
-      body: (reminderKind === "assignment" ? title : title + " " + examTypeLabel(exam.type)) + " is due " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
-      icon: "/assets/shoug-favicon-v3.png",
-      badge: "/assets/shoug-favicon-v3.png",
-      tag: key
-    });
+    } catch (e) {}
+    var title =
+      reminderKind === "assignment"
+        ? exam.title || "Assignment"
+        : exam.course || "Exam";
+    new Notification(
+      (reminderKind === "assignment"
+        ? "Assignment Due - "
+        : "Exam Reminder - ") + title,
+      {
+        body:
+          (reminderKind === "assignment"
+            ? title
+            : title + " " + examTypeLabel(exam.type)) +
+          " is due " +
+          examWhenLabel(days).toLowerCase() +
+          " (" +
+          examDateLabel(exam.date) +
+          ")",
+        icon: "/assets/shoug-favicon-v3.png",
+        badge: "/assets/shoug-favicon-v3.png",
+        tag: key,
+      },
+    );
   }
 
   function startExamReminder(user) {
     if (!user || _examReminderUid === user.uid) return;
     _examReminderUid = user.uid;
 
-    firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
-      if (!doc.exists || _examReminderUid !== user.uid) return;
-      var data = doc.data();
-      var examsMap = data.exams || {};
-      var upcoming = Object.keys(examsMap).map(function (id) {
-        var e = examsMap[id] || {};
-        var days = daysUntilExam(e.date);
-        return { id: id, course: e.course, type: e.type, date: e.date, days: days, reminderKind: "exam" };
-      });
-      (Array.isArray(data.calendarEvents) ? data.calendarEvents : []).forEach(function (item) {
-        if (!item || item.kind !== "assignment" || item.submitted || item.remindersEnabled === false) return;
-        var dueDate = item.endDate || item.date;
-        upcoming.push({ id: item.id, title: item.title, date: dueDate, days: daysUntilExam(dueDate), reminderKind: "assignment", reminderDays: Array.isArray(item.reminderDays) ? item.reminderDays : [7, 3, 1, 0] });
-      });
-      upcoming = upcoming.filter(function (e) {
-        if (e.days === null || e.days < 0 || e.days > 7) return false;
-        return e.reminderKind !== "assignment" || !Array.isArray(e.reminderDays) || e.reminderDays.indexOf(e.days) > -1;
-      }).sort(function (a, b) {
-        return a.days - b.days || (a.reminderKind === "assignment" ? -1 : 1);
-      });
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(user.uid)
+      .get()
+      .then(function (doc) {
+        if (!doc.exists || _examReminderUid !== user.uid) return;
+        var data = doc.data();
+        var examsMap = data.exams || {};
+        var upcoming = Object.keys(examsMap).map(function (id) {
+          var e = examsMap[id] || {};
+          var days = daysUntilExam(e.date);
+          return {
+            id: id,
+            course: e.course,
+            type: e.type,
+            date: e.date,
+            days: days,
+            reminderKind: "exam",
+          };
+        });
+        (Array.isArray(data.calendarEvents) ? data.calendarEvents : []).forEach(
+          function (item) {
+            if (
+              !item ||
+              item.kind !== "assignment" ||
+              item.submitted ||
+              item.remindersEnabled === false
+            )
+              return;
+            var dueDate = item.endDate || item.date;
+            upcoming.push({
+              id: item.id,
+              title: item.title,
+              date: dueDate,
+              days: daysUntilExam(dueDate),
+              reminderKind: "assignment",
+              reminderDays: Array.isArray(item.reminderDays)
+                ? item.reminderDays
+                : [7, 3, 1, 0],
+            });
+          },
+        );
+        upcoming = upcoming
+          .filter(function (e) {
+            if (e.days === null || e.days < 0 || e.days > 7) return false;
+            return (
+              e.reminderKind !== "assignment" ||
+              !Array.isArray(e.reminderDays) ||
+              e.reminderDays.indexOf(e.days) > -1
+            );
+          })
+          .sort(function (a, b) {
+            return (
+              a.days - b.days || (a.reminderKind === "assignment" ? -1 : 1)
+            );
+          });
 
-      if (!upcoming.length) return;
-      showExamToast(user, upcoming[0]);
-      maybeFireBrowserExamNotification(user, upcoming[0]);
-    }).catch(function () { });
+        if (!upcoming.length) return;
+        showExamToast(user, upcoming[0]);
+        maybeFireBrowserExamNotification(user, upcoming[0]);
+      })
+      .catch(function () {});
   }
 
   function stopExamReminder() {
@@ -833,7 +1140,7 @@
     try {
       var user = firebase.auth().currentUser;
       if (user) startExamReminder(user);
-    } catch (e) { }
+    } catch (e) {}
   });
 
   // ── Header button ─────────────────────────────────────────────────────────
@@ -847,7 +1154,8 @@
     var pad = 14;
     var shift = 0;
     if (rect.left < pad) shift = pad - rect.left;
-    if (rect.right > window.innerWidth - pad) shift = (window.innerWidth - pad) - rect.right;
+    if (rect.right > window.innerWidth - pad)
+      shift = window.innerWidth - pad - rect.right;
     if (shift) dropdown.style.transform = "translateX(" + shift + "px)";
   }
 
@@ -865,7 +1173,7 @@
       pending.className = "shoug-user-btn";
       pending.style.opacity = "0.5";
       pending.style.pointerEvents = "none";
-      pending.innerHTML = '<span>&#8230;</span>';
+      pending.innerHTML = "<span>&#8230;</span>";
       actions.insertBefore(pending, actions.firstChild);
       return;
     }
@@ -881,15 +1189,21 @@
       el.className = "shoug-user-btn";
       el.style.position = "relative";
       el.innerHTML = [
-        '<span id="shoug-user-avatar">' + escHtml((user.email || "U")[0].toUpperCase()) + '</span>',
+        '<span id="shoug-user-avatar">' +
+          escHtml((user.email || "U")[0].toUpperCase()) +
+          "</span>",
         '<span class="shoug-notif-badge" id="shoug-notif-badge" style="display:none"></span>',
         '<div class="shoug-user-dropdown">',
         '  <div class="shoug-notif-section" id="shoug-notif-section">',
         '    <div class="shoug-notif-hdr">// Notifications</div>',
         '    <div id="shoug-notif-list"><div class="shoug-notif-empty">No new notifications</div></div>',
-        '  </div>',
-        '  <div class="shoug-drop-email" id="shoug-drop-email">' + escHtml(user.email || "") + "</div>",
-        '  <a class="shoug-drop-link" href="/community/profile/?u=' + encodeURIComponent(user.uid) + '">My Profile</a>',
+        "  </div>",
+        '  <div class="shoug-drop-email" id="shoug-drop-email">' +
+          escHtml(user.email || "") +
+          "</div>",
+        '  <a class="shoug-drop-link" href="/community/profile/?u=' +
+          encodeURIComponent(user.uid) +
+          '">My Profile</a>',
         '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
@@ -911,20 +1225,35 @@
           markNotifsRead(user);
         }
       });
-      window.addEventListener("resize", function () { keepUserDropdownInViewport(el); });
-      el.querySelector("#shoug-signout").addEventListener("click", function (e) {
-        e.stopPropagation();
-        firebase.auth().signOut();
+      window.addEventListener("resize", function () {
+        keepUserDropdownInViewport(el);
       });
+      el.querySelector("#shoug-signout").addEventListener(
+        "click",
+        function (e) {
+          e.stopPropagation();
+          firebase.auth().signOut();
+        },
+      );
       startNotifListener(user);
 
-      firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
-        if (!doc.exists) return;
-        var url = avatarUrl(doc.data().avatarPreset);
-        if (!url) return;
-        var av = el.querySelector("#shoug-user-avatar");
-        if (av) av.outerHTML = '<img id="shoug-user-avatar" class="shoug-user-avatar-img" src="' + url + '" alt="">';
-      }).catch(function () { });
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(user.uid)
+        .get()
+        .then(function (doc) {
+          if (!doc.exists) return;
+          var url = avatarUrl(doc.data().avatarPreset);
+          if (!url) return;
+          var av = el.querySelector("#shoug-user-avatar");
+          if (av)
+            av.outerHTML =
+              '<img id="shoug-user-avatar" class="shoug-user-avatar-img" src="' +
+              url +
+              '" alt="">';
+        })
+        .catch(function () {});
 
       return;
     }
@@ -938,9 +1267,12 @@
 
   function pageDoc(user) {
     var slug = pageSlug();
-    return firebase.firestore()
-      .collection("userProgress").doc(user.uid)
-      .collection("pages").doc(slug);
+    return firebase
+      .firestore()
+      .collection("userProgress")
+      .doc(user.uid)
+      .collection("pages")
+      .doc(slug);
   }
 
   // Account-wide write-through cache: every page's completed/bookmarked state
@@ -953,11 +1285,21 @@
     return "shoug-progress-" + uid;
   }
   function readAccountCache(uid) {
-    try { return JSON.parse(localStorage.getItem(accountCacheKey(uid))) || { pages: {}, syncedAt: 0 }; }
-    catch (e) { return { pages: {}, syncedAt: 0 }; }
+    try {
+      return (
+        JSON.parse(localStorage.getItem(accountCacheKey(uid))) || {
+          pages: {},
+          syncedAt: 0,
+        }
+      );
+    } catch (e) {
+      return { pages: {}, syncedAt: 0 };
+    }
   }
   function writeAccountCache(uid, cache) {
-    try { localStorage.setItem(accountCacheKey(uid), JSON.stringify(cache)); } catch (e) { }
+    try {
+      localStorage.setItem(accountCacheKey(uid), JSON.stringify(cache));
+    } catch (e) {}
   }
   function readPageCache(uid) {
     return readAccountCache(uid).pages[pageSlug()] || {};
@@ -975,16 +1317,24 @@
   function syncAccountCache(user) {
     var cache = readAccountCache(user.uid);
     if (Date.now() - (cache.syncedAt || 0) < ACCOUNT_CACHE_TTL_MS) return;
-    firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get()
+    firebase
+      .firestore()
+      .collection("userProgress")
+      .doc(user.uid)
+      .collection("pages")
+      .get()
       .then(function (snap) {
         var pages = {};
         snap.forEach(function (doc) {
           var d = doc.data();
-          pages[doc.id] = { completed: !!d.completed, bookmarked: !!d.bookmarked };
+          pages[doc.id] = {
+            completed: !!d.completed,
+            bookmarked: !!d.bookmarked,
+          };
         });
         writeAccountCache(user.uid, { pages: pages, syncedAt: Date.now() });
       })
-      .catch(function () { });
+      .catch(function () {});
   }
 
   function injectCompleteBtn(user) {
@@ -1001,11 +1351,13 @@
     document.body.appendChild(completeBtn);
 
     if (readPageCache(user.uid).completed) setDone(true);
-    pageDoc(user).get().then(function (doc) {
-      var completed = doc.exists && !!doc.data().completed;
-      setDone(completed);
-      writePageCache(user.uid, { completed: completed });
-    });
+    pageDoc(user)
+      .get()
+      .then(function (doc) {
+        var completed = doc.exists && !!doc.data().completed;
+        setDone(completed);
+        writePageCache(user.uid, { completed: completed });
+      });
 
     completeBtn.addEventListener("click", function () {
       var isDone = completeBtn.classList.contains("done");
@@ -1020,29 +1372,48 @@
         completed: next,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
-      if (next) data.completedAt = firebase.firestore.FieldValue.serverTimestamp();
+      if (next)
+        data.completedAt = firebase.firestore.FieldValue.serverTimestamp();
       pageDoc(user).set(data, { merge: true });
 
       // Sync totalCompleted on the user doc
-      firebase.firestore().collection("users").doc(user.uid).set(
-        { totalCompleted: firebase.firestore.FieldValue.increment(next ? 1 : -1) },
-        { merge: true }
-      );
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            totalCompleted: firebase.firestore.FieldValue.increment(
+              next ? 1 : -1,
+            ),
+          },
+          { merge: true },
+        );
 
       // Sync coursesActive: recount distinct completed courses from userProgress
-      firebase.firestore().collection("userProgress").doc(user.uid)
-        .collection("pages").where("completed", "==", true).get()
+      firebase
+        .firestore()
+        .collection("userProgress")
+        .doc(user.uid)
+        .collection("pages")
+        .where("completed", "==", true)
+        .get()
         .then(function (snap) {
           var seen = {};
           snap.forEach(function (doc) {
-            var url = (doc.data().url || "").replace(/^\/+/, "")
+            var url = (doc.data().url || "")
+              .replace(/^\/+/, "")
               .replace(/other-courses(\/|%2F)stat101/gi, "math$1stat101"); // moved 2026-07-30
             var parts = url.split("/").filter(Boolean);
-            if (parts.length >= 3) seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
+            if (parts.length >= 3)
+              seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
           });
-          firebase.firestore().collection("users").doc(user.uid)
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(user.uid)
             .update({ coursesActive: Object.keys(seen).length })
-            .catch(function () { });
+            .catch(function () {});
         });
     });
   }
@@ -1053,11 +1424,16 @@
     document.getElementById("complete-icon").innerHTML = done
       ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5l3 3 5-5" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       : "";
-    document.getElementById("complete-label").textContent = done ? "Completed" : "Mark as complete";
+    document.getElementById("complete-label").textContent = done
+      ? "Completed"
+      : "Mark as complete";
   }
 
   function removeCompleteBtn() {
-    if (completeBtn) { completeBtn.remove(); completeBtn = null; }
+    if (completeBtn) {
+      completeBtn.remove();
+      completeBtn = null;
+    }
     var el = document.getElementById("shoug-complete-btn");
     if (el) el.remove();
   }
@@ -1068,7 +1444,10 @@
   var _cmtProfile = null;
 
   function removeCommentSection() {
-    if (_cmtUnsub) { _cmtUnsub(); _cmtUnsub = null; }
+    if (_cmtUnsub) {
+      _cmtUnsub();
+      _cmtUnsub = null;
+    }
     var el = document.getElementById("shoug-page-comments");
     if (el) el.remove();
     _cmtProfile = null;
@@ -1077,8 +1456,19 @@
   function injectCommentSection(user) {
     if (!isContentPage()) return;
     if (document.getElementById("shoug-page-comments")) return;
-    firebase.firestore().collection("users").doc(user.uid).get()
-      .catch(function () { return { exists: false, data: function () { return null; } }; })
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(user.uid)
+      .get()
+      .catch(function () {
+        return {
+          exists: false,
+          data: function () {
+            return null;
+          },
+        };
+      })
       .then(function (doc) {
         _cmtProfile = doc.exists ? doc.data() : null;
         buildCommentSection(user);
@@ -1090,30 +1480,37 @@
     var slug = pageSlug();
     var p = _cmtProfile;
     var hasProfile = p && p.username;
-    var c = hasProfile ? (p.avatarColor || "#b829ea") : "#b829ea";
-    var init = hasProfile ? escHtml((p.displayName || p.username || "?")[0].toUpperCase()) : "?";
+    var c = hasProfile ? p.avatarColor || "#b829ea" : "#b829ea";
+    var init = hasProfile
+      ? escHtml((p.displayName || p.username || "?")[0].toUpperCase())
+      : "?";
 
     var formHtml = hasProfile
-      ? '<div class="scmt-form">'
-      + '<span class="scmt-form-label">Leave a comment</span>'
-      + '<div class="scmt-form-row">'
-      + avatarBlock("scmt-av", p.avatarPreset, c, init)
-      + '<textarea class="scmt-input" id="scmt-input" placeholder="Share your thoughts, ask a question, or help a classmate…" rows="3" maxlength="1000"></textarea>'
-      + '</div>'
-      + '<div class="scmt-form-foot">'
-      + '<span class="scmt-as">Posting as <strong style="color:' + c + '">@' + escHtml(p.username) + '</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>'
-      + '<button class="scmt-post" id="scmt-post">Post Comment</button>'
-      + '</div>'
-      + '</div>'
+      ? '<div class="scmt-form">' +
+        '<span class="scmt-form-label">Leave a comment</span>' +
+        '<div class="scmt-form-row">' +
+        avatarBlock("scmt-av", p.avatarPreset, c, init) +
+        '<textarea class="scmt-input" id="scmt-input" placeholder="Share your thoughts, ask a question, or help a classmate…" rows="3" maxlength="1000"></textarea>' +
+        "</div>" +
+        '<div class="scmt-form-foot">' +
+        '<span class="scmt-as">Posting as <strong style="color:' +
+        c +
+        '">@' +
+        escHtml(p.username) +
+        "</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>" +
+        '<button class="scmt-post" id="scmt-post">Post Comment</button>' +
+        "</div>" +
+        "</div>"
       : '<div class="scmt-noprofile">Set up a <a href="/account/">community profile</a> on your dashboard to join the discussion.</div>';
 
     var wrap = document.createElement("section");
     wrap.id = "shoug-page-comments";
-    wrap.innerHTML = '<div class="scmt-inner">'
-      + '<div class="scmt-head"><span class="scmt-tag">// Discussion</span><span class="scmt-count" id="scmt-count"></span></div>'
-      + '<div class="scmt-list" id="scmt-list"><div class="scmt-empty">Loading comments…</div></div>'
-      + formHtml
-      + '</div>';
+    wrap.innerHTML =
+      '<div class="scmt-inner">' +
+      '<div class="scmt-head"><span class="scmt-tag">// Discussion</span><span class="scmt-count" id="scmt-count"></span></div>' +
+      '<div class="scmt-list" id="scmt-list"><div class="scmt-empty">Loading comments…</div></div>' +
+      formHtml +
+      "</div>";
 
     var embedWrapper = document.querySelector(".embed-area-wrapper");
     var contentArea = document.querySelector(".content-area");
@@ -1130,27 +1527,44 @@
         mainEl.appendChild(wrap);
       } else {
         var footer = document.querySelector("footer");
-        if (footer) { footer.before(wrap); } else { document.body.appendChild(wrap); }
+        if (footer) {
+          footer.before(wrap);
+        } else {
+          document.body.appendChild(wrap);
+        }
       }
     }
 
     if (hasProfile) {
       var input = document.getElementById("scmt-input");
       var btn = document.getElementById("scmt-post");
-      btn.addEventListener("click", function () { postPageComment(user, slug, input, btn); });
+      btn.addEventListener("click", function () {
+        postPageComment(user, slug, input, btn);
+      });
       input.addEventListener("keydown", function (e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") postPageComment(user, slug, input, btn);
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter")
+          postPageComment(user, slug, input, btn);
       });
     }
 
-    _cmtUnsub = firebase.firestore()
-      .collection("pageComments").doc(slug).collection("comments")
-      .orderBy("createdAt", "asc").limit(100)
-      .onSnapshot(function (snap) { renderCommentList(snap, user); },
+    _cmtUnsub = firebase
+      .firestore()
+      .collection("pageComments")
+      .doc(slug)
+      .collection("comments")
+      .orderBy("createdAt", "asc")
+      .limit(100)
+      .onSnapshot(
+        function (snap) {
+          renderCommentList(snap, user);
+        },
         function () {
           var list = document.getElementById("scmt-list");
-          if (list) list.innerHTML = '<div class="scmt-empty">Comments unavailable — update your Firestore rules to enable this.</div>';
-        });
+          if (list)
+            list.innerHTML =
+              '<div class="scmt-empty">Comments unavailable — update your Firestore rules to enable this.</div>';
+        },
+      );
   }
 
   function renderCommentList(snap, user) {
@@ -1158,10 +1572,14 @@
     var countEl = document.getElementById("scmt-count");
     if (!list) return;
     var all = [];
-    snap.forEach(function (doc) { all.push(Object.assign({ id: doc.id }, doc.data())); });
+    snap.forEach(function (doc) {
+      all.push(Object.assign({ id: doc.id }, doc.data()));
+    });
 
     // Separate top-level comments from replies
-    var topLevel = all.filter(function (c) { return !c.replyTo; });
+    var topLevel = all.filter(function (c) {
+      return !c.replyTo;
+    });
     var replyMap = {};
     all.forEach(function (c) {
       if (c.replyTo) {
@@ -1171,63 +1589,130 @@
     });
     Object.keys(replyMap).forEach(function (k) {
       replyMap[k].sort(function (a, b) {
-        var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
-        var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+        var ta =
+          a.createdAt && a.createdAt.toDate
+            ? a.createdAt.toDate().getTime()
+            : 0;
+        var tb =
+          b.createdAt && b.createdAt.toDate
+            ? b.createdAt.toDate().getTime()
+            : 0;
         return ta - tb;
       });
     });
 
-    if (countEl) countEl.textContent = all.length ? all.length + " comment" + (all.length !== 1 ? "s" : "") : "";
-    if (!topLevel.length) { list.innerHTML = '<div class="scmt-empty">No comments yet — be the first!</div>'; return; }
+    if (countEl)
+      countEl.textContent = all.length
+        ? all.length + " comment" + (all.length !== 1 ? "s" : "")
+        : "";
+    if (!topLevel.length) {
+      list.innerHTML =
+        '<div class="scmt-empty">No comments yet — be the first!</div>';
+      return;
+    }
 
     var slug = pageSlug();
     var hasProfile = _cmtProfile && _cmtProfile.username;
 
     function commentHtml(cm, isReply) {
-      var ts = cm.createdAt && cm.createdAt.toDate ? cm.createdAt.toDate() : new Date();
-      var timeStr = ts.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      var ts =
+        cm.createdAt && cm.createdAt.toDate
+          ? cm.createdAt.toDate()
+          : new Date();
+      var timeStr = ts.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
       var isMe = cm.uid === user.uid;
       var cc = cm.avatarColor || "#b829ea";
       var ci = escHtml((cm.displayName || cm.username || "?")[0].toUpperCase());
-      return '<div class="scmt-item' + (isReply ? " scmt-item--reply" : "") + '" data-id="' + escHtml(cm.id) + '">'
-        + avatarBlock("scmt-av", cm.avatarPreset, cc, ci)
-        + '<div class="scmt-body">'
-        + '<div class="scmt-meta">'
-        + (isReply && cm.replyToUsername ? '<span class="scmt-reply-to">↳ @' + escHtml(cm.replyToUsername) + '&nbsp;&nbsp;</span>' : "")
-        + '<span class="scmt-author" style="color:' + cc + '">' + escHtml(cm.displayName || cm.username || "Unknown") + '</span>'
-        + '<span class="scmt-uname">@' + escHtml(cm.username || "") + '</span>'
-        + '<span class="scmt-time">' + escHtml(timeStr) + '</span>'
-        + (isMe ? '<button class="scmt-del" data-id="' + escHtml(cm.id) + '" data-slug="' + escHtml(slug) + '">✕</button>' : "")
-        + '</div>'
-        + '<div class="scmt-text">' + escHtml(cm.text) + '</div>'
-        + (hasProfile && !isReply ? '<div class="scmt-actions"><button class="scmt-reply-btn" data-id="' + escHtml(cm.id) + '">↳ Reply</button></div>' : "")
-        + '</div></div>';
+      return (
+        '<div class="scmt-item' +
+        (isReply ? " scmt-item--reply" : "") +
+        '" data-id="' +
+        escHtml(cm.id) +
+        '">' +
+        avatarBlock("scmt-av", cm.avatarPreset, cc, ci) +
+        '<div class="scmt-body">' +
+        '<div class="scmt-meta">' +
+        (isReply && cm.replyToUsername
+          ? '<span class="scmt-reply-to">↳ @' +
+            escHtml(cm.replyToUsername) +
+            "&nbsp;&nbsp;</span>"
+          : "") +
+        '<span class="scmt-author" style="color:' +
+        cc +
+        '">' +
+        escHtml(cm.displayName || cm.username || "Unknown") +
+        "</span>" +
+        '<span class="scmt-uname">@' +
+        escHtml(cm.username || "") +
+        "</span>" +
+        '<span class="scmt-time">' +
+        escHtml(timeStr) +
+        "</span>" +
+        (isMe
+          ? '<button class="scmt-del" data-id="' +
+            escHtml(cm.id) +
+            '" data-slug="' +
+            escHtml(slug) +
+            '">✕</button>'
+          : "") +
+        "</div>" +
+        '<div class="scmt-text">' +
+        escHtml(cm.text) +
+        "</div>" +
+        (hasProfile && !isReply
+          ? '<div class="scmt-actions"><button class="scmt-reply-btn" data-id="' +
+            escHtml(cm.id) +
+            '">↳ Reply</button></div>'
+          : "") +
+        "</div></div>"
+      );
     }
 
-    list.innerHTML = topLevel.map(function (cm) {
-      var replies = replyMap[cm.id] || [];
-      var html = '<div class="scmt-reply-wrap">' + commentHtml(cm, false);
-      if (hasProfile) {
-        html += '<div class="scmt-inline-form" id="rform-' + escHtml(cm.id) + '">'
-          + '<textarea class="scmt-inline-input" placeholder="Write a reply…" rows="2" maxlength="500"></textarea>'
-          + '<div class="scmt-inline-actions">'
-          + '<button class="scmt-inline-post">Reply</button>'
-          + '<button class="scmt-inline-cancel">Cancel</button>'
-          + '</div></div>';
-      }
-      if (replies.length) {
-        html += '<div class="scmt-replies">' + replies.map(function (r) { return commentHtml(r, true); }).join("") + '</div>';
-      }
-      return html + '</div>';
-    }).join("");
+    list.innerHTML = topLevel
+      .map(function (cm) {
+        var replies = replyMap[cm.id] || [];
+        var html = '<div class="scmt-reply-wrap">' + commentHtml(cm, false);
+        if (hasProfile) {
+          html +=
+            '<div class="scmt-inline-form" id="rform-' +
+            escHtml(cm.id) +
+            '">' +
+            '<textarea class="scmt-inline-input" placeholder="Write a reply…" rows="2" maxlength="500"></textarea>' +
+            '<div class="scmt-inline-actions">' +
+            '<button class="scmt-inline-post">Reply</button>' +
+            '<button class="scmt-inline-cancel">Cancel</button>' +
+            "</div></div>";
+        }
+        if (replies.length) {
+          html +=
+            '<div class="scmt-replies">' +
+            replies
+              .map(function (r) {
+                return commentHtml(r, true);
+              })
+              .join("") +
+            "</div>";
+        }
+        return html + "</div>";
+      })
+      .join("");
 
     // Delete buttons
     list.querySelectorAll(".scmt-del").forEach(function (btn) {
       btn.addEventListener("click", function (e) {
         e.stopPropagation();
         if (!confirm("Delete this comment?")) return;
-        firebase.firestore().collection("pageComments").doc(btn.dataset.slug)
-          .collection("comments").doc(btn.dataset.id).delete();
+        firebase
+          .firestore()
+          .collection("pageComments")
+          .doc(btn.dataset.slug)
+          .collection("comments")
+          .doc(btn.dataset.id)
+          .delete();
       });
     });
 
@@ -1236,56 +1721,78 @@
       list.querySelectorAll(".scmt-reply-btn").forEach(function (btn) {
         btn.addEventListener("click", function () {
           var parentId = btn.dataset.id;
-          list.querySelectorAll(".scmt-inline-form.open").forEach(function (f) { f.classList.remove("open"); });
+          list.querySelectorAll(".scmt-inline-form.open").forEach(function (f) {
+            f.classList.remove("open");
+          });
           var form = document.getElementById("rform-" + parentId);
           if (!form) return;
           form.classList.add("open");
           var ta = form.querySelector(".scmt-inline-input");
-          if (ta) { ta.value = ""; ta.focus(); }
+          if (ta) {
+            ta.value = "";
+            ta.focus();
+          }
         });
       });
 
       list.querySelectorAll(".scmt-inline-form").forEach(function (form) {
         var parentId = form.id.replace("rform-", "");
-        var parentCm = topLevel.filter(function (c) { return c.id === parentId; })[0];
-        var parentUsername = parentCm ? (parentCm.username || "") : "";
+        var parentCm = topLevel.filter(function (c) {
+          return c.id === parentId;
+        })[0];
+        var parentUsername = parentCm ? parentCm.username || "" : "";
         var ta = form.querySelector(".scmt-inline-input");
         var postBtn = form.querySelector(".scmt-inline-post");
         var cancelBtn = form.querySelector(".scmt-inline-cancel");
 
-        if (cancelBtn) cancelBtn.addEventListener("click", function () { form.classList.remove("open"); });
+        if (cancelBtn)
+          cancelBtn.addEventListener("click", function () {
+            form.classList.remove("open");
+          });
 
         function doReply() {
           var text = ta ? ta.value.trim() : "";
           if (!text) return;
           postBtn.disabled = true;
-          firebase.firestore().collection("pageComments").doc(slug).collection("comments").add({
-            uid: user.uid,
-            username: _cmtProfile.username || "",
-            displayName: _cmtProfile.displayName || "",
-            avatarColor: _cmtProfile.avatarColor || "#b829ea",
-            avatarPreset: _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
-            text: text,
-            replyTo: parentId,
-            replyToUsername: parentUsername,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          }).then(function () {
-            if (ta) ta.value = "";
-            form.classList.remove("open");
-            postBtn.disabled = false;
-            // Notify the parent comment's author
-            if (parentCm && parentCm.uid && parentCm.uid !== user.uid) {
-              writeNotif(parentCm.uid, {
-                type: "reply",
-                fromUid: user.uid,
-                fromUsername: _cmtProfile.username || "",
-                fromDisplayName: _cmtProfile.displayName || "",
-                fromAvatarColor: _cmtProfile.avatarColor || "#b829ea",
-                pageUrl: window.location.pathname,
-                commentPreview: text.slice(0, 120),
-              });
-            }
-          }).catch(function () { postBtn.disabled = false; });
+          firebase
+            .firestore()
+            .collection("pageComments")
+            .doc(slug)
+            .collection("comments")
+            .add({
+              uid: user.uid,
+              username: _cmtProfile.username || "",
+              displayName: _cmtProfile.displayName || "",
+              avatarColor: _cmtProfile.avatarColor || "#b829ea",
+              avatarPreset:
+                _cmtProfile.avatarPreset != null
+                  ? _cmtProfile.avatarPreset
+                  : null,
+              text: text,
+              replyTo: parentId,
+              replyToUsername: parentUsername,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+            .then(function () {
+              if (ta) ta.value = "";
+              form.classList.remove("open");
+              postBtn.disabled = false;
+              // Notify the parent comment's author
+              if (parentCm && parentCm.uid && parentCm.uid !== user.uid) {
+                writeNotif(parentCm.uid, {
+                  type: "reply",
+                  fromUid: user.uid,
+                  fromUsername: _cmtProfile.username || "",
+                  fromDisplayName: _cmtProfile.displayName || "",
+                  fromAvatarColor: _cmtProfile.avatarColor || "#b829ea",
+                  pageUrl: window.location.pathname,
+                  commentPreview: text.slice(0, 120),
+                });
+              }
+            })
+            .catch(function () {
+              postBtn.disabled = false;
+            });
         }
 
         if (postBtn) postBtn.addEventListener("click", doReply);
@@ -1303,20 +1810,28 @@
     var text = input ? input.value.trim() : "";
     if (!text || !_cmtProfile) return;
     btn.disabled = true;
-    firebase.firestore().collection("pageComments").doc(slug).collection("comments").add({
-      uid: user.uid,
-      username: _cmtProfile.username || "",
-      displayName: _cmtProfile.displayName || "",
-      avatarColor: _cmtProfile.avatarColor || "#b829ea",
-      avatarPreset: _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
-      text: text,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }).then(function () {
-      input.value = "";
-      btn.disabled = false;
-    }).catch(function () {
-      btn.disabled = false;
-    });
+    firebase
+      .firestore()
+      .collection("pageComments")
+      .doc(slug)
+      .collection("comments")
+      .add({
+        uid: user.uid,
+        username: _cmtProfile.username || "",
+        displayName: _cmtProfile.displayName || "",
+        avatarColor: _cmtProfile.avatarColor || "#b829ea",
+        avatarPreset:
+          _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
+        text: text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .then(function () {
+        input.value = "";
+        btn.disabled = false;
+      })
+      .catch(function () {
+        btn.disabled = false;
+      });
   }
 
   // ── Onboarding ────────────────────────────────────────────────────────────
@@ -1333,29 +1848,60 @@
       context = "home";
       storageKey = "shoug-ob-home-v2";
     } else if (parts[0] === "academics") {
-      if (parts.length === 1) { context = "academics-index"; storageKey = "shoug-ob-academics-v2"; }
-      else if (parts.length === 2) { context = "academics-subject"; storageKey = "shoug-ob-subject-v2"; }
-      else { context = "academics-course"; storageKey = "shoug-ob-course-v2"; }
+      if (parts.length === 1) {
+        context = "academics-index";
+        storageKey = "shoug-ob-academics-v2";
+      } else if (parts.length === 2) {
+        context = "academics-subject";
+        storageKey = "shoug-ob-subject-v2";
+      } else {
+        context = "academics-course";
+        storageKey = "shoug-ob-course-v2";
+      }
     } else if (parts[0] === "resources") {
-      context = "resources"; storageKey = "shoug-ob-resources-v2";
+      context = "resources";
+      storageKey = "shoug-ob-resources-v2";
     } else if (parts[0] === "workshops") {
-      if (parts.length === 1) { context = "workshops"; storageKey = "shoug-ob-workshops-v2"; }
-      else { context = "workshop-detail"; storageKey = "shoug-ob-workshop-detail-v2"; }
+      if (parts.length === 1) {
+        context = "workshops";
+        storageKey = "shoug-ob-workshops-v2";
+      } else {
+        context = "workshop-detail";
+        storageKey = "shoug-ob-workshop-detail-v2";
+      }
     } else if (parts[0] === "about") {
-      context = "about"; storageKey = "shoug-ob-about-v2";
+      context = "about";
+      storageKey = "shoug-ob-about-v2";
     } else if (parts[0] === "work") {
-      if (parts.length === 1) { context = "work"; storageKey = "shoug-ob-work-v2"; }
-      else { context = "work-detail"; storageKey = "shoug-ob-work-detail-v2"; }
+      if (parts.length === 1) {
+        context = "work";
+        storageKey = "shoug-ob-work-v2";
+      } else {
+        context = "work-detail";
+        storageKey = "shoug-ob-work-detail-v2";
+      }
     } else if (parts[0] === "community") {
-      if (parts.length === 1) { context = "community"; storageKey = "shoug-ob-community-v2"; }
-      else { context = "community-profile"; storageKey = "shoug-ob-profile-v2"; }
+      if (parts.length === 1) {
+        context = "community";
+        storageKey = "shoug-ob-community-v2";
+      } else {
+        context = "community-profile";
+        storageKey = "shoug-ob-profile-v2";
+      }
     } else if (parts[0] === "account") {
-      if (parts[1] === "calendar") { context = "account-calendar"; storageKey = "shoug-ob-calendar-v1"; }
-      else { context = "account"; storageKey = "shoug-ob-account-v2"; }
+      if (parts[1] === "calendar") {
+        context = "account-calendar";
+        storageKey = "shoug-ob-calendar-v1";
+      } else {
+        context = "account";
+        storageKey = "shoug-ob-account-v2";
+      }
     } else if (parts[0] === "bookmarks") {
-      context = "bookmarks"; storageKey = "shoug-ob-bookmarks-v2";
+      context = "bookmarks";
+      storageKey = "shoug-ob-bookmarks-v2";
     } else if (parts[0] === "academic-plan-themes") {
-      context = "academic-plan-themes"; storageKey = "shoug-ob-apt-v2";
+      context = "academic-plan-themes";
+      storageKey = "shoug-ob-apt-v2";
     } else {
       return false; // No walkthrough for unrecognised pages (policy, career-development, etc.)
     }
@@ -1385,54 +1931,81 @@
           body: "Start here for course content. Pick a track, then choose a course.",
         },
         {
-          target: function () { return document.querySelector(".hub-grid") || document.querySelector(".track-card"); },
+          target: function () {
+            return (
+              document.querySelector(".hub-grid") ||
+              document.querySelector(".track-card")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 5 · Track Cards",
           title: "Four Subject Tracks",
           body: "Each card is a subject track. The badge shows how many courses are inside.",
         },
         {
-          target: function () { return document.querySelector('a.track-card[href="/academics/computer-science/"]'); },
+          target: function () {
+            return document.querySelector(
+              'a.track-card[href="/academics/computer-science/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 5 · Computer Science",
           title: "Computer Science Track",
           body: "<strong>CS</strong> has the core computing courses: data, systems, databases, networks, and more.",
         },
         {
-          target: function () { return document.querySelector('a.track-card[href="/academics/software-engineering/"]'); },
+          target: function () {
+            return document.querySelector(
+              'a.track-card[href="/academics/software-engineering/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 5 · Software Engineering",
           title: "Software Engineering Track",
           body: "<strong>SE</strong> covers requirements, architecture, design, testing, and practice.",
         },
         {
-          target: function () { return document.querySelector('a.track-card[href="/academics/cybersecurity/"]') || document.querySelector('a.track-card.cyber'); },
+          target: function () {
+            return (
+              document.querySelector(
+                'a.track-card[href="/academics/cybersecurity/"]',
+              ) || document.querySelector("a.track-card.cyber")
+            );
+          },
           position: "top",
           tag: "Step 4 of 5 · Cybersecurity",
           title: "Cybersecurity Track",
           body: "<strong>CYS</strong> is the hands-on security track: labs, tools, and CTF-style work.",
         },
         {
-          target: function () { return document.querySelector('a.track-card[href="/academics/other-courses/"]'); },
+          target: function () {
+            return document.querySelector(
+              'a.track-card[href="/academics/other-courses/"]',
+            );
+          },
           position: "top",
           tag: "Step 5 of 5 · Other Courses",
           title: "Other Courses",
           body: "<strong>Other Courses</strong> holds writing, ethics, physics, science, and shared requirements.",
         },
       ];
-
     } else if (context === "academics-subject") {
       // Subject listing page like /academics/computer-science/
       steps = [
         {
-          target: function () { return document.querySelector(".course-grid") || document.querySelector(".course-card") || document.querySelector(".course-row"); },
+          target: function () {
+            return (
+              document.querySelector(".course-grid") ||
+              document.querySelector(".course-card") ||
+              document.querySelector(".course-row")
+            );
+          },
           position: "bottom",
           tag: "Subject Track",
           title: "Pick a Course",
           body: "Each card is a course. Open one for notes, slides, resources, and exams.",
         },
       ];
-
     } else if (context === "academics-course") {
       // Any course or content page under /academics/{subject}/{course}/...
       steps = [
@@ -1444,7 +2017,9 @@
           body: "Course pages are split into sections. Use the sidebar or tabs to move around.",
         },
         {
-          target: function () { return document.querySelector(".academic-sidebar"); },
+          target: function () {
+            return document.querySelector(".academic-sidebar");
+          },
           position: "right",
           tag: "Step 1 of 6 · Sidebar",
           title: "Course Directory Sidebar",
@@ -1452,8 +2027,10 @@
         },
         {
           target: function () {
-            return document.querySelector(".academic-sidebar .tree-toggle-button")
-              || document.querySelector(".tree-toggle-button");
+            return (
+              document.querySelector(".academic-sidebar .tree-toggle-button") ||
+              document.querySelector(".tree-toggle-button")
+            );
           },
           position: "right",
           tag: "Step 2 of 6 · Expand / Collapse",
@@ -1462,7 +2039,10 @@
         },
         {
           target: function () {
-            return document.querySelector("nav.sub-nav") || document.querySelector(".sub-nav");
+            return (
+              document.querySelector("nav.sub-nav") ||
+              document.querySelector(".sub-nav")
+            );
           },
           position: "bottom",
           tag: "Step 3 of 6 · Section Tabs",
@@ -1471,7 +2051,10 @@
         },
         {
           target: function () {
-            return document.querySelector(".meta-panel-container") || document.querySelector(".meta-panel");
+            return (
+              document.querySelector(".meta-panel-container") ||
+              document.querySelector(".meta-panel")
+            );
           },
           position: "left",
           tag: "Step 4 of 6 · Metadata Panel",
@@ -1480,9 +2063,11 @@
         },
         {
           target: function () {
-            return document.querySelector(".tag-complete")
-              || document.getElementById("shoug-complete-btn")
-              || document.querySelector(".shoug-complete-btn");
+            return (
+              document.querySelector(".tag-complete") ||
+              document.getElementById("shoug-complete-btn") ||
+              document.querySelector(".shoug-complete-btn")
+            );
           },
           position: "bottom",
           tag: "Step 5 of 6 · Completion",
@@ -1497,7 +2082,6 @@
           body: "Bottom-right tools let you mark complete, bookmark, and save private notes.",
         },
       ];
-
     } else if (context === "resources") {
       steps = [
         {
@@ -1508,35 +2092,51 @@
           body: "A curated shelf of tools, docs, guides, and references.",
         },
         {
-          target: function () { return document.querySelector(".jump-nav") || document.querySelector(".jump-nav-inner"); },
+          target: function () {
+            return (
+              document.querySelector(".jump-nav") ||
+              document.querySelector(".jump-nav-inner")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 4 · Section Nav",
           title: "Jump to Any Category",
           body: "Use this bar to jump straight to a resource category.",
         },
         {
-          target: function () { return document.querySelector(".section-title-wrap") || document.querySelector(".section-num"); },
+          target: function () {
+            return (
+              document.querySelector(".section-title-wrap") ||
+              document.querySelector(".section-num")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 4 · Sections",
           title: "Organised by Category",
           body: "Numbered sections group related tools and links.",
         },
         {
-          target: function () { return document.querySelector("a.card") || document.querySelector(".card"); },
+          target: function () {
+            return (
+              document.querySelector("a.card") ||
+              document.querySelector(".card")
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 4 · Resource Cards",
           title: "Resource Cards",
           body: "Each card opens a tool, guide, or reference. Tags show what it covers.",
         },
         {
-          target: function () { return document.querySelector(".nav-alert"); },
+          target: function () {
+            return document.querySelector(".nav-alert");
+          },
           position: "bottom",
           tag: "Step 4 of 4 · Security Sections",
           title: "Security-Flagged Content",
           body: "<span style='color:#ff2a4b;'>Red</span> sections are security-focused. Use tools responsibly.",
         },
       ];
-
     } else if (context === "workshops") {
       steps = [
         {
@@ -1547,7 +2147,12 @@
           body: "Workshops are guided practical sessions with materials and notes.",
         },
         {
-          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-title"); },
+          target: function () {
+            return (
+              document.querySelector(".hero") ||
+              document.querySelector(".hero-title")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 3 · Overview",
           title: "What's Here",
@@ -1555,9 +2160,13 @@
         },
         {
           target: function () {
-            return (triggerEl && triggerEl.closest && triggerEl.closest(".dossier-card")) ||
+            return (
+              (triggerEl &&
+                triggerEl.closest &&
+                triggerEl.closest(".dossier-card")) ||
               document.querySelector(".dossier-card") ||
-              document.querySelector(".workshops-hub");
+              document.querySelector(".workshops-hub")
+            );
           },
           position: "bottom",
           tag: "Step 2 of 3 · Workshop Cards",
@@ -1575,11 +2184,18 @@
         },
       ];
 
-      var triggeredWorkshopCard = triggerEl && triggerEl.closest ? triggerEl.closest(".dossier-card") : null;
-      if (triggeredWorkshopCard && triggeredWorkshopCard.getAttribute("data-accent") !== "red") {
-        steps = steps.filter(function (step) { return step.title !== "Cybersecurity Crash Course"; });
+      var triggeredWorkshopCard =
+        triggerEl && triggerEl.closest
+          ? triggerEl.closest(".dossier-card")
+          : null;
+      if (
+        triggeredWorkshopCard &&
+        triggeredWorkshopCard.getAttribute("data-accent") !== "red"
+      ) {
+        steps = steps.filter(function (step) {
+          return step.title !== "Cybersecurity Crash Course";
+        });
       }
-
     } else if (context === "about") {
       steps = [
         {
@@ -1590,28 +2206,42 @@
           body: "A quick profile: background, roles, skills, and contact.",
         },
         {
-          target: function () { return document.querySelector(".identity-col") || document.querySelector(".display-name"); },
+          target: function () {
+            return (
+              document.querySelector(".identity-col") ||
+              document.querySelector(".display-name")
+            );
+          },
           position: "right",
           tag: "Step 1 of 3 · Identity",
           title: "Who Built This",
           body: "Name, roles, and a short personal intro live here.",
         },
         {
-          target: function () { return document.querySelector(".terminal-col") || document.querySelector(".terminal-block"); },
+          target: function () {
+            return (
+              document.querySelector(".terminal-col") ||
+              document.querySelector(".terminal-block")
+            );
+          },
           position: "left",
           tag: "Step 2 of 3 · Terminal Block",
           title: "Skills & Stats",
           body: "A quick system-log view of skills, tools, and stats.",
         },
         {
-          target: function () { return document.querySelector(".shoug-contact-btn") || document.querySelector('a[href^="mailto"]'); },
+          target: function () {
+            return (
+              document.querySelector(".shoug-contact-btn") ||
+              document.querySelector('a[href^="mailto"]')
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 3 · Contact",
           title: "Get in Touch",
           body: "Use Contact to report errors, suggest resources, or reach out.",
         },
       ];
-
     } else if (context === "work") {
       steps = [
         {
@@ -1622,28 +2252,42 @@
           body: "Browse projects, case studies, and applied work.",
         },
         {
-          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-title"); },
+          target: function () {
+            return (
+              document.querySelector(".hero") ||
+              document.querySelector(".hero-title")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 3 · Hero",
           title: "Work Overview",
           body: "This summarizes the kinds of work featured here.",
         },
         {
-          target: function () { return document.querySelector(".panels-grid") || document.querySelector(".panel"); },
+          target: function () {
+            return (
+              document.querySelector(".panels-grid") ||
+              document.querySelector(".panel")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 3 · Panels",
           title: "Work Categories",
           body: "Panels group projects by theme, role, or output.",
         },
         {
-          target: function () { return document.querySelector(".work-grid") || document.querySelector(".work-card"); },
+          target: function () {
+            return (
+              document.querySelector(".work-grid") ||
+              document.querySelector(".work-card")
+            );
+          },
           position: "top",
           tag: "Step 3 of 3 · Project Cards",
           title: "Project Cards",
           body: "Each card opens a project case study.",
         },
       ];
-
     } else if (context === "workshop-detail") {
       // Inside a specific workshop like /workshops/cybersecurity-crash-course/
       steps = [
@@ -1655,21 +2299,30 @@
           body: "This is the full archive for one workshop.",
         },
         {
-          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-content"); },
+          target: function () {
+            return (
+              document.querySelector(".hero") ||
+              document.querySelector(".hero-content")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 2 · Overview",
           title: "Workshop Brief",
           body: "A quick brief: topic, audience, and session context.",
         },
         {
-          target: function () { return document.querySelector(".cards-grid") || document.querySelector(".workshop-card"); },
+          target: function () {
+            return (
+              document.querySelector(".cards-grid") ||
+              document.querySelector(".workshop-card")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 2 · Sections",
           title: "Navigate the Dossier",
           body: "Open a card for schedule, topics, handouts, labs, or reflection.",
         },
       ];
-
     } else if (context === "work-detail") {
       // Inside /work/projects/ or other work sub-pages
       steps = [
@@ -1681,21 +2334,30 @@
           body: "A project archive with scope, stack, role, and outputs.",
         },
         {
-          target: function () { return document.querySelector(".filters") || document.querySelector(".filter-btn"); },
+          target: function () {
+            return (
+              document.querySelector(".filters") ||
+              document.querySelector(".filter-btn")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 2 · Filters",
           title: "Filter by Category",
           body: "Filter projects by domain or view everything.",
         },
         {
-          target: function () { return document.querySelector(".project-record") || document.querySelector(".project-list"); },
+          target: function () {
+            return (
+              document.querySelector(".project-record") ||
+              document.querySelector(".project-list")
+            );
+          },
           position: "top",
           tag: "Step 2 of 2 · Project Records",
           title: "Project Records",
           body: "Records include summary, stack, role, docs, and GitHub links.",
         },
       ];
-
     } else if (context === "community") {
       steps = [
         {
@@ -1706,28 +2368,41 @@
           body: "Follow classmates, discuss courses, and compare progress.",
         },
         {
-          target: function () { return document.querySelector(".comm-tabs") || document.querySelector(".comm-tab"); },
+          target: function () {
+            return (
+              document.querySelector(".comm-tabs") ||
+              document.querySelector(".comm-tab")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 3 · Tabs",
           title: "Four Sections",
           body: "Tabs switch between Browse, Activity, Leaderboards, and Discussions.",
         },
         {
-          target: function () { return document.querySelector('button.comm-tab[data-tab="discuss"]') || document.querySelector('button.comm-tab'); },
+          target: function () {
+            return (
+              document.querySelector('button.comm-tab[data-tab="discuss"]') ||
+              document.querySelector("button.comm-tab")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 3 · Discussions",
           title: "Course Discussions",
           body: "Pick a course, then ask questions or reply to classmates.",
         },
         {
-          target: function () { return document.querySelector('button.comm-tab[data-tab="leaderboard"]'); },
+          target: function () {
+            return document.querySelector(
+              'button.comm-tab[data-tab="leaderboard"]',
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 3 · Leaderboards",
           title: "Leaderboard & Podium",
           body: "Leaderboards rank students by completed pages.",
         },
       ];
-
     } else if (context === "community-profile") {
       steps = [
         {
@@ -1738,74 +2413,102 @@
           body: "Profiles show study stats, course progress, and exams.",
         },
         {
-          target: function () { return document.querySelector(".profile-stats"); },
+          target: function () {
+            return document.querySelector(".profile-stats");
+          },
           position: "bottom",
           tag: "Step 1 of 3 · Stats",
           title: "Study Stats",
           body: "Quick stats: completed pages, active courses, followers, and following.",
         },
         {
-          target: function () { return document.getElementById("exam-section"); },
+          target: function () {
+            return document.getElementById("exam-section");
+          },
           position: "top",
           tag: "Step 2 of 3 · Exams",
           title: "Exam Countdowns",
           body: "Exam countdowns help track quizzes, midterms, and finals.",
         },
         {
-          target: function () { return document.getElementById("follow-btn") || document.getElementById("edit-btn"); },
+          target: function () {
+            return (
+              document.getElementById("follow-btn") ||
+              document.getElementById("edit-btn")
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 3 · Follow",
           title: "Follow or Edit",
           body: "Follow classmates, or edit your own profile details.",
         },
       ];
-
     } else if (context === "account-calendar") {
       steps = [
         {
-          target: function () { return document.getElementById("semester-scope"); },
+          target: function () {
+            return document.getElementById("semester-scope");
+          },
           position: "bottom",
           tag: "Calendar · Semester",
           title: "Filter by Semester",
           body: "Use this when you want one term only. Choose <strong>All semesters</strong> to browse everything.",
         },
         {
-          target: function () { return document.getElementById("today-dashboard"); },
+          target: function () {
+            return document.getElementById("today-dashboard");
+          },
           position: "bottom",
           tag: "Calendar · Today",
           title: "Today at a Glance",
           body: "These cards show today’s classes, exams, study sessions, and real exam conflicts.",
         },
         {
-          target: function () { return document.getElementById("month-grid") || document.getElementById("calendar-month-panel"); },
+          target: function () {
+            return (
+              document.getElementById("month-grid") ||
+              document.getElementById("calendar-month-panel")
+            );
+          },
           position: "top",
           tag: "Calendar · Month",
           title: "Open Any Day",
           body: "Click a day to see the hourly Apple-style view, edit exams, add events, or adjust a single class meeting.",
         },
         {
-          target: function () { return document.getElementById("view-filters"); },
+          target: function () {
+            return document.getElementById("view-filters");
+          },
           position: "left",
           tag: "Calendar · Focus",
           title: "Hide Layers Temporarily",
           body: "Turn layers on or off without deleting anything. Useful when you only want to see exams or study sessions.",
         },
         {
-          target: function () { return document.getElementById("class-title") || document.getElementById("calendar-class-panel"); },
+          target: function () {
+            return (
+              document.getElementById("class-title") ||
+              document.getElementById("calendar-class-panel")
+            );
+          },
           position: "left",
           tag: "Calendar · Classes",
           title: "Add Class Schedules",
           body: "Add a course once for the semester. PSU dates stop the course automatically when classes end.",
         },
         {
-          target: function () { return document.getElementById("study-template") || document.getElementById("calendar-study-panel"); },
+          target: function () {
+            return (
+              document.getElementById("study-template") ||
+              document.getElementById("calendar-study-panel")
+            );
+          },
           position: "left",
           tag: "Calendar · Study",
           title: "Schedule Study Blocks",
           body: "Pick an exam and a template to quickly create a study session before the exam.",
         },
       ];
-
     } else if (context === "account") {
       steps = [
         {
@@ -1816,28 +2519,42 @@
           body: "Your study progress lives here, grouped by course and track.",
         },
         {
-          target: function () { return document.getElementById("stats-row") || document.querySelector(".stats-row"); },
+          target: function () {
+            return (
+              document.getElementById("stats-row") ||
+              document.querySelector(".stats-row")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 3 · Stats Strip",
           title: "Key Numbers at a Glance",
           body: "Top stats summarize completions, streaks, courses, and study days.",
         },
         {
-          target: function () { return document.getElementById("overview-row") || document.querySelector(".overview-row"); },
+          target: function () {
+            return (
+              document.getElementById("overview-row") ||
+              document.querySelector(".overview-row")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 3 · Progress Overview",
           title: "Progress Ring & Charts",
           body: "Charts summarize completion, balance, and recent activity.",
         },
         {
-          target: function () { return document.getElementById("track-grid") || document.querySelector(".track-grid"); },
+          target: function () {
+            return (
+              document.getElementById("track-grid") ||
+              document.querySelector(".track-grid")
+            );
+          },
           position: "top",
           tag: "Step 3 of 3 · Track Breakdown",
           title: "Progress by Track",
           body: "Track cards show progress by academic area.",
         },
       ];
-
     } else if (context === "bookmarks") {
       steps = [
         {
@@ -1848,28 +2565,42 @@
           body: "Saved pages live here, organized like a small database.",
         },
         {
-          target: function () { return document.querySelector(".folder-col") || document.querySelector(".folder-list"); },
+          target: function () {
+            return (
+              document.querySelector(".folder-col") ||
+              document.querySelector(".folder-list")
+            );
+          },
           position: "right",
           tag: "Step 1 of 3 · Directories",
           title: "Folder Sidebar",
           body: "Folders filter your saved pages. Add folders when needed.",
         },
         {
-          target: function () { return document.querySelector(".table-col") || document.querySelector(".table-body"); },
+          target: function () {
+            return (
+              document.querySelector(".table-col") ||
+              document.querySelector(".table-body")
+            );
+          },
           position: "left",
           tag: "Step 2 of 3 · Records Table",
           title: "Bookmark Records",
           body: "Rows are saved pages. Click one to inspect or reopen it.",
         },
         {
-          target: function () { return document.querySelector(".term-input-row") || document.querySelector(".term-input"); },
+          target: function () {
+            return (
+              document.querySelector(".term-input-row") ||
+              document.querySelector(".term-input")
+            );
+          },
           position: "top",
           tag: "Step 3 of 3 · Terminal",
           title: "Command Interface",
           body: "Type <strong>help</strong> to see bookmark commands.",
         },
       ];
-
     } else if (context === "academic-plan-themes") {
       steps = [
         {
@@ -1880,21 +2611,29 @@
           body: "Your degree plan, shown in different visual layouts.",
         },
         {
-          target: function () { return document.querySelector(".hero") || document.querySelector("h1"); },
+          target: function () {
+            return (
+              document.querySelector(".hero") || document.querySelector("h1")
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 2 · Your Plan",
           title: "Degree Plan Overview",
           body: "Scroll through semesters from Year 1 to graduation.",
         },
         {
-          target: function () { return document.querySelector("nav") || document.querySelector(".shoug-header-nav"); },
+          target: function () {
+            return (
+              document.querySelector("nav") ||
+              document.querySelector(".shoug-header-nav")
+            );
+          },
           position: "bottom",
           tag: "Step 2 of 2 · Switch Themes",
           title: "Try Other Layouts",
           body: "Try another plan theme if this layout does not click.",
         },
       ];
-
     } else {
       // Home page / general — full site tour
       steps = [
@@ -1906,42 +2645,66 @@
           body: "A quick tour of where everything lives.",
         },
         {
-          target: function () { return document.querySelector('.shoug-header-nav a[href="/academics/"]'); },
+          target: function () {
+            return document.querySelector(
+              '.shoug-header-nav a[href="/academics/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 1 of 7 · Academics",
           title: "Course Content",
           body: "<strong>Academics</strong> is where course notes, slides, and quizzes live.",
         },
         {
-          target: function () { return document.querySelector('.shoug-header-nav a[href="/work/"]'); },
+          target: function () {
+            return document.querySelector('.shoug-header-nav a[href="/work/"]');
+          },
           position: "bottom",
           tag: "Step 2 of 7 · Work",
           title: "Projects & Portfolio",
           body: "<strong>Work</strong> shows projects and case studies.",
         },
         {
-          target: function () { return document.querySelector('.shoug-header-nav a[href="/workshops/"]'); },
+          target: function () {
+            return document.querySelector(
+              '.shoug-header-nav a[href="/workshops/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 3 of 7 · Workshops",
           title: "Workshops",
           body: "<strong>Workshops</strong> are guided hands-on sessions.",
         },
         {
-          target: function () { return document.querySelector('.shoug-header-nav a[href="/resources/"]'); },
+          target: function () {
+            return document.querySelector(
+              '.shoug-header-nav a[href="/resources/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 4 of 7 · Resources",
           title: "Study Resources",
           body: "<strong>Resources</strong> has tools, references, guides, and links.",
         },
         {
-          target: function () { return document.querySelector('.shoug-header-nav a[href="/about/"]'); },
+          target: function () {
+            return document.querySelector(
+              '.shoug-header-nav a[href="/about/"]',
+            );
+          },
           position: "bottom",
           tag: "Step 5 of 7 · About",
           title: "About This Site",
           body: "<strong>About</strong> explains who built the site and how to reach out.",
         },
         {
-          target: function () { return document.getElementById("shoug-fb-user") || document.querySelector(".shoug-auth-btn") || document.querySelector(".shoug-header-actions"); },
+          target: function () {
+            return (
+              document.getElementById("shoug-fb-user") ||
+              document.querySelector(".shoug-auth-btn") ||
+              document.querySelector(".shoug-header-actions")
+            );
+          },
           position: "bottom",
           tag: "Step 6 of 7 · Account",
           title: "Sign In to Track Progress",
@@ -1961,7 +2724,11 @@
     // can attach to a real UI element. No free-floating intro boxes.
     function targetForStep(step) {
       if (!step || !step.target) return null;
-      try { return step.target(); } catch (e) { return null; }
+      try {
+        return step.target();
+      } catch (e) {
+        return null;
+      }
     }
 
     function stepCanRender(step) {
@@ -1979,7 +2746,8 @@
       var target = targetForStep(step);
       if (!target) return -1;
       if (target === triggerEl) return 100;
-      if (target.contains(triggerEl)) return 80 - Math.min(target.querySelectorAll("*").length, 60);
+      if (target.contains(triggerEl))
+        return 80 - Math.min(target.querySelectorAll("*").length, 60);
       if (triggerEl.contains(target)) return 60;
       return -1;
     }
@@ -1988,8 +2756,12 @@
       var el = targetForStep(step);
       if (!el) return false;
       var rect = el.getBoundingClientRect();
-      return rect.right > 0 && rect.bottom > 0 &&
-        rect.left < window.innerWidth && rect.top < window.innerHeight;
+      return (
+        rect.right > 0 &&
+        rect.bottom > 0 &&
+        rect.left < window.innerWidth &&
+        rect.top < window.innerHeight
+      );
     }
 
     if (triggerEl) {
@@ -2014,23 +2786,33 @@
 
     steps.forEach(function (step, idx) {
       var label = step.tag || "";
-      var detail = label.indexOf("·") !== -1 ? " · " + label.split("·").slice(1).join("·").trim() : "";
+      var detail =
+        label.indexOf("·") !== -1
+          ? " · " + label.split("·").slice(1).join("·").trim()
+          : "";
       step.tag = "Step " + (idx + 1) + " of " + steps.length + detail;
     });
     var current = 0;
 
     // Dim backdrop — z-index swaps per step (below header for targeted, above for center)
     var dimEl = document.createElement("div");
-    dimEl.style.cssText = "position:fixed;inset:0;background:rgba(5,2,10,.84);pointer-events:all;";
+    dimEl.style.cssText =
+      "position:fixed;inset:0;background:rgba(5,2,10,.84);pointer-events:all;";
 
     // Arrow (CSS triangle) — always above header
     var arrowEl = document.createElement("div");
-    arrowEl.style.cssText = "position:fixed;width:0;height:0;z-index:" + (CARD_Z) + ";pointer-events:none;display:none;";
+    arrowEl.style.cssText =
+      "position:fixed;width:0;height:0;z-index:" +
+      CARD_Z +
+      ";pointer-events:none;display:none;";
 
     // Tooltip card — always above header
     var card = document.createElement("div");
     card.id = "shoug-ob-card";
-    card.style.cssText = "position:fixed;z-index:" + (CARD_Z) + ";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;background:#0a0514;border:1px solid rgba(184,41,234,.45);font-family:'JetBrains Mono',monospace;pointer-events:all;";
+    card.style.cssText =
+      "position:fixed;z-index:" +
+      CARD_Z +
+      ";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;background:#0a0514;border:1px solid rgba(184,41,234,.45);font-family:'JetBrains Mono',monospace;pointer-events:all;";
 
     document.body.appendChild(dimEl);
     document.body.appendChild(arrowEl);
@@ -2061,8 +2843,9 @@
         el.style.position = "relative";
         el.dataset.obPositioned = "1";
       }
-      el.style.zIndex = (CARD_Z - 1) + "";
-      el.style.boxShadow = "0 0 0 2px #b829ea, 0 0 0 5px rgba(184,41,234,.22), 0 0 28px rgba(184,41,234,.4)";
+      el.style.zIndex = CARD_Z - 1 + "";
+      el.style.boxShadow =
+        "0 0 0 2px #b829ea, 0 0 0 5px rgba(184,41,234,.22), 0 0 28px rgba(184,41,234,.4)";
       el.style.outline = "none";
       el.style.borderRadius = "3px";
     }
@@ -2095,56 +2878,59 @@
       if (targetOffscreenY) {
         top = targetAbove ? 12 : vh - ch - 12;
         left = Math.min(Math.max(anchoredMidX - cw / 2, 12), vw - cw - 12);
-        arrowEl.style.cssText = targetAbove ? [
-          "position:fixed",
-          "left:" + (anchoredMidX - 7) + "px",
-          "top:0",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-bottom:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";") : [
-          "position:fixed",
-          "left:" + (anchoredMidX - 7) + "px",
-          "top:" + (vh - 12) + "px",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-top:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";");
+        arrowEl.style.cssText = targetAbove
+          ? [
+              "position:fixed",
+              "left:" + (anchoredMidX - 7) + "px",
+              "top:0",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-bottom:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";")
+          : [
+              "position:fixed",
+              "left:" + (anchoredMidX - 7) + "px",
+              "top:" + (vh - 12) + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-top:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";");
       } else if (position === "bottom") {
-
         var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
         var canFitAbove = rect.top - GAP - ch >= 8;
-        var placeBelow = canFitBelow || (!canFitAbove && rect.top < (vh / 2));
+        var placeBelow = canFitBelow || (!canFitAbove && rect.top < vh / 2);
         top = rect.bottom + GAP;
         left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
         if (!placeBelow) top = rect.top - GAP - ch;
-        arrowEl.style.cssText = placeBelow ? [
-          "position:fixed",
-          "left:" + (midX - 7) + "px",
-          "top:" + rect.bottom + "px",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-bottom:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";") : [
-          "position:fixed",
-          "left:" + (midX - 7) + "px",
-          "top:" + (rect.top - GAP) + "px",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-top:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";");
+        arrowEl.style.cssText = placeBelow
+          ? [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + rect.bottom + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-bottom:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";")
+          : [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + (rect.top - GAP) + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-top:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";");
       } else if (position === "right") {
         top = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
         left = rect.right + GAP;
@@ -2154,13 +2940,15 @@
         arrowEl.style.cssText = [
           "position:fixed",
           "top:" + arrowTop + "px",
-          "left:" + (flippedLeft ? (left + cw) : (left - 12)) + "px",
+          "left:" + (flippedLeft ? left + cw : left - 12) + "px",
           "border-top:7px solid transparent",
           "border-bottom:7px solid transparent",
-          flippedLeft ? "border-right:12px solid #b829ea" : "border-left:12px solid #b829ea",
+          flippedLeft
+            ? "border-right:12px solid #b829ea"
+            : "border-left:12px solid #b829ea",
           "z-index:" + (CARD_Z + 2),
           "pointer-events:none",
-          "display:block"
+          "display:block",
         ].join(";");
       } else if (position === "left") {
         top = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
@@ -2171,42 +2959,46 @@
         arrowEl.style.cssText = [
           "position:fixed",
           "top:" + arrowTop2 + "px",
-          "left:" + (flippedRight ? (left - 12) : (left + cw)) + "px",
+          "left:" + (flippedRight ? left - 12 : left + cw) + "px",
           "border-top:7px solid transparent",
           "border-bottom:7px solid transparent",
-          flippedRight ? "border-left:12px solid #b829ea" : "border-right:12px solid #b829ea",
+          flippedRight
+            ? "border-left:12px solid #b829ea"
+            : "border-right:12px solid #b829ea",
           "z-index:" + (CARD_Z + 2),
           "pointer-events:none",
-          "display:block"
+          "display:block",
         ].join(";");
       } else {
         var canFitAbove2 = rect.top - GAP - ch >= 8;
         var canFitBelow2 = rect.bottom + GAP + ch <= vh - 12;
-        var placeAbove = canFitAbove2 || (!canFitBelow2 && rect.top > (vh / 2));
+        var placeAbove = canFitAbove2 || (!canFitBelow2 && rect.top > vh / 2);
         top = rect.top - GAP - ch;
         left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
         if (!placeAbove) top = rect.bottom + GAP;
-        arrowEl.style.cssText = placeAbove ? [
-          "position:fixed",
-          "left:" + (midX - 7) + "px",
-          "top:" + (rect.top - GAP) + "px",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-top:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";") : [
-          "position:fixed",
-          "left:" + (midX - 7) + "px",
-          "top:" + rect.bottom + "px",
-          "border-left:7px solid transparent",
-          "border-right:7px solid transparent",
-          "border-bottom:12px solid #b829ea",
-          "z-index:" + (CARD_Z + 2),
-          "pointer-events:none",
-          "display:block"
-        ].join(";");
+        arrowEl.style.cssText = placeAbove
+          ? [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + (rect.top - GAP) + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-top:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";")
+          : [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + rect.bottom + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-bottom:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block",
+            ].join(";");
       }
 
       top = Math.max(8, Math.min(top, vh - ch - 12));
@@ -2223,8 +3015,8 @@
         var r = card.getBoundingClientRect();
         var newLeft = Math.min(Math.max(r.left, 8), vw2 - r.width - 8);
         var newTop = Math.min(Math.max(r.top, 8), vh2 - r.height - 8);
-        if (Math.abs(newLeft - r.left) > .5) card.style.left = newLeft + "px";
-        if (Math.abs(newTop - r.top) > .5) card.style.top = newTop + "px";
+        if (Math.abs(newLeft - r.left) > 0.5) card.style.left = newLeft + "px";
+        if (Math.abs(newTop - r.top) > 0.5) card.style.top = newTop + "px";
       });
     }
 
@@ -2243,12 +3035,14 @@
       var s = steps[current];
       var targetEl = s.target ? s.target() : null;
       var isLastStep = current >= steps.length - 1;
-      var progressLabel = steps.length > 1 ? ((current + 1) + " / " + steps.length) : "1 / 1";
+      var progressLabel =
+        steps.length > 1 ? current + 1 + " / " + steps.length : "1 / 1";
       var primaryLabel = isLastStep ? "Done ✓" : "Next →";
 
       // If this step targets a link inside the mobile nav drawer, open the drawer on
       // small screens so the link is actually visible — otherwise close it again.
-      var inMobileNav = targetEl && targetEl.closest && targetEl.closest(".shoug-header-nav");
+      var inMobileNav =
+        targetEl && targetEl.closest && targetEl.closest(".shoug-header-nav");
       if (inMobileNav && window.innerWidth <= 760) {
         document.body.classList.add("mobile-nav-open");
         navMenuOpenedByOnboarding = true;
@@ -2259,8 +3053,11 @@
 
       if (targetEl) {
         var preRect = targetEl.getBoundingClientRect();
-        var targetInView = preRect.right > 0 && preRect.bottom > 0 &&
-          preRect.left < window.innerWidth && preRect.top < window.innerHeight;
+        var targetInView =
+          preRect.right > 0 &&
+          preRect.bottom > 0 &&
+          preRect.left < window.innerWidth &&
+          preRect.top < window.innerHeight;
         if (!targetInView && targetEl.scrollIntoView) {
           targetEl.scrollIntoView({ block: "center", inline: "nearest" });
         }
@@ -2268,11 +3065,17 @@
 
       var rect = targetEl ? targetEl.getBoundingClientRect() : null;
       // Treat as no target if: zero-sized, fully outside viewport (e.g. mobile nav drawer), or display:none
-      if (rect && (
-        (rect.width === 0 && rect.height === 0) ||
-        rect.right <= 0 || rect.bottom <= 0 ||
-        rect.left >= window.innerWidth || rect.top >= window.innerHeight
-      )) { rect = null; targetEl = null; }
+      if (
+        rect &&
+        ((rect.width === 0 && rect.height === 0) ||
+          rect.right <= 0 ||
+          rect.bottom <= 0 ||
+          rect.left >= window.innerWidth ||
+          rect.top >= window.innerHeight)
+      ) {
+        rect = null;
+        targetEl = null;
+      }
 
       if (!rect || !targetEl) {
         if (current < steps.length - 1) {
@@ -2285,7 +3088,7 @@
       }
 
       // Below header (9999) → header stays visible so target element is lit up naturally.
-      dimEl.style.zIndex = (HDR_Z - 1) + "";
+      dimEl.style.zIndex = HDR_Z - 1 + "";
 
       highlight(targetEl);
       activeTargetEl = targetEl;
@@ -2294,23 +3097,40 @@
       card.innerHTML = [
         '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b829ea,rgba(184,41,234,.08));"></div>',
         '<div style="padding:28px 28px 18px;">',
-        '  <div style="font-size:.5rem;color:#b829ea;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">' + s.tag + '</div>',
-        '  <div style="font-size:.94rem;font-weight:800;color:#f8f7fb;margin-bottom:10px;line-height:1.3;">' + s.title + '</div>',
-        '  <div style="font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:\'Inter\',sans-serif;">' + s.body + '</div>',
-        '</div>',
+        '  <div style="font-size:.5rem;color:#b829ea;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">' +
+          s.tag +
+          "</div>",
+        '  <div style="font-size:.94rem;font-weight:800;color:#f8f7fb;margin-bottom:10px;line-height:1.3;">' +
+          s.title +
+          "</div>",
+        "  <div style=\"font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:'Inter',sans-serif;\">" +
+          s.body +
+          "</div>",
+        "</div>",
         '<div style="padding:12px 28px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.05);">',
-        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough ' + progressLabel + '</div>',
+        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough ' +
+          progressLabel +
+          "</div>",
         '  <div style="display:flex;gap:8px;align-items:center;">',
         '  <button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:#6f667c;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>',
-        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">' + primaryLabel + '</button>',
-        '  </div>',
-        '</div>',
+        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">' +
+          primaryLabel +
+          "</button>",
+        "  </div>",
+        "</div>",
       ].join("");
 
-      requestAnimationFrame(function () { positionCard(rect, activePosition); });
+      requestAnimationFrame(function () {
+        positionCard(rect, activePosition);
+      });
 
       document.getElementById("ob-next").addEventListener("click", function () {
-        if (current < steps.length - 1) { current++; render(); } else { finish(); }
+        if (current < steps.length - 1) {
+          current++;
+          render();
+        } else {
+          finish();
+        }
       });
       var skip = document.getElementById("ob-skip");
       if (skip) skip.addEventListener("click", dismissForNow);
@@ -2328,7 +3148,9 @@
       [dimEl, arrowEl, card].forEach(function (el) {
         el.style.opacity = "0";
         el.style.transition = "opacity 300ms";
-        setTimeout(function () { el.remove(); }, 320);
+        setTimeout(function () {
+          el.remove();
+        }, 320);
       });
     }
 
@@ -2355,7 +3177,10 @@
     // site. Clicking the dim backdrop or pressing Escape always closes it.
     dimEl.addEventListener("click", dismissForNow);
     var escHandler = function (e) {
-      if (e.key === "Escape") { dismissForNow(); document.removeEventListener("keydown", escHandler); }
+      if (e.key === "Escape") {
+        dismissForNow();
+        document.removeEventListener("keydown", escHandler);
+      }
     };
     document.addEventListener("keydown", escHandler);
 
@@ -2364,10 +3189,21 @@
     setTimeout(function () {
       if (!document.body.contains(card)) return;
       var r = card.getBoundingClientRect();
-      var onScreen = r.width > 0 && r.height > 0 &&
-        r.right > 0 && r.bottom > 0 &&
-        r.left < window.innerWidth && r.top < window.innerHeight;
-      console.log("[onboarding debug]", JSON.stringify(r), "vw=" + window.innerWidth, "vh=" + window.innerHeight, "onScreen=" + onScreen, "opacity=" + card.style.opacity);
+      var onScreen =
+        r.width > 0 &&
+        r.height > 0 &&
+        r.right > 0 &&
+        r.bottom > 0 &&
+        r.left < window.innerWidth &&
+        r.top < window.innerHeight;
+      console.log(
+        "[onboarding debug]",
+        JSON.stringify(r),
+        "vw=" + window.innerWidth,
+        "vh=" + window.innerHeight,
+        "onScreen=" + onScreen,
+        "opacity=" + card.style.opacity,
+      );
       if (!onScreen) finish();
     }, 1500);
 
@@ -2397,11 +3233,11 @@
       '<div class="shoug-icon-btn" id="shoug-notes-icon" title="My Notes">',
       '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">',
       '<rect x="1" y="1" width="11" height="11" rx="1"/><line x1="3.5" y1="4.5" x2="9.5" y2="4.5"/><line x1="3.5" y1="7" x2="9.5" y2="7"/><line x1="3.5" y1="9.5" x2="6.5" y2="9.5"/>',
-      '</svg></div>',
+      "</svg></div>",
       '<div class="shoug-icon-btn" id="shoug-bookmark-icon" title="Bookmark">',
       '<svg width="11" height="13" viewBox="0 0 11 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">',
       '<path d="M1 1h9v11L5.5 8.5 1 12z"/>',
-      '</svg></div>',
+      "</svg></div>",
     ].join("");
     document.body.appendChild(bar);
 
@@ -2422,43 +3258,75 @@
     }
 
     // Load note + bookmark state from the existing pages doc (single read)
-    db.collection("userProgress").doc(user.uid).collection("pages").doc(slug).get().then(function (doc) {
-      var d = (doc.exists && doc.data()) || {};
-      if (d.note) { var ta = document.getElementById("shoug-notes-ta"); if (ta) ta.value = d.note; }
-      var btn = document.getElementById("shoug-bookmark-icon");
-      if (btn) btn.classList.toggle("active", !!d.bookmarked);
-      writePageCache(user.uid, { bookmarked: !!d.bookmarked });
-    });
+    db.collection("userProgress")
+      .doc(user.uid)
+      .collection("pages")
+      .doc(slug)
+      .get()
+      .then(function (doc) {
+        var d = (doc.exists && doc.data()) || {};
+        if (d.note) {
+          var ta = document.getElementById("shoug-notes-ta");
+          if (ta) ta.value = d.note;
+        }
+        var btn = document.getElementById("shoug-bookmark-icon");
+        if (btn) btn.classList.toggle("active", !!d.bookmarked);
+        writePageCache(user.uid, { bookmarked: !!d.bookmarked });
+      });
 
     // Notes toggle
-    document.getElementById("shoug-notes-icon").addEventListener("click", function () {
-      var p = document.getElementById("shoug-notes-panel");
-      var ic = document.getElementById("shoug-notes-icon");
-      var open = p.classList.toggle("open");
-      ic.classList.toggle("active", open);
-      if (open) { var ta = document.getElementById("shoug-notes-ta"); if (ta) ta.focus(); }
-    });
+    document
+      .getElementById("shoug-notes-icon")
+      .addEventListener("click", function () {
+        var p = document.getElementById("shoug-notes-panel");
+        var ic = document.getElementById("shoug-notes-icon");
+        var open = p.classList.toggle("open");
+        ic.classList.toggle("active", open);
+        if (open) {
+          var ta = document.getElementById("shoug-notes-ta");
+          if (ta) ta.focus();
+        }
+      });
 
     // Notes auto-save
-    document.getElementById("shoug-notes-ta").addEventListener("input", function () {
-      clearTimeout(_notesDebounce);
-      var st = document.getElementById("np-status");
-      if (st) st.textContent = "unsaved…";
-      _notesDebounce = setTimeout(function () { saveNote(user, slug); }, 1500);
-    });
+    document
+      .getElementById("shoug-notes-ta")
+      .addEventListener("input", function () {
+        clearTimeout(_notesDebounce);
+        var st = document.getElementById("np-status");
+        if (st) st.textContent = "unsaved…";
+        _notesDebounce = setTimeout(function () {
+          saveNote(user, slug);
+        }, 1500);
+      });
 
     // Bookmark toggle — stored on the existing pages doc via merge
-    document.getElementById("shoug-bookmark-icon").addEventListener("click", function () {
-      var btn = document.getElementById("shoug-bookmark-icon");
-      var active = btn.classList.toggle("active");
-      writePageCache(user.uid, { bookmarked: active });
-      var ref = db.collection("userProgress").doc(user.uid).collection("pages").doc(slug);
-      if (active) {
-        ref.set({ url: window.location.pathname, title: pageTitle(), bookmarked: true, bookmarkFolder: null, bookmarkSavedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-      } else {
-        ref.set({ bookmarked: false }, { merge: true });
-      }
-    });
+    document
+      .getElementById("shoug-bookmark-icon")
+      .addEventListener("click", function () {
+        var btn = document.getElementById("shoug-bookmark-icon");
+        var active = btn.classList.toggle("active");
+        writePageCache(user.uid, { bookmarked: active });
+        var ref = db
+          .collection("userProgress")
+          .doc(user.uid)
+          .collection("pages")
+          .doc(slug);
+        if (active) {
+          ref.set(
+            {
+              url: window.location.pathname,
+              title: pageTitle(),
+              bookmarked: true,
+              bookmarkFolder: null,
+              bookmarkSavedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
+        } else {
+          ref.set({ bookmarked: false }, { merge: true });
+        }
+      });
   }
 
   function saveNote(user, slug) {
@@ -2467,32 +3335,88 @@
     if (!ta) return;
     var note = ta.value;
     // Merge note onto the existing pages doc so we don't overwrite progress data
-    var ref = firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").doc(slug);
-    ref.set({ note: note, url: window.location.pathname, title: pageTitle(), noteUpdatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
+    var ref = firebase
+      .firestore()
+      .collection("userProgress")
+      .doc(user.uid)
+      .collection("pages")
+      .doc(slug);
+    ref
+      .set(
+        {
+          note: note,
+          url: window.location.pathname,
+          title: pageTitle(),
+          noteUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      )
       .then(function () {
-        if (st) { st.textContent = "saved"; setTimeout(function () { var s = document.getElementById("np-status"); if (s) s.textContent = ""; }, 2000); }
-      }).catch(function () { if (st) st.textContent = "error"; });
+        if (st) {
+          st.textContent = "saved";
+          setTimeout(function () {
+            var s = document.getElementById("np-status");
+            if (s) s.textContent = "";
+          }, 2000);
+        }
+      })
+      .catch(function () {
+        if (st) st.textContent = "error";
+      });
   }
 
   // ── App section tab bar ───────────────────────────────────────────────────
 
   function isAppPage() {
     var p = window.location.pathname;
-    return p.indexOf("/bookmarks") === 0 ||
+    return (
+      p.indexOf("/bookmarks") === 0 ||
       p.indexOf("/account") === 0 ||
-      p.indexOf("/community") === 0;
+      p.indexOf("/community") === 0
+    );
   }
 
-  function curNavLang() { return (document.documentElement.lang || "en").slice(0, 2) === "ar" ? "ar" : "en"; }
+  function curNavLang() {
+    return (document.documentElement.lang || "en").slice(0, 2) === "ar"
+      ? "ar"
+      : "en";
+  }
 
   var APP_NAV_LABELS = {
-    en: { home: "Home", profile: "My Profile", calendar: "Calendar", bookmarks: "Bookmarks", progress: "My Progress", community: "Community", theme: "Toggle dark and light mode" },
-    ar: { home: "الرئيسية", profile: "ملفي الشخصي", calendar: "التقويم", bookmarks: "المحفوظات", progress: "تقدمي", community: "المجتمع", theme: "تبديل الوضع الفاتح والداكن" },
+    en: {
+      home: "Home",
+      profile: "My Profile",
+      calendar: "Calendar",
+      bookmarks: "Bookmarks",
+      progress: "My Progress",
+      community: "Community",
+      theme: "Toggle dark and light mode",
+    },
+    ar: {
+      home: "الرئيسية",
+      profile: "ملفي الشخصي",
+      calendar: "التقويم",
+      bookmarks: "المحفوظات",
+      progress: "تقدمي",
+      community: "المجتمع",
+      theme: "تبديل الوضع الفاتح والداكن",
+    },
   };
-  var APP_NAV_KEYS = ["home", "profile", "calendar", "bookmarks", "progress", "community"];
+  var APP_NAV_KEYS = [
+    "home",
+    "profile",
+    "calendar",
+    "bookmarks",
+    "progress",
+    "community",
+  ];
 
   function ensureArabicLocalization() {
-    if (window.__shougArabicLocalizationLoaded || document.getElementById("shoug-arabic-localization-script")) return;
+    if (
+      window.__shougArabicLocalizationLoaded ||
+      document.getElementById("shoug-arabic-localization-script")
+    )
+      return;
     var script = document.createElement("script");
     script.id = "shoug-arabic-localization-script";
     script.src = "/javascripts/arabic-localization.js?v=60";
@@ -2505,7 +3429,9 @@
     if (!nav) return;
     var labels = APP_NAV_LABELS[curNavLang()];
     var tabs = nav.querySelectorAll(".shoug-app-tab");
-    tabs.forEach(function (t, i) { if (APP_NAV_KEYS[i]) t.textContent = labels[APP_NAV_KEYS[i]]; });
+    tabs.forEach(function (t, i) {
+      if (APP_NAV_KEYS[i]) t.textContent = labels[APP_NAV_KEYS[i]];
+    });
     var themeBtn = document.getElementById("shoug-theme-toggle");
     if (themeBtn) themeBtn.setAttribute("aria-label", labels.theme);
   }
@@ -2517,40 +3443,61 @@
     var labels = APP_NAV_LABELS[curNavLang()];
     var tabs = [
       {
-        key: "home", href: "/",
-        active: false
+        key: "home",
+        href: "/",
+        active: false,
       },
       {
-        key: "profile", href: "/community/profile/?u=" + encodeURIComponent(user.uid),
-        active: path.indexOf("/community/profile") === 0
+        key: "profile",
+        href: "/community/profile/?u=" + encodeURIComponent(user.uid),
+        active: path.indexOf("/community/profile") === 0,
       },
       {
-        key: "calendar", href: "/account/calendar/",
-        active: path.indexOf("/account/calendar") === 0
+        key: "calendar",
+        href: "/account/calendar/",
+        active: path.indexOf("/account/calendar") === 0,
       },
       {
-        key: "bookmarks", href: "/bookmarks/",
-        active: path.indexOf("/bookmarks") === 0
+        key: "bookmarks",
+        href: "/bookmarks/",
+        active: path.indexOf("/bookmarks") === 0,
       },
       {
-        key: "progress", href: "/account/",
-        active: path === "/account/" || path === "/account"
+        key: "progress",
+        href: "/account/",
+        active: path === "/account/" || path === "/account",
       },
       {
-        key: "community", href: "/community/",
-        active: path.indexOf("/community") === 0 && path.indexOf("/community/profile") !== 0
+        key: "community",
+        href: "/community/",
+        active:
+          path.indexOf("/community") === 0 &&
+          path.indexOf("/community/profile") !== 0,
       },
     ];
     var isLight = document.body.classList.contains("shoug-light-mode");
     var nav = document.createElement("nav");
     nav.id = "shoug-app-nav";
-    nav.innerHTML = tabs.map(function (t) {
-      return '<a class="shoug-app-tab' + (t.active ? " active" : "") + '" href="' + t.href + '">' + labels[t.key] + "</a>";
-    }).join("")
-      + '<div style="flex:1"></div>'
-      + '<button id="shoug-theme-toggle" type="button" aria-label="' + labels.theme + '" style="margin-right:20px">'
-      + (isLight ? MOON_SVG : SUN_SVG)
-      + '</button>';
+    nav.innerHTML =
+      tabs
+        .map(function (t) {
+          return (
+            '<a class="shoug-app-tab' +
+            (t.active ? " active" : "") +
+            '" href="' +
+            t.href +
+            '">' +
+            labels[t.key] +
+            "</a>"
+          );
+        })
+        .join("") +
+      '<div style="flex:1"></div>' +
+      '<button id="shoug-theme-toggle" type="button" aria-label="' +
+      labels.theme +
+      '" style="margin-right:20px">' +
+      (isLight ? MOON_SVG : SUN_SVG) +
+      "</button>";
     // Insert as first child so it sits in document flow at the top of the page
     document.body.insertBefore(nav, document.body.firstChild);
     // App pages have no fixed site header, so clear any pre-set padding-top
@@ -2572,25 +3519,28 @@
       if (window.__shougSetLanguage && langBtn.dataset.langBound !== "true") {
         langBtn.dataset.langBound = "true";
         langBtn.addEventListener("click", function () {
-          var isArabic = (document.documentElement.lang || "en").slice(0, 2) === "ar";
+          var isArabic =
+            (document.documentElement.lang || "en").slice(0, 2) === "ar";
           window.__shougSetLanguage(isArabic ? "en" : "ar");
         });
       }
     }
     ensureArabicLocalization();
 
-    document.getElementById("shoug-theme-toggle").addEventListener("click", function () {
-      var nowLight = document.body.classList.toggle("shoug-light-mode");
-      localStorage.setItem("shoug-theme", nowLight ? "light" : "dark");
-      if (nowLight) {
-        document.documentElement.style.background = "#f8f6ff";
-        document.documentElement.style.color = "#21152f";
-      } else {
-        document.documentElement.style.background = "";
-        document.documentElement.style.color = "";
-      }
-      this.innerHTML = nowLight ? MOON_SVG : SUN_SVG;
-    });
+    document
+      .getElementById("shoug-theme-toggle")
+      .addEventListener("click", function () {
+        var nowLight = document.body.classList.toggle("shoug-light-mode");
+        localStorage.setItem("shoug-theme", nowLight ? "light" : "dark");
+        if (nowLight) {
+          document.documentElement.style.background = "#f8f6ff";
+          document.documentElement.style.color = "#21152f";
+        } else {
+          document.documentElement.style.background = "";
+          document.documentElement.style.color = "";
+        }
+        this.innerHTML = nowLight ? MOON_SVG : SUN_SVG;
+      });
   }
 
   function removeAppNav() {
@@ -2601,7 +3551,8 @@
   function removePageIcons() {
     clearTimeout(_notesDebounce);
     ["shoug-page-icons", "shoug-notes-panel"].forEach(function (id) {
-      var el = document.getElementById(id); if (el) el.remove();
+      var el = document.getElementById(id);
+      if (el) el.remove();
     });
   }
 
@@ -2609,8 +3560,10 @@
 
   // ── Theme toggle ──────────────────────────────────────────────────────────
 
-  var MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-  var SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  var MOON_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  var SUN_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 
   function injectThemeToggle() {
     if (!isAppPage()) return;
@@ -2645,7 +3598,10 @@
     injectStyles();
 
     // Keep the app-nav tab labels in sync with the page language toggle
-    new MutationObserver(updateAppNavLang).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    new MutationObserver(updateAppNavLang).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang"],
+    });
 
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
 
@@ -2657,7 +3613,9 @@
     // from the last session that the visitor was signed in, in which case show
     // a pending avatar instead of flashing "Sign In" while Firebase reconnects.
     var wasSignedIn = false;
-    try { wasSignedIn = localStorage.getItem("shoug-was-signed-in") === "1"; } catch (e) { }
+    try {
+      wasSignedIn = localStorage.getItem("shoug-was-signed-in") === "1";
+    } catch (e) {}
     setHeaderButton(wasSignedIn ? "pending" : null);
     injectThemeToggle();
     injectBlueprintCredit();
@@ -2720,7 +3678,7 @@
         "#study-template",
         "#exam-list",
         ".today-card",
-        ".day[data-date]"
+        ".day[data-date]",
       ].join(",");
 
       function cleanup() {
@@ -2741,17 +3699,26 @@
       // Elements with their own dedicated, always-available interaction
       // (account menu, mobile nav/directory toggles) must never be hijacked
       // by the tour — a click here should just do its normal job.
-      var tourExcludedSelector = "#shoug-fb-user, .shoug-user-dropdown, .shoug-auth-btn, .shoug-header-menu-btn, .shoug-directory-btn";
+      var tourExcludedSelector =
+        "#shoug-fb-user, .shoug-user-dropdown, .shoug-auth-btn, .shoug-header-menu-btn, .shoug-directory-btn";
 
       function onPointerOver(event) {
-        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) return;
-        var target = event.target && event.target.closest
-          ? event.target.closest(interactiveSelector)
-          : null;
+        if (
+          event.target &&
+          event.target.closest &&
+          event.target.closest(tourExcludedSelector)
+        )
+          return;
+        var target =
+          event.target && event.target.closest
+            ? event.target.closest(interactiveSelector)
+            : null;
         if (!target || target === hoverTarget) return;
         hoverTarget = target;
         clearTimeout(hoverTimer);
-        hoverTimer = setTimeout(function () { start(target); }, 450);
+        hoverTimer = setTimeout(function () {
+          start(target);
+        }, 450);
       }
 
       function onPointerOut(event) {
@@ -2763,37 +3730,58 @@
       }
 
       function onContextClick(event) {
-        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) return;
-        var target = event.target && event.target.closest
-          ? event.target.closest(interactiveSelector)
-          : null;
+        if (
+          event.target &&
+          event.target.closest &&
+          event.target.closest(tourExcludedSelector)
+        )
+          return;
+        var target =
+          event.target && event.target.closest
+            ? event.target.closest(interactiveSelector)
+            : null;
         if (!target || started) return;
         var link = target.closest && target.closest("a[href]");
         var opened = start(target);
-        if (opened && link && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        if (
+          opened &&
+          link &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.shiftKey &&
+          !event.altKey
+        ) {
           event.preventDefault();
           event.stopPropagation();
         }
       }
 
-      document.addEventListener("pointerover", onPointerOver, { passive: true });
+      document.addEventListener("pointerover", onPointerOver, {
+        passive: true,
+      });
       document.addEventListener("pointerout", onPointerOut, { passive: true });
       document.addEventListener("click", onContextClick, true);
     })();
 
     // Pick up the result of a signInWithRedirect (GitHub fallback on iOS/Safari)
-    firebase.auth().getRedirectResult().catch(function (err) {
-      if (err && err.code && err.code !== "auth/no-auth-event") {
-        console.error("GitHub sign-in failed:", err.message || err.code);
-      }
-    });
+    firebase
+      .auth()
+      .getRedirectResult()
+      .catch(function (err) {
+        if (err && err.code && err.code !== "auth/no-auth-event") {
+          console.error("GitHub sign-in failed:", err.message || err.code);
+        }
+      });
 
     firebase.auth().onAuthStateChanged(function (user) {
       try {
         if (user) localStorage.setItem("shoug-was-signed-in", "1");
         else localStorage.removeItem("shoug-was-signed-in");
-      } catch (e) { }
-      if (!user && _notifUnsub) { _notifUnsub(); _notifUnsub = null; }
+      } catch (e) {}
+      if (!user && _notifUnsub) {
+        _notifUnsub();
+        _notifUnsub = null;
+      }
       if (!user) stopExamReminder();
       setHeaderButton(user);
       removeCompleteBtn();
@@ -2822,7 +3810,9 @@
       // namespace created by app-compat — they don't depend on each other, so
       // loading them in parallel (instead of chained) saves a network round trip.
       var pending = 2;
-      function done() { if (--pending === 0) boot(); }
+      function done() {
+        if (--pending === 0) boot();
+      }
       loadScript(FB_BASE + "auth-compat.js", done);
       loadScript(FB_BASE + "firestore-compat.js", done);
     });
