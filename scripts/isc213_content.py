@@ -36,6 +36,8 @@ CHEAT_1_SECTIONS = [
 Buy it, Donate it, Drop it, Document it.</div>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 Dropping <em>ends</em> a right (nothing is exchanged). Documentation <em>protects</em> a right (the obligation still stands). Waqf is a gift with no return, so it is a Donation, never a Bargain.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides give the Arabic names: Dropping = <em>Isqatat</em> (إسقاطات), Documentation = <em>Toutheeqat</em> (توثيقات).</div>
 ''',
     },
     {
@@ -75,6 +77,8 @@ Cases 2 and 3 get swapped constantly. Ask one question: did the <strong>process<
 </div>
 <div class="callout mnemonic"><div class="callout-label">Mnemonic — E.O.I.F.</div>
 Emerged, Occurrences, Incidences, Fatwa.</div>
+<div class="callout slides"><div class="callout-label">From the slides — answer with the notes</div>
+The slides list only three terms — emerged cases, incidences (<em>Waqeaat</em>, وقائع), and fatwa — and leave out "occurrences". Exam questions follow the notes, so keep all four.</div>
 ''',
     },
     {
@@ -109,6 +113,8 @@ Emerged, Occurrences, Incidences, Fatwa.</div>
 
 <h3>4 — Both flexible and constant</h3>
 <p>Constant in its fixed principles and prohibitions; flexible in the forms and procedures those principles are applied to.</p>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides word characteristic 3 as "based on <strong>logical reasoning</strong> and <strong>what benefits the people</strong>" — a plain way to remember ta'l&#299;l and ma&#7779;la&#7717;ah. For characteristic 4 the slide only asks "how so?" — the answer is the line above.</div>
 ''',
     },
     {
@@ -131,6 +137,8 @@ Emerged, Occurrences, Incidences, Fatwa.</div>
 Knowledge base <strong>QHIA</strong> (Qur'an, Hadith, Ijma', Arabic), then practical qualities <strong>SHMRU</strong> (Skill, Honesty, Maqasid, Research, Understanding reality).</div>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 Listing only the book knowledge and dropping the character items. Honesty, maqasid awareness, and lived reality are graded just as often.</div>
+<div class="callout slides"><div class="callout-label">From the slides — answer with the notes</div>
+The slides pack the same content into <strong>six</strong> conditions: (1) <strong>knowledge</strong> of the Qur'an, the Sunnah, the issues of consensus <em>and controversy</em> in jurisprudence, the fundamentals of jurisprudence, and Arabic; (2) being self-jurisprudent — a jurisprudence talent; (3) honest in speech and <em>just in his religion</em>, avoiding major sins and leaving minor ones; (4) aware of the Shari'a's purposes; (5) able to elicit rules from established rulings; (6) familiar with reality. Two small extras: knowing where scholars <em>disagreed</em>, and the <em>fundamentals of jurisprudence</em>. Exam questions follow the notes, so list the nine.</div>
 ''',
     },
     {
@@ -152,6 +160,8 @@ Listing only the book knowledge and dropping the character items. Honesty, maqas
 "Pious Understanding Searches Companions, Imams, Sources, forms an Opinion, or else Refrains."</div>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 Personal opinion is the <em>second-to-last</em> resort, not an early step. And if opinion cannot produce a legitimate rule, the correct move is to refrain — not to guess.</div>
+<div class="callout slides"><div class="callout-label">From the slides — answer with the notes</div>
+The slides show <strong>seven</strong> steps: they skip "use his own opinion" and go straight from new sources to refraining, and word step 3 as "collating the case to the legitimate texts." Exam questions follow the notes, so give all eight in order.</div>
 ''',
     },
     {
@@ -177,6 +187,10 @@ Personal opinion is the <em>second-to-last</em> resort, not an early step. And i
 </ul>
 <div class="callout mnemonic"><div class="callout-label">Mnemonics down the chain</div>
 Political = you and the <em>state</em>; Civil = you and your <em>own interests</em>. General = rights you hold just by being human; Private = rights that need a second party. Family = cannot be priced; Financial = can be priced.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+<strong>Who assigns rights?</strong> Rights in Islam are divine grants drawn from the sources of Shari'a rulings. There is no legitimate right without evidence, so the origin of every right is Allah — there is no ruler but Him and no legislation but His.<br>
+<strong>Authority</strong> can be over a <em>person</em> (child custody — <em>ḥaḍānah</em> — guardianship, a ruler's authority to govern) or over a specific <em>object</em> (ownership).<br>
+<strong>Obligation</strong> can be <em>financial</em> (repaying a debt) or a <em>performance</em> (an employee doing contracted work, a parent raising their children).</div>
 ''',
     },
     {
@@ -190,6 +204,8 @@ Political = you and the <em>state</em>; Civil = you and your <em>own interests</
 </div>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 Personal and Material get confused because both seem to involve another person. The test: does the right point at a person's <strong>obligation</strong> (Personal — someone owes you money) or at a <strong>thing</strong> (Material — you own the land)? If neither a physical thing nor another's debt is involved, it is Incorporeal.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides' rights diagram calls material rights "material / <em>corporeal</em>" and hangs the three incorporeal rights off that branch: <strong>copyrights, patents, trademarks</strong> — Lecture 3 in one picture.</div>
 ''',
     },
     {
@@ -206,6 +222,7 @@ Personal and Material get confused because both seem to involve another person. 
 <tr><td>Step 7 vs. step 8</td><td>Own opinion comes second-to-last; refraining is the true last resort.</td></tr>
 <tr><td>P.M.I.</td><td>Personal = people, Material = matter, Incorporeal = ideas.</td></tr>
 <tr><td>Gharar examples</td><td>Runaway slave, fish in the sea, an unborn camel's fetus.</td></tr>
+<tr><td>Notes vs. slides</td><td>Answer in the notes' wording: 4 relevant terms, 9 qualifications, 8 steps — the slides show 3, 6, and 7.</td></tr>
 </tbody></table></div>
 ''',
     },
@@ -236,6 +253,9 @@ CHEAT_1_FLASH = [
     ("Political rights", "Organise governance — election and nomination."),
     ("General rights", "Inherent personality rights — bodily safety, home inviolability."),
     ("P.M.I.", "Personal (people), Material (matter), Incorporeal (ideas)."),
+    ("Isqatat / Toutheeqat", "The slides' Arabic names for Dropping and Documentation."),
+    ("Waqeaat", "Incidences — one of the terms for newly emerged cases."),
+    ("Who assigns rights?", "Allah — rights are divine grants; no legitimate right without evidence."),
 ]
 
 # --------------------------------------------------------------------------- #
@@ -258,6 +278,8 @@ CHEAT_2_SECTIONS = [
 </div>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 The years are not in chronological order as listed. Patent (1791) is oldest, then Copyright (1886), then Trade name (1909). Know both the list order and the real timeline.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides also call incorporeal rights <strong>intellectual rights</strong>, and tie the copyright date to the <strong>Berne Convention for the Protection of Literary and Artistic Works (1886)</strong>.</div>
 ''',
     },
     {
@@ -297,6 +319,8 @@ Literary = permanent, non-transferable. Financial = temporary, inheritable.</div
 "Whoever lies upon me deliberately, let him take his seat in the Fire." Accurate attribution lets an author take credit for good, or bear responsibility for harm.</div>
 <div class="callout mnemonic"><div class="callout-label">Mnemonic — B.C.P.R.</div>
 Benefit &rarr; Custom &rarr; Plagiarism &rarr; Responsibility.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+Copyright lets the author <em>use and exploit</em> the work. "Author" also covers the writers of texts, scenarios, and dialogue in visual and audio works. The slides name one condition for protection: the work must be <strong>creative to any extent</strong> — composing something new, or interpreting, adding detail to, correcting, or summarising an existing work. Reason 4 appears as "the entitlement to gain is accompanied by the burden of loss."</div>
 ''',
     },
     {
@@ -328,7 +352,11 @@ The Importation Certificate is the odd one out: it does not protect an invention
 <h3>Shariah ruling — three reasons</h3>
 <p>Recognised, because: benefits are compensable; plagiarism / false attribution is forbidden; rights correspond to responsibilities.</p>
 <div class="callout mistake"><div class="callout-label">The sharpest trap in the lecture</div>
-Patent has <strong>three</strong> reasons — it drops the "general custom ('urf)" reason that Copyright and Trade name both carry. If a question lists four reasons for patent legitimacy, 'urf is the intruder.</div>
+In the notes, patent has <strong>three</strong> reasons — it drops the "general custom ('urf)" reason that Copyright and Trade name both carry. If a question lists four reasons for patent legitimacy, 'urf is the intruder.</div>
+<div class="callout slides"><div class="callout-label">From the slides — answer with the notes</div>
+The slides show <strong>four</strong> reasons for the patent right, including general custom ('urf) — the same four as copyright. The instructor said the questions follow the notes, so answer with three.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+A second definition: a patent is <strong>a document issued by an official office</strong>, working in the name of different countries, on request. It gives the owner the right to use the invention named in it and to benefit by selling or distributing it. The slides also set a class activity on the <strong>SAIP</strong> (Saudi Authority for Intellectual Property) website: what does intellectual property mean, what is a patent, and what are the conditions for obtaining one?</div>
 ''',
     },
     {
@@ -352,6 +380,10 @@ Trade name = Mark, Sign, Location. The trademark's own three functions = Distinc
 <p>Legally recognised, on condition it is <strong>not based on cheating or gharar</strong>. The reasoning mirrors Copyright's — all four reasons apply.</p>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 Trade name is the only one of the three with an explicit conditional caveat. Do not drop it when answering a trade-name ruling question.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+<strong>Names used on the slides:</strong> the three parts of a trade name are the <em>slogan / trademark</em>, the <em>commercial address</em>, and the <em>location</em>. The trademark functions appear as "functions of the trade name": attracting clients, differentiating the goods from similar goods, and restricting competition to protect the product.<br>
+<strong>Trademark definition:</strong> names, words, signatures, letters, symbols, numbers, titles, seals, designs, graphics, images, distinctive engravings, packaging, shapes, colours or colour combinations — any sign used to distinguish a business's goods or services.<br>
+<strong>Saudi law:</strong> Saudi Arabia adopted the unified GCC Trademark Law (effective September 2016) and is a member of the GCC Patent Law and GCC Customs Law, which align IP practice across Saudi Arabia, Kuwait, Qatar, Oman, Bahrain, and the UAE. Patents and trademarks are both granted on a <strong>first-to-file</strong> basis, so protect them before launching a product.</div>
 
 <div class="table-scroll"><table class="rule-table">
 <caption>The three incorporeal rights, side by side</caption>
@@ -360,7 +392,7 @@ Trade name is the only one of the three with an explicit conditional caveat. Do 
 <tr><td>Year mentioned</td><td>1886</td><td>1791</td><td>1909</td></tr>
 <tr><td>Protects</td><td>A creative work</td><td>An invention</td><td>A business identity</td></tr>
 <tr><td>Owner's rights</td><td>Literary (permanent) + Financial (temporary)</td><td>Use it for a limited time + name on it</td><td>Exclusive use + transferable asset</td></tr>
-<tr><td>Shariah reasons</td><td>4</td><td>3 (no 'urf)</td><td>4, plus the "no cheating / gharar" condition</td></tr>
+<tr><td>Shariah reasons</td><td>4</td><td>3 (no 'urf) — the slides show 4</td><td>4, plus the "no cheating / gharar" condition</td></tr>
 </tbody></table></div>
 <div class="callout mnemonic"><div class="callout-label">Mnemonic</div>
 Only Patent drops to three reasons. Only Trade name adds a condition. Copyright is the default four-reason case.</div>
@@ -377,6 +409,8 @@ Only Patent drops to three reasons. Only Trade name adds a condition. Copyright 
 <p>Insurance rests on <strong>collective risk-sharing</strong>: one person could be crushed by a disaster's full cost, but pooling relief expenses across a large group makes the burden manageable. That cooperative ideal was compromised when insurance shifted from mutual aid to a profit-driven commercial enterprise.</p>
 <div class="callout mnemonic"><div class="callout-label">Mnemonic</div>
 "Started as sharing the burden. Became selling the promise." That sentence is the hinge the whole lecture swings on.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides draw the philosophy as a crowd: everyone pays in, only the few marked in red are hit by a disaster, and the pooled money covers them. Everyone carries a small, certain cost so no one carries a large, sudden one.</div>
 
 <div class="card-grid">
   <div class="mini-card"><span class="mini-key">Halal</span><div class="mini-title">Collaborative / social</div>Donation-based, mutual solidarity, no profit motive. <span class="verdict halal">Fully lawful</span></div>
@@ -419,6 +453,8 @@ Collaborative = Cooperation. Commercial = Cash-for-risk. Same first letter, oppo
 <p>Collaborative associations collect donated subscriptions, invest them, and use the pool plus investment profits to cover subscriber risks. Any <strong>surplus</strong> after settling claims belongs entirely to the participants — they can take it back or roll it into future payments.</p>
 <div class="callout mistake"><div class="callout-label">Common mistake</div>
 The managing company may administer the surplus and its investment interest, but may <strong>not keep any of it</strong>. Ownership stays with the participants.</div>
+<div class="callout slides"><div class="callout-label">From the slides</div>
+The slides list the contract in four points: collect subscriptions from members; manage and invest the money for the members' benefit; the managing body may deduct a sum <strong>for the effort of management only</strong>; and the surplus is <strong>reinvested in the fund</strong>, never paid to the managing company.</div>
 ''',
     },
     {
@@ -510,12 +546,13 @@ Five contrasts, one pattern: everything about Commercial is <em>individual and p
 <caption>What to check last, in order of how often it is tested</caption>
 <thead><tr><th>Item</th><th>Say it in one line</th></tr></thead>
 <tbody>
-<tr><td>Reason counts</td><td>Copyright 4, Patent 3 (no 'urf), Trade name 4 + condition.</td></tr>
+<tr><td>Reason counts</td><td>Copyright 4, Patent 3 (no 'urf), Trade name 4 + condition. The slides show patent with 4 — answer with the notes.</td></tr>
 <tr><td>F.L.A.I.</td><td>Full, Limited, Additive, Importation — and Importation protects no invention.</td></tr>
 <tr><td>Riba mapping</td><td>More = fa&#7693;l, equal = nas&#299;'ah, nothing = illegitimate taking.</td></tr>
 <tr><td>G.G.R.</td><td>Gharar + Gambling + Riba — all three, never just one.</td></tr>
 <tr><td>D.N.F.</td><td>Dependent, Necessity, Free.</td></tr>
 <tr><td>Surplus rule</td><td>Belongs to participants; the managing company administers but keeps none.</td></tr>
+<tr><td>Management fee (slides)</td><td>The managing body may deduct a sum for management effort only; the surplus is reinvested in the fund.</td></tr>
 <tr><td>Dates</td><td>Marine insurance: 15th-century northern Italy. Reached Islamic countries: 19th century, as "Saukarah."</td></tr>
 <tr><td>L stays, F pays</td><td>Literary right permanent and non-transferable; financial right temporary and inheritable.</td></tr>
 </tbody></table></div>
@@ -550,11 +587,26 @@ CHEAT_2_FLASH = [
     ("G.G.R.", "Gharar, Gambling, Riba — why commercial insurance is prohibited."),
     ("D.N.F.", "Dependent, Necessity, Free — the three exceptions."),
     ("Surplus", "Belongs entirely to participants; the company administers but keeps none."),
+    ("Intellectual rights", "The slides' other name for incorporeal rights."),
+    ("Berne Convention", "1886 — the convention behind the copyright date."),
+    ("SAIP", "Saudi Authority for Intellectual Property."),
+    ("First-to-file", "Saudi Arabia grants patents and trademarks to whoever files first."),
+    ("Management fee", "Collaborative managers may deduct a sum for management effort only."),
 ]
 
 # --------------------------------------------------------------------------- #
 # Midterm cheat sheet — the two halves above on one page (Lectures 1–4)
 # --------------------------------------------------------------------------- #
+
+INSTRUCTOR_NOTE = ('Girls I uploaded the slides but don’t depend on them<br>'
+                   'The questions will be worded just like the notes not the slides')
+
+INSTRUCTOR_NOTE_HTML = f'''
+<div class="callout slides"><div class="callout-label">Notes first — from the instructor</div>
+"{INSTRUCTOR_NOTE}"<br>
+Boxes marked <strong>From the slides</strong> add detail from the instructor's slides. Where the slides and the notes differ, answer with the notes.</div>
+'''
+
 
 def _radar_rows(sections):
     return sections[-1]['body'].split('<tbody>')[1].split('</tbody>')[0].strip()
@@ -565,6 +617,7 @@ CHEAT_SECTIONS = [
     {**s, 'id': f's{i}', 'num': f'{i:02d}'}
     for i, s in enumerate(CHEAT_1_SECTIONS[:-1] + CHEAT_2_SECTIONS[:-1], start=1)
 ]
+CHEAT_SECTIONS[0] = {**CHEAT_SECTIONS[0], 'body': INSTRUCTOR_NOTE_HTML + CHEAT_SECTIONS[0]['body']}
 CHEAT_SECTIONS.append({
     'id': f's{len(CHEAT_SECTIONS) + 1}', 'tag': 'Exam radar', 'num': f'{len(CHEAT_SECTIONS) + 1:02d}',
     'h2': 'Highest-yield items for the midterm',
@@ -621,8 +674,8 @@ MINDMAP = [
         ('Transactions: four categories (B.D.D.D.)', '', [
             ('Bargains', 'Sale and leasing.', []),
             ('Donations', 'Grants, will, endowment (waqf).', []),
-            ('Dropping', 'Ending an obligation, e.g. abolishing a debt.', []),
-            ('Documentation', 'Mortgage, bail, draft.', []),
+            ('Dropping', 'Ending an obligation, e.g. abolishing a debt. Slides: Isqatat.', []),
+            ('Documentation', 'Mortgage, bail, draft. Slides: Toutheeqat.', []),
         ]),
         ('Full definition', 'NEW · CHANGED · RENAMED · COMBINED.', []),
         ('Identifying the definition (N.U.R.C.)', 'Four cases, each with its example.', [
@@ -631,7 +684,7 @@ MINDMAP = [
             ('Renamed, ruling unchanged', 'Bank interest is still riba.', []),
             ('Combined old forms', 'Murabaha; leasing merging sale and rent.', []),
         ]),
-        ('Relevant terms (E.O.I.F.)', 'Emerged cases, Occurrences, Incidences, Fatwa.', []),
+        ('Relevant terms (E.O.I.F.)', 'Emerged cases, Occurrences, Incidences, Fatwa. The slides list three and call incidences Waqeaat.', []),
         ('Four characteristics', '"Please Permit Reasonable Flexibility."', [
             ('General bases and principles', 'Not detailed like acts of worship; leaves room for ijtihad. Evidence: mutual consent (4:29), no riba (2:275), no gharar (hadith).', []),
             ('Permissibility is the default', 'Worship is restricted by default; transactions are permitted unless a clear text forbids.', []),
@@ -643,14 +696,18 @@ MINDMAP = [
         ('Nine qualifications of a researcher', 'Knowledge base then character.', [
             ('Q.H.I.A.', "Qur'an, Hadith, Ijma', Arabic language.", []),
             ('S.H.M.R.U.', 'Skill of ijtihad, Honesty, Maqasid awareness, Research ability, Understanding lived reality.', []),
+            ("Slides version", "Grouped into six: knowledge (including consensus and controversy, and the fundamentals of jurisprudence), self-jurisprudent, honest and just, the Shari'a's purposes, eliciting rules, familiar with reality. The exam follows the notes' nine.", []),
         ]),
         ('Eight steps to a ruling', 'Sequence is examinable.', [
             ('1–3', 'Pray, understand the subject, search Qur\'an and Sunnah.', []),
             ('4–6', "Companions' sayings, the four imams, recent scholars' articles.", []),
             ('7', 'His own opinion — second-to-last resort only.', []),
             ('8', 'Refrain from ruling if no legitimate rule can be reached.', []),
+            ("Slides version", "Seven steps — no own-opinion step. The exam follows the notes' eight.", []),
         ]),
         ('Rights', 'An exclusive entitlement establishing an authority or an obligation.', [
+            ('Who assigns rights (slides)', 'Allah — rights are divine grants; no legitimate right without evidence.', []),
+            ('Authority and obligation (slides)', 'Authority over a person (custody, guardianship) or an object (ownership). Obligation is financial (a debt) or a performance (contracted work, raising children).', []),
             ('Political rights', 'Organising governance — election, nomination.', []),
             ('Civil rights', "Establish the individual's interests directly.", [
                 ('General rights', 'Inherent personality rights — bodily safety, home inviolability.', []),
@@ -665,24 +722,27 @@ MINDMAP = [
             ]),
         ]),
     ]),
-    ('Lecture 3 — Incorporeal Rights: Copyright, Patent, Trade Name', 'Value + permitted use = property, physical or not.', [
-        ('Copyright — 1886', 'Protects a creative work.', [
+    ('Lecture 3 — Incorporeal Rights: Copyright, Patent, Trade Name', 'Value + permitted use = property, physical or not. The slides also call them intellectual rights.', [
+        ('Copyright — 1886', 'Protects a creative work. Slides: the Berne Convention (1886).', [
             ('Who is the author', 'The creator; name on the work unless proven otherwise; else the publisher represents them.', []),
             ('Two rights', 'Literary — permanent, non-transferable. Financial — temporary, inheritable.', []),
             ('Four Shariah reasons (B.C.P.R.)', "Benefit compensable, Custom ('urf), Plagiarism banned, Responsibility earns reward.", []),
             ('Not protected', 'Abstracting or collecting existing information with no creative contribution.', []),
+            ('Author examples (slides)', 'Also writers of texts, scenarios, and dialogue; the one condition is that the work is creative to any extent.', []),
         ]),
         ('Patent — 1791', 'Exclusivity in exchange for disclosure.', [
             ("Inventor's rights", 'Use it for a limited period; register it under his name.', []),
             ('Four certificates (F.L.A.I.)', 'Full-Rights, Limited, Additive, Importation.', []),
             ('Importation certificate', 'An enterprise right — protects no invention.', []),
-            ('Three Shariah reasons', "Drops the 'urf reason that Copyright and Trade name keep.", []),
+            ('Three Shariah reasons', "Drops the 'urf reason that Copyright and Trade name keep. The slides show four; the exam follows the notes.", []),
+            ('Slides definition', 'An official document from an IP office giving the owner the right to use the invention and benefit by selling or distributing it.', []),
         ]),
         ('Trade name — 1909', 'Protects a business identity.', [
             ('Three components (M.S.L.)', 'Mark, Sign, Location.', []),
             ('Trademark functions (D.C.M.)', 'Distinctiveness, Consumer attraction, Market surveillance.', []),
             ('Two rights', 'Exclusive use; transferable asset with measurable value.', []),
             ('Ruling', 'Four reasons, plus the condition: not based on cheating or gharar.', []),
+            ('Trademark and Saudi law (slides)', 'Any distinguishing sign — names, symbols, designs, colours. GCC Trademark Law effective September 2016; patents and trademarks are first-to-file.', []),
         ]),
     ]),
     ('Lecture 4 — Insurance', 'Two systems, two verdicts. Keep the tracks separate.', [
@@ -693,7 +753,7 @@ MINDMAP = [
             ('Three historical forms (Z.K.S.)', "Zakat, Kinship (Aqilah), Social solidarity (the Ash'arites).", []),
             ('Three modern systems (R.S.R.)', 'Retirement, Social Security, Reciprocal.', []),
             ('Ruling', 'Donation contract → no riba → fully lawful.', []),
-            ('Surplus', 'Belongs to participants; the company administers but keeps none.', []),
+            ('Surplus', 'Belongs to participants; the company administers but keeps none. Slides: reinvested in the fund; managers may deduct a fee for management effort only.', []),
         ]),
         ('Commercial insurance', 'Compensation-based, profit-making. Prohibited, with narrow exceptions.', [
             ('Emergence', 'Marine insurance, 15th-century northern Italy; reached Islamic countries in the 19th century as "Saukarah."', []),
@@ -800,14 +860,14 @@ EXAM_1_MCQ = [
       "Honesty in word and action",
       "Holding a formal judicial appointment",
       "Awareness of the higher objectives of religion"], 2,
-     "A judicial appointment is never listed. The nine are Q.H.I.A. plus S.H.M.R.U."),
+     "A judicial appointment is never listed. The nine are Q.H.I.A. plus S.H.M.R.U. (The slides group them into six; the exam follows the notes' nine.)"),
     ("In the eight steps to a ruling, what immediately follows searching the Qur'an and Sunnah?",
      "L2 · Block 2",
      ["Searching the four imams' jurisprudence",
       "Examining the Companions' sayings and arguments",
       "Using his own opinion",
       "Refraining from ruling"], 1,
-     "Order: pray, understand, texts, Companions, four imams, new sources, own opinion, refrain."),
+     "Order: pray, understand, texts, Companions, four imams, new sources, own opinion, refrain. (The slides show seven steps with no own-opinion step; the exam follows the notes' eight.)"),
     ("A scholar has exhausted every source and still cannot reach a legitimate rule. What should he do?",
      "L2 · Block 2",
      ["Follow the closest school of thought",
@@ -886,7 +946,8 @@ EXAM_1_WRITTEN = [
      itself; honesty in word and action; awareness of the higher objectives of religion (maqasid
      al-Shari'ah); the ability to elicit rulings from contemporary scholars' books; and an understanding
      of lived reality and its surrounding circumstances.</p>
-     <p>Group them as Q.H.I.A. (the knowledge base) plus S.H.M.R.U. (the practical qualities).</p>'''),
+     <p>Group them as Q.H.I.A. (the knowledge base) plus S.H.M.R.U. (the practical qualities).</p>
+     <p>The instructor's slides group the same content into six conditions; answer with the notes' nine.</p>'''),
     ("Draw the full classification of rights from the top down, ending in the three financial rights.",
      "L2 · Blocks 3–8",
      '''<p><strong>Rights</strong> — an exclusive entitlement by which the Law establishes an authority or
@@ -945,14 +1006,14 @@ EXAM_2_MCQ = [
     ("How many Shariah reasons are given for recognising the patent right?",
      "L3 · Block 10",
      ["Two", "Three", "Four", "Five"], 1,
-     "Patent drops the \"general custom ('urf)\" reason that copyright and trade name both carry."),
+     "Patent drops the \"general custom ('urf)\" reason that copyright and trade name both carry. The slides show four, adding 'urf, but the exam follows the notes."),
     ("Which reason is NOT given for the legitimacy of the patent right?",
      "L3 · Block 10",
      ["Benefits are compensable in Islam",
       "General custom ('urf) admits the right",
       "Plagiarism and false attribution are forbidden",
       "Rights correspond to responsibilities"], 1,
-     "'Urf is the intruder — this is the sharpest trap in Lecture 3."),
+     "Per the notes, 'urf is the intruder — the sharpest trap in Lecture 3. (The slides do list 'urf for patents; the exam follows the notes.)"),
     ("Which patent certificate does NOT protect an invention?",
      "L3 · Block 9",
      ["Full-Rights Certificate", "Limited Certificate",
@@ -1038,7 +1099,7 @@ EXAM_2_WRITTEN = [
      '''<p><strong>Copyright (1886)</strong> protects a creative work; the owner holds a literary right
      (permanent, non-transferable) and a financial right (temporary, inheritable); four Shariah reasons.</p>
      <p><strong>Patent (1791)</strong> protects an invention; the inventor may use it for a limited period
-     and register it under his name; three Shariah reasons — it drops the 'urf reason.</p>
+     and register it under his name; three Shariah reasons — it drops the 'urf reason (the slides show four; the exam follows the notes).</p>
      <p><strong>Trade name (1909)</strong> protects a business identity; the owner holds exclusive use and
      a transferable asset; four Shariah reasons, plus the condition that it not be based on cheating or
      gharar.</p>
@@ -1141,7 +1202,7 @@ FINAL_EXTRA_MCQ = [
       "General custom ('urf) admits the right",
       "Plagiarism is prohibited",
       "Rights correspond to responsibilities"], 1,
-     "Patent is recognised for three reasons only; 'urf is the one it drops."),
+     "Patent is recognised for three reasons only; 'urf is the one it drops. (The slides list 'urf for patents too; the exam follows the notes.)"),
     ("The Ash'arites pooling their food is cited as an example of:",
      "L4 · Block 5",
      ["The kinship system (Aqilah)", "The social solidarity system",
@@ -1153,7 +1214,7 @@ FINAL_EXTRA_MCQ = [
       "It is donated to charity",
       "It belongs entirely to the participants, who may take it back or roll it forward",
       "It is split evenly between the company and participants"], 2,
-     "The company may administer the surplus and its investment interest, but keeps none of it."),
+     "The company may administer the surplus and its investment interest, but keeps none of it. The slides add that the managing body may deduct a sum for its management effort only."),
     ("Which principle allows a jurisprudent to treat a newly invented financial instrument as permissible "
      "in the absence of any text about it?",
      "L1 · Block 9",
