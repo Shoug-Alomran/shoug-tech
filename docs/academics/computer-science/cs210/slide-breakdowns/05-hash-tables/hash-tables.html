@@ -1,18 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-sg-styled>
-<head>
-<link rel="stylesheet" href="../../../../../styles/breakdown-language.css?v=cca2675653b6">
-<script src="../../../../../javascripts/breakdown-language.js?v=b1d6c65345d9"></script>
+  <head>
+    <link
+      rel="stylesheet"
+      href="../../../../../styles/breakdown-language.css?v=cca2675653b6"
+    />
+    <script src="../../../../../javascripts/breakdown-language.js?v=e0f6e3407f68"></script>
 
-<link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hash Tables - Comprehensive Study Guide</title>
-    <link rel="stylesheet" href="/styles/cs210.css">
+    <link rel="stylesheet" href="/styles/cs210.css" />
     <script>
-        /* Theme resolution, in priority order:
+      /* Theme resolution, in priority order:
              1. the stored site preference (what the toggle writes);
              2. the embedding page -- these pages are iframed by their wrapper,
                 and the wrapper only marks itself when it is in LIGHT mode, so an
@@ -21,352 +37,756 @@
            It runs before first paint, and re-asserts afterwards because the
            shared theme scripts fall back to the OS setting and would otherwise
            leave a light page sitting inside a dark one. */
-        (function() {
-            var root = document.documentElement;
+      (function () {
+        var root = document.documentElement;
 
-            function parentTheme() {
-                try {
-                    if (!window.parent || window.parent === window) return null;
-                    var pdoc = window.parent.document;
-                    if (!pdoc) return null;
-                    var body = pdoc.body;
-                    if (body && body.classList.contains("shoug-light-mode")) return "light";
-                    var attr = (body && body.getAttribute("data-theme")) ||
-                        pdoc.documentElement.getAttribute("data-theme");
-                    if (attr === "dark" || attr === "light") return attr;
-                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
-                        pdoc.documentElement.getAttribute("data-md-color-scheme");
-                    if (scheme) return scheme === "slate" ? "dark" : "light";
-                    return "dark";
-                } catch (e) {
-                    return null; // cross-origin: fall through to the OS setting
-                }
-            }
+        function parentTheme() {
+          try {
+            if (!window.parent || window.parent === window) return null;
+            var pdoc = window.parent.document;
+            if (!pdoc) return null;
+            var body = pdoc.body;
+            if (body && body.classList.contains("shoug-light-mode"))
+              return "light";
+            var attr =
+              (body && body.getAttribute("data-theme")) ||
+              pdoc.documentElement.getAttribute("data-theme");
+            if (attr === "dark" || attr === "light") return attr;
+            var scheme =
+              (body && body.getAttribute("data-md-color-scheme")) ||
+              pdoc.documentElement.getAttribute("data-md-color-scheme");
+            if (scheme) return scheme === "slate" ? "dark" : "light";
+            return "dark";
+          } catch (e) {
+            return null; // cross-origin: fall through to the OS setting
+          }
+        }
 
-            function stored() {
-                try {
-                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
-                    if (saved === "dark" || saved === "light") return saved;
-                } catch (e) {}
-                return null;
-            }
+        function stored() {
+          try {
+            var saved =
+              localStorage.getItem("shoug-theme") ||
+              localStorage.getItem("theme");
+            if (saved === "dark" || saved === "light") return saved;
+          } catch (e) {}
+          return null;
+        }
 
-            function resolve() {
-                var saved = stored();
-                if (saved) return saved;
-                var inherited = parentTheme();
-                if (inherited) {
-                    /* Record what the embedding page is showing: the shared theme
+        function resolve() {
+          var saved = stored();
+          if (saved) return saved;
+          var inherited = parentTheme();
+          if (inherited) {
+            /* Record what the embedding page is showing: the shared theme
                        scripts read this key, and without it their first toggle
                        just re-applies the theme already on screen. */
-                    try {
-                        localStorage.setItem("shoug-theme", inherited);
-                        localStorage.setItem("theme", inherited);
-                    } catch (e) {}
-                    return inherited;
-                }
-                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ?
-                    "dark" : "light";
-            }
+            try {
+              localStorage.setItem("shoug-theme", inherited);
+              localStorage.setItem("theme", inherited);
+            } catch (e) {}
+            return inherited;
+          }
+          return window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
 
-            function apply() {
-                var theme = resolve();
-                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
-                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
-            }
+        function apply() {
+          var theme = resolve();
+          if (root.getAttribute("data-theme") !== theme)
+            root.setAttribute("data-theme", theme);
+          if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+        }
 
-            apply();
-            if (window.MutationObserver) {
-                new MutationObserver(apply).observe(root, {
-                    attributes: true,
-                    attributeFilter: ["data-theme"]
-                });
-            }
-            document.addEventListener("DOMContentLoaded", apply);
-            window.addEventListener("load", apply);
-        })();
+        apply();
+        if (window.MutationObserver) {
+          new MutationObserver(apply).observe(root, {
+            attributes: true,
+            attributeFilter: ["data-theme"],
+          });
+        }
+        document.addEventListener("DOMContentLoaded", apply);
+        window.addEventListener("load", apply);
+      })();
     </script>
     <script src="/javascripts/standalone-theme.js"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
 
-    <meta name="description" content="CS210 - Week 13 - Comprehensive Reference">
-    <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/">
-    <meta property="og:title" content="Hash Tables - Comprehensive Study Guide">
-    <meta property="og:description" content="CS210 - Week 13 - Comprehensive Reference">
-    <meta property="og:url" content="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/">
-    <meta property="og:type" content="article">
-    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Hash Tables - Comprehensive Study Guide">
-    <meta name="twitter:description" content="CS210 - Week 13 - Comprehensive Reference">
-    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta
+      name="description"
+      content="CS210 - Week 13 - Comprehensive Reference"
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/"
+    />
+    <meta
+      property="og:title"
+      content="Hash Tables - Comprehensive Study Guide"
+    />
+    <meta
+      property="og:description"
+      content="CS210 - Week 13 - Comprehensive Reference"
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Hash Tables - Comprehensive Study Guide"
+    />
+    <meta
+      name="twitter:description"
+      content="CS210 - Week 13 - Comprehensive Reference"
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "url": "https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/",
-            "name": "Hash Tables - Comprehensive Study Guide",
-            "description": "CS210 - Week 13 - Comprehensive Reference",
-            "isPartOf": {
-                "@type": "WebSite",
-                "name": "Shoug's Digital Garden",
-                "url": "https://shoug-tech.com/"
-            }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/",
+        "name": "Hash Tables - Comprehensive Study Guide",
+        "description": "CS210 - Week 13 - Comprehensive Reference",
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "Shoug's Digital Garden",
+          "url": "https://shoug-tech.com/"
         }
+      }
     </script>
 
-    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/">
-    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/?lang=ar">
-    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/">
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/?lang=ar"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/"
+    />
 
     <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
     <script type="text/javascript">
-        (function(c, l, a, r, i, t, y) {
-            c[a] = c[a] || function() {
-                (c[a].q = c[a].q || []).push(arguments)
-            };
-            t = l.createElement(r);
-            t.async = 1;
-            t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0];
-            y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "xub0eqmvs9");
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
-    <link rel="stylesheet" href="/styles/a11y.css">
-  <link rel="stylesheet" href="/styles/slide-figures.css?v=e698a3ce14" />
-<style data-page-fit>
-/* Generated by scripts/fit_page_layout.py from measurements at laptop, iPad and phone widths; re-run to refresh. */
+    <link rel="stylesheet" href="/styles/a11y.css" />
+    <link rel="stylesheet" href="/styles/slide-figures.css?v=e698a3ce14" />
+    <style data-page-fit>
+      /* Generated by scripts/fit_page_layout.py from measurements at laptop, iPad and phone widths; re-run to refresh. */
 
-div.container:not(#pf) {
-  width: auto;
-  max-width: min(1320px, 100%);
-}
+      div.container:not(#pf) {
+        width: auto;
+        max-width: min(1320px, 100%);
+      }
 
-@media (max-width: 600px) {
-  div.container:not(#pf) {
-    padding-left: 16px;
-    padding-right: 16px;
-    margin-left: 0;
-    margin-right: 0;
-  }
+      @media (max-width: 600px) {
+        div.container:not(#pf) {
+          padding-left: 16px;
+          padding-right: 16px;
+          margin-left: 0;
+          margin-right: 0;
+        }
 
-  div.highlight:not(#pf),
-div.highlight > ul:not(#pf),
-div.important:not(#pf),
-div.visual:not(#pf) {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-</style>
-<link rel="stylesheet" href="../../../../../styles/breakdown-contents.css?v=3e2d7e4357d8">
-<script src="../../../../../javascripts/breakdown-contents.js?v=8d9123e5e177" defer></script>
-</head>
-<body data-cs210="guide" data-cs210-page="hash-tables">
-    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
-        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z" />
-        </svg>
-        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.1" />
-            <path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" />
-        </svg>
-        <span data-theme-label>Dark</span>
+        div.highlight:not(#pf),
+        div.highlight > ul:not(#pf),
+        div.important:not(#pf),
+        div.visual:not(#pf) {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="../../../../../styles/breakdown-contents.css?v=3e2d7e4357d8"
+    />
+    <script
+      src="../../../../../javascripts/breakdown-contents.js?v=8d9123e5e177"
+      defer
+    ></script>
+  </head>
+  <body data-cs210="guide" data-cs210-page="hash-tables">
+    <button
+      class="sg-theme-toggle"
+      type="button"
+      onclick="toggleTheme()"
+      aria-label="Toggle dark and light mode"
+    >
+      <svg
+        class="sg-icon-moon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z" />
+      </svg>
+      <svg
+        class="sg-icon-sun"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="4.1" />
+        <path
+          d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"
+        />
+      </svg>
+      <span data-theme-label>Dark</span>
     </button>
 
-
     <div class="container">
-        <h1>Hash Tables Study Guide</h1>
-        <p class="subtitle">CS210 - Week 13 - Comprehensive Reference</p>
+      <h1>Hash Tables Study Guide</h1>
+      <p class="subtitle">CS210 - Week 13 - Comprehensive Reference</p>
 
-        <div class="toc">
-            <h3>Table of Contents</h3>
-            <ul>
-                <li><a href="#introduction">1. Introduction to Hash Tables</a></li>
-                <li><a href="#basic-plan">2. Hashing: Basic Plan</a></li>
-                <li><a href="#hash-functions">3. Hash Functions</a></li>
-                <li><a href="#separate-chaining">4. Separate Chaining</a></li>
-                <li><a href="#linear-probing">5. Linear Probing</a></li>
-                <li><a href="#comparison">6. Performance Comparison</a></li>
-                <li><a href="#advanced">7. Advanced Topics</a></li>
-                <li><a href="#summary">8. Summary & Best Practices</a></li>
-            </ul>
-        </div>
-
-        <!-- SECTION 1: INTRODUCTION -->
-        <h2 id="introduction">1. Introduction to Hash Tables</h2>
-
-        <div class="key-point">
-            <h4>Main Concept</h4>
-            <p>Hash tables provide <strong>constant-time</strong> average case performance for search, insert, and delete operations by using a hash function to compute an array index directly from the key.</p>
-        </div>
-
-        <h3>What is a Map?</h3>
-        <p>A <strong>map</strong> is a data structure that models a searchable collection of key-value pairs, where:</p>
+      <div class="toc">
+        <h3>Table of Contents</h3>
         <ul>
-            <li>Keys are <strong>unique</strong> - no duplicate keys allowed</li>
-            <li>Each key maps to exactly <strong>one value</strong></li>
-            <li>Main operations: <code>get(key)</code>, <code>put(key, value)</code>, <code>remove(key)</code></li>
+          <li><a href="#introduction">1. Introduction to Hash Tables</a></li>
+          <li><a href="#basic-plan">2. Hashing: Basic Plan</a></li>
+          <li><a href="#hash-functions">3. Hash Functions</a></li>
+          <li><a href="#separate-chaining">4. Separate Chaining</a></li>
+          <li><a href="#linear-probing">5. Linear Probing</a></li>
+          <li><a href="#comparison">6. Performance Comparison</a></li>
+          <li><a href="#advanced">7. Advanced Topics</a></li>
+          <li><a href="#summary">8. Summary & Best Practices</a></li>
         </ul>
+      </div>
 
-        <div class="example">
-            <h4>Real-World Examples</h4>
-            <ul>
-                <li><strong>Address Book:</strong> Name (key) → Phone Number (value)</li>
-                <li><strong>Student Records:</strong> Student ID (key) → Student Data (value)</li>
-                <li><strong>Dictionary:</strong> Word (key) → Definition (value)</li>
-            </ul>
-        </div>
+      <!-- SECTION 1: INTRODUCTION -->
+      <h2 id="introduction">1. Introduction to Hash Tables</h2>
 
-        <!-- SECTION 2: BASIC PLAN -->
-        <h2 id="basic-plan">2. Hashing: Basic Plan</h2>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Hashing, the basic plan: a key-indexed table."><img src="figures/slide-02.png" alt="Hashing, the basic plan: a key-indexed table." width="1569" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=2">PDF page 2</a>Hashing, the basic plan: a key-indexed table.</figcaption></figure>
-        <h3>Core Idea</h3>
-        <p>Save items in a <strong>key-indexed table</strong> where the index is computed as a function of the key.</p>
+      <div class="key-point">
+        <h4>Main Concept</h4>
+        <p>
+          Hash tables provide <strong>constant-time</strong> average case
+          performance for search, insert, and delete operations by using a hash
+          function to compute an array index directly from the key.
+        </p>
+      </div>
 
-        <div class="info">
-            <h4>Key Components</h4>
-            <ol>
-                <li><strong>Hash Function:</strong> Method for computing array index from key</li>
-                <li><strong>Equality Test:</strong> Method for checking if two keys are equal</li>
-                <li><strong>Collision Resolution:</strong> Strategy for handling keys that hash to the same index</li>
-            </ol>
-        </div>
+      <h3>What is a Map?</h3>
+      <p>
+        A <strong>map</strong> is a data structure that models a searchable
+        collection of key-value pairs, where:
+      </p>
+      <ul>
+        <li>Keys are <strong>unique</strong> - no duplicate keys allowed</li>
+        <li>Each key maps to exactly <strong>one value</strong></li>
+        <li>
+          Main operations: <code>get(key)</code>, <code>put(key, value)</code>,
+          <code>remove(key)</code>
+        </li>
+      </ul>
 
-        <h3>The Space-Time Tradeoff</h3>
-        <table>
-            <tr>
-                <th>Scenario</th>
-                <th>Strategy</th>
-                <th>Issue</th>
-            </tr>
-            <tr>
-                <td>No space limitation</td>
-                <td>Trivial hash function with key as index</td>
-                <td>Wastes enormous amounts of memory</td>
-            </tr>
-            <tr>
-                <td>No time limitation</td>
-                <td>Sequential search through all items</td>
-                <td>Very slow for large datasets</td>
-            </tr>
-            <tr>
-                <td><strong>Real world</strong></td>
-                <td><strong>Hashing with collision resolution</strong></td>
-                <td><strong>Balance space and time efficiently</strong></td>
-            </tr>
-        </table>
+      <div class="example">
+        <h4>Real-World Examples</h4>
+        <ul>
+          <li>
+            <strong>Address Book:</strong> Name (key) → Phone Number (value)
+          </li>
+          <li>
+            <strong>Student Records:</strong> Student ID (key) → Student Data
+            (value)
+          </li>
+          <li><strong>Dictionary:</strong> Word (key) → Definition (value)</li>
+        </ul>
+      </div>
 
-        <!-- SECTION 3: HASH FUNCTIONS -->
-        <h2 id="hash-functions">3. Hash Functions</h2>
+      <!-- SECTION 2: BASIC PLAN -->
+      <h2 id="basic-plan">2. Hashing: Basic Plan</h2>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Hashing, the basic plan: a key-indexed table."
+        >
+          <img
+            src="figures/slide-02.png"
+            alt="Hashing, the basic plan: a key-indexed table."
+            width="1569"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=2"
+            >PDF page 2</a
+          >Hashing, the basic plan: a key-indexed table.
+        </figcaption>
+      </figure>
+      <h3>Core Idea</h3>
+      <p>
+        Save items in a <strong>key-indexed table</strong> where the index is
+        computed as a function of the key.
+      </p>
 
-        <div class="highlight">
-            <h4>Idealistic Goal</h4>
-            <p>Scramble the keys <strong>uniformly</strong> to produce a table index that is:</p>
-            <ul>
-                <li><strong>Efficiently computable</strong></li>
-                <li>Makes each table index <strong>equally likely</strong> for each key</li>
-            </ul>
-        </div>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Computing the hash function."><img src="figures/slide-05.png" alt="Computing the hash function." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=5">PDF page 5</a>Computing the hash function.</figcaption></figure>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Java&#x27;s hash code conventions."><img src="figures/slide-06.png" alt="Java&#x27;s hash code conventions." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=6">PDF page 6</a>Java&#x27;s hash code conventions.</figcaption></figure>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Implementing hash code for integers, booleans and doubles."><img src="figures/slide-11.png" alt="Implementing hash code for integers, booleans and doubles." width="1537" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=11">PDF page 11</a>Implementing hash code for integers, booleans and doubles.</figcaption></figure>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Implementing hash code for strings."><img src="figures/slide-12.png" alt="Implementing hash code for strings." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=12">PDF page 12</a>Implementing hash code for strings.</figcaption></figure>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Modular hashing."><img src="figures/slide-16.png" alt="Modular hashing." width="1491" height="1086" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=16">PDF page 16</a>Modular hashing.</figcaption></figure>
-          <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The uniform hashing assumption."><img src="figures/slide-17.png" alt="The uniform hashing assumption." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=17">PDF page 17</a>The uniform hashing assumption.</figcaption></figure>
-        <h3>Computing Hash Codes</h3>
+      <div class="info">
+        <h4>Key Components</h4>
+        <ol>
+          <li>
+            <strong>Hash Function:</strong> Method for computing array index
+            from key
+          </li>
+          <li>
+            <strong>Equality Test:</strong> Method for checking if two keys are
+            equal
+          </li>
+          <li>
+            <strong>Collision Resolution:</strong> Strategy for handling keys
+            that hash to the same index
+          </li>
+        </ol>
+      </div>
 
-        <h4>For Integers</h4>
-        <pre>public int hashCode() {
+      <h3>The Space-Time Tradeoff</h3>
+      <table>
+        <tr>
+          <th>Scenario</th>
+          <th>Strategy</th>
+          <th>Issue</th>
+        </tr>
+        <tr>
+          <td>No space limitation</td>
+          <td>Trivial hash function with key as index</td>
+          <td>Wastes enormous amounts of memory</td>
+        </tr>
+        <tr>
+          <td>No time limitation</td>
+          <td>Sequential search through all items</td>
+          <td>Very slow for large datasets</td>
+        </tr>
+        <tr>
+          <td><strong>Real world</strong></td>
+          <td><strong>Hashing with collision resolution</strong></td>
+          <td><strong>Balance space and time efficiently</strong></td>
+        </tr>
+      </table>
+
+      <!-- SECTION 3: HASH FUNCTIONS -->
+      <h2 id="hash-functions">3. Hash Functions</h2>
+
+      <div class="highlight">
+        <h4>Idealistic Goal</h4>
+        <p>
+          Scramble the keys <strong>uniformly</strong> to produce a table index
+          that is:
+        </p>
+        <ul>
+          <li><strong>Efficiently computable</strong></li>
+          <li>
+            Makes each table index <strong>equally likely</strong> for each key
+          </li>
+        </ul>
+      </div>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Computing the hash function."
+        >
+          <img
+            src="figures/slide-05.png"
+            alt="Computing the hash function."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=5"
+            >PDF page 5</a
+          >Computing the hash function.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Java&#x27;s hash code conventions."
+        >
+          <img
+            src="figures/slide-06.png"
+            alt="Java&#x27;s hash code conventions."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=6"
+            >PDF page 6</a
+          >Java&#x27;s hash code conventions.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Implementing hash code for integers, booleans and doubles."
+        >
+          <img
+            src="figures/slide-11.png"
+            alt="Implementing hash code for integers, booleans and doubles."
+            width="1537"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=11"
+            >PDF page 11</a
+          >Implementing hash code for integers, booleans and doubles.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Implementing hash code for strings."
+        >
+          <img
+            src="figures/slide-12.png"
+            alt="Implementing hash code for strings."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=12"
+            >PDF page 12</a
+          >Implementing hash code for strings.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Modular hashing."
+        >
+          <img
+            src="figures/slide-16.png"
+            alt="Modular hashing."
+            width="1491"
+            height="1086"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=16"
+            >PDF page 16</a
+          >Modular hashing.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: The uniform hashing assumption."
+        >
+          <img
+            src="figures/slide-17.png"
+            alt="The uniform hashing assumption."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=17"
+            >PDF page 17</a
+          >The uniform hashing assumption.
+        </figcaption>
+      </figure>
+      <h3>Computing Hash Codes</h3>
+
+      <h4>For Integers</h4>
+      <pre>
+public int hashCode() {
             return value;
             }</pre>
-        <p>Simply return the integer value itself.</p>
+      <p>Simply return the integer value itself.</p>
 
-        <h4>For Booleans</h4>
-        <pre>public int hashCode() {
+      <h4>For Booleans</h4>
+      <pre>
+public int hashCode() {
             if (value) return 1231;
             else return 1237;
             }</pre>
-        <p>Use two different prime numbers for true and false.</p>
+      <p>Use two different prime numbers for true and false.</p>
 
-        <h4>For Doubles</h4>
-        <pre>public int hashCode() {
+      <h4>For Doubles</h4>
+      <pre>
+public int hashCode() {
             long bits = doubleToLongBits(value);
             return (int) (bits ^ (bits >>> 32));
             }</pre>
-        <p>Convert to 64-bit representation and XOR the two halves.</p>
+      <p>Convert to 64-bit representation and XOR the two halves.</p>
 
-        <h4>For Strings (Horner's Method)</h4>
-        <pre>public int hashCode() {
+      <h4>For Strings (Horner's Method)</h4>
+      <pre>
+public int hashCode() {
             int hash = 0;
             for (int i = 0; i < length(); i++) hash=s[i] + (31 * hash); return hash; }</pre>
 
-                <div class="formula">
-                    h = s[0]·31<sup>L-1</sup> + s[1]·31<sup>L-2</sup> + ... + s[L-2]·31 + s[L-1]
-                </div>
+      <div class="formula">
+        h = s[0]·31<sup>L-1</sup> + s[1]·31<sup>L-2</sup> + ... + s[L-2]·31 +
+        s[L-1]
+      </div>
 
-                <div class="example">
-                    <h4>String Hash Example: "call"</h4>
-                    <pre>hash = 99·31³ + 97·31² + 108·31 + 108
+      <div class="example">
+        <h4>String Hash Example: "call"</h4>
+        <pre>
+hash = 99·31³ + 97·31² + 108·31 + 108
                         = 108 + 31·(108 + 31·(97 + 31·99))
                         = 3,045,982</pre>
-                </div>
+      </div>
 
-                <h3>Modular Hashing</h3>
-                <p>Convert hash code (any 32-bit integer) to table index (0 to M-1):</p>
+      <h3>Modular Hashing</h3>
+      <p>Convert hash code (any 32-bit integer) to table index (0 to M-1):</p>
 
-                <div class="comparison">
-                    <div class="comparison-item bad">
-                        <h4>✗ Bug Version</h4>
-                        <pre>private int hash(Key key) {
+      <div class="comparison">
+        <div class="comparison-item bad">
+          <h4>✗ Bug Version</h4>
+          <pre>
+private int hash(Key key) {
                             return key.hashCode() % M;
                             }</pre>
-                        <p>Can return negative values!</p>
-                    </div>
-                    <div class="comparison-item good">
-                        <h4>✓ Correct Version</h4>
-                        <pre>private int hash(Key key) {
+          <p>Can return negative values!</p>
+        </div>
+        <div class="comparison-item good">
+          <h4>✓ Correct Version</h4>
+          <pre>
+private int hash(Key key) {
                             return (key.hashCode() & 0x7fffffff) % M;
                             }</pre>
-                        <p>Masks sign bit to ensure positive result</p>
-                    </div>
-                </div>
+          <p>Masks sign bit to ensure positive result</p>
+        </div>
+      </div>
 
-                <h3>Uniform Hashing Assumption</h3>
-                <div class="important">
-                    <p><strong>Key Assumption:</strong> Each key is equally likely to hash to an integer between 0 and M-1.</p>
-                    <p>This assumption is crucial for performance analysis but is difficult to achieve in practice.</p>
-                </div>
+      <h3>Uniform Hashing Assumption</h3>
+      <div class="important">
+        <p>
+          <strong>Key Assumption:</strong> Each key is equally likely to hash to
+          an integer between 0 and M-1.
+        </p>
+        <p>
+          This assumption is crucial for performance analysis but is difficult
+          to achieve in practice.
+        </p>
+      </div>
 
-                <h4>Birthday Problem & Load Balancing</h4>
-                <ul>
-                    <li><strong>Birthday Problem:</strong> Expect two balls in same bin after ~√(πM/2) tosses</li>
-                    <li><strong>Coupon Collector:</strong> Expect every bin has ≥1 ball after ~M ln M tosses</li>
-                    <li><strong>Load Balancing:</strong> After M tosses, most loaded bin has Θ(log M / log log M) balls</li>
-                </ul>
+      <h4>Birthday Problem & Load Balancing</h4>
+      <ul>
+        <li>
+          <strong>Birthday Problem:</strong> Expect two balls in same bin after
+          ~√(πM/2) tosses
+        </li>
+        <li>
+          <strong>Coupon Collector:</strong> Expect every bin has ≥1 ball after
+          ~M ln M tosses
+        </li>
+        <li>
+          <strong>Load Balancing:</strong> After M tosses, most loaded bin has
+          Θ(log M / log log M) balls
+        </li>
+      </ul>
 
-                <!-- SECTION 4: SEPARATE CHAINING -->
-                <h2 id="separate-chaining">4. Separate Chaining</h2>
+      <!-- SECTION 4: SEPARATE CHAINING -->
+      <h2 id="separate-chaining">4. Separate Chaining</h2>
 
-                <div class="key-point">
-                    <h4>Core Idea</h4>
-                    <p>Use an array of M &lt; N linked lists. Each array position points to a chain of items that hash to that index.</p>
-                </div>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Collisions: two keys hashing to the same index."><img src="figures/slide-20.png" alt="Collisions: two keys hashing to the same index." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=20">PDF page 20</a>Collisions: two keys hashing to the same index.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The separate-chaining symbol table."><img src="figures/slide-23.png" alt="The separate-chaining symbol table." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=23">PDF page 23</a>The separate-chaining symbol table.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Analysis of separate chaining."><img src="figures/slide-27.png" alt="Analysis of separate chaining." width="1508" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=27">PDF page 27</a>Analysis of separate chaining.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Resizing a separate-chaining hash table."><img src="figures/slide-28.png" alt="Resizing a separate-chaining hash table." width="1579" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=28">PDF page 28</a>Resizing a separate-chaining hash table.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Deletion in a separate-chaining hash table."><img src="figures/slide-29.png" alt="Deletion in a separate-chaining hash table." width="1480" height="871" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=29">PDF page 29</a>Deletion in a separate-chaining hash table.</figcaption></figure>
-                <h3>How It Works</h3>
-                <ol>
-                    <li><strong>Hash:</strong> Map key to integer i between 0 and M-1</li>
-                    <li><strong>Insert:</strong> Put at front of i<sup>th</sup> chain (if not already there)</li>
-                    <li><strong>Search:</strong> Search only the i<sup>th</sup> chain</li>
-                </ol>
+      <div class="key-point">
+        <h4>Core Idea</h4>
+        <p>
+          Use an array of M &lt; N linked lists. Each array position points to a
+          chain of items that hash to that index.
+        </p>
+      </div>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Collisions: two keys hashing to the same index."
+        >
+          <img
+            src="figures/slide-20.png"
+            alt="Collisions: two keys hashing to the same index."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=20"
+            >PDF page 20</a
+          >Collisions: two keys hashing to the same index.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: The separate-chaining symbol table."
+        >
+          <img
+            src="figures/slide-23.png"
+            alt="The separate-chaining symbol table."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=23"
+            >PDF page 23</a
+          >The separate-chaining symbol table.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Analysis of separate chaining."
+        >
+          <img
+            src="figures/slide-27.png"
+            alt="Analysis of separate chaining."
+            width="1508"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=27"
+            >PDF page 27</a
+          >Analysis of separate chaining.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Resizing a separate-chaining hash table."
+        >
+          <img
+            src="figures/slide-28.png"
+            alt="Resizing a separate-chaining hash table."
+            width="1579"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=28"
+            >PDF page 28</a
+          >Resizing a separate-chaining hash table.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Deletion in a separate-chaining hash table."
+        >
+          <img
+            src="figures/slide-29.png"
+            alt="Deletion in a separate-chaining hash table."
+            width="1480"
+            height="871"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=29"
+            >PDF page 29</a
+          >Deletion in a separate-chaining hash table.
+        </figcaption>
+      </figure>
+      <h3>How It Works</h3>
+      <ol>
+        <li><strong>Hash:</strong> Map key to integer i between 0 and M-1</li>
+        <li>
+          <strong>Insert:</strong> Put at front of i<sup>th</sup> chain (if not
+          already there)
+        </li>
+        <li><strong>Search:</strong> Search only the i<sup>th</sup> chain</li>
+      </ol>
 
-                <div class="visual">
-                    <h4>Visual Representation</h4>
-                    <pre>
+      <div class="visual">
+        <h4>Visual Representation</h4>
+        <pre>
                         Array Index Linked List Chain
                         0 → [A] → [B] → [E] → null
                         1 → null
@@ -375,10 +795,11 @@ div.visual:not(#pf) {
                         4 → [L] → [P] → null
                         5 → [M] → [H] → [C] → [R] → null
                     </pre>
-                </div>
+      </div>
 
-                <h3>Java Implementation</h3>
-                <pre>public class SeparateChainingHashST&lt;Key, Value&gt; {
+      <h3>Java Implementation</h3>
+      <pre>
+public class SeparateChainingHashST&lt;Key, Value&gt; {
                     private int M = 97; // number of chains
                     private Node[] st = new Node[M]; // array of chains
 
@@ -411,76 +832,225 @@ div.visual:not(#pf) {
                     }
                     }</pre>
 
-                <h3>Performance Analysis</h3>
-                <div class="success">
-                    <h4>✓ Proposition</h4>
-                    <p>Under uniform hashing assumption, the probability that the number of keys in a list is within a constant factor of N/M is extremely close to 1.</p>
-                </div>
+      <h3>Performance Analysis</h3>
+      <div class="success">
+        <h4>✓ Proposition</h4>
+        <p>
+          Under uniform hashing assumption, the probability that the number of
+          keys in a list is within a constant factor of N/M is extremely close
+          to 1.
+        </p>
+      </div>
 
-                <div class="formula">
-                    Average # of probes = N/M
-                </div>
+      <div class="formula">Average # of probes = N/M</div>
 
-                <table>
-                    <tr>
-                        <th>Operation</th>
-                        <th>Average Case</th>
-                        <th>Worst Case</th>
-                    </tr>
-                    <tr>
-                        <td>Search Hit</td>
-                        <td>~3-5 probes</td>
-                        <td>N probes</td>
-                    </tr>
-                    <tr>
-                        <td>Search Miss</td>
-                        <td>~3-5 probes</td>
-                        <td>N probes</td>
-                    </tr>
-                    <tr>
-                        <td>Insert</td>
-                        <td>~3-5 probes</td>
-                        <td>N probes</td>
-                    </tr>
-                </table>
+      <table>
+        <tr>
+          <th>Operation</th>
+          <th>Average Case</th>
+          <th>Worst Case</th>
+        </tr>
+        <tr>
+          <td>Search Hit</td>
+          <td>~3-5 probes</td>
+          <td>N probes</td>
+        </tr>
+        <tr>
+          <td>Search Miss</td>
+          <td>~3-5 probes</td>
+          <td>N probes</td>
+        </tr>
+        <tr>
+          <td>Insert</td>
+          <td>~3-5 probes</td>
+          <td>N probes</td>
+        </tr>
+      </table>
 
-                <h3>Resizing Strategy</h3>
-                <div class="highlight">
-                    <p><strong>Goal:</strong> Keep average chain length N/M ≈ constant</p>
-                    <ul>
-                        <li><strong>Double</strong> array size M when N/M ≥ 8</li>
-                        <li><strong>Halve</strong> array size M when N/M ≤ 2</li>
-                        <li>Must <strong>rehash</strong> all keys when resizing (hash value changes!)</li>
-                    </ul>
-                </div>
+      <h3>Resizing Strategy</h3>
+      <div class="highlight">
+        <p><strong>Goal:</strong> Keep average chain length N/M ≈ constant</p>
+        <ul>
+          <li><strong>Double</strong> array size M when N/M ≥ 8</li>
+          <li><strong>Halve</strong> array size M when N/M ≤ 2</li>
+          <li>
+            Must <strong>rehash</strong> all keys when resizing (hash value
+            changes!)
+          </li>
+        </ul>
+      </div>
 
-                <!-- SECTION 5: LINEAR PROBING -->
-                <h2 id="linear-probing">5. Linear Probing</h2>
+      <!-- SECTION 5: LINEAR PROBING -->
+      <h2 id="linear-probing">5. Linear Probing</h2>
 
-                <div class="key-point">
-                    <h4>Core Idea (Open Addressing)</h4>
-                    <p>When a collision occurs, probe the next array position (i+1, i+2, ...) until an empty slot is found.</p>
-                </div>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Collision resolution by open addressing."><img src="figures/slide-33.png" alt="Collision resolution by open addressing." width="1510" height="1066" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=33">PDF page 33</a>Collision resolution by open addressing.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The linear-probing demo."><img src="figures/slide-35.png" alt="The linear-probing demo." width="1580" height="999" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=35">PDF page 35</a>The linear-probing demo.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Linear-probing summary."><img src="figures/slide-37.png" alt="Linear-probing summary." width="1540" height="909" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=37">PDF page 37</a>Linear-probing summary.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Knuth&#x27;s parking problem."><img src="figures/slide-40.png" alt="Knuth&#x27;s parking problem." width="1474" height="936" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=40">PDF page 40</a>Knuth&#x27;s parking problem.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Analysis of linear probing."><img src="figures/slide-41.png" alt="Analysis of linear probing." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=41">PDF page 41</a>Analysis of linear probing.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Resizing a linear-probing hash table."><img src="figures/slide-42.png" alt="Resizing a linear-probing hash table." width="1490" height="1099" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=42">PDF page 42</a>Resizing a linear-probing hash table.</figcaption></figure>
-                <h3>How It Works</h3>
-                <ol>
-                    <li><strong>Hash:</strong> Map key to integer i between 0 and M-1</li>
-                    <li><strong>Insert:</strong> Put at table index i if free; if not, try i+1, i+2, etc.</li>
-                    <li><strong>Search:</strong> Search table index i; if occupied but no match, try i+1, i+2, etc.</li>
-                </ol>
+      <div class="key-point">
+        <h4>Core Idea (Open Addressing)</h4>
+        <p>
+          When a collision occurs, probe the next array position (i+1, i+2, ...)
+          until an empty slot is found.
+        </p>
+      </div>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Collision resolution by open addressing."
+        >
+          <img
+            src="figures/slide-33.png"
+            alt="Collision resolution by open addressing."
+            width="1510"
+            height="1066"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=33"
+            >PDF page 33</a
+          >Collision resolution by open addressing.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: The linear-probing demo."
+        >
+          <img
+            src="figures/slide-35.png"
+            alt="The linear-probing demo."
+            width="1580"
+            height="999"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=35"
+            >PDF page 35</a
+          >The linear-probing demo.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Linear-probing summary."
+        >
+          <img
+            src="figures/slide-37.png"
+            alt="Linear-probing summary."
+            width="1540"
+            height="909"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=37"
+            >PDF page 37</a
+          >Linear-probing summary.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Knuth&#x27;s parking problem."
+        >
+          <img
+            src="figures/slide-40.png"
+            alt="Knuth&#x27;s parking problem."
+            width="1474"
+            height="936"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=40"
+            >PDF page 40</a
+          >Knuth&#x27;s parking problem.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Analysis of linear probing."
+        >
+          <img
+            src="figures/slide-41.png"
+            alt="Analysis of linear probing."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=41"
+            >PDF page 41</a
+          >Analysis of linear probing.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Resizing a linear-probing hash table."
+        >
+          <img
+            src="figures/slide-42.png"
+            alt="Resizing a linear-probing hash table."
+            width="1490"
+            height="1099"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=42"
+            >PDF page 42</a
+          >Resizing a linear-probing hash table.
+        </figcaption>
+      </figure>
+      <h3>How It Works</h3>
+      <ol>
+        <li><strong>Hash:</strong> Map key to integer i between 0 and M-1</li>
+        <li>
+          <strong>Insert:</strong> Put at table index i if free; if not, try
+          i+1, i+2, etc.
+        </li>
+        <li>
+          <strong>Search:</strong> Search table index i; if occupied but no
+          match, try i+1, i+2, etc.
+        </li>
+      </ol>
 
-                <div class="important">
-                    <p><strong>Critical:</strong> Array size M must be <em>greater than</em> number of key-value pairs N.</p>
-                </div>
+      <div class="important">
+        <p>
+          <strong>Critical:</strong> Array size M must be
+          <em>greater than</em> number of key-value pairs N.
+        </p>
+      </div>
 
-                <div class="visual">
-                    <h4>Visual Example</h4>
-                    <pre>
+      <div class="visual">
+        <h4>Visual Example</h4>
+        <pre>
                         Index: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
                         [P] [M] [ ] [ ] [A] [C] [S] [H] [L] [ ] [E] [ ] [ ] [ ] [R] [X]
 
@@ -488,10 +1058,11 @@ div.visual:not(#pf) {
                         Position 5 occupied → try 6 → occupied → try 7 → occupied
                         → try 8 → occupied → try 9 → EMPTY! Insert at 9
                     </pre>
-                </div>
+      </div>
 
-                <h3>Java Implementation</h3>
-                <pre>public class LinearProbingHashST&lt;Key, Value&gt; {
+      <h3>Java Implementation</h3>
+      <pre>
+public class LinearProbingHashST&lt;Key, Value&gt; {
                     private int M = 30001;
                     private Value[] vals = (Value[]) new Object[M];
                     private Key[] keys = (Key[]) new Object[M];
@@ -517,292 +1088,475 @@ div.visual:not(#pf) {
                     }
                     }</pre>
 
-                <h3>Knuth's Parking Problem</h3>
-                <div class="info">
-                    <p><strong>Analogy:</strong> Cars arrive at one-way street with M parking spaces. Each wants random space i; if taken, try i+1, i+2, etc.</p>
-                    <ul>
-                        <li><strong>Half-full (M/2 cars):</strong> Mean displacement ≈ 3/2</li>
-                        <li><strong>Full (M cars):</strong> Mean displacement ≈ √(πM/8)</li>
-                    </ul>
-                </div>
+      <h3>Knuth's Parking Problem</h3>
+      <div class="info">
+        <p>
+          <strong>Analogy:</strong> Cars arrive at one-way street with M parking
+          spaces. Each wants random space i; if taken, try i+1, i+2, etc.
+        </p>
+        <ul>
+          <li>
+            <strong>Half-full (M/2 cars):</strong> Mean displacement ≈ 3/2
+          </li>
+          <li><strong>Full (M cars):</strong> Mean displacement ≈ √(πM/8)</li>
+        </ul>
+      </div>
 
-                <h3>Performance Analysis</h3>
-                <div class="formula">
-                    <p><strong>Search Hit:</strong> ~½(1 + 1/(1-α))</p>
-                    <p><strong>Search Miss/Insert:</strong> ~½(1 + 1/(1-α)²)</p>
-                    <p>where α = N/M (load factor)</p>
-                </div>
+      <h3>Performance Analysis</h3>
+      <div class="formula">
+        <p><strong>Search Hit:</strong> ~½(1 + 1/(1-α))</p>
+        <p><strong>Search Miss/Insert:</strong> ~½(1 + 1/(1-α)²)</p>
+        <p>where α = N/M (load factor)</p>
+      </div>
 
-                <table>
-                    <tr>
-                        <th>Load Factor α</th>
-                        <th>Search Hit</th>
-                        <th>Search Miss</th>
-                    </tr>
-                    <tr>
-                        <td>½</td>
-                        <td>~1.5</td>
-                        <td>~2.5</td>
-                    </tr>
-                    <tr>
-                        <td>⅔</td>
-                        <td>~2.0</td>
-                        <td>~5.0</td>
-                    </tr>
-                    <tr>
-                        <td>¾</td>
-                        <td>~3.0</td>
-                        <td>~8.5</td>
-                    </tr>
-                </table>
+      <table>
+        <tr>
+          <th>Load Factor α</th>
+          <th>Search Hit</th>
+          <th>Search Miss</th>
+        </tr>
+        <tr>
+          <td>½</td>
+          <td>~1.5</td>
+          <td>~2.5</td>
+        </tr>
+        <tr>
+          <td>⅔</td>
+          <td>~2.0</td>
+          <td>~5.0</td>
+        </tr>
+        <tr>
+          <td>¾</td>
+          <td>~3.0</td>
+          <td>~8.5</td>
+        </tr>
+      </table>
 
-                <div class="highlight">
-                    <h4>Typical Choice</h4>
-                    <p>Keep α = N/M ≈ ½ for constant-time operations</p>
-                    <ul>
-                        <li><strong>Double</strong> size when N/M ≥ ½</li>
-                        <li><strong>Halve</strong> size when N/M ≤ ⅛</li>
-                    </ul>
-                </div>
+      <div class="highlight">
+        <h4>Typical Choice</h4>
+        <p>Keep α = N/M ≈ ½ for constant-time operations</p>
+        <ul>
+          <li><strong>Double</strong> size when N/M ≥ ½</li>
+          <li><strong>Halve</strong> size when N/M ≤ ⅛</li>
+        </ul>
+      </div>
 
-                <h3>Deletion in Linear Probing</h3>
-                <div class="important">
-                    <h4>Critical Issue</h4>
-                    <p>Cannot simply delete an entry and set it to null! This would break search for items that had collided with the deleted item.</p>
-                </div>
+      <h3>Deletion in Linear Probing</h3>
+      <div class="important">
+        <h4>Critical Issue</h4>
+        <p>
+          Cannot simply delete an entry and set it to null! This would break
+          search for items that had collided with the deleted item.
+        </p>
+      </div>
 
-                <p><strong>Solution:</strong> After deletion, must rehash all keys in the same cluster that comes after the deleted key.</p>
+      <p>
+        <strong>Solution:</strong> After deletion, must rehash all keys in the
+        same cluster that comes after the deleted key.
+      </p>
 
-                <!-- SECTION 6: COMPARISON -->
-                <h2 id="comparison">6. Performance Comparison</h2>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Symbol table implementations compared."><img src="figures/slide-44.png" alt="Symbol table implementations compared." width="1596" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=44">PDF page 44</a>Symbol table implementations compared.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Separate chaining against linear probing."><img src="figures/slide-49.png" alt="Separate chaining against linear probing." width="1514" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=49">PDF page 49</a>Separate chaining against linear probing.</figcaption></figure>
-                <h3>Separate Chaining vs Linear Probing</h3>
+      <!-- SECTION 6: COMPARISON -->
+      <h2 id="comparison">6. Performance Comparison</h2>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Symbol table implementations compared."
+        >
+          <img
+            src="figures/slide-44.png"
+            alt="Symbol table implementations compared."
+            width="1596"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=44"
+            >PDF page 44</a
+          >Symbol table implementations compared.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Separate chaining against linear probing."
+        >
+          <img
+            src="figures/slide-49.png"
+            alt="Separate chaining against linear probing."
+            width="1514"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=49"
+            >PDF page 49</a
+          >Separate chaining against linear probing.
+        </figcaption>
+      </figure>
+      <h3>Separate Chaining vs Linear Probing</h3>
 
-                <div class="comparison">
-                    <div class="comparison-item good">
-                        <h4>✓ Separate Chaining</h4>
-                        <ul>
-                            <li>Performance degrades gracefully</li>
-                            <li>Less sensitive to poorly-designed hash functions</li>
-                            <li>Easy deletion</li>
-                            <li>Can exceed load factor of 1</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-item good">
-                        <h4>✓ Linear Probing</h4>
-                        <ul>
-                            <li>Less wasted space (no pointers)</li>
-                            <li>Better cache performance</li>
-                            <li>Simpler implementation</li>
-                            <li>Faster when load factor is low</li>
-                        </ul>
-                    </div>
-                </div>
+      <div class="comparison">
+        <div class="comparison-item good">
+          <h4>✓ Separate Chaining</h4>
+          <ul>
+            <li>Performance degrades gracefully</li>
+            <li>Less sensitive to poorly-designed hash functions</li>
+            <li>Easy deletion</li>
+            <li>Can exceed load factor of 1</li>
+          </ul>
+        </div>
+        <div class="comparison-item good">
+          <h4>✓ Linear Probing</h4>
+          <ul>
+            <li>Less wasted space (no pointers)</li>
+            <li>Better cache performance</li>
+            <li>Simpler implementation</li>
+            <li>Faster when load factor is low</li>
+          </ul>
+        </div>
+      </div>
 
-                <h3>Complete Symbol Table Implementations Comparison</h3>
-                <table>
-                    <tr>
-                        <th>Implementation</th>
-                        <th>Search</th>
-                        <th>Insert</th>
-                        <th>Delete</th>
-                        <th>Ordered?</th>
-                        <th>Key Interface</th>
-                    </tr>
-                    <tr>
-                        <td>Sequential Search</td>
-                        <td>N</td>
-                        <td>N</td>
-                        <td>N</td>
-                        <td>No</td>
-                        <td>equals()</td>
-                    </tr>
-                    <tr>
-                        <td>Binary Search</td>
-                        <td>lg N</td>
-                        <td>N</td>
-                        <td>N</td>
-                        <td>Yes</td>
-                        <td>compareTo()</td>
-                    </tr>
-                    <tr>
-                        <td>BST</td>
-                        <td>1.39 lg N</td>
-                        <td>1.39 lg N</td>
-                        <td>√N</td>
-                        <td>Yes</td>
-                        <td>compareTo()</td>
-                    </tr>
-                    <tr>
-                        <td>Red-Black BST</td>
-                        <td>1.0 lg N</td>
-                        <td>1.0 lg N</td>
-                        <td>1.0 lg N</td>
-                        <td>Yes</td>
-                        <td>compareTo()</td>
-                    </tr>
-                    <tr style="background-color: #d4edda;">
-                        <td><strong>Separate Chaining</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>No</strong></td>
-                        <td><strong>equals(), hashCode()</strong></td>
-                    </tr>
-                    <tr style="background-color: #d4edda;">
-                        <td><strong>Linear Probing</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>3-5*</strong></td>
-                        <td><strong>No</strong></td>
-                        <td><strong>equals(), hashCode()</strong></td>
-                    </tr>
-                </table>
-                <p style="font-size: 0.9em; color: #666;">* Under uniform hashing assumption</p>
+      <h3>Complete Symbol Table Implementations Comparison</h3>
+      <table>
+        <tr>
+          <th>Implementation</th>
+          <th>Search</th>
+          <th>Insert</th>
+          <th>Delete</th>
+          <th>Ordered?</th>
+          <th>Key Interface</th>
+        </tr>
+        <tr>
+          <td>Sequential Search</td>
+          <td>N</td>
+          <td>N</td>
+          <td>N</td>
+          <td>No</td>
+          <td>equals()</td>
+        </tr>
+        <tr>
+          <td>Binary Search</td>
+          <td>lg N</td>
+          <td>N</td>
+          <td>N</td>
+          <td>Yes</td>
+          <td>compareTo()</td>
+        </tr>
+        <tr>
+          <td>BST</td>
+          <td>1.39 lg N</td>
+          <td>1.39 lg N</td>
+          <td>√N</td>
+          <td>Yes</td>
+          <td>compareTo()</td>
+        </tr>
+        <tr>
+          <td>Red-Black BST</td>
+          <td>1.0 lg N</td>
+          <td>1.0 lg N</td>
+          <td>1.0 lg N</td>
+          <td>Yes</td>
+          <td>compareTo()</td>
+        </tr>
+        <tr style="background-color: #d4edda">
+          <td><strong>Separate Chaining</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>No</strong></td>
+          <td><strong>equals(), hashCode()</strong></td>
+        </tr>
+        <tr style="background-color: #d4edda">
+          <td><strong>Linear Probing</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>3-5*</strong></td>
+          <td><strong>No</strong></td>
+          <td><strong>equals(), hashCode()</strong></td>
+        </tr>
+      </table>
+      <p style="font-size: 0.9em; color: #666">
+        * Under uniform hashing assumption
+      </p>
 
-                <!-- SECTION 7: ADVANCED TOPICS -->
-                <h2 id="advanced">7. Advanced Topics</h2>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Algorithmic complexity attacks."><img src="figures/slide-46.png" alt="Algorithmic complexity attacks." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=46">PDF page 46</a>Algorithmic complexity attacks.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: One-way hash functions."><img src="figures/slide-48.png" alt="One-way hash functions." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=48">PDF page 48</a>One-way hash functions.</figcaption></figure>
-                  <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Hashing: variations on the theme."><img src="figures/slide-50.png" alt="Hashing: variations on the theme." width="1474" height="1103" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/hash-tables/hash-tables.pdf#page=50">PDF page 50</a>Hashing: variations on the theme.</figcaption></figure>
-                <h3>Hash Function Variants</h3>
+      <!-- SECTION 7: ADVANCED TOPICS -->
+      <h2 id="advanced">7. Advanced Topics</h2>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Algorithmic complexity attacks."
+        >
+          <img
+            src="figures/slide-46.png"
+            alt="Algorithmic complexity attacks."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=46"
+            >PDF page 46</a
+          >Algorithmic complexity attacks.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: One-way hash functions."
+        >
+          <img
+            src="figures/slide-48.png"
+            alt="One-way hash functions."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=48"
+            >PDF page 48</a
+          >One-way hash functions.
+        </figcaption>
+      </figure>
+      <figure class="sfx-figure" data-slide-figure>
+        <button
+          type="button"
+          class="sfx-zoom"
+          aria-label="Enlarge figure: Hashing: variations on the theme."
+        >
+          <img
+            src="figures/slide-50.png"
+            alt="Hashing: variations on the theme."
+            width="1474"
+            height="1103"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        <figcaption>
+          <a
+            class="sfx-tag"
+            href="../../slides/hash-tables/hash-tables.pdf#page=50"
+            >PDF page 50</a
+          >Hashing: variations on the theme.
+        </figcaption>
+      </figure>
+      <h3>Hash Function Variants</h3>
 
-                <h4>Two-Probe Hashing</h4>
-                <div class="info">
-                    <p>Hash to two positions and insert in the shorter chain.</p>
-                    <p><strong>Result:</strong> Reduces expected length of longest chain to log log N</p>
-                </div>
+      <h4>Two-Probe Hashing</h4>
+      <div class="info">
+        <p>Hash to two positions and insert in the shorter chain.</p>
+        <p>
+          <strong>Result:</strong> Reduces expected length of longest chain to
+          log log N
+        </p>
+      </div>
 
-                <h4>Double Hashing</h4>
-                <div class="info">
-                    <p>Use linear probing but skip a variable amount (not just 1) each time.</p>
-                    <pre>h(x) = h1(x) + j·h2(x) where j = 0, 1, 2, ...</pre>
-                    <p><strong>Advantages:</strong> Effectively eliminates clustering, table can be nearly full</p>
-                </div>
+      <h4>Double Hashing</h4>
+      <div class="info">
+        <p>
+          Use linear probing but skip a variable amount (not just 1) each time.
+        </p>
+        <pre>h(x) = h1(x) + j·h2(x) where j = 0, 1, 2, ...</pre>
+        <p>
+          <strong>Advantages:</strong> Effectively eliminates clustering, table
+          can be nearly full
+        </p>
+      </div>
 
-                <h4>Cuckoo Hashing</h4>
-                <div class="info">
-                    <p>Hash key to two positions. If both occupied, displace one key and reinsert it.</p>
-                    <p><strong>Result:</strong> Constant worst-case time for search!</p>
-                </div>
+      <h4>Cuckoo Hashing</h4>
+      <div class="info">
+        <p>
+          Hash key to two positions. If both occupied, displace one key and
+          reinsert it.
+        </p>
+        <p><strong>Result:</strong> Constant worst-case time for search!</p>
+      </div>
 
-                <h3>Algorithmic Complexity Attacks</h3>
-                <div class="important">
-                    <h4>Security Concern</h4>
-                    <p>A malicious adversary who knows your hash function can craft inputs that all hash to the same bucket, causing performance to degrade to O(N).</p>
-                    <p><strong>Examples:</strong></p>
-                    <ul>
-                        <li>Denial-of-service attacks on web servers</li>
-                        <li>Bro server exploits</li>
-                        <li>Perl 5.8.0 associative array attacks</li>
-                    </ul>
-                </div>
+      <h3>Algorithmic Complexity Attacks</h3>
+      <div class="important">
+        <h4>Security Concern</h4>
+        <p>
+          A malicious adversary who knows your hash function can craft inputs
+          that all hash to the same bucket, causing performance to degrade to
+          O(N).
+        </p>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Denial-of-service attacks on web servers</li>
+          <li>Bro server exploits</li>
+          <li>Perl 5.8.0 associative array attacks</li>
+        </ul>
+      </div>
 
-                <div class="example">
-                    <h4>Java String Hash Collision</h4>
-                    <p>Due to Java's base-31 hash function, it's possible to generate 2<sup>N</sup> strings of length 2N that all hash to the same value!</p>
-                    <pre>
+      <div class="example">
+        <h4>Java String Hash Collision</h4>
+        <p>
+          Due to Java's base-31 hash function, it's possible to generate 2<sup
+            >N</sup
+          >
+          strings of length 2N that all hash to the same value!
+        </p>
+        <pre>
                         "Aa" and "BB" both hash to 2112
                         "AaAa", "AaBB", "BBAa", "BBBB" all hash to -540425984
                     </pre>
-                </div>
+      </div>
 
-                <h3>One-Way Hash Functions</h3>
-                <div class="info">
-                    <h4>Cryptographic Hash Functions</h4>
-                    <p>Special hash functions where it's computationally infeasible to:</p>
-                    <ul>
-                        <li>Find a key that hashes to a specific value</li>
-                        <li>Find two keys that hash to the same value</li>
-                    </ul>
-                    <p><strong>Examples:</strong> SHA-256, SHA-3, BLAKE3</p>
-                    <p><strong>Uses:</strong> Password storage, digital signatures, blockchain</p>
-                    <p><strong>Note:</strong> Too expensive for general symbol table use</p>
-                </div>
+      <h3>One-Way Hash Functions</h3>
+      <div class="info">
+        <h4>Cryptographic Hash Functions</h4>
+        <p>Special hash functions where it's computationally infeasible to:</p>
+        <ul>
+          <li>Find a key that hashes to a specific value</li>
+          <li>Find two keys that hash to the same value</li>
+        </ul>
+        <p><strong>Examples:</strong> SHA-256, SHA-3, BLAKE3</p>
+        <p>
+          <strong>Uses:</strong> Password storage, digital signatures,
+          blockchain
+        </p>
+        <p><strong>Note:</strong> Too expensive for general symbol table use</p>
+      </div>
 
-                <!-- SECTION 8: SUMMARY -->
-                <h2 id="summary">8. Summary & Best Practices</h2>
+      <!-- SECTION 8: SUMMARY -->
+      <h2 id="summary">8. Summary & Best Practices</h2>
 
-                <div class="key-point">
-                    <h4>Key Takeaways</h4>
-                    <ul>
-                        <li>Hash tables provide <strong>constant-time</strong> average performance for search/insert/delete</li>
-                        <li>Require a good <strong>hash function</strong> and <strong>collision resolution</strong> strategy</li>
-                        <li>Two main approaches: <strong>Separate Chaining</strong> and <strong>Linear Probing</strong></li>
-                        <li>Performance depends on <strong>load factor α = N/M</strong></li>
-                        <li>Uniform hashing assumption is critical but hard to achieve</li>
-                    </ul>
-                </div>
+      <div class="key-point">
+        <h4>Key Takeaways</h4>
+        <ul>
+          <li>
+            Hash tables provide <strong>constant-time</strong> average
+            performance for search/insert/delete
+          </li>
+          <li>
+            Require a good <strong>hash function</strong> and
+            <strong>collision resolution</strong> strategy
+          </li>
+          <li>
+            Two main approaches: <strong>Separate Chaining</strong> and
+            <strong>Linear Probing</strong>
+          </li>
+          <li>Performance depends on <strong>load factor α = N/M</strong></li>
+          <li>Uniform hashing assumption is critical but hard to achieve</li>
+        </ul>
+      </div>
 
-                <h3>Best Practices</h3>
+      <h3>Best Practices</h3>
 
-                <h4>✓ DO:</h4>
-                <ul>
-                    <li>Use prime numbers or powers of 2 for table size M</li>
-                    <li>Keep load factor α between 0.5 and 0.75 for linear probing</li>
-                    <li>Keep load factor α around 1-4 for separate chaining</li>
-                    <li>Implement proper <code>hashCode()</code> that uses all significant fields</li>
-                    <li>Ensure <code>equals()</code> and <code>hashCode()</code> are consistent</li>
-                    <li>Resize dynamically to maintain good performance</li>
-                </ul>
+      <h4>✓ DO:</h4>
+      <ul>
+        <li>Use prime numbers or powers of 2 for table size M</li>
+        <li>Keep load factor α between 0.5 and 0.75 for linear probing</li>
+        <li>Keep load factor α around 1-4 for separate chaining</li>
+        <li>
+          Implement proper <code>hashCode()</code> that uses all significant
+          fields
+        </li>
+        <li>
+          Ensure <code>equals()</code> and <code>hashCode()</code> are
+          consistent
+        </li>
+        <li>Resize dynamically to maintain good performance</li>
+      </ul>
 
-                <h4>✗ DON'T:</h4>
-                <ul>
-                    <li>Use predictable hash functions in security-critical applications</li>
-                    <li>Forget to handle the sign bit when converting hash codes to indices</li>
-                    <li>Directly delete entries in linear probing (must rehash cluster)</li>
-                    <li>Use hash tables if you need ordered operations (use BST instead)</li>
-                    <li>Assume uniform hashing without testing your hash function</li>
-                </ul>
+      <h4>✗ DON'T:</h4>
+      <ul>
+        <li>
+          Use predictable hash functions in security-critical applications
+        </li>
+        <li>
+          Forget to handle the sign bit when converting hash codes to indices
+        </li>
+        <li>Directly delete entries in linear probing (must rehash cluster)</li>
+        <li>
+          Use hash tables if you need ordered operations (use BST instead)
+        </li>
+        <li>Assume uniform hashing without testing your hash function</li>
+      </ul>
 
-                <h3>When to Use What</h3>
-                <table>
-                    <tr>
-                        <th>Use Case</th>
-                        <th>Best Choice</th>
-                        <th>Reason</th>
-                    </tr>
-                    <tr>
-                        <td>Need ordered operations</td>
-                        <td>Red-Black BST</td>
-                        <td>Hash tables don't maintain order</td>
-                    </tr>
-                    <tr>
-                        <td>Simple, fast lookups</td>
-                        <td>Hash Table (either variant)</td>
-                        <td>Constant-time average case</td>
-                    </tr>
-                    <tr>
-                        <td>Unpredictable load</td>
-                        <td>Separate Chaining</td>
-                        <td>Degrades gracefully</td>
-                    </tr>
-                    <tr>
-                        <td>Memory constrained</td>
-                        <td>Linear Probing</td>
-                        <td>No pointer overhead</td>
-                    </tr>
-                    <tr>
-                        <td>Cache-sensitive code</td>
-                        <td>Linear Probing</td>
-                        <td>Better locality of reference</td>
-                    </tr>
-                </table>
+      <h3>When to Use What</h3>
+      <table>
+        <tr>
+          <th>Use Case</th>
+          <th>Best Choice</th>
+          <th>Reason</th>
+        </tr>
+        <tr>
+          <td>Need ordered operations</td>
+          <td>Red-Black BST</td>
+          <td>Hash tables don't maintain order</td>
+        </tr>
+        <tr>
+          <td>Simple, fast lookups</td>
+          <td>Hash Table (either variant)</td>
+          <td>Constant-time average case</td>
+        </tr>
+        <tr>
+          <td>Unpredictable load</td>
+          <td>Separate Chaining</td>
+          <td>Degrades gracefully</td>
+        </tr>
+        <tr>
+          <td>Memory constrained</td>
+          <td>Linear Probing</td>
+          <td>No pointer overhead</td>
+        </tr>
+        <tr>
+          <td>Cache-sensitive code</td>
+          <td>Linear Probing</td>
+          <td>Better locality of reference</td>
+        </tr>
+      </table>
 
-                <h3>Common Pitfalls</h3>
-                <div class="important">
-                    <ol>
-                        <li><strong>Hash Code Overflow:</strong> Forgetting to mask sign bit can cause negative indices</li>
-                        <li><strong>Poor Hash Functions:</strong> Using only part of the key leads to clustering</li>
-                        <li><strong>Inconsistent equals/hashCode:</strong> If a.equals(b) but a.hashCode() ≠ b.hashCode(), table breaks</li>
-                        <li><strong>Ignoring Load Factor:</strong> Letting table get too full degrades performance</li>
-                        <li><strong>Security:</strong> Using predictable hash functions in adversarial environments</li>
-                    </ol>
-                </div>
+      <h3>Common Pitfalls</h3>
+      <div class="important">
+        <ol>
+          <li>
+            <strong>Hash Code Overflow:</strong> Forgetting to mask sign bit can
+            cause negative indices
+          </li>
+          <li>
+            <strong>Poor Hash Functions:</strong> Using only part of the key
+            leads to clustering
+          </li>
+          <li>
+            <strong>Inconsistent equals/hashCode:</strong> If a.equals(b) but
+            a.hashCode() ≠ b.hashCode(), table breaks
+          </li>
+          <li>
+            <strong>Ignoring Load Factor:</strong> Letting table get too full
+            degrades performance
+          </li>
+          <li>
+            <strong>Security:</strong> Using predictable hash functions in
+            adversarial environments
+          </li>
+        </ol>
+      </div>
 
-                <h3>Quick Reference: Hash Code Implementation</h3>
-                <pre>// Template for user-defined types
+      <h3>Quick Reference: Hash Code Implementation</h3>
+      <pre>
+// Template for user-defined types
                     public int hashCode() {
                     int hash = 17; // nonzero constant
                     hash = 31 * hash + field1.hashCode(); // reference type
@@ -811,78 +1565,208 @@ div.visual:not(#pf) {
                     return hash;
                     }</pre>
 
-                <div class="success" style="margin-top: 40px; text-align: center;">
-                    <h3>You're Ready!</h3>
-                    <p>You now have a comprehensive understanding of hash tables. Practice implementing both separate chaining and linear probing to solidify these concepts.</p>
-                </div>
+      <div class="success" style="margin-top: 40px; text-align: center">
+        <h3>You're Ready!</h3>
+        <p>
+          You now have a comprehensive understanding of hash tables. Practice
+          implementing both separate chaining and linear probing to solidify
+          these concepts.
+        </p>
+      </div>
 
-                <div style="margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 5px; text-align: center; color: #666;">
-                    <p><em>Study Guide Created from CS210 Week 13 Materials</em></p>
-                    <p><em>Algorithms by Robert Sedgewick & Kevin Wayne</em></p>
-                </div>
+      <div
+        style="
+          margin-top: 40px;
+          padding: 20px;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          text-align: center;
+          color: #666;
+        "
+      >
+        <p><em>Study Guide Created from CS210 Week 13 Materials</em></p>
+        <p><em>Algorithms by Robert Sedgewick & Kevin Wayne</em></p>
+      </div>
 
-                <!-- PRACTICE QUESTIONS SECTION -->
-                <h2 id="practice-questions" style="margin-top: 2rem;">Practice Questions</h2>
+      <!-- PRACTICE QUESTIONS SECTION -->
+      <h2 id="practice-questions" style="margin-top: 2rem">
+        Practice Questions
+      </h2>
 
-                <div class="example">
-                    <h4>Question 1: Hash Function Requirements</h4>
-                    <p><strong>Q:</strong> What are the two idealistic goals of a hash function, and why is achieving both simultaneously difficult?</p>
-                    <p><strong>A:</strong> The two goals are (1) the function must be <strong>efficiently computable</strong> and (2) it must make each table index <strong>equally likely</strong> for each key (uniform distribution). They are hard to achieve simultaneously because truly uniform hashing requires knowledge of the key distribution in advance, which is rarely available. Real hash functions use heuristics (e.g., polynomial rolling with base 31 for strings) that work well in practice but can be exploited by adversarial inputs. The <em>uniform hashing assumption</em> is therefore an idealization used for analysis, not a guaranteed property.</p>
-                </div>
+      <div class="example">
+        <h4>Question 1: Hash Function Requirements</h4>
+        <p>
+          <strong>Q:</strong> What are the two idealistic goals of a hash
+          function, and why is achieving both simultaneously difficult?
+        </p>
+        <p>
+          <strong>A:</strong> The two goals are (1) the function must be
+          <strong>efficiently computable</strong> and (2) it must make each
+          table index <strong>equally likely</strong> for each key (uniform
+          distribution). They are hard to achieve simultaneously because truly
+          uniform hashing requires knowledge of the key distribution in advance,
+          which is rarely available. Real hash functions use heuristics (e.g.,
+          polynomial rolling with base 31 for strings) that work well in
+          practice but can be exploited by adversarial inputs. The
+          <em>uniform hashing assumption</em> is therefore an idealization used
+          for analysis, not a guaranteed property.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 2: The Sign-Bit Bug</h4>
-                    <p><strong>Q:</strong> Why does <code>return key.hashCode() % M</code> produce a bug, and how is it fixed?</p>
-                    <p><strong>A:</strong> Java's <code>hashCode()</code> can return any 32-bit integer, including negative values. The <code>%</code> operator in Java preserves the sign of the dividend, so a negative hash code produces a negative index, which would cause an <code>ArrayIndexOutOfBoundsException</code>. The fix is to mask the sign bit first: <code>return (key.hashCode() &amp; 0x7fffffff) % M</code>. The bitwise AND with <code>0x7fffffff</code> clears the most significant (sign) bit, ensuring the result is always a non-negative integer before the modulo operation.</p>
-                </div>
+      <div class="example">
+        <h4>Question 2: The Sign-Bit Bug</h4>
+        <p>
+          <strong>Q:</strong> Why does
+          <code>return key.hashCode() % M</code> produce a bug, and how is it
+          fixed?
+        </p>
+        <p>
+          <strong>A:</strong> Java's <code>hashCode()</code> can return any
+          32-bit integer, including negative values. The <code>%</code> operator
+          in Java preserves the sign of the dividend, so a negative hash code
+          produces a negative index, which would cause an
+          <code>ArrayIndexOutOfBoundsException</code>. The fix is to mask the
+          sign bit first:
+          <code>return (key.hashCode() &amp; 0x7fffffff) % M</code>. The bitwise
+          AND with <code>0x7fffffff</code> clears the most significant (sign)
+          bit, ensuring the result is always a non-negative integer before the
+          modulo operation.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 3: Separate Chaining vs. Linear Probing</h4>
-                    <p><strong>Q:</strong> Compare separate chaining and linear probing on three dimensions: memory usage, sensitivity to hash quality, and ease of deletion.</p>
-                    <p><strong>A:</strong>
-                        - <strong>Memory:</strong> Separate chaining uses extra memory for linked-list node pointers even when chains are short. Linear probing stores everything in the array itself (no pointers), so it uses less memory per element and has better cache locality. <br>
-                        - <strong>Sensitivity to hash quality:</strong> Separate chaining degrades more gracefully with a poor hash function — worst case is one very long chain, but other chains are unaffected. Linear probing suffers from <em>clustering</em>: once a cluster forms, insertions anywhere near it make it grow faster, severely degrading performance. <br>
-                        - <strong>Deletion:</strong> Separate chaining allows straightforward deletion (remove node from linked list). Linear probing cannot simply set a slot to null — doing so breaks search for items that probed past that slot. The fix requires rehashing all keys in the same cluster after the deleted position.</p>
-                </div>
+      <div class="example">
+        <h4>Question 3: Separate Chaining vs. Linear Probing</h4>
+        <p>
+          <strong>Q:</strong> Compare separate chaining and linear probing on
+          three dimensions: memory usage, sensitivity to hash quality, and ease
+          of deletion.
+        </p>
+        <p>
+          <strong>A:</strong> - <strong>Memory:</strong> Separate chaining uses
+          extra memory for linked-list node pointers even when chains are short.
+          Linear probing stores everything in the array itself (no pointers), so
+          it uses less memory per element and has better cache locality. <br />
+          - <strong>Sensitivity to hash quality:</strong> Separate chaining
+          degrades more gracefully with a poor hash function — worst case is one
+          very long chain, but other chains are unaffected. Linear probing
+          suffers from <em>clustering</em>: once a cluster forms, insertions
+          anywhere near it make it grow faster, severely degrading performance.
+          <br />
+          - <strong>Deletion:</strong> Separate chaining allows straightforward
+          deletion (remove node from linked list). Linear probing cannot simply
+          set a slot to null — doing so breaks search for items that probed past
+          that slot. The fix requires rehashing all keys in the same cluster
+          after the deleted position.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 4: Load Factor and Performance</h4>
-                    <p><strong>Q:</strong> For linear probing with load factor α = N/M, give the expected number of probes for a search hit and a search miss when α = ½ and α = ¾. What does this tell you about why keeping α low matters?</p>
-                    <p><strong>A:</strong> Using Knuth's formula, expected probes ≈ ½(1 + 1/(1-α)) for a hit and ½(1 + 1/(1-α)²) for a miss. <br>
-                        - At α = ½: hit ≈ 1.5 probes, miss ≈ 2.5 probes — excellent performance. <br>
-                        - At α = ¾: hit ≈ 2.5 probes, miss ≈ 8.5 probes — misses are 3× more expensive. <br>
-                        As α approaches 1, the denominator (1-α) approaches 0 and the number of probes diverges to infinity. This is why linear probing tables resize (double) when α reaches ½, trading memory for guaranteed constant-time operations.</p>
-                </div>
+      <div class="example">
+        <h4>Question 4: Load Factor and Performance</h4>
+        <p>
+          <strong>Q:</strong> For linear probing with load factor α = N/M, give
+          the expected number of probes for a search hit and a search miss when
+          α = ½ and α = ¾. What does this tell you about why keeping α low
+          matters?
+        </p>
+        <p>
+          <strong>A:</strong> Using Knuth's formula, expected probes ≈ ½(1 +
+          1/(1-α)) for a hit and ½(1 + 1/(1-α)²) for a miss. <br />
+          - At α = ½: hit ≈ 1.5 probes, miss ≈ 2.5 probes — excellent
+          performance. <br />
+          - At α = ¾: hit ≈ 2.5 probes, miss ≈ 8.5 probes — misses are 3× more
+          expensive. <br />
+          As α approaches 1, the denominator (1-α) approaches 0 and the number
+          of probes diverges to infinity. This is why linear probing tables
+          resize (double) when α reaches ½, trading memory for guaranteed
+          constant-time operations.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 5: Why Hash Tables Cannot Support Ordered Operations</h4>
-                    <p><strong>Q:</strong> A colleague wants to use a hash table to find all keys in the range [lo, hi] efficiently. Why is this a bad idea, and what data structure should they use instead?</p>
-                    <p><strong>A:</strong> Hash tables destroy the natural ordering of keys — a key hashes to an essentially random bucket position bearing no relationship to its value. There is no way to enumerate keys in sorted order, find a predecessor/successor, or answer range queries without scanning all N entries (O(N)). For ordered operations, a <strong>balanced BST such as a Red-Black tree</strong> should be used. It supports search, insert, and delete in O(log N), but also supports ordered operations like floor, ceiling, rank, and range queries in O(log N) time.</p>
-                </div>
+      <div class="example">
+        <h4>Question 5: Why Hash Tables Cannot Support Ordered Operations</h4>
+        <p>
+          <strong>Q:</strong> A colleague wants to use a hash table to find all
+          keys in the range [lo, hi] efficiently. Why is this a bad idea, and
+          what data structure should they use instead?
+        </p>
+        <p>
+          <strong>A:</strong> Hash tables destroy the natural ordering of keys —
+          a key hashes to an essentially random bucket position bearing no
+          relationship to its value. There is no way to enumerate keys in sorted
+          order, find a predecessor/successor, or answer range queries without
+          scanning all N entries (O(N)). For ordered operations, a
+          <strong>balanced BST such as a Red-Black tree</strong> should be used.
+          It supports search, insert, and delete in O(log N), but also supports
+          ordered operations like floor, ceiling, rank, and range queries in
+          O(log N) time.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 6: Algorithmic Complexity Attacks</h4>
-                    <p><strong>Q:</strong> What is an algorithmic complexity attack on a hash table, how does Java's string hash function make it possible, and what are two defenses?</p>
-                    <p><strong>A:</strong> An attacker who knows your hash function can craft a large set of keys that all hash to the same bucket, turning O(1) expected operations into O(N) worst-case operations. Java's base-31 string hash makes this possible because it is deterministic and publicly known — it is demonstrably possible to generate 2^N strings of length 2N that all share the same hash value. <br>
-                        <strong>Defense 1:</strong> Use a randomized hash function (e.g., add a secret random salt at startup so the attacker cannot predict hash values). <br>
-                        <strong>Defense 2:</strong> Use a stronger collision-resolution strategy like cuckoo hashing, which guarantees O(1) worst-case lookups regardless of key distribution.
-                    </p>
-                </div>
+      <div class="example">
+        <h4>Question 6: Algorithmic Complexity Attacks</h4>
+        <p>
+          <strong>Q:</strong> What is an algorithmic complexity attack on a hash
+          table, how does Java's string hash function make it possible, and what
+          are two defenses?
+        </p>
+        <p>
+          <strong>A:</strong> An attacker who knows your hash function can craft
+          a large set of keys that all hash to the same bucket, turning O(1)
+          expected operations into O(N) worst-case operations. Java's base-31
+          string hash makes this possible because it is deterministic and
+          publicly known — it is demonstrably possible to generate 2^N strings
+          of length 2N that all share the same hash value. <br />
+          <strong>Defense 1:</strong> Use a randomized hash function (e.g., add
+          a secret random salt at startup so the attacker cannot predict hash
+          values). <br />
+          <strong>Defense 2:</strong> Use a stronger collision-resolution
+          strategy like cuckoo hashing, which guarantees O(1) worst-case lookups
+          regardless of key distribution.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 7: Resizing and Rehashing</h4>
-                    <p><strong>Q:</strong> When a hash table resizes (doubles its capacity), why must ALL existing keys be rehashed rather than simply moved to the same relative position?</p>
-                    <p><strong>A:</strong> The bucket index for a key is computed as <code>(hashCode &amp; 0x7fffffff) % M</code>. When M changes (e.g., from 97 to 194), the modulo changes and every key's bucket index changes. A key that was in bucket 5 of a size-97 table would compute a completely different index in a size-194 table. Simply copying the slots to new positions would place keys in wrong buckets, breaking lookup. Therefore, every key must be run through the hash function again with the new M and inserted into its new correct bucket — this is called <em>rehashing</em>. Its amortized cost is O(1) per operation when using doubling.</p>
-                </div>
+      <div class="example">
+        <h4>Question 7: Resizing and Rehashing</h4>
+        <p>
+          <strong>Q:</strong> When a hash table resizes (doubles its capacity),
+          why must ALL existing keys be rehashed rather than simply moved to the
+          same relative position?
+        </p>
+        <p>
+          <strong>A:</strong> The bucket index for a key is computed as
+          <code>(hashCode &amp; 0x7fffffff) % M</code>. When M changes (e.g.,
+          from 97 to 194), the modulo changes and every key's bucket index
+          changes. A key that was in bucket 5 of a size-97 table would compute a
+          completely different index in a size-194 table. Simply copying the
+          slots to new positions would place keys in wrong buckets, breaking
+          lookup. Therefore, every key must be run through the hash function
+          again with the new M and inserted into its new correct bucket — this
+          is called <em>rehashing</em>. Its amortized cost is O(1) per operation
+          when using doubling.
+        </p>
+      </div>
 
-                <div class="example">
-                    <h4>Question 8: Choosing the Right Table Size</h4>
-                    <p><strong>Q:</strong> Why is it recommended to use a prime number for the hash table size M, particularly when using modular hashing?</p>
-                    <p><strong>A:</strong> When M is prime, the modulo operation <code>h % M</code> distributes keys more uniformly across all M buckets. If M has small factors (e.g., M = 100), then keys whose hash codes differ only in the lower bits will cluster together. For example, if all hash codes are even, they all map to even buckets and half the table is wasted. A prime M has no such factors, ensuring no systematic bias in which buckets receive keys. In practice, common choices are prime numbers slightly less than powers of 2, such as 97, 997, or 30011, to balance resizing convenience with uniform distribution.</p>
-                </div>
-
+      <div class="example">
+        <h4>Question 8: Choosing the Right Table Size</h4>
+        <p>
+          <strong>Q:</strong> Why is it recommended to use a prime number for
+          the hash table size M, particularly when using modular hashing?
+        </p>
+        <p>
+          <strong>A:</strong> When M is prime, the modulo operation
+          <code>h % M</code> distributes keys more uniformly across all M
+          buckets. If M has small factors (e.g., M = 100), then keys whose hash
+          codes differ only in the lower bits will cluster together. For
+          example, if all hash codes are even, they all map to even buckets and
+          half the table is wasted. A prime M has no such factors, ensuring no
+          systematic bias in which buckets receive keys. In practice, common
+          choices are prime numbers slightly less than powers of 2, such as 97,
+          997, or 30011, to balance resizing convenience with uniform
+          distribution.
+        </p>
+      </div>
     </div>
 
-  <script src="/javascripts/slide-figures.js?v=b8dda7aa7b" defer></script>
-</body>
+    <script src="/javascripts/slide-figures.js?v=b8dda7aa7b" defer></script>
+  </body>
 </html>

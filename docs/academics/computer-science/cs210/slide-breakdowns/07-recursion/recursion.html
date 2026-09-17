@@ -1,18 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-sg-styled>
-<head>
-<link rel="stylesheet" href="../../../../../styles/breakdown-language.css?v=cca2675653b6">
-<script src="../../../../../javascripts/breakdown-language.js?v=b1d6c65345d9"></script>
+  <head>
+    <link
+      rel="stylesheet"
+      href="../../../../../styles/breakdown-language.css?v=cca2675653b6"
+    />
+    <script src="../../../../../javascripts/breakdown-language.js?v=e0f6e3407f68"></script>
 
-<link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recursion - Comprehensive Study Guide</title>
-    <link rel="stylesheet" href="/styles/cs210.css">
+    <link rel="stylesheet" href="/styles/cs210.css" />
     <script>
-        /* Theme resolution, in priority order:
+      /* Theme resolution, in priority order:
              1. the stored site preference (what the toggle writes);
              2. the embedding page -- these pages are iframed by their wrapper,
                 and the wrapper only marks itself when it is in LIGHT mode, so an
@@ -21,255 +37,387 @@
            It runs before first paint, and re-asserts afterwards because the
            shared theme scripts fall back to the OS setting and would otherwise
            leave a light page sitting inside a dark one. */
-        (function() {
-            var root = document.documentElement;
+      (function () {
+        var root = document.documentElement;
 
-            function parentTheme() {
-                try {
-                    if (!window.parent || window.parent === window) return null;
-                    var pdoc = window.parent.document;
-                    if (!pdoc) return null;
-                    var body = pdoc.body;
-                    if (body && body.classList.contains("shoug-light-mode")) return "light";
-                    var attr = (body && body.getAttribute("data-theme")) ||
-                        pdoc.documentElement.getAttribute("data-theme");
-                    if (attr === "dark" || attr === "light") return attr;
-                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
-                        pdoc.documentElement.getAttribute("data-md-color-scheme");
-                    if (scheme) return scheme === "slate" ? "dark" : "light";
-                    return "dark";
-                } catch (e) {
-                    return null; // cross-origin: fall through to the OS setting
-                }
-            }
+        function parentTheme() {
+          try {
+            if (!window.parent || window.parent === window) return null;
+            var pdoc = window.parent.document;
+            if (!pdoc) return null;
+            var body = pdoc.body;
+            if (body && body.classList.contains("shoug-light-mode"))
+              return "light";
+            var attr =
+              (body && body.getAttribute("data-theme")) ||
+              pdoc.documentElement.getAttribute("data-theme");
+            if (attr === "dark" || attr === "light") return attr;
+            var scheme =
+              (body && body.getAttribute("data-md-color-scheme")) ||
+              pdoc.documentElement.getAttribute("data-md-color-scheme");
+            if (scheme) return scheme === "slate" ? "dark" : "light";
+            return "dark";
+          } catch (e) {
+            return null; // cross-origin: fall through to the OS setting
+          }
+        }
 
-            function stored() {
-                try {
-                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
-                    if (saved === "dark" || saved === "light") return saved;
-                } catch (e) {}
-                return null;
-            }
+        function stored() {
+          try {
+            var saved =
+              localStorage.getItem("shoug-theme") ||
+              localStorage.getItem("theme");
+            if (saved === "dark" || saved === "light") return saved;
+          } catch (e) {}
+          return null;
+        }
 
-            function resolve() {
-                var saved = stored();
-                if (saved) return saved;
-                var inherited = parentTheme();
-                if (inherited) {
-                    /* Record what the embedding page is showing: the shared theme
+        function resolve() {
+          var saved = stored();
+          if (saved) return saved;
+          var inherited = parentTheme();
+          if (inherited) {
+            /* Record what the embedding page is showing: the shared theme
                        scripts read this key, and without it their first toggle
                        just re-applies the theme already on screen. */
-                    try {
-                        localStorage.setItem("shoug-theme", inherited);
-                        localStorage.setItem("theme", inherited);
-                    } catch (e) {}
-                    return inherited;
-                }
-                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ?
-                    "dark" : "light";
-            }
+            try {
+              localStorage.setItem("shoug-theme", inherited);
+              localStorage.setItem("theme", inherited);
+            } catch (e) {}
+            return inherited;
+          }
+          return window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
 
-            function apply() {
-                var theme = resolve();
-                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
-                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
-            }
+        function apply() {
+          var theme = resolve();
+          if (root.getAttribute("data-theme") !== theme)
+            root.setAttribute("data-theme", theme);
+          if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+        }
 
-            apply();
-            if (window.MutationObserver) {
-                new MutationObserver(apply).observe(root, {
-                    attributes: true,
-                    attributeFilter: ["data-theme"]
-                });
-            }
-            document.addEventListener("DOMContentLoaded", apply);
-            window.addEventListener("load", apply);
-        })();
+        apply();
+        if (window.MutationObserver) {
+          new MutationObserver(apply).observe(root, {
+            attributes: true,
+            attributeFilter: ["data-theme"],
+          });
+        }
+        document.addEventListener("DOMContentLoaded", apply);
+        window.addEventListener("load", apply);
+      })();
     </script>
     <script src="/javascripts/standalone-theme.js"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
 
-    <meta name="description" content="Data Structures and Algorithms in Java">
-    <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/">
-    <meta property="og:title" content="Recursion - Comprehensive Study Guide">
-    <meta property="og:description" content="Data Structures and Algorithms in Java">
-    <meta property="og:url" content="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/">
-    <meta property="og:type" content="article">
-    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Recursion - Comprehensive Study Guide">
-    <meta name="twitter:description" content="Data Structures and Algorithms in Java">
-    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="description" content="Data Structures and Algorithms in Java" />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/"
+    />
+    <meta property="og:title" content="Recursion - Comprehensive Study Guide" />
+    <meta
+      property="og:description"
+      content="Data Structures and Algorithms in Java"
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Recursion - Comprehensive Study Guide"
+    />
+    <meta
+      name="twitter:description"
+      content="Data Structures and Algorithms in Java"
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "url": "https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/",
-            "name": "Recursion - Comprehensive Study Guide",
-            "description": "Data Structures and Algorithms in Java",
-            "isPartOf": {
-                "@type": "WebSite",
-                "name": "Shoug's Digital Garden",
-                "url": "https://shoug-tech.com/"
-            }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/",
+        "name": "Recursion - Comprehensive Study Guide",
+        "description": "Data Structures and Algorithms in Java",
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "Shoug's Digital Garden",
+          "url": "https://shoug-tech.com/"
         }
+      }
     </script>
 
-    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/">
-    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/?lang=ar">
-    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/">
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/?lang=ar"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://shoug-tech.com/academics/computer-science/cs210/slide-breakdowns/07-recursion/"
+    />
 
     <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
     <script type="text/javascript">
-        (function(c, l, a, r, i, t, y) {
-            c[a] = c[a] || function() {
-                (c[a].q = c[a].q || []).push(arguments)
-            };
-            t = l.createElement(r);
-            t.async = 1;
-            t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0];
-            y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "xub0eqmvs9");
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
-    <link rel="stylesheet" href="/styles/a11y.css">
-  <link rel="stylesheet" href="/styles/slide-figures.css?v=e698a3ce14" />
-<style data-page-fit>
-/* Generated by scripts/fit_page_layout.py from measurements at laptop, iPad and phone widths; re-run to refresh. */
+    <link rel="stylesheet" href="/styles/a11y.css" />
+    <link rel="stylesheet" href="/styles/slide-figures.css?v=e698a3ce14" />
+    <style data-page-fit>
+      /* Generated by scripts/fit_page_layout.py from measurements at laptop, iPad and phone widths; re-run to refresh. */
 
-div.container:not(#pf) {
-  width: auto;
-  max-width: min(1320px, 100%);
-}
+      div.container:not(#pf) {
+        width: auto;
+        max-width: min(1320px, 100%);
+      }
 
-@media (max-width: 600px) {
-  div.container:not(#pf) {
-    padding-left: 16px;
-    padding-right: 16px;
-    margin-left: 0;
-    margin-right: 0;
-  }
+      @media (max-width: 600px) {
+        div.container:not(#pf) {
+          padding-left: 16px;
+          padding-right: 16px;
+          margin-left: 0;
+          margin-right: 0;
+        }
 
-  #examples:not(#pf),
-#introduction:not(#pf),
-#summary:not(#pf),
-#types:not(#pf),
-div.comparison-card:not(#pf),
-div.example:not(#pf),
-div.example > ul:not(#pf),
-div.key-points:not(#pf),
-div.key-points > ul:not(#pf) {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-</style>
-<link rel="stylesheet" href="../../../../../styles/breakdown-contents.css?v=3e2d7e4357d8">
-<script src="../../../../../javascripts/breakdown-contents.js?v=8d9123e5e177" defer></script>
-</head>
-<body data-cs210="guide" data-cs210-page="recursion">
-    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
-        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z" />
-        </svg>
-        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.1" />
-            <path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" />
-        </svg>
-        <span data-theme-label>Dark</span>
+        #examples:not(#pf),
+        #introduction:not(#pf),
+        #summary:not(#pf),
+        #types:not(#pf),
+        div.comparison-card:not(#pf),
+        div.example:not(#pf),
+        div.example > ul:not(#pf),
+        div.key-points:not(#pf),
+        div.key-points > ul:not(#pf) {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="../../../../../styles/breakdown-contents.css?v=3e2d7e4357d8"
+    />
+    <script
+      src="../../../../../javascripts/breakdown-contents.js?v=8d9123e5e177"
+      defer
+    ></script>
+  </head>
+  <body data-cs210="guide" data-cs210-page="recursion">
+    <button
+      class="sg-theme-toggle"
+      type="button"
+      onclick="toggleTheme()"
+      aria-label="Toggle dark and light mode"
+    >
+      <svg
+        class="sg-icon-moon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z" />
+      </svg>
+      <svg
+        class="sg-icon-sun"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="4.1" />
+        <path
+          d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"
+        />
+      </svg>
+      <span data-theme-label>Dark</span>
     </button>
 
-
     <div class="container">
-        <header>
-            <h1>Recursion Study Guide</h1>
-            <p>Data Structures and Algorithms in Java</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">Based on Goodrich, Tamassia, & Goldwasser</p>
-        </header>
+      <header>
+        <h1>Recursion Study Guide</h1>
+        <p>Data Structures and Algorithms in Java</p>
+        <p style="font-size: 0.9em; margin-top: 10px">
+          Based on Goodrich, Tamassia, & Goldwasser
+        </p>
+      </header>
 
-        <nav>
+      <nav>
+        <ul>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#pattern">Recursion Pattern</a></li>
+          <li><a href="#examples">Examples</a></li>
+          <li><a href="#types">Types of Recursion</a></li>
+          <li><a href="#complexity">Complexity Analysis</a></li>
+          <li><a href="#summary">Summary</a></li>
+        </ul>
+      </nav>
+
+      <div class="content">
+        <!-- INTRODUCTION -->
+        <section id="introduction">
+          <h2>What is Recursion?</h2>
+
+          <div class="definition">
+            <h3>Definition</h3>
+            <p>
+              <strong>Recursion</strong> occurs when a method calls itself. It's
+              a powerful programming technique where a problem is solved by
+              breaking it down into smaller instances of the same problem.
+            </p>
+          </div>
+
+          <h3>Content of a Recursive Method</h3>
+
+          <div class="key-points">
+            <h4>1. Base Case(s)</h4>
             <ul>
-                <li><a href="#introduction">Introduction</a></li>
-                <li><a href="#pattern">Recursion Pattern</a></li>
-                <li><a href="#examples">Examples</a></li>
-                <li><a href="#types">Types of Recursion</a></li>
-                <li><a href="#complexity">Complexity Analysis</a></li>
-                <li><a href="#summary">Summary</a></li>
+              <li>
+                Values of input variables for which we perform
+                <strong>no recursive calls</strong>
+              </li>
+              <li>There should be <strong>at least one base case</strong></li>
+              <li>
+                Every possible chain of recursive calls must eventually reach a
+                base case
+              </li>
+              <li>
+                <em
+                  >When we stop the loop - the method must stop calling
+                  itself</em
+                >
+              </li>
             </ul>
-        </nav>
+          </div>
 
-        <div class="content">
-            <!-- INTRODUCTION -->
-            <section id="introduction">
-                <h2>What is Recursion?</h2>
+          <div class="key-points">
+            <h4>2. Recursive Calls</h4>
+            <ul>
+              <li>Calls to the current method</li>
+              <li>
+                Each recursive call should be defined so that it
+                <strong>makes progress towards a base case</strong>
+              </li>
+              <li>
+                The method must update parameters to eventually reach the base
+                case
+              </li>
+            </ul>
+          </div>
 
-                <div class="definition">
-                    <h3>Definition</h3>
-                    <p><strong>Recursion</strong> occurs when a method calls itself. It's a powerful programming technique where a problem is solved by breaking it down into smaller instances of the same problem.</p>
-                </div>
+          <div class="important">
+            <h3>Critical Requirements</h3>
+            <ul>
+              <li>Must have a base case (or the recursion never stops!)</li>
+              <li>Must make progress toward the base case</li>
+              <li>Must call itself (that's what makes it recursive)</li>
+            </ul>
+          </div>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Visualizing recursion with a recursion trace."
+            >
+              <img
+                src="figures/slide-04.png"
+                alt="Visualizing recursion with a recursion trace."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=4"
+                >PDF page 4</a
+              >Visualizing recursion with a recursion trace.
+            </figcaption>
+          </figure>
+        </section>
 
-                <h3>Content of a Recursive Method</h3>
+        <!-- RECURSION PATTERN -->
+        <section id="pattern">
+          <h2>The Recursion Pattern: Factorial</h2>
 
-                <div class="key-points">
-                    <h4>1. Base Case(s)</h4>
-                    <ul>
-                        <li>Values of input variables for which we perform <strong>no recursive calls</strong></li>
-                        <li>There should be <strong>at least one base case</strong></li>
-                        <li>Every possible chain of recursive calls must eventually reach a base case</li>
-                        <li><em>When we stop the loop - the method must stop calling itself</em></li>
-                    </ul>
-                </div>
+          <div class="example">
+            <h3>Classic Example: Factorial Function</h3>
+            <p>
+              <strong>Mathematical Definition:</strong> n! = 1 · 2 · 3 · ... ·
+              (n-1) · n
+            </p>
 
-                <div class="key-points">
-                    <h4>2. Recursive Calls</h4>
-                    <ul>
-                        <li>Calls to the current method</li>
-                        <li>Each recursive call should be defined so that it <strong>makes progress towards a base case</strong></li>
-                        <li>The method must update parameters to eventually reach the base case</li>
-                    </ul>
-                </div>
+            <p style="margin-top: 15px">
+              <strong>Recursive Definition:</strong>
+            </p>
+            <p style="font-size: 1.2em; margin: 10px 0">
+              f(n) = { 1 if n = 0<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n ·
+              f(n-1) else
+            </p>
+          </div>
 
-                <div class="important">
-                    <h3>Critical Requirements</h3>
-                    <ul>
-                        <li>Must have a base case (or the recursion never stops!)</li>
-                        <li>Must make progress toward the base case</li>
-                        <li>Must call itself (that's what makes it recursive)</li>
-                    </ul>
-                </div>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Visualizing recursion with a recursion trace."><img src="figures/slide-04.png" alt="Visualizing recursion with a recursion trace." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=4">PDF page 4</a>Visualizing recursion with a recursion trace.</figcaption></figure>
-            </section>
+          <h3>Java Implementation</h3>
+          <div class="code-block">
+            <span class="keyword">public static int</span>
+            <span class="function">factorial</span>(<span class="keyword"
+              >int</span
+            >
+            n) <span class="keyword">throws</span> IllegalArgumentException {
+            <span class="keyword">if</span> (n < 0)
+            <span class="keyword">throw new</span> IllegalArgumentException();
+            <span class="comment">// argument must be nonnegative</span>
+            <span class="keyword">else if</span> (n == 0)
+            <span class="keyword">return</span> 1;
+            <span class="comment">// base case</span>
+            <span class="keyword">else</span>
+            <span class="keyword">return</span> n *
+            <span class="function">factorial</span>(n-1);
+            <span class="comment">// recursive case (must update n)</span>
+            }
+          </div>
 
-            <!-- RECURSION PATTERN -->
-            <section id="pattern">
-                <h2>The Recursion Pattern: Factorial</h2>
-
-                <div class="example">
-                    <h3>Classic Example: Factorial Function</h3>
-                    <p><strong>Mathematical Definition:</strong> n! = 1 · 2 · 3 · ... · (n-1) · n</p>
-
-                    <p style="margin-top: 15px;"><strong>Recursive Definition:</strong></p>
-                    <p style="font-size: 1.2em; margin: 10px 0;">
-                        f(n) = { 1 if n = 0<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n · f(n-1) else
-                    </p>
-                </div>
-
-                <h3>Java Implementation</h3>
-                <div class="code-block">
-<span class="keyword">public static int</span> <span class="function">factorial</span>(<span class="keyword">int</span> n) <span class="keyword">throws</span> IllegalArgumentException {
-    <span class="keyword">if</span> (n < 0)
-        <span class="keyword">throw new</span> IllegalArgumentException();  <span class="comment">// argument must be nonnegative</span>
-    <span class="keyword">else if</span> (n == 0)
-        <span class="keyword">return</span> 1;                              <span class="comment">// base case</span>
-    <span class="keyword">else</span>
-        <span class="keyword">return</span> n * <span class="function">factorial</span>(n-1);          <span class="comment">// recursive case (must update n)</span>
-}
-                </div>
-
-                <h3>Execution Trace: factorial(4)</h3>
-                <div class="visual-diagram">
-                    <pre style="text-align: left; display: inline-block;">
+          <h3>Execution Trace: factorial(4)</h3>
+          <div class="visual-diagram">
+            <pre style="text-align: left; display: inline-block">
 factorial(4)
     ↓ call                    → return 4*6 = 24 (final answer)
 factorial(3)
@@ -281,73 +429,158 @@ factorial(1)
 factorial(0)
     → return 1 (base case)
                     </pre>
-                </div>
+          </div>
 
-                <div class="important">
-                    <h3>How it Works:</h3>
-                    <ol>
-                        <li><strong>Forward calls:</strong> Methods keep calling themselves with decreasing n</li>
-                        <li><strong>Base case reached:</strong> When n = 0, return 1</li>
-                        <li><strong>Backward returns:</strong> Each call returns its result to the caller</li>
-                        <li><strong>Final result:</strong> 4! = 24</li>
-                    </ol>
-                    <p style="margin-top: 15px;"><strong>Runtime:</strong> <span class="complexity-box">O(n)</span> - Makes n+1 calls</p>
-                </div>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The recursion pattern."><img src="figures/slide-02.png" alt="The recursion pattern." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=2">PDF page 2</a>The recursion pattern.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The content of a recursive method: base cases and recursive calls."><img src="figures/slide-03.png" alt="The content of a recursive method: base cases and recursive calls." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=3">PDF page 3</a>The content of a recursive method: base cases and recursive calls.</figcaption></figure>
-            </section>
+          <div class="important">
+            <h3>How it Works:</h3>
+            <ol>
+              <li>
+                <strong>Forward calls:</strong> Methods keep calling themselves
+                with decreasing n
+              </li>
+              <li><strong>Base case reached:</strong> When n = 0, return 1</li>
+              <li>
+                <strong>Backward returns:</strong> Each call returns its result
+                to the caller
+              </li>
+              <li><strong>Final result:</strong> 4! = 24</li>
+            </ol>
+            <p style="margin-top: 15px">
+              <strong>Runtime:</strong>
+              <span class="complexity-box">O(n)</span> - Makes n+1 calls
+            </p>
+          </div>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: The recursion pattern."
+            >
+              <img
+                src="figures/slide-02.png"
+                alt="The recursion pattern."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=2"
+                >PDF page 2</a
+              >The recursion pattern.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: The content of a recursive method: base cases and recursive calls."
+            >
+              <img
+                src="figures/slide-03.png"
+                alt="The content of a recursive method: base cases and recursive calls."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=3"
+                >PDF page 3</a
+              >The content of a recursive method: base cases and recursive
+              calls.
+            </figcaption>
+          </figure>
+        </section>
 
-            <!-- EXAMPLES -->
-            <section id="examples">
-                <h2>Common Recursion Examples</h2>
+        <!-- EXAMPLES -->
+        <section id="examples">
+          <h2>Common Recursion Examples</h2>
 
-                <!-- BINARY SEARCH -->
-                <h3>1. Binary Search</h3>
-                <div class="example">
-                    <p><strong>Problem:</strong> Search for an integer in an ordered array</p>
-                    <p><strong>Strategy:</strong> Check middle element, then recur on appropriate half</p>
-                </div>
+          <!-- BINARY SEARCH -->
+          <h3>1. Binary Search</h3>
+          <div class="example">
+            <p>
+              <strong>Problem:</strong> Search for an integer in an ordered
+              array
+            </p>
+            <p>
+              <strong>Strategy:</strong> Check middle element, then recur on
+              appropriate half
+            </p>
+          </div>
 
-                <div class="code-block">
-<span class="keyword">public static boolean</span> <span class="function">binarySearch</span>(<span class="keyword">int</span>[] data, <span class="keyword">int</span> target, <span class="keyword">int</span> low, <span class="keyword">int</span> high) {
-    <span class="keyword">if</span> (low > high)
-        <span class="keyword">return false</span>;                      <span class="comment">// interval empty; no match</span>
-    <span class="keyword">else</span> {
-        <span class="keyword">int</span> mid = (low + high) / 2;
-        <span class="keyword">if</span> (target == data[mid])
-            <span class="keyword">return true</span>;                   <span class="comment">// found a match</span>
-        <span class="keyword">else if</span> (target < data[mid])
-            <span class="keyword">return</span> <span class="function">binarySearch</span>(data, target, low, mid - 1);    <span class="comment">// recur left</span>
-        <span class="keyword">else</span>
-            <span class="keyword">return</span> <span class="function">binarySearch</span>(data, target, mid + 1, high);   <span class="comment">// recur right</span>
-    }
-}
-                </div>
+          <div class="code-block">
+            <span class="keyword">public static boolean</span>
+            <span class="function">binarySearch</span>(<span class="keyword"
+              >int</span
+            >[] data, <span class="keyword">int</span> target,
+            <span class="keyword">int</span> low,
+            <span class="keyword">int</span> high) {
+            <span class="keyword">if</span> (low > high)
+            <span class="keyword">return false</span>;
+            <span class="comment">// interval empty; no match</span>
+            <span class="keyword">else</span> {
+            <span class="keyword">int</span> mid = (low + high) / 2;
+            <span class="keyword">if</span> (target == data[mid])
+            <span class="keyword">return true</span>;
+            <span class="comment">// found a match</span>
+            <span class="keyword">else if</span> (target < data[mid])
+            <span class="keyword">return</span>
+            <span class="function">binarySearch</span>(data, target, low, mid -
+            1); <span class="comment">// recur left</span>
+            <span class="keyword">else</span>
+            <span class="keyword">return</span>
+            <span class="function">binarySearch</span>(data, target, mid + 1,
+            high); <span class="comment">// recur right</span>
+            } }
+          </div>
 
-                <div class="important">
-                    <p><strong>Runtime:</strong> <span class="complexity-box">O(log n)</span></p>
-                    <p>Each recursive call divides the search region in half, so there can be at most log n levels.</p>
-                </div>
+          <div class="important">
+            <p>
+              <strong>Runtime:</strong>
+              <span class="complexity-box">O(log n)</span>
+            </p>
+            <p>
+              Each recursive call divides the search region in half, so there
+              can be at most log n levels.
+            </p>
+          </div>
 
-                <!-- LINEAR SUM -->
-                <h3>2. Linear Sum (Array Summation)</h3>
-                <div class="example">
-                    <p><strong>Problem:</strong> Add all numbers in an integer array</p>
-                    <p><strong>Strategy:</strong> Sum first n-1 elements, then add the nth element</p>
-                </div>
+          <!-- LINEAR SUM -->
+          <h3>2. Linear Sum (Array Summation)</h3>
+          <div class="example">
+            <p><strong>Problem:</strong> Add all numbers in an integer array</p>
+            <p>
+              <strong>Strategy:</strong> Sum first n-1 elements, then add the
+              nth element
+            </p>
+          </div>
 
-                <div class="code-block">
-<span class="keyword">public static int</span> <span class="function">linearSum</span>(<span class="keyword">int</span>[] A, <span class="keyword">int</span> n) {
-    <span class="keyword">if</span> (n == 0)
-        <span class="keyword">return</span> 0;                          <span class="comment">// base case</span>
-    <span class="keyword">else</span>
-        <span class="keyword">return</span> <span class="function">linearSum</span>(A, n - 1) + A[n - 1];  <span class="comment">// recursive case</span>
-}
-                </div>
+          <div class="code-block">
+            <span class="keyword">public static int</span>
+            <span class="function">linearSum</span>(<span class="keyword"
+              >int</span
+            >[] A, <span class="keyword">int</span> n) {
+            <span class="keyword">if</span> (n == 0)
+            <span class="keyword">return</span> 0;
+            <span class="comment">// base case</span>
+            <span class="keyword">else</span>
+            <span class="keyword">return</span>
+            <span class="function">linearSum</span>(A, n - 1) + A[n - 1];
+            <span class="comment">// recursive case</span>
+            }
+          </div>
 
-                <div class="visual-diagram">
-                    <h4>Trace: linearSum(data, 5) for data = [4, 3, 6, 2, 8]</h4>
-                    <pre style="text-align: left; display: inline-block;">
+          <div class="visual-diagram">
+            <h4>Trace: linearSum(data, 5) for data = [4, 3, 6, 2, 8]</h4>
+            <pre style="text-align: left; display: inline-block">
 linearSum(data, 5) → return 15 + data[4] = 15 + 8 = 23
     ↓
 linearSum(data, 4) → return 13 + data[3] = 13 + 2 = 15
@@ -360,270 +593,564 @@ linearSum(data, 1) → return 0 + data[0] = 0 + 4 = 4
     ↓
 linearSum(data, 0) → return 0 (base case)
                     </pre>
-                </div>
+          </div>
 
-                <!-- ARRAY REVERSAL -->
-                <h3>3. Reversing an Array</h3>
-                <div class="code-block">
-<span class="keyword">public static void</span> <span class="function">reverseArray</span>(<span class="keyword">int</span>[] data, <span class="keyword">int</span> low, <span class="keyword">int</span> high) {
-    <span class="keyword">if</span> (low < high) {                     <span class="comment">// if at least two elements in subarray</span>
-        <span class="keyword">int</span> temp = data[low];             <span class="comment">// swap data[low] and data[high]</span>
-        data[low] = data[high];
-        data[high] = temp;
-        <span class="function">reverseArray</span>(data, low + 1, high - 1);   <span class="comment">// recur on the rest</span>
-    }
-}
-                </div>
+          <!-- ARRAY REVERSAL -->
+          <h3>3. Reversing an Array</h3>
+          <div class="code-block">
+            <span class="keyword">public static void</span>
+            <span class="function">reverseArray</span>(<span class="keyword"
+              >int</span
+            >[] data, <span class="keyword">int</span> low,
+            <span class="keyword">int</span> high) {
+            <span class="keyword">if</span> (low < high) {
+            <span class="comment">// if at least two elements in subarray</span>
+            <span class="keyword">int</span> temp = data[low];
+            <span class="comment">// swap data[low] and data[high]</span>
+            data[low] = data[high]; data[high] = temp;
+            <span class="function">reverseArray</span>(data, low + 1, high - 1);
+            <span class="comment">// recur on the rest</span>
+            } }
+          </div>
 
-                <div class="important">
-                    <p><strong>Runtime:</strong> <span class="complexity-box">O(n)</span></p>
-                    <p>Each recursive call swaps two elements and moves indices closer to the middle.</p>
-                </div>
+          <div class="important">
+            <p>
+              <strong>Runtime:</strong> <span class="complexity-box">O(n)</span>
+            </p>
+            <p>
+              Each recursive call swaps two elements and moves indices closer to
+              the middle.
+            </p>
+          </div>
 
-                <!-- POWER FUNCTION -->
-                <h3>4. Computing Powers</h3>
+          <!-- POWER FUNCTION -->
+          <h3>4. Computing Powers</h3>
 
-                <div class="comparison-table">
-                    <div class="comparison-card">
-                        <h4>✗ Slow Approach: O(n)</h4>
-                        <div class="code-block">
-<span class="keyword">int</span> <span class="function">power</span>(<span class="keyword">int</span> x, <span class="keyword">int</span> n) {
-    <span class="keyword">if</span> (n == 0)
-        <span class="keyword">return</span> 1;
-    <span class="keyword">else</span>
-        <span class="keyword">return</span> x * <span class="function">power</span>(x, n-1);
-}
-                        </div>
-                        <p>Makes n recursive calls</p>
-                    </div>
+          <div class="comparison-table">
+            <div class="comparison-card">
+              <h4>✗ Slow Approach: O(n)</h4>
+              <div class="code-block">
+                <span class="keyword">int</span>
+                <span class="function">power</span>(<span class="keyword"
+                  >int</span
+                >
+                x, <span class="keyword">int</span> n) {
+                <span class="keyword">if</span> (n == 0)
+                <span class="keyword">return</span> 1;
+                <span class="keyword">else</span>
+                <span class="keyword">return</span> x *
+                <span class="function">power</span>(x, n-1); }
+              </div>
+              <p>Makes n recursive calls</p>
+            </div>
 
-                    <div class="comparison-card">
-                        <h4>✓ Fast Approach: O(log n)</h4>
-                        <div class="code-block">
-<span class="keyword">int</span> <span class="function">power</span>(<span class="keyword">int</span> x, <span class="keyword">int</span> n) {
-    <span class="keyword">if</span> (n == 0)
-        <span class="keyword">return</span> 1;
-    <span class="keyword">if</span> (n % 2 == 1) {
-        <span class="keyword">int</span> y = <span class="function">power</span>(x, (n-1)/2);
-        <span class="keyword">return</span> x * y * y;
-    } <span class="keyword">else</span> {
-        <span class="keyword">int</span> y = <span class="function">power</span>(x, n/2);
-        <span class="keyword">return</span> y * y;
-    }
-}
-                        </div>
-                        <p>Uses repeated squaring!</p>
-                    </div>
-                </div>
+            <div class="comparison-card">
+              <h4>✓ Fast Approach: O(log n)</h4>
+              <div class="code-block">
+                <span class="keyword">int</span>
+                <span class="function">power</span>(<span class="keyword"
+                  >int</span
+                >
+                x, <span class="keyword">int</span> n) {
+                <span class="keyword">if</span> (n == 0)
+                <span class="keyword">return</span> 1;
+                <span class="keyword">if</span> (n % 2 == 1) {
+                <span class="keyword">int</span> y =
+                <span class="function">power</span>(x, (n-1)/2);
+                <span class="keyword">return</span> x * y * y; }
+                <span class="keyword">else</span> {
+                <span class="keyword">int</span> y =
+                <span class="function">power</span>(x, n/2);
+                <span class="keyword">return</span> y * y; } }
+              </div>
+              <p>Uses repeated squaring!</p>
+            </div>
+          </div>
 
-                <div class="example">
-                    <h4>How Recursive Squaring Works:</h4>
-                    <ul>
-                        <li>2⁴ = (2²)² = 4² = 16</li>
-                        <li>2⁵ = 2 · (2²)² = 2 · 16 = 32</li>
-                        <li>2⁸ = (2⁴)² = 16² = 256</li>
-                    </ul>
-                    <p style="margin-top: 15px;"><strong>Key Insight:</strong> Halve the exponent each time → logarithmic complexity!</p>
-                </div>
+          <div class="example">
+            <h4>How Recursive Squaring Works:</h4>
+            <ul>
+              <li>2⁴ = (2²)² = 4² = 16</li>
+              <li>2⁵ = 2 · (2²)² = 2 · 16 = 32</li>
+              <li>2⁸ = (2⁴)² = 16² = 256</li>
+            </ul>
+            <p style="margin-top: 15px">
+              <strong>Key Insight:</strong> Halve the exponent each time →
+              logarithmic complexity!
+            </p>
+          </div>
 
-                <!-- FIBONACCI -->
-                <h3>5. Fibonacci Numbers</h3>
+          <!-- FIBONACCI -->
+          <h3>5. Fibonacci Numbers</h3>
 
-                <div class="definition">
-                    <p><strong>Definition:</strong></p>
-                    <ul>
-                        <li>F₀ = 0</li>
-                        <li>F₁ = 1</li>
-                        <li>Fᵢ = Fᵢ₋₁ + Fᵢ₋₂ for i > 1</li>
-                    </ul>
-                </div>
+          <div class="definition">
+            <p><strong>Definition:</strong></p>
+            <ul>
+              <li>F₀ = 0</li>
+              <li>F₁ = 1</li>
+              <li>Fᵢ = Fᵢ₋₁ + Fᵢ₋₂ for i > 1</li>
+            </ul>
+          </div>
 
-                <div class="comparison-table">
-                    <div class="comparison-card">
-                        <h4>✗ Binary Recursion (SLOW)</h4>
-                        <div class="code-block">
-<span class="keyword">int</span> <span class="function">binaryFib</span>(<span class="keyword">int</span> k) {
-    <span class="keyword">if</span> (k <= 1)
-        <span class="keyword">return</span> k;
-    <span class="keyword">else</span>
-        <span class="keyword">return</span> <span class="function">binaryFib</span>(k-1) 
-             + <span class="function">binaryFib</span>(k-2);
-}
-                        </div>
-                        <p><strong>Runtime:</strong> <span class="complexity-box">O(2ⁿ)</span> - EXPONENTIAL!</p>
-                        <p>Makes redundant calculations</p>
-                    </div>
+          <div class="comparison-table">
+            <div class="comparison-card">
+              <h4>✗ Binary Recursion (SLOW)</h4>
+              <div class="code-block">
+                <span class="keyword">int</span>
+                <span class="function">binaryFib</span>(<span class="keyword"
+                  >int</span
+                >
+                k) { <span class="keyword">if</span> (k <= 1)
+                <span class="keyword">return</span> k;
+                <span class="keyword">else</span>
+                <span class="keyword">return</span>
+                <span class="function">binaryFib</span>(k-1) +
+                <span class="function">binaryFib</span>(k-2); }
+              </div>
+              <p>
+                <strong>Runtime:</strong>
+                <span class="complexity-box">O(2ⁿ)</span> - EXPONENTIAL!
+              </p>
+              <p>Makes redundant calculations</p>
+            </div>
 
-                    <div class="comparison-card">
-                        <h4>✓ Linear Recursion (FAST)</h4>
-                        <div class="code-block">
-<span class="keyword">Pair</span> <span class="function">linearFib</span>(<span class="keyword">int</span> k) {
-    <span class="keyword">if</span> (k == 1)
-        <span class="keyword">return</span> (k, 0);
-    <span class="keyword">else</span> {
-        (i, j) = <span class="function">linearFib</span>(k-1);
-        <span class="keyword">return</span> (i+j, i);
-    }
-}
-                        </div>
-                        <p><strong>Runtime:</strong> <span class="complexity-box">O(n)</span> - LINEAR!</p>
-                        <p>Returns pair (Fₖ, Fₖ₋₁)</p>
-                    </div>
-                </div>
+            <div class="comparison-card">
+              <h4>✓ Linear Recursion (FAST)</h4>
+              <div class="code-block">
+                <span class="keyword">Pair</span>
+                <span class="function">linearFib</span>(<span class="keyword"
+                  >int</span
+                >
+                k) { <span class="keyword">if</span> (k == 1)
+                <span class="keyword">return</span> (k, 0);
+                <span class="keyword">else</span> { (i, j) =
+                <span class="function">linearFib</span>(k-1);
+                <span class="keyword">return</span> (i+j, i); } }
+              </div>
+              <p>
+                <strong>Runtime:</strong>
+                <span class="complexity-box">O(n)</span> - LINEAR!
+              </p>
+              <p>Returns pair (Fₖ, Fₖ₋₁)</p>
+            </div>
+          </div>
 
-                <!-- ENGLISH RULER -->
-                <h3>6. English Ruler (Drawing Ticks)</h3>
+          <!-- ENGLISH RULER -->
+          <h3>6. English Ruler (Drawing Ticks)</h3>
 
-                <div class="example">
-                    <p><strong>Problem:</strong> Draw tick marks on a ruler with varying lengths</p>
-                    <p><strong>Pattern:</strong> For a tick of length L, draw smaller ticks (L-1) on both sides</p>
-                </div>
+          <div class="example">
+            <p>
+              <strong>Problem:</strong> Draw tick marks on a ruler with varying
+              lengths
+            </p>
+            <p>
+              <strong>Pattern:</strong> For a tick of length L, draw smaller
+              ticks (L-1) on both sides
+            </p>
+          </div>
 
-                <div class="code-block">
-<span class="keyword">public static void</span> <span class="function">drawInterval</span>(<span class="keyword">int</span> centralLength) {
-    <span class="keyword">if</span> (centralLength > 0) {
-        <span class="function">drawInterval</span>(centralLength - 1);     <span class="comment">// draw top interval</span>
-        <span class="function">drawLine</span>(centralLength);              <span class="comment">// draw center tick line</span>
-        <span class="function">drawInterval</span>(centralLength - 1);     <span class="comment">// draw bottom interval</span>
-    }
-}
-                </div>
+          <div class="code-block">
+            <span class="keyword">public static void</span>
+            <span class="function">drawInterval</span>(<span class="keyword"
+              >int</span
+            >
+            centralLength) { <span class="keyword">if</span> (centralLength > 0)
+            { <span class="function">drawInterval</span>(centralLength - 1);
+            <span class="comment">// draw top interval</span>
+            <span class="function">drawLine</span>(centralLength);
+            <span class="comment">// draw center tick line</span>
+            <span class="function">drawInterval</span>(centralLength - 1);
+            <span class="comment">// draw bottom interval</span>
+            } }
+          </div>
 
-                <div class="important">
-                    <p><strong>Note:</strong> This is an example of <strong>binary recursion</strong> (two recursive calls per invocation)</p>
-                </div>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The English ruler example."><img src="figures/slide-05.png" alt="The English ruler example." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=5">PDF page 5</a>The English ruler example.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Using recursion: drawInterval."><img src="figures/slide-06.png" alt="Using recursion: drawInterval." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=6">PDF page 6</a>Using recursion: drawInterval.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: The recursive drawing method."><img src="figures/slide-07.png" alt="The recursive drawing method." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=7">PDF page 7</a>The recursive drawing method.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Binary search, recursively."><img src="figures/slide-09.png" alt="Binary search, recursively." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=9">PDF page 9</a>Binary search, recursively.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Visualizing binary search."><img src="figures/slide-10.png" alt="Visualizing binary search." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=10">PDF page 10</a>Visualizing binary search.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Reversing an array recursively."><img src="figures/slide-16.png" alt="Reversing an array recursively." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=16">PDF page 16</a>Reversing an array recursively.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Computing powers."><img src="figures/slide-18.png" alt="Computing powers." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=18">PDF page 18</a>Computing powers.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Recursive squaring."><img src="figures/slide-19.png" alt="Recursive squaring." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=19">PDF page 19</a>Recursive squaring.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Computing Fibonacci numbers recursively."><img src="figures/slide-25.png" alt="Computing Fibonacci numbers recursively." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=25">PDF page 25</a>Computing Fibonacci numbers recursively.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: A better Fibonacci algorithm."><img src="figures/slide-27.png" alt="A better Fibonacci algorithm." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=27">PDF page 27</a>A better Fibonacci algorithm.</figcaption></figure>
-            </section>
+          <div class="important">
+            <p>
+              <strong>Note:</strong> This is an example of
+              <strong>binary recursion</strong> (two recursive calls per
+              invocation)
+            </p>
+          </div>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: The English ruler example."
+            >
+              <img
+                src="figures/slide-05.png"
+                alt="The English ruler example."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=5"
+                >PDF page 5</a
+              >The English ruler example.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Using recursion: drawInterval."
+            >
+              <img
+                src="figures/slide-06.png"
+                alt="Using recursion: drawInterval."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=6"
+                >PDF page 6</a
+              >Using recursion: drawInterval.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: The recursive drawing method."
+            >
+              <img
+                src="figures/slide-07.png"
+                alt="The recursive drawing method."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=7"
+                >PDF page 7</a
+              >The recursive drawing method.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Binary search, recursively."
+            >
+              <img
+                src="figures/slide-09.png"
+                alt="Binary search, recursively."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=9"
+                >PDF page 9</a
+              >Binary search, recursively.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Visualizing binary search."
+            >
+              <img
+                src="figures/slide-10.png"
+                alt="Visualizing binary search."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=10"
+                >PDF page 10</a
+              >Visualizing binary search.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Reversing an array recursively."
+            >
+              <img
+                src="figures/slide-16.png"
+                alt="Reversing an array recursively."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=16"
+                >PDF page 16</a
+              >Reversing an array recursively.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Computing powers."
+            >
+              <img
+                src="figures/slide-18.png"
+                alt="Computing powers."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=18"
+                >PDF page 18</a
+              >Computing powers.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Recursive squaring."
+            >
+              <img
+                src="figures/slide-19.png"
+                alt="Recursive squaring."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=19"
+                >PDF page 19</a
+              >Recursive squaring.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Computing Fibonacci numbers recursively."
+            >
+              <img
+                src="figures/slide-25.png"
+                alt="Computing Fibonacci numbers recursively."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=25"
+                >PDF page 25</a
+              >Computing Fibonacci numbers recursively.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: A better Fibonacci algorithm."
+            >
+              <img
+                src="figures/slide-27.png"
+                alt="A better Fibonacci algorithm."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=27"
+                >PDF page 27</a
+              >A better Fibonacci algorithm.
+            </figcaption>
+          </figure>
+        </section>
 
-            <!-- TYPES OF RECURSION -->
-            <section id="types">
-                <h2>Types of Recursion</h2>
+        <!-- TYPES OF RECURSION -->
+        <section id="types">
+          <h2>Types of Recursion</h2>
 
-                <!-- LINEAR RECURSION -->
-                <h3>1. Linear Recursion</h3>
-                <div class="definition">
-                    <p><strong>Definition:</strong> Makes at most <strong>one recursive call</strong> per invocation</p>
-                </div>
+          <!-- LINEAR RECURSION -->
+          <h3>1. Linear Recursion</h3>
+          <div class="definition">
+            <p>
+              <strong>Definition:</strong> Makes at most
+              <strong>one recursive call</strong> per invocation
+            </p>
+          </div>
 
-                <div class="key-points">
-                    <h4>Characteristics:</h4>
-                    <ul>
-                        <li>Test for base cases first</li>
-                        <li>Perform a single recursive call (may have conditionals to decide which call)</li>
-                        <li>Each recursive call makes progress toward base case</li>
-                    </ul>
-                </div>
+          <div class="key-points">
+            <h4>Characteristics:</h4>
+            <ul>
+              <li>Test for base cases first</li>
+              <li>
+                Perform a single recursive call (may have conditionals to decide
+                which call)
+              </li>
+              <li>Each recursive call makes progress toward base case</li>
+            </ul>
+          </div>
 
-                <div class="example">
-                    <h4>Examples:</h4>
-                    <ul>
-                        <li>Factorial</li>
-                        <li>Linear sum</li>
-                        <li>Binary search</li>
-                        <li>Array reversal</li>
-                    </ul>
-                </div>
+          <div class="example">
+            <h4>Examples:</h4>
+            <ul>
+              <li>Factorial</li>
+              <li>Linear sum</li>
+              <li>Binary search</li>
+              <li>Array reversal</li>
+            </ul>
+          </div>
 
-                <!-- TAIL RECURSION -->
-                <h3>2. Tail Recursion</h3>
-                <div class="definition">
-                    <p><strong>Definition:</strong> A special case of linear recursion where the recursive call is the <strong>last step</strong> of the method</p>
-                </div>
+          <!-- TAIL RECURSION -->
+          <h3>2. Tail Recursion</h3>
+          <div class="definition">
+            <p>
+              <strong>Definition:</strong> A special case of linear recursion
+              where the recursive call is the <strong>last step</strong> of the
+              method
+            </p>
+          </div>
 
-                <div class="important">
-                    <h4>Special Property:</h4>
-                    <p>Tail recursive methods can be <strong>easily converted to iterative (loop-based)</strong> implementations, which are often more efficient.</p>
-                </div>
+          <div class="important">
+            <h4>Special Property:</h4>
+            <p>
+              Tail recursive methods can be
+              <strong>easily converted to iterative (loop-based)</strong>
+              implementations, which are often more efficient.
+            </p>
+          </div>
 
-                <div class="comparison-table">
-                    <div class="comparison-card">
-                        <h4>Tail Recursive Version</h4>
-                        <div class="code-block">
-<span class="keyword">void</span> <span class="function">reverseArray</span>(<span class="keyword">int</span>[] A, 
-                  <span class="keyword">int</span> i, <span class="keyword">int</span> j) {
-    <span class="keyword">if</span> (i < j) {
-        swap(A[i], A[j]);
-        <span class="function">reverseArray</span>(A, i+1, j-1);
-    }
-}
-                        </div>
-                    </div>
+          <div class="comparison-table">
+            <div class="comparison-card">
+              <h4>Tail Recursive Version</h4>
+              <div class="code-block">
+                <span class="keyword">void</span>
+                <span class="function">reverseArray</span>(<span class="keyword"
+                  >int</span
+                >[] A, <span class="keyword">int</span> i,
+                <span class="keyword">int</span> j) {
+                <span class="keyword">if</span> (i < j) { swap(A[i], A[j]);
+                <span class="function">reverseArray</span>(A, i+1, j-1); } }
+              </div>
+            </div>
 
-                    <div class="comparison-card">
-                        <h4>Iterative Equivalent</h4>
-                        <div class="code-block">
-<span class="keyword">void</span> <span class="function">reverseArray</span>(<span class="keyword">int</span>[] A, 
-                  <span class="keyword">int</span> i, <span class="keyword">int</span> j) {
-    <span class="keyword">while</span> (i < j) {
-        swap(A[i], A[j]);
-        i = i + 1;
-        j = j - 1;
-    }
-}
-                        </div>
-                    </div>
-                </div>
+            <div class="comparison-card">
+              <h4>Iterative Equivalent</h4>
+              <div class="code-block">
+                <span class="keyword">void</span>
+                <span class="function">reverseArray</span>(<span class="keyword"
+                  >int</span
+                >[] A, <span class="keyword">int</span> i,
+                <span class="keyword">int</span> j) {
+                <span class="keyword">while</span> (i < j) { swap(A[i], A[j]); i
+                = i + 1; j = j - 1; } }
+              </div>
+            </div>
+          </div>
 
-                <!-- BINARY RECURSION -->
-                <h3>3. Binary Recursion</h3>
-                <div class="definition">
-                    <p><strong>Definition:</strong> Makes <strong>two recursive calls</strong> for each non-base case</p>
-                </div>
+          <!-- BINARY RECURSION -->
+          <h3>3. Binary Recursion</h3>
+          <div class="definition">
+            <p>
+              <strong>Definition:</strong> Makes
+              <strong>two recursive calls</strong> for each non-base case
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Examples:</h4>
-                    <ul>
-                        <li>Binary sum (divide array in half, sum each half)</li>
-                        <li>English ruler drawing</li>
-                        <li>Binary Fibonacci (inefficient)</li>
-                    </ul>
-                </div>
+          <div class="example">
+            <h4>Examples:</h4>
+            <ul>
+              <li>Binary sum (divide array in half, sum each half)</li>
+              <li>English ruler drawing</li>
+              <li>Binary Fibonacci (inefficient)</li>
+            </ul>
+          </div>
 
-                <div class="code-block">
-<span class="keyword">int</span> <span class="function">binarySum</span>(<span class="keyword">int</span>[] A, <span class="keyword">int</span> i, <span class="keyword">int</span> n) {
-    <span class="keyword">if</span> (n == 1)
-        <span class="keyword">return</span> A[i];
-    <span class="keyword">return</span> <span class="function">binarySum</span>(A, i, n/2) + <span class="function">binarySum</span>(A, i + n/2, n/2);
-}
-                </div>
+          <div class="code-block">
+            <span class="keyword">int</span>
+            <span class="function">binarySum</span>(<span class="keyword"
+              >int</span
+            >[] A, <span class="keyword">int</span> i,
+            <span class="keyword">int</span> n) {
+            <span class="keyword">if</span> (n == 1)
+            <span class="keyword">return</span> A[i];
+            <span class="keyword">return</span>
+            <span class="function">binarySum</span>(A, i, n/2) +
+            <span class="function">binarySum</span>(A, i + n/2, n/2); }
+          </div>
 
-                <!-- MULTIPLE RECURSION -->
-                <h3>4. Multiple Recursion</h3>
-                <div class="definition">
-                    <p><strong>Definition:</strong> Makes <strong>potentially many</strong> recursive calls (more than two)</p>
-                </div>
+          <!-- MULTIPLE RECURSION -->
+          <h3>4. Multiple Recursion</h3>
+          <div class="definition">
+            <p>
+              <strong>Definition:</strong> Makes
+              <strong>potentially many</strong> recursive calls (more than two)
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Example: Puzzle Solving</h4>
-                    <p>Generate all possible combinations/permutations</p>
-                </div>
+          <div class="example">
+            <h4>Example: Puzzle Solving</h4>
+            <p>Generate all possible combinations/permutations</p>
+          </div>
 
-                <div class="code-block">
-<span class="keyword">void</span> <span class="function">puzzleSolve</span>(<span class="keyword">int</span> k, List S, Set U) {
-    <span class="keyword">for all</span> e <span class="keyword">in</span> U <span class="keyword">do</span>
-        Remove e from U
-        Add e to the end of S
-        <span class="keyword">if</span> k == 1 <span class="keyword">then</span>
+          <div class="code-block">
+            <span class="keyword">void</span>
+            <span class="function">puzzleSolve</span>(<span class="keyword"
+              >int</span
+            >
+            k, List S, Set U) { <span class="keyword">for all</span> e
+            <span class="keyword">in</span> U <span class="keyword">do</span>
+            Remove e from U Add e to the end of S
+            <span class="keyword">if</span> k == 1
+            <span class="keyword">then</span>
             Test whether S solves the puzzle
-        <span class="keyword">else</span>
-            <span class="function">puzzleSolve</span>(k-1, S, U)
-        Add e back to U
-        Remove e from the end of S
-}
-                </div>
+            <span class="keyword">else</span>
+            <span class="function">puzzleSolve</span>(k-1, S, U) Add e back to U
+            Remove e from the end of S }
+          </div>
 
-                <div class="visual-diagram">
-                    <h4>Recursion Tree for PuzzleSolve(3, [], {a,b,c})</h4>
-                    <pre style="text-align: left; display: inline-block; font-size: 0.9em;">
+          <div class="visual-diagram">
+            <h4>Recursion Tree for PuzzleSolve(3, [], {a,b,c})</h4>
+            <pre
+              style="text-align: left; display: inline-block; font-size: 0.9em"
+            >
                         []
           ┌─────────┼─────────┐
          [a]       [b]       [c]
@@ -632,329 +1159,707 @@ linearSum(data, 0) → return 0 (base case)
        ↓   ↓    ↓   ↓    ↓   ↓
       abc acb  bac bca  cab cba
                     </pre>
-                </div>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Linear recursion."><img src="figures/slide-13.png" alt="Linear recursion." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=13">PDF page 13</a>Linear recursion.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: An example of linear recursion."><img src="figures/slide-15.png" alt="An example of linear recursion." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=15">PDF page 15</a>An example of linear recursion.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Tail recursion."><img src="figures/slide-22.png" alt="Tail recursion." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=22">PDF page 22</a>Tail recursion.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Binary recursion."><img src="figures/slide-23.png" alt="Binary recursion." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=23">PDF page 23</a>Binary recursion.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Multiple recursion."><img src="figures/slide-28.png" alt="Multiple recursion." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=28">PDF page 28</a>Multiple recursion.</figcaption></figure>
-            </section>
+          </div>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Linear recursion."
+            >
+              <img
+                src="figures/slide-13.png"
+                alt="Linear recursion."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=13"
+                >PDF page 13</a
+              >Linear recursion.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: An example of linear recursion."
+            >
+              <img
+                src="figures/slide-15.png"
+                alt="An example of linear recursion."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=15"
+                >PDF page 15</a
+              >An example of linear recursion.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Tail recursion."
+            >
+              <img
+                src="figures/slide-22.png"
+                alt="Tail recursion."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=22"
+                >PDF page 22</a
+              >Tail recursion.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Binary recursion."
+            >
+              <img
+                src="figures/slide-23.png"
+                alt="Binary recursion."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=23"
+                >PDF page 23</a
+              >Binary recursion.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Multiple recursion."
+            >
+              <img
+                src="figures/slide-28.png"
+                alt="Multiple recursion."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=28"
+                >PDF page 28</a
+              >Multiple recursion.
+            </figcaption>
+          </figure>
+        </section>
 
-            <!-- COMPLEXITY ANALYSIS -->
-            <section id="complexity">
-                <h2>Complexity Analysis</h2>
+        <!-- COMPLEXITY ANALYSIS -->
+        <section id="complexity">
+          <h2>Complexity Analysis</h2>
 
-                <h3>Time Complexity Comparison</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Algorithm</th>
-                            <th>Type</th>
-                            <th>Time Complexity</th>
-                            <th>Explanation</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Factorial</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Makes n recursive calls</td>
-                        </tr>
-                        <tr>
-                            <td>Binary Search</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(log n)</span></td>
-                            <td>Halves search space each time</td>
-                        </tr>
-                        <tr>
-                            <td>Linear Sum</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Processes each element once</td>
-                        </tr>
-                        <tr>
-                            <td>Array Reversal</td>
-                            <td>Tail</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Swaps n/2 pairs</td>
-                        </tr>
-                        <tr>
-                            <td>Power (naive)</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Multiplies n times</td>
-                        </tr>
-                        <tr>
-                            <td>Power (squaring)</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(log n)</span></td>
-                            <td>Halves exponent each time</td>
-                        </tr>
-                        <tr>
-                            <td>Binary Sum</td>
-                            <td>Binary</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Processes each element in tree</td>
-                        </tr>
-                        <tr>
-                            <td>Binary Fibonacci</td>
-                            <td>Binary</td>
-                            <td><span class="complexity-box">O(2ⁿ)</span></td>
-                            <td>Exponential - very inefficient!</td>
-                        </tr>
-                        <tr>
-                            <td>Linear Fibonacci</td>
-                            <td>Linear</td>
-                            <td><span class="complexity-box">O(n)</span></td>
-                            <td>Makes n-1 calls</td>
-                        </tr>
-                    </tbody>
-                </table>
+          <h3>Time Complexity Comparison</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Type</th>
+                <th>Time Complexity</th>
+                <th>Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Factorial</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Makes n recursive calls</td>
+              </tr>
+              <tr>
+                <td>Binary Search</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(log n)</span></td>
+                <td>Halves search space each time</td>
+              </tr>
+              <tr>
+                <td>Linear Sum</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Processes each element once</td>
+              </tr>
+              <tr>
+                <td>Array Reversal</td>
+                <td>Tail</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Swaps n/2 pairs</td>
+              </tr>
+              <tr>
+                <td>Power (naive)</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Multiplies n times</td>
+              </tr>
+              <tr>
+                <td>Power (squaring)</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(log n)</span></td>
+                <td>Halves exponent each time</td>
+              </tr>
+              <tr>
+                <td>Binary Sum</td>
+                <td>Binary</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Processes each element in tree</td>
+              </tr>
+              <tr>
+                <td>Binary Fibonacci</td>
+                <td>Binary</td>
+                <td><span class="complexity-box">O(2ⁿ)</span></td>
+                <td>Exponential - very inefficient!</td>
+              </tr>
+              <tr>
+                <td>Linear Fibonacci</td>
+                <td>Linear</td>
+                <td><span class="complexity-box">O(n)</span></td>
+                <td>Makes n-1 calls</td>
+              </tr>
+            </tbody>
+          </table>
 
-                <h3>Understanding Call Counts</h3>
+          <h3>Understanding Call Counts</h3>
 
-                <div class="example">
-                    <h4>Binary Fibonacci Analysis</h4>
-                    <p>Let nₖ = number of recursive calls for BinaryFib(k):</p>
-                    <ul>
-                        <li>n₀ = 1</li>
-                        <li>n₁ = 1</li>
-                        <li>n₂ = n₁ + n₀ + 1 = 3</li>
-                        <li>n₃ = n₂ + n₁ + 1 = 5</li>
-                        <li>n₄ = n₃ + n₂ + 1 = 9</li>
-                        <li>n₈ = 67</li>
-                    </ul>
-                    <p style="margin-top: 15px;">Notice: nₖ at least doubles every other time → nₖ > 2^(k/2)</p>
-                    <p><strong>This is exponential growth - very bad!</strong></p>
-                </div>
+          <div class="example">
+            <h4>Binary Fibonacci Analysis</h4>
+            <p>Let nₖ = number of recursive calls for BinaryFib(k):</p>
+            <ul>
+              <li>n₀ = 1</li>
+              <li>n₁ = 1</li>
+              <li>n₂ = n₁ + n₀ + 1 = 3</li>
+              <li>n₃ = n₂ + n₁ + 1 = 5</li>
+              <li>n₄ = n₃ + n₂ + 1 = 9</li>
+              <li>n₈ = 67</li>
+            </ul>
+            <p style="margin-top: 15px">
+              Notice: nₖ at least doubles every other time → nₖ > 2^(k/2)
+            </p>
+            <p><strong>This is exponential growth - very bad!</strong></p>
+          </div>
 
-                <div class="important">
-                    <h3>Key Insights for Efficiency</h3>
-                    <ul>
-                        <li><strong>Avoid redundant calculations:</strong> Binary Fibonacci recalculates same values multiple times</li>
-                        <li><strong>Use clever math:</strong> Recursive squaring reduces O(n) to O(log n)</li>
-                        <li><strong>Consider iterative alternatives:</strong> Tail recursive methods can often be converted to loops</li>
-                        <li><strong>Store intermediate results:</strong> Dynamic programming (memoization) can help</li>
-                    </ul>
-                </div>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Analyzing binary search: O(log n)."><img src="figures/slide-12.png" alt="Analyzing binary search: O(log n)." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=12">PDF page 12</a>Analyzing binary search: O(log n).</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Analysis of recursive squaring."><img src="figures/slide-21.png" alt="Analysis of recursive squaring." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=21">PDF page 21</a>Analysis of recursive squaring.</figcaption></figure>
-              <figure class="sfx-figure" data-slide-figure><button type="button" class="sfx-zoom" aria-label="Enlarge figure: Why naive Fibonacci is exponential."><img src="figures/slide-26.png" alt="Why naive Fibonacci is exponential." width="1607" height="1121" loading="lazy" decoding="async" /></button><figcaption><a class="sfx-tag" href="../../slides/recursion/recursion.pdf#page=26">PDF page 26</a>Why naive Fibonacci is exponential.</figcaption></figure>
-            </section>
+          <div class="important">
+            <h3>Key Insights for Efficiency</h3>
+            <ul>
+              <li>
+                <strong>Avoid redundant calculations:</strong> Binary Fibonacci
+                recalculates same values multiple times
+              </li>
+              <li>
+                <strong>Use clever math:</strong> Recursive squaring reduces
+                O(n) to O(log n)
+              </li>
+              <li>
+                <strong>Consider iterative alternatives:</strong> Tail recursive
+                methods can often be converted to loops
+              </li>
+              <li>
+                <strong>Store intermediate results:</strong> Dynamic programming
+                (memoization) can help
+              </li>
+            </ul>
+          </div>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Analyzing binary search: O(log n)."
+            >
+              <img
+                src="figures/slide-12.png"
+                alt="Analyzing binary search: O(log n)."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=12"
+                >PDF page 12</a
+              >Analyzing binary search: O(log n).
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Analysis of recursive squaring."
+            >
+              <img
+                src="figures/slide-21.png"
+                alt="Analysis of recursive squaring."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=21"
+                >PDF page 21</a
+              >Analysis of recursive squaring.
+            </figcaption>
+          </figure>
+          <figure class="sfx-figure" data-slide-figure>
+            <button
+              type="button"
+              class="sfx-zoom"
+              aria-label="Enlarge figure: Why naive Fibonacci is exponential."
+            >
+              <img
+                src="figures/slide-26.png"
+                alt="Why naive Fibonacci is exponential."
+                width="1607"
+                height="1121"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption>
+              <a
+                class="sfx-tag"
+                href="../../slides/recursion/recursion.pdf#page=26"
+                >PDF page 26</a
+              >Why naive Fibonacci is exponential.
+            </figcaption>
+          </figure>
+        </section>
 
-            <!-- SUMMARY -->
-            <section id="summary">
-                <h2>Summary & Study Tips</h2>
+        <!-- SUMMARY -->
+        <section id="summary">
+          <h2>Summary & Study Tips</h2>
 
-                <h3>Key Concepts to Remember</h3>
+          <h3>Key Concepts to Remember</h3>
 
-                <div class="key-points">
-                    <h4>1. Three Requirements for Recursion:</h4>
-                    <ul>
-                        <li>✓ Must have a <strong>base case</strong></li>
-                        <li>✓ Must make <strong>progress</strong> toward base case</li>
-                        <li>✓ Must <strong>call itself</strong></li>
-                    </ul>
-                </div>
+          <div class="key-points">
+            <h4>1. Three Requirements for Recursion:</h4>
+            <ul>
+              <li>✓ Must have a <strong>base case</strong></li>
+              <li>✓ Must make <strong>progress</strong> toward base case</li>
+              <li>✓ Must <strong>call itself</strong></li>
+            </ul>
+          </div>
 
-                <div class="key-points">
-                    <h4>2. Types of Recursion:</h4>
-                    <ul>
-                        <li><strong>Linear:</strong> One recursive call per invocation</li>
-                        <li><strong>Tail:</strong> Recursive call is the last operation (easily converted to loops)</li>
-                        <li><strong>Binary:</strong> Two recursive calls per invocation</li>
-                        <li><strong>Multiple:</strong> Many recursive calls (used for enumeration/combinations)</li>
-                    </ul>
-                </div>
+          <div class="key-points">
+            <h4>2. Types of Recursion:</h4>
+            <ul>
+              <li>
+                <strong>Linear:</strong> One recursive call per invocation
+              </li>
+              <li>
+                <strong>Tail:</strong> Recursive call is the last operation
+                (easily converted to loops)
+              </li>
+              <li>
+                <strong>Binary:</strong> Two recursive calls per invocation
+              </li>
+              <li>
+                <strong>Multiple:</strong> Many recursive calls (used for
+                enumeration/combinations)
+              </li>
+            </ul>
+          </div>
 
-                <div class="key-points">
-                    <h4>3. When to Use Recursion:</h4>
-                    <ul>
-                        <li>✓ Problem can be broken into smaller subproblems of the same type</li>
-                        <li>✓ Natural recursive structure (trees, divide-and-conquer)</li>
-                        <li>✓ Code is clearer/simpler than iterative version</li>
-                        <li>✗ Avoid when efficiency is critical and recursion adds overhead</li>
-                        <li>✗ Avoid when iterative solution is equally clear</li>
-                    </ul>
-                </div>
+          <div class="key-points">
+            <h4>3. When to Use Recursion:</h4>
+            <ul>
+              <li>
+                ✓ Problem can be broken into smaller subproblems of the same
+                type
+              </li>
+              <li>✓ Natural recursive structure (trees, divide-and-conquer)</li>
+              <li>✓ Code is clearer/simpler than iterative version</li>
+              <li>
+                ✗ Avoid when efficiency is critical and recursion adds overhead
+              </li>
+              <li>✗ Avoid when iterative solution is equally clear</li>
+            </ul>
+          </div>
 
-                <h3>Common Pitfalls to Avoid</h3>
+          <h3>Common Pitfalls to Avoid</h3>
 
-                <div class="important">
-                    <ul>
-                        <li><strong>Missing base case:</strong> Results in infinite recursion (stack overflow)</li>
-                        <li><strong>Not making progress:</strong> Recursive call doesn't move toward base case</li>
-                        <li><strong>Redundant calculations:</strong> Like binary Fibonacci - use dynamic programming instead</li>
-                        <li><strong>Too many recursive calls:</strong> Can cause stack overflow for large inputs</li>
-                        <li><strong>Modifying wrong parameters:</strong> Ensure you update parameters correctly</li>
-                    </ul>
-                </div>
+          <div class="important">
+            <ul>
+              <li>
+                <strong>Missing base case:</strong> Results in infinite
+                recursion (stack overflow)
+              </li>
+              <li>
+                <strong>Not making progress:</strong> Recursive call doesn't
+                move toward base case
+              </li>
+              <li>
+                <strong>Redundant calculations:</strong> Like binary Fibonacci -
+                use dynamic programming instead
+              </li>
+              <li>
+                <strong>Too many recursive calls:</strong> Can cause stack
+                overflow for large inputs
+              </li>
+              <li>
+                <strong>Modifying wrong parameters:</strong> Ensure you update
+                parameters correctly
+              </li>
+            </ul>
+          </div>
 
-                <h3>Study Strategies</h3>
+          <h3>Study Strategies</h3>
 
-                <div class="example">
-                    <h4>To Master Recursion:</h4>
-                    <ol>
-                        <li><strong>Draw recursion trees:</strong> Visualize how calls are made and returned</li>
-                        <li><strong>Trace execution:</strong> Follow the values step by step</li>
-                        <li><strong>Count recursive calls:</strong> Understand time complexity</li>
-                        <li><strong>Identify base cases:</strong> Always start here when analyzing recursive code</li>
-                        <li><strong>Practice converting:</strong> Try converting recursive to iterative and vice versa</li>
-                        <li><strong>Solve problems:</strong> Write your own recursive solutions from scratch</li>
-                    </ol>
-                </div>
+          <div class="example">
+            <h4>To Master Recursion:</h4>
+            <ol>
+              <li>
+                <strong>Draw recursion trees:</strong> Visualize how calls are
+                made and returned
+              </li>
+              <li>
+                <strong>Trace execution:</strong> Follow the values step by step
+              </li>
+              <li>
+                <strong>Count recursive calls:</strong> Understand time
+                complexity
+              </li>
+              <li>
+                <strong>Identify base cases:</strong> Always start here when
+                analyzing recursive code
+              </li>
+              <li>
+                <strong>Practice converting:</strong> Try converting recursive
+                to iterative and vice versa
+              </li>
+              <li>
+                <strong>Solve problems:</strong> Write your own recursive
+                solutions from scratch
+              </li>
+            </ol>
+          </div>
 
-                <h3>Practice Problems</h3>
+          <h3>Practice Problems</h3>
 
-                <div class="key-points">
-                    <h4>Try implementing these recursively:</h4>
-                    <ul>
-                        <li>Calculate the nth Fibonacci number (both ways)</li>
-                        <li>Find the maximum element in an array</li>
-                        <li>Check if a string is a palindrome</li>
-                        <li>Calculate the Greatest Common Divisor (GCD)</li>
-                        <li>Generate all permutations of a string</li>
-                        <li>Implement merge sort</li>
-                        <li>Traverse a binary tree</li>
-                        <li>Solve the Tower of Hanoi puzzle</li>
-                    </ul>
-                </div>
+          <div class="key-points">
+            <h4>Try implementing these recursively:</h4>
+            <ul>
+              <li>Calculate the nth Fibonacci number (both ways)</li>
+              <li>Find the maximum element in an array</li>
+              <li>Check if a string is a palindrome</li>
+              <li>Calculate the Greatest Common Divisor (GCD)</li>
+              <li>Generate all permutations of a string</li>
+              <li>Implement merge sort</li>
+              <li>Traverse a binary tree</li>
+              <li>Solve the Tower of Hanoi puzzle</li>
+            </ul>
+          </div>
 
-                <h3>Quick Reference Card</h3>
+          <h3>Quick Reference Card</h3>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Concept</th>
-                            <th>Key Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Base Case</strong></td>
-                            <td>Simplest case that can be solved directly without recursion</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Recursive Case</strong></td>
-                            <td>Breaks problem into smaller subproblems and calls itself</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Progress</strong></td>
-                            <td>Each recursive call must move closer to the base case</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Stack Space</strong></td>
-                            <td>Each recursive call uses stack memory; deep recursion can overflow</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Tail Recursion</strong></td>
-                            <td>Last operation is the recursive call; can be optimized to iteration</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Time Complexity</strong></td>
-                            <td>Count how many times the function is called and work per call</td>
-                        </tr>
-                    </tbody>
-                </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Concept</th>
+                <th>Key Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Base Case</strong></td>
+                <td>
+                  Simplest case that can be solved directly without recursion
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Recursive Case</strong></td>
+                <td>
+                  Breaks problem into smaller subproblems and calls itself
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Progress</strong></td>
+                <td>Each recursive call must move closer to the base case</td>
+              </tr>
+              <tr>
+                <td><strong>Stack Space</strong></td>
+                <td>
+                  Each recursive call uses stack memory; deep recursion can
+                  overflow
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Tail Recursion</strong></td>
+                <td>
+                  Last operation is the recursive call; can be optimized to
+                  iteration
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Time Complexity</strong></td>
+                <td>
+                  Count how many times the function is called and work per call
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-                <div class="important" style="margin-top: 30px; text-align: center;">
-                    <h3>Final Tip</h3>
-                    <p style="font-size: 1.2em;">
-                        "To understand recursion, you must first understand recursion."
-                    </p>
-                    <p style="margin-top: 15px;">
-                        Practice is key! Start with simple examples and gradually work your way up to more complex problems. Draw diagrams, trace executions, and don't be afraid to experiment!
-                    </p>
-                </div>
-            </section>
-            <!-- PRACTICE QUESTIONS SECTION -->
-            <section id="practice-questions">
-                <h2>Practice Questions</h2>
+          <div class="important" style="margin-top: 30px; text-align: center">
+            <h3>Final Tip</h3>
+            <p style="font-size: 1.2em">
+              "To understand recursion, you must first understand recursion."
+            </p>
+            <p style="margin-top: 15px">
+              Practice is key! Start with simple examples and gradually work
+              your way up to more complex problems. Draw diagrams, trace
+              executions, and don't be afraid to experiment!
+            </p>
+          </div>
+        </section>
+        <!-- PRACTICE QUESTIONS SECTION -->
+        <section id="practice-questions">
+          <h2>Practice Questions</h2>
 
-                <div class="example">
-                    <h4>Question 1: Three Requirements for Correct Recursion</h4>
-                    <p><strong>Q:</strong> State the three necessary conditions for a correct recursive method and explain what goes wrong if each one is missing.</p>
-                    <p><strong>A:</strong>
-                        1. <strong>Base case:</strong> Without it, the method calls itself forever → stack overflow (StackOverflowError in Java). <br>
-                        2. <strong>Progress toward base case:</strong> Without it, the recursion may never terminate even if a base case exists (e.g., <code>factorial(n)</code> that calls <code>factorial(n)</code> instead of <code>factorial(n-1)</code>). <br>
-                        3. <strong>Self-call (recursive case):</strong> Without it, the method is simply iterative/direct and does not use recursion. The combination of all three ensures the recursion terminates and produces a correct result.
-                    </p>
-                </div>
+          <div class="example">
+            <h4>Question 1: Three Requirements for Correct Recursion</h4>
+            <p>
+              <strong>Q:</strong> State the three necessary conditions for a
+              correct recursive method and explain what goes wrong if each one
+              is missing.
+            </p>
+            <p>
+              <strong>A:</strong> 1. <strong>Base case:</strong> Without it, the
+              method calls itself forever → stack overflow (StackOverflowError
+              in Java). <br />
+              2. <strong>Progress toward base case:</strong> Without it, the
+              recursion may never terminate even if a base case exists (e.g.,
+              <code>factorial(n)</code> that calls
+              <code>factorial(n)</code> instead of <code>factorial(n-1)</code>).
+              <br />
+              3. <strong>Self-call (recursive case):</strong> Without it, the
+              method is simply iterative/direct and does not use recursion. The
+              combination of all three ensures the recursion terminates and
+              produces a correct result.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 2: Trace factorial(4)</h4>
-                    <p><strong>Q:</strong> Trace the execution of <code>factorial(4)</code> showing the call stack at maximum depth and the return values unwinding back.</p>
-                    <p><strong>A:</strong> Call stack builds up (forward phase): factorial(4) → factorial(3) → factorial(2) → factorial(1) → factorial(0). At maximum depth: 5 frames on the call stack. Return values unwind (backward phase): factorial(0) returns 1 → factorial(1) returns 1×1=1 → factorial(2) returns 2×1=2 → factorial(3) returns 3×2=6 → factorial(4) returns 4×6=<strong>24</strong>. Total: n+1 = 5 method calls, O(n) time, O(n) call stack space.</p>
-                </div>
+          <div class="example">
+            <h4>Question 2: Trace factorial(4)</h4>
+            <p>
+              <strong>Q:</strong> Trace the execution of
+              <code>factorial(4)</code> showing the call stack at maximum depth
+              and the return values unwinding back.
+            </p>
+            <p>
+              <strong>A:</strong> Call stack builds up (forward phase):
+              factorial(4) → factorial(3) → factorial(2) → factorial(1) →
+              factorial(0). At maximum depth: 5 frames on the call stack. Return
+              values unwind (backward phase): factorial(0) returns 1 →
+              factorial(1) returns 1×1=1 → factorial(2) returns 2×1=2 →
+              factorial(3) returns 3×2=6 → factorial(4) returns
+              4×6=<strong>24</strong>. Total: n+1 = 5 method calls, O(n) time,
+              O(n) call stack space.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 3: Binary Fibonacci Is Exponential — Why?</h4>
-                    <p><strong>Q:</strong> Explain why naive binary Fibonacci (two recursive calls per level) has O(2^n) complexity. Show the redundant computation for fib(5).</p>
-                    <p><strong>A:</strong> In naive binary recursion, <code>binaryFib(5)</code> calls <code>binaryFib(4)</code> and <code>binaryFib(3)</code>. <code>binaryFib(4)</code> calls <code>binaryFib(3)</code> and <code>binaryFib(2)</code>. Notice <code>binaryFib(3)</code> is computed <em>twice</em>. Similarly, <code>binaryFib(2)</code> is computed 3 times, <code>binaryFib(1)</code> is computed 5 times. In general, the number of calls for fib(k) grows faster than 2^(k/2), giving exponential complexity. The fix is linear recursion that returns a pair (Fₖ, Fₖ₋₁), computing each Fibonacci number exactly once — reducing time to O(n).</p>
-                </div>
+          <div class="example">
+            <h4>Question 3: Binary Fibonacci Is Exponential — Why?</h4>
+            <p>
+              <strong>Q:</strong> Explain why naive binary Fibonacci (two
+              recursive calls per level) has O(2^n) complexity. Show the
+              redundant computation for fib(5).
+            </p>
+            <p>
+              <strong>A:</strong> In naive binary recursion,
+              <code>binaryFib(5)</code> calls <code>binaryFib(4)</code> and
+              <code>binaryFib(3)</code>. <code>binaryFib(4)</code> calls
+              <code>binaryFib(3)</code> and <code>binaryFib(2)</code>. Notice
+              <code>binaryFib(3)</code> is computed <em>twice</em>. Similarly,
+              <code>binaryFib(2)</code> is computed 3 times,
+              <code>binaryFib(1)</code> is computed 5 times. In general, the
+              number of calls for fib(k) grows faster than 2^(k/2), giving
+              exponential complexity. The fix is linear recursion that returns a
+              pair (Fₖ, Fₖ₋₁), computing each Fibonacci number exactly once —
+              reducing time to O(n).
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 4: Tail Recursion and Conversion to Iteration</h4>
-                    <p><strong>Q:</strong> Define tail recursion. Show that the array reversal recursion is tail recursive and convert it to an iterative version.</p>
-                    <p><strong>A:</strong> A method is <strong>tail recursive</strong> if the recursive call is the <em>very last operation</em> before returning — no work is done with the return value. For array reversal: <code>if (low &lt; high) { swap(A[low], A[high]); reverseArray(A, low+1, high-1); }</code> — the call is the last statement, so this is tail recursive. <br>
-                        Iterative equivalent: <code>while (low &lt; high) { swap(A[low], A[high]); low++; high--; }</code> <br>
-                        The while loop replaces the recursive call, and the parameters become mutable loop variables. The iterative version uses O(1) stack space vs. O(n/2) for the recursive version.</p>
-                </div>
+          <div class="example">
+            <h4>Question 4: Tail Recursion and Conversion to Iteration</h4>
+            <p>
+              <strong>Q:</strong> Define tail recursion. Show that the array
+              reversal recursion is tail recursive and convert it to an
+              iterative version.
+            </p>
+            <p>
+              <strong>A:</strong> A method is <strong>tail recursive</strong> if
+              the recursive call is the <em>very last operation</em> before
+              returning — no work is done with the return value. For array
+              reversal:
+              <code
+                >if (low &lt; high) { swap(A[low], A[high]); reverseArray(A,
+                low+1, high-1); }</code
+              >
+              — the call is the last statement, so this is tail recursive.
+              <br />
+              Iterative equivalent:
+              <code
+                >while (low &lt; high) { swap(A[low], A[high]); low++; high--;
+                }</code
+              >
+              <br />
+              The while loop replaces the recursive call, and the parameters
+              become mutable loop variables. The iterative version uses O(1)
+              stack space vs. O(n/2) for the recursive version.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 5: Recursive Squaring vs. Linear Power</h4>
-                    <p><strong>Q:</strong> Compute 2^10 using the recursive squaring approach, showing each recursive call and demonstrating that only O(log n) multiplications are needed.</p>
-                    <p><strong>A:</strong> power(2, 10): n=10 (even) → y = power(2, 5), return y*y. <br>
-                        power(2, 5): n=5 (odd) → y = power(2, 2), return 2*y*y. <br>
-                        power(2, 2): n=2 (even) → y = power(2, 1), return y*y. <br>
-                        power(2, 1): n=1 (odd) → y = power(2, 0), return 2*y*y. <br>
-                        power(2, 0): base case → return 1. <br>
-                        Unwinding: power(2,1) = 2*1*1 = 2. power(2,2) = 2*2 = 4. power(2,5) = 2*4*4 = 32. power(2,10) = 32*32 = <strong>1024</strong>. Only 4 recursive calls (log₂ 10 ≈ 3.3) vs. 10 for the naive approach.</p>
-                </div>
+          <div class="example">
+            <h4>Question 5: Recursive Squaring vs. Linear Power</h4>
+            <p>
+              <strong>Q:</strong> Compute 2^10 using the recursive squaring
+              approach, showing each recursive call and demonstrating that only
+              O(log n) multiplications are needed.
+            </p>
+            <p>
+              <strong>A:</strong> power(2, 10): n=10 (even) → y = power(2, 5),
+              return y*y. <br />
+              power(2, 5): n=5 (odd) → y = power(2, 2), return 2*y*y. <br />
+              power(2, 2): n=2 (even) → y = power(2, 1), return y*y. <br />
+              power(2, 1): n=1 (odd) → y = power(2, 0), return 2*y*y. <br />
+              power(2, 0): base case → return 1. <br />
+              Unwinding: power(2,1) = 2*1*1 = 2. power(2,2) = 2*2 = 4.
+              power(2,5) = 2*4*4 = 32. power(2,10) = 32*32 =
+              <strong>1024</strong>. Only 4 recursive calls (log₂ 10 ≈ 3.3) vs.
+              10 for the naive approach.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 6: Types of Recursion Classification</h4>
-                    <p><strong>Q:</strong> Classify each of the following as linear, tail, binary, or multiple recursion, and state the time complexity: (a) factorial, (b) binary search, (c) binary sum, (d) puzzle solver generating permutations.</p>
-                    <p><strong>A:</strong>
-                        (a) <strong>Factorial:</strong> Linear recursion (one call per invocation, result used after return so NOT tail recursive). O(n). <br>
-                        (b) <strong>Binary search:</strong> Linear recursion (one call per invocation, last operation — actually tail recursive). O(log n). <br>
-                        (c) <strong>Binary sum:</strong> Binary recursion (two calls per invocation). O(n) — despite binary recursion, all n elements are processed once total. <br>
-                        (d) <strong>Puzzle solver:</strong> Multiple recursion (up to |U| calls per invocation, where U is the remaining unused set). O(n!) for generating all n! permutations.
-                    </p>
-                </div>
+          <div class="example">
+            <h4>Question 6: Types of Recursion Classification</h4>
+            <p>
+              <strong>Q:</strong> Classify each of the following as linear,
+              tail, binary, or multiple recursion, and state the time
+              complexity: (a) factorial, (b) binary search, (c) binary sum, (d)
+              puzzle solver generating permutations.
+            </p>
+            <p>
+              <strong>A:</strong> (a) <strong>Factorial:</strong> Linear
+              recursion (one call per invocation, result used after return so
+              NOT tail recursive). O(n). <br />
+              (b) <strong>Binary search:</strong> Linear recursion (one call per
+              invocation, last operation — actually tail recursive). O(log n).
+              <br />
+              (c) <strong>Binary sum:</strong> Binary recursion (two calls per
+              invocation). O(n) — despite binary recursion, all n elements are
+              processed once total. <br />
+              (d) <strong>Puzzle solver:</strong> Multiple recursion (up to |U|
+              calls per invocation, where U is the remaining unused set). O(n!)
+              for generating all n! permutations.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 7: Call Stack and Stack Overflow</h4>
-                    <p><strong>Q:</strong> What is the call stack, why does deep recursion risk a StackOverflowError, and which recursion type from this chapter is most dangerous for large inputs?</p>
-                    <p><strong>A:</strong> The <strong>call stack</strong> is a region of memory where each method invocation creates a <em>stack frame</em> storing local variables, parameters, and the return address. Frames are pushed on entry and popped on return. Java's call stack has a fixed maximum depth (typically ~5,000–10,000 frames, depending on frame size and JVM settings). If recursion goes deeper than this limit, a <code>StackOverflowError</code> is thrown. <br>
-                        The most dangerous type is <strong>linear/tail recursion with large n</strong> — e.g., <code>factorial(100000)</code> creates 100,001 frames. Binary recursion on large inputs also creates deep stacks (depth = log₂ N for balanced recursion). Tail recursion can be optimized by compilers to reuse the same frame (tail call optimization), but Java does NOT perform this optimization.</p>
-                </div>
+          <div class="example">
+            <h4>Question 7: Call Stack and Stack Overflow</h4>
+            <p>
+              <strong>Q:</strong> What is the call stack, why does deep
+              recursion risk a StackOverflowError, and which recursion type from
+              this chapter is most dangerous for large inputs?
+            </p>
+            <p>
+              <strong>A:</strong> The <strong>call stack</strong> is a region of
+              memory where each method invocation creates a
+              <em>stack frame</em> storing local variables, parameters, and the
+              return address. Frames are pushed on entry and popped on return.
+              Java's call stack has a fixed maximum depth (typically
+              ~5,000–10,000 frames, depending on frame size and JVM settings).
+              If recursion goes deeper than this limit, a
+              <code>StackOverflowError</code> is thrown. <br />
+              The most dangerous type is
+              <strong>linear/tail recursion with large n</strong> — e.g.,
+              <code>factorial(100000)</code> creates 100,001 frames. Binary
+              recursion on large inputs also creates deep stacks (depth = log₂ N
+              for balanced recursion). Tail recursion can be optimized by
+              compilers to reuse the same frame (tail call optimization), but
+              Java does NOT perform this optimization.
+            </p>
+          </div>
 
-                <div class="example">
-                    <h4>Question 8: Design a Recursive Solution</h4>
-                    <p><strong>Q:</strong> Write a recursive method to check if a string is a palindrome (reads the same forwards and backwards). Identify the base case(s), recursive case, and its time complexity.</p>
-                    <p><strong>A:</strong>
-                        <strong>Base cases:</strong> (1) Empty string → true (2) Single character → true. <br>
-                        <strong>Recursive case:</strong> Check if first and last characters match AND the substring between them is a palindrome. <br>
-                        <code>boolean isPalindrome(String s, int lo, int hi) {</code> <br>
-                        &nbsp;&nbsp;<code>if (lo >= hi) return true; // base cases</code> <br>
-                        &nbsp;&nbsp;<code>if (s.charAt(lo) != s.charAt(hi)) return false;</code> <br>
-                        &nbsp;&nbsp;<code>return isPalindrome(s, lo+1, hi-1); // tail recursive</code> <br>
-                        <code>}</code> <br>
-                        <strong>Time complexity:</strong> O(n/2) = O(n) — makes n/2 recursive calls. <strong>Space:</strong> O(n) call stack (or O(1) if compiler performs tail call optimization). This is a tail-recursive method and can be directly converted to a while loop.
-                    </p>
-                </div>
+          <div class="example">
+            <h4>Question 8: Design a Recursive Solution</h4>
+            <p>
+              <strong>Q:</strong> Write a recursive method to check if a string
+              is a palindrome (reads the same forwards and backwards). Identify
+              the base case(s), recursive case, and its time complexity.
+            </p>
+            <p>
+              <strong>A:</strong> <strong>Base cases:</strong> (1) Empty string
+              → true (2) Single character → true. <br />
+              <strong>Recursive case:</strong> Check if first and last
+              characters match AND the substring between them is a palindrome.
+              <br />
+              <code>boolean isPalindrome(String s, int lo, int hi) {</code>
+              <br />
+              &nbsp;&nbsp;<code>if (lo >= hi) return true; // base cases</code>
+              <br />
+              &nbsp;&nbsp;<code
+                >if (s.charAt(lo) != s.charAt(hi)) return false;</code
+              >
+              <br />
+              &nbsp;&nbsp;<code
+                >return isPalindrome(s, lo+1, hi-1); // tail recursive</code
+              >
+              <br />
+              <code>}</code> <br />
+              <strong>Time complexity:</strong> O(n/2) = O(n) — makes n/2
+              recursive calls. <strong>Space:</strong> O(n) call stack (or O(1)
+              if compiler performs tail call optimization). This is a
+              tail-recursive method and can be directly converted to a while
+              loop.
+            </p>
+          </div>
+        </section>
+      </div>
 
-            </section>
-        </div>
-
-        <footer>
-            <p>Based on "Data Structures and Algorithms in Java" by Goodrich, Tamassia, & Goldwasser (6th Edition)</p>
-            <p style="margin-top: 10px;">CS210 Week 5 - Recursion Study Guide</p>
-        </footer>
+      <footer>
+        <p>
+          Based on "Data Structures and Algorithms in Java" by Goodrich,
+          Tamassia, & Goldwasser (6th Edition)
+        </p>
+        <p style="margin-top: 10px">CS210 Week 5 - Recursion Study Guide</p>
+      </footer>
     </div>
 
-  <script src="/javascripts/slide-figures.js?v=b8dda7aa7b" defer></script>
-</body>
+    <script src="/javascripts/slide-figures.js?v=b8dda7aa7b" defer></script>
+  </body>
 </html>

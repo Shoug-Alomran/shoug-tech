@@ -115,12 +115,22 @@
       return typeof value === 'string' && value.trim() && (/[\u0600-\u06ff]/.test(value) || isReference(original) || /^[A-Z0-9][A-Z0-9\s/_.:+-]*$/.test(original.trim()));
     }
 
+    // Translations persist per lesson so a revisit (or a new tab) is instant.
+    var storeKey = 'bd-ar-v6:' + location.pathname;
+    var stored = {};
+    try { stored = JSON.parse(localStorage.getItem(storeKey)) || {}; } catch (_) { stored = {}; }
+    function persistStore() {
+      try { localStorage.setItem(storeKey, JSON.stringify(stored)); }
+      catch (_) {
+        // Quota: drop other lessons' caches, then try once more.
+        try {
+          Object.keys(localStorage).forEach(function (key) { if (key.indexOf('bd-ar-') === 0 && key !== storeKey) localStorage.removeItem(key); });
+          localStorage.setItem(storeKey, JSON.stringify(stored));
+        } catch (_) {}
+      }
+    }
+
     async function fetchBatch(texts, signal) {
-      var key = 'bd-ar-v5:' + JSON.stringify(texts);
-      try {
-        var cached = JSON.parse(sessionStorage.getItem(key));
-        if (Array.isArray(cached) && cached.length === texts.length && cached.every(function (s, i) { return validTranslation(s, texts[i]); })) return cached;
-      } catch (_) {}
       var requestController = new AbortController();
       var cancel = function () { requestController.abort(); };
       signal.addEventListener('abort', cancel, { once: true });
@@ -141,10 +151,13 @@
         throw error;
       }
       var data = await response.json();
-      if (!Array.isArray(data.translations) || data.translations.length !== texts.length ||
-          data.translations.some(function (text, i) { return !validTranslation(text, texts[i]); })) throw new Error('Incomplete translation');
-      try { sessionStorage.setItem(key, JSON.stringify(data.translations)); } catch (_) {}
-      return data.translations;
+      if (!Array.isArray(data.translations) || data.translations.length !== texts.length) throw new Error('Incomplete translation');
+      // One unusable item (a term the model left in English) keeps its English
+      // text instead of discarding the whole batch.
+      return data.translations.map(function (text, i) {
+        if (validTranslation(text, texts[i])) { stored[texts[i]] = text; return text; }
+        return texts[i];
+      });
     }
 
     function pieces(text) {
@@ -178,32 +191,62 @@
               else if (!translations.has(part)) missing.add(part); });
           });
         });
+        missing.forEach(function (text) {
+          if (typeof stored[text] === 'string') { translations.set(text, stored[text]); missing.delete(text); }
+        });
         var batches = [], batch = [], size = 0;
         missing.forEach(function (text) {
-          if (batch.length && (batch.length >= 40 || size + text.length > 5000)) { batches.push(batch); batch = []; size = 0; }
+          if (batch.length && (batch.length >= 16 || size + text.length > 2500)) { batches.push(batch); batch = []; size = 0; }
           batch.push(text); size += text.length;
         });
         if (batch.length) batches.push(batch);
-        var done = 0;
-        // Sequential batches avoid a burst of model requests on long chapters.
-        for (var texts of batches) {
-          var values = await fetchBatch(texts, signal);
-          if (version !== revision) return;
-          texts.forEach(function (text, i) { translations.set(text, values[i]); });
-          done++;
-          report('جارٍ ترجمة الشرح… ' + done + '/' + batches.length);
-        }
-        if (version !== revision) return;
-        records.forEach(function (slots) {
-          slots.forEach(function (record) {
-            var translated = pieces(record.en).map(function (part) { return translations.get(part); }).join(' ').trim();
-            // Isolate arithmetic from surrounding RTL text without adding DOM nodes.
-            translated = translated.replace(/\d+(?:\s*[+*/]\s*\d+)+/g, '\u2066$&\u2069');
-            record.ar = record.en.match(/^\s*/)[0] + translated + record.en.match(/\s*$/)[0];
+        function apply() {
+          records.forEach(function (slots) {
+            slots.forEach(function (record) {
+              var parts = pieces(record.en);
+              if (!parts.every(function (part) { return translations.has(part); })) return;
+              var translated = parts.map(function (part) { return translations.get(part); }).join(' ').trim();
+              // Isolate arithmetic from surrounding RTL text without adding DOM nodes.
+              translated = translated.replace(/\d+(?:\s*[+*/]\s*\d+)+/g, '\u2066$&\u2069');
+              record.ar = record.en.match(/^\s*/)[0] + translated + record.en.match(/\s*$/)[0];
+            });
           });
-        });
-        render('ar');
-        report('ترجمة آلية · الصور الأصلية بلغتها الأصلية');
+          render('ar');
+        }
+        // Show cached text and switch direction at once, then fill in top-down as
+        // batches arrive. A few requests run together; the worker allows 60/min.
+        if (batches.length) apply();
+        var done = 0, next = 0, failure = null;
+        async function worker() {
+          while (next < batches.length && !failure) {
+            var texts = batches[next++];
+            try {
+              var values;
+              try { values = await fetchBatch(texts, signal); }
+              catch (first) {
+                // A slow or rate-limited model call gets one more try before it counts.
+                if (version !== revision) return;
+                await new Promise(function (resolve) { setTimeout(resolve, first.status === 429 ? 20000 : 1500); });
+                if (version !== revision) return;
+                values = await fetchBatch(texts, signal);
+              }
+              if (version !== revision) return;
+              texts.forEach(function (text, i) { translations.set(text, values[i]); });
+              done++;
+              apply();
+              report('جارٍ ترجمة الشرح… ' + done + '/' + batches.length);
+            } catch (error) { failure = failure || error; }
+          }
+        }
+        var workers = [];
+        for (var w = 0; w < Math.min(4, batches.length); w++) workers.push(worker());
+        await Promise.all(workers);
+        if (version !== revision) return;
+        persistStore();
+        if (failure && !done && batches.length) throw failure;
+        apply();
+        if (failure) report('Part of this lesson is still in English. Select AR to finish. / جزء من الشرح لم يُترجم بعد، اضغط AR لإكماله.', true);
+        else report('ترجمة آلية · الصور الأصلية بلغتها الأصلية');
       } catch (error) {
         if (version !== revision) return;
         render('en');

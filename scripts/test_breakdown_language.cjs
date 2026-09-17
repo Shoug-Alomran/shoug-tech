@@ -91,7 +91,7 @@ async function main() {
       if (frame) await frame.waitForFunction(() => document.documentElement.lang === 'en');
       console.log('PASS English/Arabic/English:', file);
     }
-    await page.evaluate(() => sessionStorage.clear());
+    await page.evaluate(() => { sessionStorage.clear(); Object.keys(localStorage).filter(k => k.startsWith('bd-ar-')).forEach(k => localStorage.removeItem(k)); });
     await page.reload();
     fail = true;
     await page.locator('[data-bd-lang=ar]').click();
@@ -113,7 +113,7 @@ async function main() {
     await page.locator('[data-bd-lang=en]').click();
     assert.equal(await page.locator('#placeholder-test').getAttribute('placeholder'), 'Search this lesson');
     assert.equal(await page.locator('#dynamic-test').textContent(), 'A newly revealed explanation');
-    await page.evaluate(() => sessionStorage.clear());
+    await page.evaluate(() => { sessionStorage.clear(); Object.keys(localStorage).filter(k => k.startsWith('bd-ar-')).forEach(k => localStorage.removeItem(k)); });
     await page.reload();
     delay = 500;
     await page.locator('[data-bd-lang=ar]').click();
