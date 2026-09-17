@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """Validate production slide-breakdown viewers against filesystem truth.
 
-The validator deliberately uses Python's HTML parser instead of regexes for
-iframe/link discovery. Viewer HTML in this repository comes from several
-legacy generators, so attribute order, whitespace, nested spans, and quoting
-must not change whether a valid viewer passes CI.
+This validator intentionally checks the deterministic markup emitted by
+repair_slide_breakdown_viewers.py instead of trying to parse the repository's
+many generations of legacy viewer HTML.  The filesystem is the source of
+truth: if an authored breakdown exists, the final viewer must literally
+contain an iframe and primary link to that file.
 """
 
 from __future__ import annotations
 
 import html
+import os
 import re
 import sys
-from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -33,68 +34,46 @@ STATUS_RE = re.compile(
 )
 
 
-class ViewerParser(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.iframes: list[str] = []
-        self.primary_links: list[str] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        values = {name.lower(): (value or "") for name, value in attrs}
-        if tag.lower() == "iframe" and values.get("src"):
-            self.iframes.append(values["src"])
-        if tag.lower() == "a" and values.get("href"):
-            classes = set(values.get("class", "").split())
-            if "btn-primary" in classes:
-                self.primary_links.append(values["href"])
+def relative_href(source: Path, index: Path) -> str:
+    rel = os.path.relpath(source, index.parent).replace(os.sep, "/")
+    return rel if rel.startswith(".") else "./" + rel
 
 
-def local_target(index: Path, href: str) -> Path | None:
-    parsed = urlparse(html.unescape(href))
-    if parsed.scheme or parsed.netloc:
-        return None
-    if parsed.path.startswith("/"):
-        if not parsed.path.startswith("/academics/"):
-            return None
-        return ROOT / "docs" / parsed.path.lstrip("/")
-    return (index.parent / parsed.path).resolve()
+def attr_points_to(text: str, tag: str, attr: str, expected: str, required_class: str | None = None) -> bool:
+    """Check literal final HTML markup without depending on legacy document parsing."""
+    for match in re.finditer(rf"<{tag}\b[^>]*>", text, re.I | re.S):
+        markup = match.group(0)
+        if required_class:
+            class_match = re.search(r'\bclass=["\']([^"\']*)["\']', markup, re.I)
+            if not class_match or required_class not in class_match.group(1).split():
+                continue
+        attr_match = re.search(rf'\b{attr}=["\']([^"\']+)["\']', markup, re.I)
+        if attr_match and html.unescape(attr_match.group(1)) == expected:
+            return True
+    return False
 
 
 def validate_viewer(index: Path, source: Path, errors: list[str]) -> None:
     text = index.read_text(encoding="utf-8", errors="ignore")
-    if COMING_SOON in text or 'class="coming-soon-panel"' in text or "class='coming-soon-panel'" in text:
+    expected = relative_href(source, index)
+
+    if COMING_SOON in text or re.search(
+        r'<div\b[^>]*class=["\'][^"\']*\bcoming-soon-panel\b', text, re.I
+    ):
         errors.append(f"available viewer still says Coming Soon: {index.relative_to(ROOT)}")
 
-    parser = ViewerParser()
-    try:
-        parser.feed(text)
-    except Exception as exc:
-        errors.append(f"viewer HTML could not be parsed ({exc}): {index.relative_to(ROOT)}")
-        return
-
-    iframe_matches = parser.iframes
-    if not iframe_matches:
-        errors.append(f"available viewer has no iframe: {index.relative_to(ROOT)}")
-    elif not any(local_target(index, href) == source.resolve() for href in iframe_matches):
+    if not attr_points_to(text, "iframe", "src", expected):
         errors.append(
-            f"available viewer does not embed authored source {source.name}: "
-            f"{index.relative_to(ROOT)} (iframe srcs: {iframe_matches!r})"
+            f"available viewer missing expected iframe src {expected!r}: {index.relative_to(ROOT)}"
         )
 
-    open_matches = parser.primary_links
-    if not open_matches:
-        errors.append(f"available viewer has no Open in New Tab: {index.relative_to(ROOT)}")
-    elif not any(local_target(index, href) == source.resolve() for href in open_matches):
+    if not attr_points_to(text, "a", "href", expected, "btn-primary"):
         errors.append(
-            f"Open in New Tab does not target authored source {source.name}: "
-            f"{index.relative_to(ROOT)} (primary hrefs: {open_matches!r})"
+            f"available viewer missing expected Open in New Tab href {expected!r}: {index.relative_to(ROOT)}"
         )
 
-    for label, matches in (("iframe", iframe_matches), ("Open in New Tab", open_matches)):
-        for href in matches:
-            target = local_target(index, href)
-            if target is not None and not target.is_file():
-                errors.append(f"missing {label} target {href!r}: {index.relative_to(ROOT)}")
+    if not source.is_file():
+        errors.append(f"authored breakdown disappeared: {source.relative_to(ROOT)}")
 
 
 def generic_viewer_source(href: str) -> Path | None:
@@ -138,6 +117,7 @@ def validate_listing(listing: Path, root: Path, errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     roots = slide_breakdown_roots(ACADEMICS)
+    checked = 0
     for root in roots:
         for folder in sorted(path for path in root.iterdir() if path.is_dir()):
             index = folder / "index.html"
@@ -145,6 +125,7 @@ def main() -> int:
                 continue
             source = breakdown_source(folder, root)
             if source is not None:
+                checked += 1
                 validate_viewer(index, source, errors)
         listing = root / "index.html"
         if listing.is_file():
@@ -164,7 +145,7 @@ def main() -> int:
         print("slide-breakdown validation failed:")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print(f"slide-breakdown validation passed ({len(roots)} roots)")
+    print(f"slide-breakdown validation passed: {checked} available viewers across {len(roots)} roots")
     return 0
 
 
