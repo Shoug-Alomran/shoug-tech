@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""Validate production slide-breakdown viewers against filesystem truth."""
+"""Validate production slide-breakdown viewers against filesystem truth.
+
+The validator deliberately uses Python's HTML parser instead of regexes for
+iframe/link discovery. Viewer HTML in this repository comes from several
+legacy generators, so attribute order, whitespace, nested spans, and quoting
+must not change whether a valid viewer passes CI.
+"""
 
 from __future__ import annotations
 
 import html
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -15,11 +22,6 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from slide_breakdown_utils import breakdown_source, slide_breakdown_roots  # noqa: E402
 
 COMING_SOON = "This HTML slide breakdown is coming soon."
-IFRAME_RE = re.compile(r"<iframe\b[^>]*\bsrc=[\"']([^\"']+)", re.I)
-OPEN_RE = re.compile(
-    r'<a\b(?=[^>]*class=["\'][^"\']*\bbtn-primary\b[^"\']*["\'])(?=[^>]*href=["\']([^"\']+)["\'])[^>]*>',
-    re.I,
-)
 ROW_RE = re.compile(
     r'<a\b(?P<attrs>[^>]*\bclass=["\'][^"\']*\bdir-row\b[^"\']*["\'][^>]*)>(?P<body>.*?)</a>',
     re.I | re.S,
@@ -29,6 +31,22 @@ STATUS_RE = re.compile(
     r'(<span\b[^>]*class=["\'][^"\']*\bstatus-tag\b[^"\']*["\'][^>]*>)([^<]*)(</span>)',
     re.I | re.S,
 )
+
+
+class ViewerParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.iframes: list[str] = []
+        self.primary_links: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {name.lower(): (value or "") for name, value in attrs}
+        if tag.lower() == "iframe" and values.get("src"):
+            self.iframes.append(values["src"])
+        if tag.lower() == "a" and values.get("href"):
+            classes = set(values.get("class", "").split())
+            if "btn-primary" in classes:
+                self.primary_links.append(values["href"])
 
 
 def local_target(index: Path, href: str) -> Path | None:
@@ -44,20 +62,33 @@ def local_target(index: Path, href: str) -> Path | None:
 
 def validate_viewer(index: Path, source: Path, errors: list[str]) -> None:
     text = index.read_text(encoding="utf-8", errors="ignore")
-    if COMING_SOON in text or "coming-soon-panel" in text:
+    if COMING_SOON in text or 'class="coming-soon-panel"' in text or "class='coming-soon-panel'" in text:
         errors.append(f"available viewer still says Coming Soon: {index.relative_to(ROOT)}")
 
-    iframe_matches = IFRAME_RE.findall(text)
+    parser = ViewerParser()
+    try:
+        parser.feed(text)
+    except Exception as exc:
+        errors.append(f"viewer HTML could not be parsed ({exc}): {index.relative_to(ROOT)}")
+        return
+
+    iframe_matches = parser.iframes
     if not iframe_matches:
         errors.append(f"available viewer has no iframe: {index.relative_to(ROOT)}")
     elif not any(local_target(index, href) == source.resolve() for href in iframe_matches):
-        errors.append(f"available viewer does not embed authored source {source.name}: {index.relative_to(ROOT)}")
+        errors.append(
+            f"available viewer does not embed authored source {source.name}: "
+            f"{index.relative_to(ROOT)} (iframe srcs: {iframe_matches!r})"
+        )
 
-    open_matches = OPEN_RE.findall(text)
+    open_matches = parser.primary_links
     if not open_matches:
         errors.append(f"available viewer has no Open in New Tab: {index.relative_to(ROOT)}")
     elif not any(local_target(index, href) == source.resolve() for href in open_matches):
-        errors.append(f"Open in New Tab does not target authored source {source.name}: {index.relative_to(ROOT)}")
+        errors.append(
+            f"Open in New Tab does not target authored source {source.name}: "
+            f"{index.relative_to(ROOT)} (primary hrefs: {open_matches!r})"
+        )
 
     for label, matches in (("iframe", iframe_matches), ("Open in New Tab", open_matches)):
         for href in matches:
@@ -67,7 +98,6 @@ def validate_viewer(index: Path, source: Path, errors: list[str]) -> None:
 
 
 def generic_viewer_source(href: str) -> Path | None:
-    """Resolve /viewer/?src=/academics/... links used by STAT101-style listings."""
     parsed = urlparse(html.unescape(href))
     query = parse_qs(parsed.query)
     values = query.get("src")
@@ -107,10 +137,8 @@ def validate_listing(listing: Path, root: Path, errors: list[str]) -> None:
 
 def main() -> int:
     errors: list[str] = []
-    for root in slide_breakdown_roots(ACADEMICS):
-        # Only directories with index.html are dedicated viewer directories.
-        # Direct-source layouts (e.g. STAT101) are represented by generic
-        # /viewer/?src= links and are checked from the listing instead.
+    roots = slide_breakdown_roots(ACADEMICS)
+    for root in roots:
         for folder in sorted(path for path in root.iterdir() if path.is_dir()):
             index = folder / "index.html"
             if not index.is_file():
@@ -136,7 +164,7 @@ def main() -> int:
         print("slide-breakdown validation failed:")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print(f"slide-breakdown validation passed ({len(slide_breakdown_roots(ACADEMICS))} roots)")
+    print(f"slide-breakdown validation passed ({len(roots)} roots)")
     return 0
 
 
