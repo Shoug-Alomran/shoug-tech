@@ -278,6 +278,8 @@ def transform_reference(text: str, chapter_no: int, old_slug: str, old_title: st
         text = re.sub(r'(<iframe\b[^>]*\bsrc=")[^"]+', rf'\1./{new_exam}.html', text, count=1)
     else:
         text = re.sub(r'(<iframe\b[^>]*\bsrc=")[^"]+', rf'\1./{new_slug}.html', text, count=1)
+    text = text.replace(f'./{old_slug}.html', f'./{new_slug}.html')
+    text = text.replace(f'./{old_slug}-quiz.html', f'./{new_slug}-quiz.html')
     active_section = "Exams" if kind == "exam" else "Study Material"
     text = sitegen.replace_academic_sidebar(text, "SE401", active_section)
     if kind == "exam":
@@ -310,7 +312,9 @@ def transform_reference(text: str, chapter_no: int, old_slug: str, old_title: st
     text = re.sub(r'(<meta name="twitter:description"\s+content=")[^"]*(">)', rf'\1{html.escape(page_desc, quote=True)}\2', text)
     structured_data = '<script type="application/ld+json">' + json.dumps({"@context":"https://schema.org","@type":"WebPage","url":canonical,"name":page_name,"description":page_desc,"isPartOf":{"@type":"WebSite","name":"Shoug\'s Digital Garden","url":"https://shoug-tech.com/"}}) + '</script>'
     text = re.sub(r'<script\s+type="application/ld\+json">.*?</script>', lambda _match: structured_data, text, count=1, flags=re.S)
-    raw_file = new_exam + '.html' if kind == 'exam' else new_slug + '.html'
+    raw_file = new_slug + '-quiz.html' if kind == 'exam' else new_slug + '.html'
+    text = text.replace(f'./{chapter_no:02d}-{new_slug}-quiz.html', f'./{raw_file}')
+    text = text.replace(f'./{chapter_no:02d}-{new_slug}.html', f'./{raw_file}')
     text = re.sub(r'(<a class="btn btn-primary" href=")[^"]+("[^>]*>)', rf'\1./{raw_file}\2', text, count=1)
     route_base = '/academics/software-engineering/se401/exams/' if kind == 'exam' else '/academics/software-engineering/se401/extra-resources/mindmaps/'
     previous_route = route_base if chapter_no == 1 else route_base + f'{chapter_no-1:02d}-{CHAPTERS[chapter_no-2][0]}{"-quiz" if kind == "exam" else ""}/'
@@ -352,7 +356,33 @@ def replace_rows(hub: str, kind: str) -> str:
         route_base = "exams" if kind == "exam" else "extra-resources/mindmaps"
         rows.append(f'<a class="dir-row" href="/academics/software-engineering/se401/{route_base}/{folder}/"><div class="dir-num">{i}</div><div class="dir-title">{html.escape(label)}</div><div class="dir-status"><span class="status-tag available">AVAILABLE</span></div><div class="dir-arrow">-&gt;</div></a>')
     block = '<div class="directory-container"><div class="dir-header"><span>SEQ</span><span>DESCRIPTOR</span><span>SYS_STATE</span><span></span></div>' + ''.join(rows) + '</div>\n'
-    hub = re.sub(r'<div class="directory-container">.*?(?=<footer class="shoug-site-footer">)', block, hub, count=1, flags=re.S)
+    updated = re.sub(r'<div class="directory-container">.*?(?=<footer class="shoug-site-footer">)', block, hub, count=1, flags=re.S)
+    if updated == hub:
+        updated = re.sub(
+            r'<style id="empty-section-state-style">.*?</style>\s*'
+            r'<div class="coming-soon-container"[^>]*>.*?</div>\s*'
+            r'(?=<footer class="shoug-site-footer">)',
+            block,
+            hub,
+            count=1,
+            flags=re.S,
+        )
+    hub = updated
+    if ".dir-group {" not in hub:
+        group_css = """
+      .dir-group {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--text-purple-bright);
+        background-color: var(--bg-void);
+        padding: 22px 40px 10px;
+        border-bottom: 1px solid var(--border-purple);
+      }
+"""
+        hub = hub.replace("      .dir-row {", group_css + "\n      .dir-row {", 1)
     hub = sitegen.replace_academic_sidebar(hub, "SE401", "Exams" if kind == "exam" else "Study Material")
     return re.sub(r'[ \t]+\n', '\n', hub)
 
@@ -387,7 +417,8 @@ def main() -> None:
     extra_hub_path.write_text(re.sub(r'[ \t]+\n', '\n', extra_hub))
     print(f"Built {len(CHAPTERS)} SE401 mindmaps and {len(CHAPTERS)} SE401 exams")
     from fix_mindmap_sidebar_state import apply_course
-    apply_course("se401", BASE)
+    if BASE.name.lower() == "se401":
+        apply_course("se401", BASE)
     from fix_academic_sidebar_links import fix_page
     for page in [MAPS / "index.html", EXAMS / "index.html", *MAPS.glob("*/index.html"), *EXAMS.glob("*/index.html")]:
         fix_page(page)

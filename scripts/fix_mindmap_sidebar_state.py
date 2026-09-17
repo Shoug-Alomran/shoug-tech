@@ -56,8 +56,10 @@ def apply_course(code: str, base: Path, labels: dict[str, str] | None = None) ->
         )
         text = page.read_text()
         pattern = re.compile(
-            r'<li class="tree-item tree-section(?: file-active)?"><a class="tree-file" href="[^"]*(?:study-material|extra-resources)/"[^>]*>.*?STUDY MATERIAL</a></li>'
-            r'(?:<ul class="tree-children item-children is-open">.*?</ul>)?', re.S | re.I)
+            r'<li\s+class="tree-item tree-section(?: file-active)?"\s*>\s*'
+            r'<a\s+class="tree-file"\s+href="[^"]*(?:study-material|extra-resources)/"[^>]*>.*?'
+            r'STUDY MATERIAL\s*</a\s*>\s*</li>'
+            r'(?:\s*<ul class="tree-children item-children is-open">.*?</ul>)?', re.S | re.I)
         text, count = pattern.subn(replacement, text, count=1)
         if count != 1:
             raise RuntimeError(f"Could not locate Study Material sidebar entry in {page}")

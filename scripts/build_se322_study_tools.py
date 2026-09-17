@@ -7,6 +7,11 @@ import build_se401_study_tools as core
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "docs/academics/software-engineering/se322"
 
+SPECIAL_EXAMS = [
+    ("11-quiz-1-261", "Quiz 1 (261)", "quiz-1-261.html"),
+    ("10-midterm-252", "Midterm (252)", "midterm-252.html"),
+]
+
 CHAPTERS = [
  ("introduction-to-software-design-and-architecture", "Introduction to Software Design and Architecture", [
   ("Software Engineering Foundations", "IEEE defines software engineering as a systematic, disciplined, and quantifiable approach to software development, operation, and maintenance.", ["The SDLC connects requirements, design, implementation, testing, deployment, and maintenance.", "Engineering problem solving identifies the initial state, goal state, constraints, candidate solutions, evaluation, and implementation.", "Design is studied because defects and costly decisions are easier to address before construction.", "Cost of change grows roughly by an order of magnitude per phase, so a requirement misread in analysis is cheap to fix on paper and expensive to fix in production.", "Systematic means repeatable and reviewable; quantifiable means the result can be measured against stated targets rather than judged by taste."], [
@@ -272,6 +277,37 @@ def main():
     core.EXAMS = BASE / "exams"
     core.CHAPTERS = CHAPTERS
     core.main()
+    exam_index = BASE / "exams/index.html"
+    exam_text = exam_index.read_text()
+    exam_rows = []
+
+    def add_group(label, arabic):
+        exam_rows.append(f'<div class="dir-group" data-en-text="{label}" data-ar-text="{arabic}">{label}</div>')
+
+    def add_row(number, folder, label):
+        exam_rows.append(
+            f'<a class="dir-row" href="/academics/software-engineering/se322/exams/{folder}/">'
+            f'<div class="dir-num">{number:02d}</div><div class="dir-title">{label}</div>'
+            '<div class="dir-status"><span class="status-tag available">AVAILABLE</span></div>'
+            '<div class="dir-arrow">-&gt;</div></a>'
+        )
+
+    add_group("Quiz 1 scope — Chapters 1–3", "نطاق الاختبار 1 — الفصول 1–3")
+    for number, (slug, title, _branches) in enumerate(CHAPTERS[:3], 1):
+        add_row(number, f"{number:02d}-{slug}-quiz", f"Chapter {number}: {title} Quiz")
+    add_row(4, "11-quiz-1-261", "Quiz 1 (261)")
+
+    add_group("Midterm scope — Chapters 1–4", "نطاق الاختبار النصفي — الفصول 1–4")
+    add_row(5, "04-architecture-patterns-quiz", "Chapter 4: Architecture Patterns Quiz")
+    add_row(6, "10-midterm-252", "Midterm (252)")
+
+    add_group("Chapter Practice Quizzes", "اختبارات الفصول التدريبية")
+    for number, (slug, title, _branches) in enumerate(CHAPTERS[4:], 7):
+        chapter_number = number - 2
+        add_row(number, f"{chapter_number:02d}-{slug}-quiz", f"Chapter {chapter_number}: {title} Quiz")
+    exam_block = '<div class="directory-container"><div class="dir-header"><span>SEQ</span><span>DESCRIPTOR</span><span>SYS_STATE</span><span></span></div>' + ''.join(exam_rows) + '</div>\n'
+    exam_text = re.sub(r'<div class="directory-container">.*?(?=<footer class="shoug-site-footer">)', exam_block, exam_text, count=1, flags=re.S)
+    exam_index.write_text(exam_text)
     summary_dir = BASE / "extra-resources/summary"
     summary_dir.mkdir(parents=True, exist_ok=True)
     summary_template = (ROOT / "docs/academics/software-engineering/se401/extra-resources/summary/index.html").read_text()
@@ -293,6 +329,14 @@ def main():
         "/academics/software-engineering/se322/extra-resources/01-summary/",
         "/academics/software-engineering/se322/extra-resources/summary/",
     )
+    for old_route, new_route in {
+        "/academics/software-engineering/se322/extra-resources/01-activity-3-uml-and-tools-workshop/": "/academics/software-engineering/se322/extra-resources/activity/solved/activity-3/uml-and-tools-workshop/",
+        "/academics/software-engineering/se322/extra-resources/02-activity-4/": "/academics/software-engineering/se322/extra-resources/activity/solved/activity-4/",
+        "/academics/software-engineering/se322/extra-resources/03-activity-5/": "/academics/software-engineering/se322/extra-resources/activity/solved/activity-5/",
+        "/academics/software-engineering/se322/extra-resources/04-project/": "/academics/software-engineering/se322/extra-resources/activity/",
+        "/academics/software-engineering/se322/extra-resources/05-summary/": "/academics/software-engineering/se322/extra-resources/summary/",
+    }.items():
+        summary_page = summary_page.replace(old_route, new_route)
     summary_dir.joinpath("index.html").write_text(re.sub(r'[ \t]+\n', '\n', summary_page))
     targets = [BASE / "extra-resources/index.html", BASE / "extra-resources/summary/index.html", BASE / "exams/index.html"]
     targets += list((BASE / "extra-resources/mindmaps").rglob("*.html"))
