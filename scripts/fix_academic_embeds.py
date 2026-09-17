@@ -388,6 +388,56 @@ def repair_malformed_bilingual_embed_wrappers(content: str) -> str:
     return re.sub(r'</style>\s*</style>', '</style>', content)
 
 
+def repair_available_slide_breakdown(content: str, path: Path) -> str:
+    """Replace stale placeholders with content, or remove them if no source exists."""
+    if "/slide-breakdowns/" not in path.as_posix() or "coming-soon-panel" not in content:
+        return content
+    button = re.search(r'<a\b(?=[^>]*class="btn btn-primary")[^>]*>', content, flags=re.S)
+    href_match = re.search(r'href="([^"#]+\.html)"', button.group(0), flags=re.S) if button else None
+    if href_match:
+        raw_href = href_match.group(1)
+        source = (
+            ROOT / "docs" / raw_href.lstrip("/")
+            if raw_href.startswith("/")
+            else path.parent / raw_href
+        ).resolve()
+    else:
+        candidates = sorted(
+            candidate for candidate in path.parent.rglob("*.html")
+            if candidate.name != "index.html"
+        )
+        source = candidates[0].resolve() if candidates else None
+        raw_href = source.relative_to(path.parent.resolve()).as_posix() if source else ""
+    if not source or not source.is_file():
+        content = re.sub(
+            r'<span class="btn btn-primary btn-disabled"[^>]*>\s*\[ COMING SOON \]\s*</span>',
+            '', content, count=1, flags=re.S,
+        )
+        return re.sub(
+            r'<div class="embed-container" id="embedded-content">\s*'
+            r'<div class="rendered-content coming-soon-panel">.*?</div>\s*</div>',
+            '<div class="embed-container" id="embedded-content"><div class="rendered-content"></div></div>',
+            content, count=1, flags=re.S,
+        )
+    href = html.escape(raw_href, quote=True)
+    content = re.sub(
+        r'<span class="btn btn-primary btn-disabled"[^>]*>\s*\[ COMING SOON \]\s*</span>',
+        f'<a class="btn btn-primary" href="{href}" target="_blank" rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a>',
+        content,
+        count=1,
+        flags=re.S,
+    )
+    return re.sub(
+        r'<div class="embed-container" id="embedded-content">\s*'
+        r'<div class="rendered-content coming-soon-panel">.*?</div>\s*</div>',
+        f'<div class="embed-container" id="embedded-content"><div class="rendered-content">'
+        f'<iframe class="embed-frame legacy-html-frame" src="{href}" loading="lazy"></iframe></div></div>',
+        content,
+        count=1,
+        flags=re.S,
+    )
+
+
 def add_sidebar_embed_fix(content: str) -> str:
     if "academic-sidebar" not in content:
         return content
@@ -546,6 +596,7 @@ def main() -> None:
             "body.sidebar-collapsed .academic-sidebar .file-tree",
         )
         content = normalize_empty_section(content)
+        content = repair_available_slide_breakdown(content, path)
         if "/slide-breakdowns/" in path.as_posix() and path.name == "index.html":
             if path.parent.name == "slide-breakdowns":
                 content = update_slide_breakdown_index_status(content)

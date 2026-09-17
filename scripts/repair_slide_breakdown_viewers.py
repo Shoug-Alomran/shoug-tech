@@ -9,15 +9,17 @@ assumptions and works across all courses under docs/academics.
 from __future__ import annotations
 
 import html
+import os
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ACADEMICS = ROOT / "docs" / "academics"
+sys.path.insert(0, str(ROOT / "scripts"))
+from slide_breakdown_utils import breakdown_source, slide_breakdown_roots  # noqa: E402
 COMING_SOON_TEXT = "This HTML slide breakdown is coming soon."
 
-EMBED_AREA_RE = re.compile(r'<div class="embed-area-wrapper"[^>]*>.*?(?=\s*</main>)', re.S)
-EMBED_CONTAINER_RE = re.compile(r'<div class="embed-container" id="embedded-content">.*?</div>\s*</div>', re.S)
 PRIMARY_BUTTON_RE = re.compile(
     r'<(?:a|span)\b[^>]*class="[^"]*\bbtn\s+btn-primary\b[^"]*"[^>]*>'
     r'\s*\[[^\]]*(?:-&gt;|->|COMING SOON)[^\]]*\]\s*</(?:a|span)>', re.I | re.S)
@@ -27,30 +29,38 @@ DIR_ROW_RE = re.compile(
     r'<span\b[^>]*class="[^"]*\bstatus-tag\b[^"]*"[^>]*>)(?P<status>[^<]*)(</span>)', re.I | re.S)
 
 
-def breakdown_file(folder: Path) -> Path | None:
-    if not folder.is_dir():
-        return None
-    candidates = [p for p in folder.glob("*.html")
-                  if p.name.lower() != "index.html" and not p.name.lower().endswith(".ar.html")]
-    if not candidates:
-        return None
-    slug_tail = re.sub(r"^\d+[-_]", "", folder.name).lower()
-    preferred = [p for p in candidates if p.stem.lower() in {
-        slug_tail, slug_tail.replace("-", "_"), slug_tail.split("-")[0]}]
-    return max(preferred or candidates, key=lambda p: p.stat().st_size)
+def replace_div_block(page: str, marker: str, replacement: str) -> str:
+    """Replace one balanced div block identified by a stable class marker."""
+    marker_start = page.find(marker)
+    if marker_start < 0:
+        return page
+    div_start = page.rfind("<div", 0, marker_start + 1)
+    tags = re.compile(r"<div\b[^>]*>|</div\s*>", re.I)
+    depth = 0
+    for match in tags.finditer(page, div_start):
+        if match.group().lower().startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return page[:div_start] + replacement + page[match.end():]
+        else:
+            depth += 1
+    return page
 
 
-def viewer_embed(filename: str) -> str:
-    safe = html.escape(filename, quote=True)
+def viewer_container(href: str) -> str:
+    safe = html.escape(href, quote=True)
     return (
-        '<div class="embed-area-wrapper" vid="82">\n'
         '  <div class="embed-container" id="embedded-content">\n'
         '    <div class="rendered-content" data-lang-panel="en">'
-        f'<iframe class="embed-frame legacy-html-frame" src="./{safe}" loading="lazy" title="Slide breakdown"></iframe></div>\n'
+        f'<iframe class="embed-frame legacy-html-frame" src="{safe}" loading="lazy" title="Slide breakdown"></iframe></div>\n'
         '    <div class="rendered-content" data-lang-panel="ar" hidden>'
-        f'<iframe class="embed-frame legacy-html-frame" src="./{safe}" loading="lazy" title="Slide breakdown"></iframe></div>\n'
+        f'<iframe class="embed-frame legacy-html-frame" src="{safe}" loading="lazy" title="Slide breakdown"></iframe></div>\n'
         '  </div>\n'
-        '</div>\n')
+    )
+
+
+def viewer_embed(href: str) -> str:
+    return '<div class="embed-area-wrapper" vid="82">\n' + viewer_container(href) + '</div>\n'
 
 
 def open_button(filename: str) -> str:
@@ -62,15 +72,14 @@ def open_button(filename: str) -> str:
 def repair_viewer(index_path: Path, source: Path) -> bool:
     original = index_path.read_text(encoding="utf-8")
     page = original
-    rel_src = f"./{source.name}"
+    rel_src = os.path.relpath(source, index_path.parent).replace(os.sep, "/")
+    if not rel_src.startswith("."):
+        rel_src = "./" + rel_src
 
     if COMING_SOON_TEXT in page or "coming-soon-panel" in page:
-        if EMBED_AREA_RE.search(page):
-            page = EMBED_AREA_RE.sub(viewer_embed(source.name), page, count=1)
-        elif EMBED_CONTAINER_RE.search(page):
-            container = viewer_embed(source.name)
-            container = re.sub(r'^<div class="embed-area-wrapper"[^>]*>\n|\n</div>\n$', '', container)
-            page = EMBED_CONTAINER_RE.sub(container, page, count=1)
+        page = replace_div_block(page, 'class="embed-area-wrapper"', viewer_embed(rel_src))
+        if page == original:
+            page = replace_div_block(page, 'class="embed-container" id="embedded-content"', viewer_container(rel_src))
 
     # Every iframe in a slide-breakdown viewer should load the real sibling
     # breakdown. This also repairs stale absolute paths after SEO renames.
@@ -90,7 +99,7 @@ def update_listing(listing: Path) -> bool:
 
     def repl(match: re.Match[str]) -> str:
         slug = match.group("slug").rstrip("/")
-        status = "AVAILABLE" if breakdown_file(listing.parent / slug) else "COMING SOON"
+        status = "AVAILABLE" if breakdown_source(listing.parent / slug, listing.parent) else "COMING SOON"
         return match.group(1) + status + match.group(5)
 
     page = DIR_ROW_RE.sub(repl, original)
@@ -105,18 +114,16 @@ def main() -> None:
         raise SystemExit(f"Academic root not found: {ACADEMICS}")
 
     repaired = available = listings = 0
-    for slide_root in ACADEMICS.glob("*/*/slide-breakdowns"):
-        if not slide_root.is_dir():
-            continue
+    for slide_root in slide_breakdown_roots(ACADEMICS):
         for folder in sorted(p for p in slide_root.iterdir() if p.is_dir()):
-            source = breakdown_file(folder)
+            source = breakdown_source(folder, slide_root)
             index_path = folder / "index.html"
             if source is None or not index_path.exists():
                 continue
             available += 1
             if repair_viewer(index_path, source):
                 repaired += 1
-                print(f"repaired {index_path.relative_to(ROOT)} -> ./{source.name}")
+                print(f"repaired {index_path.relative_to(ROOT)} -> {source.relative_to(index_path.parent)}")
         listing = slide_root / "index.html"
         if listing.exists() and update_listing(listing):
             listings += 1

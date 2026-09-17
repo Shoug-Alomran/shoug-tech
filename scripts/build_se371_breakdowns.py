@@ -811,8 +811,8 @@ def render_content(ch):
 # --------------------------------------------------------------------------- #
 
 SHELL_SRC = os.path.join(
-    REPO, 'docs', 'academics', 'other-courses', 'ethcs303',
-    'slide-breakdowns', '02-kantianism', 'index.html')
+    REPO, 'docs', 'academics', 'software-engineering', 'se371',
+    'slide-breakdowns', 'index.html')
 
 
 def shell_main(ch, prev_ch, next_ch):
@@ -882,6 +882,7 @@ def build_shell(ch, prev_ch, next_ch, template):
     out = re.sub(r'<script\s+type="application/ld\+json"\s*>.*?</script>', '', out, flags=re.S)
     out = re.sub(r'<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*>', '', out, flags=re.S)
     out = out.replace('ethcs303', 'se371').replace('ETHCS303', 'SE371')
+    out = out.replace('/academics/other-courses/se371/', '/academics/software-engineering/se371/')
 
     # standalone-theme.js inside the iframe reads the parent for its theme. With
     # no stored preference the shell renders its dark chrome but exposes nothing,
