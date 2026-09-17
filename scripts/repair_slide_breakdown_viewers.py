@@ -61,11 +61,16 @@ def viewer_embed(href: str) -> str:
     )
 
 
-def open_button(source: Path, index_path: Path) -> str:
+def relative_href(source: Path, index_path: Path) -> str:
+    """Return a browser-safe path even when source lives in the slide root."""
     rel = os.path.relpath(source, index_path.parent).replace(os.sep, "/")
     if not rel.startswith("."):
         rel = "./" + rel
-    safe = html.escape(rel, quote=True)
+    return rel
+
+
+def open_button(source: Path, index_path: Path) -> str:
+    safe = html.escape(relative_href(source, index_path), quote=True)
     return (f'<a class="btn btn-primary" href="{safe}" target="_blank" '
             'rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a>')
 
@@ -73,21 +78,17 @@ def open_button(source: Path, index_path: Path) -> str:
 def repair_viewer(index_path: Path, source: Path) -> bool:
     original = index_path.read_text(encoding="utf-8")
     page = original
-    rel_src = os.path.relpath(source, index_path.parent).replace(os.sep, "/")
-    if not rel_src.startswith("."):
-        rel_src = "./" + rel_src
+    rel_src = relative_href(source, index_path)
 
     # Rebuild the embed region unconditionally for every available viewer.
     # This fixes Coming Soon shells, missing iframes, and stale iframe paths in
     # one deterministic operation instead of trying to recognize old variants.
     replaced = replace_div_block(page, 'class="embed-area-wrapper"', viewer_embed(rel_src))
     if replaced == page:
-        # Some legacy wrappers use extra/reordered classes.
         replaced = replace_div_block(page, "embed-area-wrapper", viewer_embed(rel_src))
     page = replaced
 
-    # The first primary action on a breakdown viewer is Open in New Tab. Match
-    # by class only; historical versions used several labels/arrow encodings.
+    # The first primary action on a breakdown viewer is Open in New Tab.
     button = open_button(source, index_path)
     if PRIMARY_BUTTON_RE.search(page):
         page = PRIMARY_BUTTON_RE.sub(button, page, count=1)
@@ -109,9 +110,6 @@ def update_listing(listing: Path) -> bool:
     def repl(match: re.Match[str]) -> str:
         slug = match.group("slug").rstrip("/")
         folder = listing.parent / slug
-        # Only dedicated viewer directories are handled here. Generic
-        # /viewer/?src= listings are validated separately and already point to
-        # their authored file directly.
         status = "AVAILABLE" if (folder / "index.html").is_file() and breakdown_source(folder, listing.parent) else "COMING SOON"
         return match.group(1) + status + match.group(5)
 
@@ -138,7 +136,11 @@ def main() -> None:
             available += 1
             if repair_viewer(index_path, source):
                 repaired += 1
-                print(f"repaired {index_path.relative_to(ROOT)} -> {source.relative_to(index_path.parent)}")
+                # Do not use Path.relative_to here: legacy courses such as
+                # ISC113 keep authored HTML one level above the viewer folder.
+                # os.path.relpath handles both sibling and parent-level sources.
+                display_source = os.path.relpath(source, index_path.parent).replace(os.sep, "/")
+                print(f"repaired {index_path.relative_to(ROOT)} -> {display_source}")
         listing = slide_root / "index.html"
         if listing.exists() and update_listing(listing):
             listings += 1
