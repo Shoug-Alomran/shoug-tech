@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Repair academic slide-breakdown viewers from filesystem truth."""
+"""Repair academic slide-breakdown viewers from filesystem truth.
+
+The authored breakdown HTML is authoritative.  If it exists, the wrapper must
+show one correctly styled Open in New Tab action, must embed that HTML, and
+must not retain a stale Coming Soon state.
+"""
 
 from __future__ import annotations
 
@@ -25,9 +30,39 @@ DIR_ROW_RE = re.compile(
     r'(<a\b[^>]*href="(?P<href>[^"]+/slide-breakdowns/(?P<slug>[^"]+)/?)"[^>]*class="[^"]*\bdir-row\b[^"]*"[^>]*>.*?'
     r'<span\b[^>]*class="[^"]*\bstatus-tag\b[^"]*"[^>]*>)(?P<status>[^<]*)(</span>)', re.I | re.S)
 
+# Some newer course shells include a second plain-text "open" link in addition
+# to the real .btn-primary action.  It is the source of the blue duplicate seen
+# on ISC213.  Only remove links whose visible text is explicitly Open in New Tab;
+# navigation/back links are left untouched.
+DUPLICATE_OPEN_RE = re.compile(
+    r'<a\b(?![^>]*class=["\'][^"\']*\bbtn-primary\b)[^>]*>\s*'
+    r'(?:\[\s*)?(?:↗\s*)?OPEN\s+IN\s+NEW\s+TAB(?:\s*-?&gt;)?(?:\s*\])?\s*</a>',
+    re.I | re.S,
+)
+
+# Force the primary viewer action to use the site's purple treatment even on
+# legacy wrappers whose local CSS does not define .btn-primary consistently.
+VIEWER_STYLE = """
+<style id="slide-breakdown-viewer-action-style">
+.action-buttons .btn-primary,
+.se371-viewer-actions .btn-primary {
+  color: var(--brand-purple, #b829ea) !important;
+  border: 1px solid var(--brand-purple, #b829ea) !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+.action-buttons .btn-primary:hover,
+.se371-viewer-actions .btn-primary:hover {
+  color: #d978ff !important;
+  background: rgba(184, 41, 234, 0.10) !important;
+  box-shadow: 0 0 12px rgba(184, 41, 234, 0.20);
+}
+</style>
+"""
+
 
 def replace_balanced_div(page: str, start: int, replacement: str) -> str:
-    """Replace the balanced div whose opening tag begins at start."""
     tags = re.compile(r"<div\b[^>]*>|</div\s*>", re.I)
     depth = 0
     for match in tags.finditer(page, start):
@@ -42,7 +77,6 @@ def replace_balanced_div(page: str, start: int, replacement: str) -> str:
 
 
 def replace_matching_div(page: str, pattern: re.Pattern[str], replacement: str) -> str:
-    """Replace an actual HTML div, never a CSS selector containing the same class name."""
     match = pattern.search(page)
     return replace_balanced_div(page, match.start(), replacement) if match else page
 
@@ -74,12 +108,20 @@ def open_button(source: Path, index_path: Path) -> str:
 
 
 def insert_before_closing(page: str, markup: str) -> str:
-    """Insert markup into the document when a legacy viewer lacks the expected container."""
     for closing in ("</main>", "</body>"):
         pos = page.lower().rfind(closing)
         if pos >= 0:
             return page[:pos] + "\n" + markup + "\n" + page[pos:]
     return page + "\n" + markup + "\n"
+
+
+def ensure_action_style(page: str) -> str:
+    if 'id="slide-breakdown-viewer-action-style"' in page:
+        return page
+    head_end = page.lower().find("</head>")
+    if head_end >= 0:
+        return page[:head_end] + VIEWER_STYLE + page[head_end:]
+    return VIEWER_STYLE + page
 
 
 def repair_viewer(index_path: Path, source: Path) -> bool:
@@ -88,9 +130,6 @@ def repair_viewer(index_path: Path, source: Path) -> bool:
     rel_src = relative_href(source, index_path)
     embed = viewer_embed(rel_src)
 
-    # Match only a real HTML element. The previous implementation searched for
-    # the text "embed-area-wrapper" and usually found the CSS selector first,
-    # so it reported a repair without ever inserting an iframe.
     if EMBED_DIV_RE.search(page):
         page = replace_matching_div(page, EMBED_DIV_RE, embed)
     elif COMING_SOON_RE.search(page):
@@ -98,6 +137,9 @@ def repair_viewer(index_path: Path, source: Path) -> bool:
     else:
         page = insert_before_closing(page, embed)
 
+    # An authored source means AVAILABLE, regardless of stale wrapper text.
+    # Replace the existing primary control (including disabled Coming Soon spans)
+    # with the one canonical action.
     button = open_button(source, index_path)
     if PRIMARY_BUTTON_RE.search(page):
         page = PRIMARY_BUTTON_RE.sub(button, page, count=1)
@@ -106,16 +148,21 @@ def repair_viewer(index_path: Path, source: Path) -> bool:
         if actions:
             page = page[:actions.end()] + "\n            " + button + page[actions.end():]
         else:
-            # Some older viewers (notably SE371) have no action-buttons block.
-            # Put the required action immediately before the embed instead.
             embed_match = EMBED_DIV_RE.search(page)
             if embed_match:
                 page = page[:embed_match.start()] + '<div class="action-buttons">' + button + '</div>\n' + page[embed_match.start():]
             else:
                 page = insert_before_closing(page, button)
 
-    # Available viewers must not retain the exact legacy availability message.
+    # Remove any extra plain Open-in-New-Tab action left by a newer shell.  The
+    # canonical .btn-primary inserted above remains because the regex excludes it.
+    page = DUPLICATE_OPEN_RE.sub("", page)
+
+    # Remove stale availability copy/classes after the source has been proven to
+    # exist.  This covers wrappers that had a Coming Soon button but a real iframe.
     page = page.replace("This HTML slide breakdown is coming soon.", "")
+    page = re.sub(r'\bbtn-disabled\b', '', page)
+    page = ensure_action_style(page)
 
     if page != original:
         index_path.write_text(page, encoding="utf-8")
