@@ -112,6 +112,8 @@ PROBE = r"""(() => {
       const cs = getComputedStyle(e);
       if (cs.position !== 'fixed' && cs.position !== 'sticky') continue;
       const r = e.getBoundingClientRect();
+      // Closed off-canvas panels (e.g. the slide assistant) sit translated past an edge.
+      if (r.left >= vw - 1 || r.right <= 1) continue;
       if (r.top <= 1 && r.width >= vw * 0.9 && r.height > vh * 0.16) {
         found.push(['tall-header', `a ${cs.position} header takes ${px(r.height)} (${Math.round(100 * r.height / vh)}% of the screen height)`]);
         break;
