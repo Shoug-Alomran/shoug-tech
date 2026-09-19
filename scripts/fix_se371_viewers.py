@@ -72,7 +72,7 @@ def viewer_main(i: int, slug: str, filename: str, title: str) -> str:
 <section class="se371-viewer-head">
   <div class="se371-viewer-kicker">CHAPTER_{i + 1:02d} // SLIDE BREAKDOWN</div>
   <h1 class="se371-viewer-title">{safe_title}</h1>
-  <div class="se371-viewer-actions"><a href="./{filename}" target="_blank" rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a><a href="{BASE}">[ &lt;- BACK TO INDEX ]</a></div>
+  <div class="se371-viewer-actions"><a class="btn btn-primary" href="./{filename}" target="_blank" rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a><a href="{BASE}">[ &lt;- BACK TO INDEX ]</a></div>
 </section>
 <div class="se371-viewer-nav"><span>{prev_link}</span><span>{next_link}</span></div>
 <div class="embed-area-wrapper">

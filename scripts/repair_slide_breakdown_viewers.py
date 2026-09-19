@@ -19,11 +19,15 @@ ACADEMICS = ROOT / "docs" / "academics"
 sys.path.insert(0, str(ROOT / "scripts"))
 from slide_breakdown_utils import breakdown_source, slide_breakdown_roots  # noqa: E402
 
+# Prettier-formatted wrappers close tags as `</a\n   >`, so the closing tag must
+# allow whitespace before `>`.  Without it the lazy body ran on to the first
+# compact `</a>` in the site footer and deleted the header, nav and embed.
 PRIMARY_BUTTON_RE = re.compile(
-    r'<(?:a|span)\b(?=[^>]*class=["\'][^"\']*\bbtn-primary\b[^"\']*["\'])[^>]*>.*?</(?:a|span)>',
+    r'<(?P<tag>a|span)\b(?=[^>]*class=["\'][^"\']*\bbtn-primary\b[^"\']*["\'])[^>]*>[^<]*</(?P=tag)\s*>',
     re.I | re.S,
 )
-ACTION_DIV_RE = re.compile(r'<div\b[^>]*class=["\'][^"\']*\baction-buttons\b[^"\']*["\'][^>]*>', re.I)
+ACTION_DIV_RE = re.compile(
+    r'<div\b[^>]*class=["\'][^"\']*\b(?:action-buttons|se371-viewer-actions)\b[^"\']*["\'][^>]*>', re.I)
 EMBED_DIV_RE = re.compile(r'<div\b[^>]*class=["\'][^"\']*\bembed-area-wrapper\b[^"\']*["\'][^>]*>', re.I)
 COMING_SOON_RE = re.compile(r'<div\b[^>]*class=["\'][^"\']*\bcoming-soon-panel\b[^"\']*["\'][^>]*>', re.I)
 DIR_ROW_RE = re.compile(
@@ -36,7 +40,7 @@ DIR_ROW_RE = re.compile(
 # navigation/back links are left untouched.
 DUPLICATE_OPEN_RE = re.compile(
     r'<a\b(?![^>]*class=["\'][^"\']*\bbtn-primary\b)[^>]*>\s*'
-    r'(?:\[\s*)?(?:↗\s*)?OPEN\s+IN\s+NEW\s+TAB(?:\s*-?&gt;)?(?:\s*\])?\s*</a>',
+    r'(?:\[\s*)?(?:↗\s*)?OPEN\s+IN\s+NEW\s+TAB(?:\s*-?&gt;)?(?:\s*\])?\s*</a\s*>',
     re.I | re.S,
 )
 
@@ -130,7 +134,13 @@ def repair_viewer(index_path: Path, source: Path) -> bool:
     rel_src = relative_href(source, index_path)
     embed = viewer_embed(rel_src)
 
-    if EMBED_DIV_RE.search(page):
+    # An embed already pointing at the source is kept as-is so its EN/AR
+    # language panels from install_breakdown_language.py survive.
+    already_embedded = re.search(
+        r'<iframe\b[^>]*\bsrc=["\']' + re.escape(html.escape(rel_src, quote=True)) + r'["\']', page)
+    if EMBED_DIV_RE.search(page) and already_embedded:
+        pass
+    elif EMBED_DIV_RE.search(page):
         page = replace_matching_div(page, EMBED_DIV_RE, embed)
     elif COMING_SOON_RE.search(page):
         page = replace_matching_div(page, COMING_SOON_RE, embed)

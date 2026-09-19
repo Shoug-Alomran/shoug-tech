@@ -38,6 +38,25 @@ def _preferred_source(folder: Path, candidates: list[Path]) -> Path:
     return max(preferred or candidates, key=lambda path: path.stat().st_size)
 
 
+IFRAME_SRC_RE = re.compile(r'<iframe\b[^>]*\bsrc=["\']([^"\'#?]+\.html)["\']', re.I)
+
+
+def _wrapper_iframe_source(folder: Path) -> Path | None:
+    """Return the local HTML the viewer wrapper already embeds, if it exists."""
+    index = folder / "index.html"
+    if not index.is_file():
+        return None
+    base = folder.resolve()
+    for src in IFRAME_SRC_RE.findall(index.read_text(encoding="utf-8", errors="ignore")):
+        if src.startswith(("/", "http:", "https:")):
+            continue
+        path = (folder / src).resolve()
+        if (path.is_file() and path.is_relative_to(base) and path != index.resolve()
+                and not path.name.lower().endswith(".ar.html")):
+            return folder / path.relative_to(base)
+    return None
+
+
 def breakdown_source(folder: Path, root: Path | None = None) -> Path | None:
     """Find the authored HTML represented by a dedicated viewer folder.
 
@@ -48,6 +67,19 @@ def breakdown_source(folder: Path, root: Path | None = None) -> Path | None:
     candidates = authored_html(folder)
     if candidates:
         return _preferred_source(folder, candidates)
+    # Nested layouts (CS285, SE201, CS340, ...) keep the file under chapter-N/
+    # with its own name; the wrapper's existing iframe already points at it.
+    embedded = _wrapper_iframe_source(folder)
+    if embedded is not None:
+        return embedded
+    # SE311 keeps each breakdown one level down as `chapter-N/chapter-N.html`.
+    # Only a subfolder's same-named file counts, so figures/ etc. stay excluded.
+    nested = sorted(
+        sub / f"{sub.name}.html" for sub in folder.iterdir()
+        if sub.is_dir() and (sub / f"{sub.name}.html").is_file()
+    ) if folder.is_dir() else []
+    if nested:
+        return _preferred_source(folder, nested)
     if root is not None:
         slug = re.sub(r"^\d+[-_]", "", folder.name).lower()
         root_candidates = [

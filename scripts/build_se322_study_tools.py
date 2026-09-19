@@ -3,6 +3,7 @@
 from pathlib import Path
 import re
 import build_se401_study_tools as core
+from quiz_banks.se322 import BANK as QUIZ_BANK
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "docs/academics/software-engineering/se322"
@@ -276,6 +277,7 @@ def main():
     core.MAPS = BASE / "extra-resources/mindmaps"
     core.EXAMS = BASE / "exams"
     core.CHAPTERS = CHAPTERS
+    core.QUIZ_BANK = QUIZ_BANK
     core.main()
     exam_index = BASE / "exams/index.html"
     exam_text = exam_index.read_text()
