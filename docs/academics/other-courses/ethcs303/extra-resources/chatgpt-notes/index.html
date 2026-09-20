@@ -972,15 +972,37 @@
 .notes-group-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border-dim,rgba(255,255,255,.08));padding-bottom:10px;margin-bottom:20px}
 .notes-group-title{font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-purple,#b829ea);margin:0}
 .notes-group-count{font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.68rem;color:var(--text-secondary,#a09fa6)}
-.notes-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start}
-.notes-card{display:flex;flex-direction:column;border:1px solid var(--border-med,rgba(255,255,255,.12));background:var(--bg-elevated,#0a0611);text-decoration:none;transition:border-color .15s ease,transform .15s ease}
+.notes-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:stretch}
+.notes-card{display:flex;flex-direction:column;height:100%;border:1px solid var(--border-med,rgba(255,255,255,.12));background:var(--bg-elevated,#0a0611);text-decoration:none;transition:border-color .15s ease,transform .15s ease}
 .notes-card:hover,.notes-card:focus-visible{border-color:var(--brand-purple,#b829ea);transform:translateY(-2px)}
-.notes-card img{display:block;width:100%;height:auto;background:#000}
-.notes-card figcaption{padding:12px 14px;font-size:.86rem;line-height:1.45;color:var(--text-primary,#fff)}
+.notes-card figure{display:flex;flex-direction:column;height:100%;margin:0}
+/* One thumbnail box for every note. The screenshots differ wildly in aspect
+   ratio, so each fills the box from its top edge: the grid stays perfectly
+   even and the thumbnail shows the note's heading. The full note opens on
+   click. */
+.notes-thumb{height:230px;flex:0 0 230px;display:block;overflow:hidden;background:#07050c;border-bottom:1px solid var(--border-dim,rgba(255,255,255,.08))}
+.notes-card img{display:block;width:100%;height:100%;object-fit:cover;object-position:top left}
+.notes-card figcaption{flex:1 1 auto;display:flex;align-items:flex-start;padding:12px 14px;font-size:.86rem;line-height:1.45;color:var(--text-primary,#fff)}
 .notes-card .notes-num{font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.68rem;color:var(--brand-purple,#b829ea);margin-right:8px}
 .notes-foot{padding:32px clamp(24px,4vw,64px) 48px}
-@media(min-width:1600px){.notes-grid{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}}
-@media(max-width:700px){.notes-group{padding:22px 18px 0}.notes-intro{padding:0 18px 8px}.notes-grid{grid-template-columns:1fr;gap:14px}.notes-foot{padding:24px 18px 36px}}
+/* In-page viewer. Cards stay real links to the image file, so the gallery
+   still works with scripting off; the script opens this overlay instead. */
+.notes-lightbox[hidden]{display:none}
+/* Above the fixed site header (z-index 10000) so the viewer's own bar is
+   never hidden behind it. */
+.notes-lightbox{position:fixed;inset:0;z-index:10050;display:flex;flex-direction:column;background:rgba(3,2,6,.94);backdrop-filter:blur(4px)}
+.notes-lb-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,3vw,28px);background:#07050c;border-bottom:1px solid var(--border-dim,rgba(255,255,255,.1))}
+.notes-lb-caption{flex:1 1 220px;min-width:0;font-size:.9rem;line-height:1.4;color:var(--text-primary,#fff)}
+.notes-lb-count{font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.7rem;letter-spacing:.1em;color:var(--text-secondary,#a09fa6)}
+.notes-lb-btn{font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:9px 13px;border:1px solid var(--border-med,rgba(255,255,255,.2));background:transparent;color:var(--text-primary,#fff);cursor:pointer;text-decoration:none;white-space:nowrap}
+.notes-lb-btn:hover,.notes-lb-btn:focus-visible{border-color:var(--brand-purple,#b829ea);color:#d978ff}
+.notes-lb-btn[disabled]{opacity:.35;cursor:default}
+.notes-lb-stage{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:10px;padding:clamp(12px,2vw,24px);min-height:0}
+.notes-lb-stage img{max-width:100%;max-height:100%;object-fit:contain;background:#07050c;border:1px solid var(--border-dim,rgba(255,255,255,.1))}
+.notes-lb-nav{flex:0 0 auto;font-size:1.3rem;line-height:1;padding:14px 16px}
+@media(max-width:700px){.notes-lb-bar{gap:8px;padding:10px 12px}.notes-lb-caption{flex-basis:100%;order:-1}.notes-lb-stage{position:relative;padding:10px}.notes-lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:1;padding:14px 12px;background:rgba(7,5,12,.85)}.notes-lb-nav-prev{left:8px}.notes-lb-nav-next{right:8px}}
+@media(min-width:1600px){.notes-grid{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}.notes-thumb{height:260px;flex-basis:260px}}
+@media(max-width:700px){.notes-group{padding:22px 18px 0}.notes-intro{padding:0 18px 8px}.notes-grid{grid-template-columns:1fr;gap:14px}.notes-thumb{height:300px;flex-basis:300px}.notes-foot{padding:24px 18px 36px}}
 </style>
 </head>
   <body>
@@ -1087,7 +1109,7 @@
       <div class="shoug-header-backdrop" data-mobile-overlay></div>
     </header>
     <div class="app-layout">
-      <nav class="sidebar academic-sidebar" aria-label="Academic directory"><div class="sidebar-header"><span class="sidebar-title">SYSTEM_DIRECTORY</span><button class="sidebar-collapse-button" type="button" data-sidebar-collapse aria-expanded="true"><span class="collapse-icon">&lt;</span></button></div><div class="file-tree"><ul class="tree-node"><li class="tree-item root-dir"><a class="tree-course-link" href="/academics/">ACADEMICS/</a></li><li class="tree-item"><a class="tree-file" href="/academic-plan-themes/academic-plan/">ACADEMIC PLAN</a></li><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-computer-science" aria-expanded="false"><span class="tree-toggle">[+]</span> COMPUTER SCIENCE/</button></li><ul id="tree-computer-science" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs101/">CS101</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs102/">CS102</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs210/">CS210</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs285/">CS285</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs330/">CS330</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs331/">CS331</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs340/">CS340</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-software-engineering" aria-expanded="false"><span class="tree-toggle">[+]</span> SOFTWARE ENGINEERING/</button></li><ul id="tree-software-engineering" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se201/">SE201</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se311/">SE311</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se322/">SE322</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se365/">SE365</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se371/">SE371</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se401/">SE401</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se411/">SE411</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se423/">SE423</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se499/">SE499</a></li></ul><li class="tree-item cyber-track"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-cybersecurity" aria-expanded="false"><span class="tree-toggle">[+]</span> CYBERSECURITY/</button></li><ul id="tree-cybersecurity" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys401/">CYS401</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys402/">CYS402</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys403/">CYS403</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys405/">CYS405</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys406/">CYS406</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-math" aria-expanded="false"><span class="tree-toggle">[+]</span> MATH/</button></li><ul id="tree-math" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/math/stat101/">STAT101</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/math221/">MATH221</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy105/">PHY105</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy205/">PHY205</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/sci101/">SCI101</a></li></ul><li class="tree-item dir-open"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-other-courses" aria-expanded="true"><span class="tree-toggle">[-]</span> OTHER COURSES/</button></li><ul id="tree-other-courses" class="tree-children is-open"><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-english" aria-expanded="false"><span class="tree-toggle">[+]</span> ENGLISH HUB/</button></li><ul id="tree-english" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng101/">ENG101</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng103/">ENG103</a></li></ul><li class="tree-item file-active"><a class="tree-file" href="/academics/other-courses/ethcs303/"><span class="status-dot"></span>ETHCS303</a></li><ul class="tree-children section-children"><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/slide-breakdowns/" data-en-text="SLIDE BREAKDOWNS" data-ar-text="تفكيك الشرائح">SLIDE BREAKDOWNS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/video-explanations/" data-en-text="VIDEO EXPLANATIONS" data-ar-text="شروحات الفيديو">VIDEO EXPLANATIONS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/slides/" data-en-text="SLIDES" data-ar-text="الشرائح">SLIDES</a></li><li class="tree-item tree-section file-active"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/" data-en-text="STUDY MATERIAL" data-ar-text="المواد الدراسية"><span class="status-dot"></span>STUDY MATERIAL</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/01-ethcs-303-summary/">Summary</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/01-summary/" data-en-text="Summary" data-ar-text="الملخص">Summary</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/mindmap/" data-en-text="Mindmaps" data-ar-text="الخرائط الذهنية">Mindmaps</a></li><li class="tree-item tree-viewer file-active"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/chatgpt-notes/" data-en-text="ChatGPT Notes" data-ar-text="ملاحظات ChatGPT"><span class="status-dot"></span>ChatGPT Notes</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/ethical-theories-comparison-table/">Ethical Theories Comparison Table</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/moral-theories-guide/">Moral Theories Guide</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/acm-code-of-ethics-and-professional-conduct/">ACM Code of Ethics</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/ieee-code-of-conduct/">IEEE Code of Conduct</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/software-engineering-code-of-ethics-and-professional-practice/">SE Code of Ethics</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/case-scenario-on-whistle-blowing/">Case Scenario: Whistle Blowing</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/class-discussion-on-privacy-policies-in-social-media/">Class Discussion: Privacy Policies</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/comparison-tables-for-all-chapters/">Comparison Tables for All Chapters</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/cheat-sheets/" data-en-text="Cheat Sheets" data-ar-text="أوراق المراجعة">Cheat Sheets</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/practice-questions/">Practice Questions</a></li></ul><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/exams/" data-en-text="EXAMS" data-ar-text="الاختبارات">EXAMS</a></li></ul><li class="tree-item"><a class="tree-file" href="/academics/other-courses/com201/">COM201</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc113/">ISC113</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc213/">ISC213</a></li></ul></ul></div></nav>
+      <nav class="sidebar academic-sidebar" aria-label="Academic directory"><div class="sidebar-header"><span class="sidebar-title">SYSTEM_DIRECTORY</span><button class="sidebar-collapse-button" type="button" data-sidebar-collapse aria-expanded="true"><span class="collapse-icon">&lt;</span></button></div><div class="file-tree"><ul class="tree-node"><li class="tree-item root-dir"><a class="tree-course-link" href="/academics/">ACADEMICS/</a></li><li class="tree-item"><a class="tree-file" href="/academic-plan-themes/academic-plan/">ACADEMIC PLAN</a></li><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-computer-science" aria-expanded="false"><span class="tree-toggle">[+]</span> COMPUTER SCIENCE/</button></li><ul id="tree-computer-science" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs101/">CS101</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs102/">CS102</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs210/">CS210</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs285/">CS285</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs330/">CS330</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs331/">CS331</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs340/">CS340</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-software-engineering" aria-expanded="false"><span class="tree-toggle">[+]</span> SOFTWARE ENGINEERING/</button></li><ul id="tree-software-engineering" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se201/">SE201</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se311/">SE311</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se322/">SE322</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se365/">SE365</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se371/">SE371</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se401/">SE401</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se411/">SE411</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se423/">SE423</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se499/">SE499</a></li></ul><li class="tree-item cyber-track"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-cybersecurity" aria-expanded="false"><span class="tree-toggle">[+]</span> CYBERSECURITY/</button></li><ul id="tree-cybersecurity" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys401/">CYS401</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys402/">CYS402</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys403/">CYS403</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys405/">CYS405</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys406/">CYS406</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-math" aria-expanded="false"><span class="tree-toggle">[+]</span> MATH/</button></li><ul id="tree-math" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/math/stat101/">STAT101</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/math221/">MATH221</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy105/">PHY105</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy205/">PHY205</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/sci101/">SCI101</a></li></ul><li class="tree-item dir-open"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-other-courses" aria-expanded="true"><span class="tree-toggle">[-]</span> OTHER COURSES/</button></li><ul id="tree-other-courses" class="tree-children is-open"><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-english" aria-expanded="false"><span class="tree-toggle">[+]</span> ENGLISH HUB/</button></li><ul id="tree-english" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng101/">ENG101</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng103/">ENG103</a></li></ul><li class="tree-item file-active"><a class="tree-file" href="/academics/other-courses/ethcs303/"><span class="status-dot"></span>ETHCS303</a></li><ul class="tree-children section-children"><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/slide-breakdowns/" data-en-text="SLIDE BREAKDOWNS" data-ar-text="تفكيك الشرائح">SLIDE BREAKDOWNS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/video-explanations/" data-en-text="VIDEO EXPLANATIONS" data-ar-text="شروحات الفيديو">VIDEO EXPLANATIONS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/slides/" data-en-text="SLIDES" data-ar-text="الشرائح">SLIDES</a></li><li class="tree-item tree-section file-active"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/" data-en-text="STUDY MATERIAL" data-ar-text="المواد الدراسية"><span class="status-dot"></span>STUDY MATERIAL</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/01-ethcs-303-summary/">Summary</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/01-summary/" data-en-text="Summary" data-ar-text="الملخص">Summary</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/mindmap/" data-en-text="Mindmaps" data-ar-text="الخرائط الذهنية">Mindmaps</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/chatgpt-notes/" data-en-text="ChatGPT Notes" data-ar-text="ملاحظات ChatGPT">ChatGPT Notes</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/ethical-theories-comparison-table/">Ethical Theories Comparison Table</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/moral-theories-guide/">Moral Theories Guide</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/acm-code-of-ethics-and-professional-conduct/">ACM Code of Ethics</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/ieee-code-of-conduct/">IEEE Code of Conduct</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/software-engineering-code-of-ethics-and-professional-practice/">SE Code of Ethics</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/case-scenario-on-whistle-blowing/">Case Scenario: Whistle Blowing</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/class-discussion-on-privacy-policies-in-social-media/">Class Discussion: Privacy Policies</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/comparison-tables-for-all-chapters/">Comparison Tables for All Chapters</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/cheat-sheets/" data-en-text="Cheat Sheets" data-ar-text="أوراق المراجعة">Cheat Sheets</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/other-courses/ethcs303/extra-resources/practice-questions/">Practice Questions</a></li></ul><li class="tree-item tree-section"><a class="tree-file" href="/academics/other-courses/ethcs303/exams/" data-en-text="EXAMS" data-ar-text="الاختبارات">EXAMS</a></li></ul><li class="tree-item"><a class="tree-file" href="/academics/other-courses/com201/">COM201</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc113/">ISC113</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc213/">ISC213</a></li></ul></ul></div></nav>
       <main class="sys-main" id="main-content" tabindex="-1">
         <div class="content-topbar">
           <div class="breadcrumb">
@@ -1117,27 +1139,35 @@
             <span class="notes-group-count">4 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./01-ethical-theories-focus-and-main-question.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./01-ethical-theories-focus-and-main-question.jpg" loading="lazy" decoding="async" alt="Ethical theories focus and main question" />
+            <a class="notes-card" href="./01-ethical-theories-focus-and-main-question.jpg" data-note="01" data-caption="Ethical theories focus and main question">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./01-ethical-theories-focus-and-main-question.jpg" loading="lazy" decoding="async" alt="Ethical theories focus and main question" />
+                </span>
                 <figcaption><span class="notes-num">01</span>Ethical theories focus and main question</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./02-ethical-theories-main-question-summary.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./02-ethical-theories-main-question-summary.jpg" loading="lazy" decoding="async" alt="Ethical theories main question summary" />
+            <a class="notes-card" href="./02-ethical-theories-main-question-summary.jpg" data-note="02" data-caption="Ethical theories main question summary">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./02-ethical-theories-main-question-summary.jpg" loading="lazy" decoding="async" alt="Ethical theories main question summary" />
+                </span>
                 <figcaption><span class="notes-num">02</span>Ethical theories main question summary</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./03-virtue-ethics-compared-with-the-other-theories.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./03-virtue-ethics-compared-with-the-other-theories.jpg" loading="lazy" decoding="async" alt="Virtue ethics compared with the other theories" />
+            <a class="notes-card" href="./03-virtue-ethics-compared-with-the-other-theories.jpg" data-note="03" data-caption="Virtue ethics compared with the other theories">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./03-virtue-ethics-compared-with-the-other-theories.jpg" loading="lazy" decoding="async" alt="Virtue ethics compared with the other theories" />
+                </span>
                 <figcaption><span class="notes-num">03</span>Virtue ethics compared with the other theories</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./04-four-theories-applied-to-a-lost-wallet.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./04-four-theories-applied-to-a-lost-wallet.jpg" loading="lazy" decoding="async" alt="Four theories applied to a lost wallet" />
+            <a class="notes-card" href="./04-four-theories-applied-to-a-lost-wallet.jpg" data-note="04" data-caption="Four theories applied to a lost wallet">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./04-four-theories-applied-to-a-lost-wallet.jpg" loading="lazy" decoding="async" alt="Four theories applied to a lost wallet" />
+                </span>
                 <figcaption><span class="notes-num">04</span>Four theories applied to a lost wallet</figcaption>
               </figure>
             </a>
@@ -1149,33 +1179,43 @@
             <span class="notes-group-count">5 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./05-professional-relationships-and-their-main-ideas.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./05-professional-relationships-and-their-main-ideas.jpg" loading="lazy" decoding="async" alt="Professional relationships and their main ideas" />
+            <a class="notes-card" href="./05-professional-relationships-and-their-main-ideas.jpg" data-note="05" data-caption="Professional relationships and their main ideas">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./05-professional-relationships-and-their-main-ideas.jpg" loading="lazy" decoding="async" alt="Professional relationships and their main ideas" />
+                </span>
                 <figcaption><span class="notes-num">05</span>Professional relationships and their main ideas</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./06-systems-analyst-vs-software-engineer.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./06-systems-analyst-vs-software-engineer.jpg" loading="lazy" decoding="async" alt="Systems analyst vs. software engineer" />
+            <a class="notes-card" href="./06-systems-analyst-vs-software-engineer.jpg" data-note="06" data-caption="Systems analyst vs. software engineer">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./06-systems-analyst-vs-software-engineer.jpg" loading="lazy" decoding="async" alt="Systems analyst vs. software engineer" />
+                </span>
                 <figcaption><span class="notes-num">06</span>Systems analyst vs. software engineer</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./07-complete-vs-incomplete-requirements.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./07-complete-vs-incomplete-requirements.jpg" loading="lazy" decoding="async" alt="Complete vs. incomplete requirements" />
+            <a class="notes-card" href="./07-complete-vs-incomplete-requirements.jpg" data-note="07" data-caption="Complete vs. incomplete requirements">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./07-complete-vs-incomplete-requirements.jpg" loading="lazy" decoding="async" alt="Complete vs. incomplete requirements" />
+                </span>
                 <figcaption><span class="notes-num">07</span>Complete vs. incomplete requirements</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./08-red-lie-sweep-under-the-rug-cancelled-vacation.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./08-red-lie-sweep-under-the-rug-cancelled-vacation.jpg" loading="lazy" decoding="async" alt="Red lie sweep under the rug cancelled vacation" />
+            <a class="notes-card" href="./08-red-lie-sweep-under-the-rug-cancelled-vacation.jpg" data-note="08" data-caption="Red lie sweep under the rug cancelled vacation">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./08-red-lie-sweep-under-the-rug-cancelled-vacation.jpg" loading="lazy" decoding="async" alt="Red lie sweep under the rug cancelled vacation" />
+                </span>
                 <figcaption><span class="notes-num">08</span>Red lie sweep under the rug cancelled vacation</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./09-systems-analyst-and-software-engineer-listing-questions.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./09-systems-analyst-and-software-engineer-listing-questions.jpg" loading="lazy" decoding="async" alt="Systems analyst and software engineer listing questions" />
+            <a class="notes-card" href="./09-systems-analyst-and-software-engineer-listing-questions.jpg" data-note="09" data-caption="Systems analyst and software engineer listing questions">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./09-systems-analyst-and-software-engineer-listing-questions.jpg" loading="lazy" decoding="async" alt="Systems analyst and software engineer listing questions" />
+                </span>
                 <figcaption><span class="notes-num">09</span>Systems analyst and software engineer listing questions</figcaption>
               </figure>
             </a>
@@ -1187,81 +1227,107 @@
             <span class="notes-group-count">13 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./10-human-and-technical-causes-of-security-problems.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./10-human-and-technical-causes-of-security-problems.jpg" loading="lazy" decoding="async" alt="Human and technical causes of security problems" />
+            <a class="notes-card" href="./10-human-and-technical-causes-of-security-problems.jpg" data-note="10" data-caption="Human and technical causes of security problems">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./10-human-and-technical-causes-of-security-problems.jpg" loading="lazy" decoding="async" alt="Human and technical causes of security problems" />
+                </span>
                 <figcaption><span class="notes-num">10</span>Human and technical causes of security problems</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./11-security-problems-and-countermeasures.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./11-security-problems-and-countermeasures.jpg" loading="lazy" decoding="async" alt="Security problems and countermeasures" />
+            <a class="notes-card" href="./11-security-problems-and-countermeasures.jpg" data-note="11" data-caption="Security problems and countermeasures">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./11-security-problems-and-countermeasures.jpg" loading="lazy" decoding="async" alt="Security problems and countermeasures" />
+                </span>
                 <figcaption><span class="notes-num">11</span>Security problems and countermeasures</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./12-unstructured-vs-structured-attack-summary.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./12-unstructured-vs-structured-attack-summary.jpg" loading="lazy" decoding="async" alt="Unstructured vs. structured attack summary" />
+            <a class="notes-card" href="./12-unstructured-vs-structured-attack-summary.jpg" data-note="12" data-caption="Unstructured vs. structured attack summary">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./12-unstructured-vs-structured-attack-summary.jpg" loading="lazy" decoding="async" alt="Unstructured vs. structured attack summary" />
+                </span>
                 <figcaption><span class="notes-num">12</span>Unstructured vs. structured attack summary</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./13-unstructured-vs-structured-attack-table.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./13-unstructured-vs-structured-attack-table.jpg" loading="lazy" decoding="async" alt="Unstructured vs. structured attack table" />
+            <a class="notes-card" href="./13-unstructured-vs-structured-attack-table.jpg" data-note="13" data-caption="Unstructured vs. structured attack table">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./13-unstructured-vs-structured-attack-table.jpg" loading="lazy" decoding="async" alt="Unstructured vs. structured attack table" />
+                </span>
                 <figcaption><span class="notes-num">13</span>Unstructured vs. structured attack table</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./14-attack-targets-by-attack-type.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./14-attack-targets-by-attack-type.jpg" loading="lazy" decoding="async" alt="Attack targets by attack type" />
+            <a class="notes-card" href="./14-attack-targets-by-attack-type.jpg" data-note="14" data-caption="Attack targets by attack type">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./14-attack-targets-by-attack-type.jpg" loading="lazy" decoding="async" alt="Attack targets by attack type" />
+                </span>
                 <figcaption><span class="notes-num">14</span>Attack targets by attack type</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./15-why-strong-passwords-matter.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./15-why-strong-passwords-matter.jpg" loading="lazy" decoding="async" alt="Why strong passwords matter" />
+            <a class="notes-card" href="./15-why-strong-passwords-matter.jpg" data-note="15" data-caption="Why strong passwords matter">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./15-why-strong-passwords-matter.jpg" loading="lazy" decoding="async" alt="Why strong passwords matter" />
+                </span>
                 <figcaption><span class="notes-num">15</span>Why strong passwords matter</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./16-logic-bomb-vs-exploit-attack.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./16-logic-bomb-vs-exploit-attack.jpg" loading="lazy" decoding="async" alt="Logic bomb vs. exploit attack" />
+            <a class="notes-card" href="./16-logic-bomb-vs-exploit-attack.jpg" data-note="16" data-caption="Logic bomb vs. exploit attack">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./16-logic-bomb-vs-exploit-attack.jpg" loading="lazy" decoding="async" alt="Logic bomb vs. exploit attack" />
+                </span>
                 <figcaption><span class="notes-num">16</span>Logic bomb vs. exploit attack</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./17-attack-types-and-main-ideas.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./17-attack-types-and-main-ideas.jpg" loading="lazy" decoding="async" alt="Attack types and main ideas" />
+            <a class="notes-card" href="./17-attack-types-and-main-ideas.jpg" data-note="17" data-caption="Attack types and main ideas">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./17-attack-types-and-main-ideas.jpg" loading="lazy" decoding="async" alt="Attack types and main ideas" />
+                </span>
                 <figcaption><span class="notes-num">17</span>Attack types and main ideas</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./18-regular-vs-stealth-backdoor-analogy.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./18-regular-vs-stealth-backdoor-analogy.jpg" loading="lazy" decoding="async" alt="Regular vs. stealth backdoor analogy" />
+            <a class="notes-card" href="./18-regular-vs-stealth-backdoor-analogy.jpg" data-note="18" data-caption="Regular vs. stealth backdoor analogy">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./18-regular-vs-stealth-backdoor-analogy.jpg" loading="lazy" decoding="async" alt="Regular vs. stealth backdoor analogy" />
+                </span>
                 <figcaption><span class="notes-num">18</span>Regular vs. stealth backdoor analogy</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./19-regular-vs-stealth-backdoor-table.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./19-regular-vs-stealth-backdoor-table.jpg" loading="lazy" decoding="async" alt="Regular vs. stealth backdoor table" />
+            <a class="notes-card" href="./19-regular-vs-stealth-backdoor-table.jpg" data-note="19" data-caption="Regular vs. stealth backdoor table">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./19-regular-vs-stealth-backdoor-table.jpg" loading="lazy" decoding="async" alt="Regular vs. stealth backdoor table" />
+                </span>
                 <figcaption><span class="notes-num">19</span>Regular vs. stealth backdoor table</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./20-insider-threat-countermeasures-and-purpose.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./20-insider-threat-countermeasures-and-purpose.jpg" loading="lazy" decoding="async" alt="Insider threat countermeasures and purpose" />
+            <a class="notes-card" href="./20-insider-threat-countermeasures-and-purpose.jpg" data-note="20" data-caption="Insider threat countermeasures and purpose">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./20-insider-threat-countermeasures-and-purpose.jpg" loading="lazy" decoding="async" alt="Insider threat countermeasures and purpose" />
+                </span>
                 <figcaption><span class="notes-num">20</span>Insider threat countermeasures and purpose</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./21-cyberterrorism-vs-hacktivism.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./21-cyberterrorism-vs-hacktivism.jpg" loading="lazy" decoding="async" alt="Cyberterrorism vs. hacktivism" />
+            <a class="notes-card" href="./21-cyberterrorism-vs-hacktivism.jpg" data-note="21" data-caption="Cyberterrorism vs. hacktivism">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./21-cyberterrorism-vs-hacktivism.jpg" loading="lazy" decoding="async" alt="Cyberterrorism vs. hacktivism" />
+                </span>
                 <figcaption><span class="notes-num">21</span>Cyberterrorism vs. hacktivism</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./22-dos-vs-ddos.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./22-dos-vs-ddos.jpg" loading="lazy" decoding="async" alt="DoS vs. DDoS" />
+            <a class="notes-card" href="./22-dos-vs-ddos.jpg" data-note="22" data-caption="DoS vs. DDoS">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./22-dos-vs-ddos.jpg" loading="lazy" decoding="async" alt="DoS vs. DDoS" />
+                </span>
                 <figcaption><span class="notes-num">22</span>DoS vs. DDoS</figcaption>
               </figure>
             </a>
@@ -1273,9 +1339,11 @@
             <span class="notes-group-count">1 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./23-cloud-computing-mnemonics-cheat-sheet.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./23-cloud-computing-mnemonics-cheat-sheet.jpg" loading="lazy" decoding="async" alt="Cloud computing mnemonics cheat sheet" />
+            <a class="notes-card" href="./23-cloud-computing-mnemonics-cheat-sheet.jpg" data-note="23" data-caption="Cloud computing mnemonics cheat sheet">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./23-cloud-computing-mnemonics-cheat-sheet.jpg" loading="lazy" decoding="async" alt="Cloud computing mnemonics cheat sheet" />
+                </span>
                 <figcaption><span class="notes-num">23</span>Cloud computing mnemonics cheat sheet</figcaption>
               </figure>
             </a>
@@ -1287,69 +1355,91 @@
             <span class="notes-group-count">11 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./24-cookies-advantages-and-disadvantages.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./24-cookies-advantages-and-disadvantages.jpg" loading="lazy" decoding="async" alt="Cookies advantages and disadvantages" />
+            <a class="notes-card" href="./24-cookies-advantages-and-disadvantages.jpg" data-note="24" data-caption="Cookies advantages and disadvantages">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./24-cookies-advantages-and-disadvantages.jpg" loading="lazy" decoding="async" alt="Cookies advantages and disadvantages" />
+                </span>
                 <figcaption><span class="notes-num">24</span>Cookies advantages and disadvantages</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./25-first-party-vs-third-party-cookies.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./25-first-party-vs-third-party-cookies.jpg" loading="lazy" decoding="async" alt="First party vs. third party cookies" />
+            <a class="notes-card" href="./25-first-party-vs-third-party-cookies.jpg" data-note="25" data-caption="First party vs. third party cookies">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./25-first-party-vs-third-party-cookies.jpg" loading="lazy" decoding="async" alt="First party vs. third party cookies" />
+                </span>
                 <figcaption><span class="notes-num">25</span>First party vs. third party cookies</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./26-regular-cookies-vs-flash-cookies.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./26-regular-cookies-vs-flash-cookies.jpg" loading="lazy" decoding="async" alt="Regular cookies vs. flash cookies" />
+            <a class="notes-card" href="./26-regular-cookies-vs-flash-cookies.jpg" data-note="26" data-caption="Regular cookies vs. flash cookies">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./26-regular-cookies-vs-flash-cookies.jpg" loading="lazy" decoding="async" alt="Regular cookies vs. flash cookies" />
+                </span>
                 <figcaption><span class="notes-num">26</span>Regular cookies vs. flash cookies</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./27-cookies-vs-fingerprinting.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./27-cookies-vs-fingerprinting.jpg" loading="lazy" decoding="async" alt="Cookies vs. fingerprinting" />
+            <a class="notes-card" href="./27-cookies-vs-fingerprinting.jpg" data-note="27" data-caption="Cookies vs. fingerprinting">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./27-cookies-vs-fingerprinting.jpg" loading="lazy" decoding="async" alt="Cookies vs. fingerprinting" />
+                </span>
                 <figcaption><span class="notes-num">27</span>Cookies vs. fingerprinting</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./28-tracking-technologies-compared.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./28-tracking-technologies-compared.jpg" loading="lazy" decoding="async" alt="Tracking technologies compared" />
+            <a class="notes-card" href="./28-tracking-technologies-compared.jpg" data-note="28" data-caption="Tracking technologies compared">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./28-tracking-technologies-compared.jpg" loading="lazy" decoding="async" alt="Tracking technologies compared" />
+                </span>
                 <figcaption><span class="notes-num">28</span>Tracking technologies compared</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./29-cross-device-vs-online-behavioural-tracking.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./29-cross-device-vs-online-behavioural-tracking.jpg" loading="lazy" decoding="async" alt="Cross device vs. online behavioural tracking" />
+            <a class="notes-card" href="./29-cross-device-vs-online-behavioural-tracking.jpg" data-note="29" data-caption="Cross device vs. online behavioural tracking">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./29-cross-device-vs-online-behavioural-tracking.jpg" loading="lazy" decoding="async" alt="Cross device vs. online behavioural tracking" />
+                </span>
                 <figcaption><span class="notes-num">29</span>Cross device vs. online behavioural tracking</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./30-rfid-advantages-and-privacy-risks.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./30-rfid-advantages-and-privacy-risks.jpg" loading="lazy" decoding="async" alt="RFID advantages and privacy risks" />
+            <a class="notes-card" href="./30-rfid-advantages-and-privacy-risks.jpg" data-note="30" data-caption="RFID advantages and privacy risks">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./30-rfid-advantages-and-privacy-risks.jpg" loading="lazy" decoding="async" alt="RFID advantages and privacy risks" />
+                </span>
                 <figcaption><span class="notes-num">30</span>RFID advantages and privacy risks</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./31-data-mining-vs-profiling.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./31-data-mining-vs-profiling.jpg" loading="lazy" decoding="async" alt="Data mining vs. profiling" />
+            <a class="notes-card" href="./31-data-mining-vs-profiling.jpg" data-note="31" data-caption="Data mining vs. profiling">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./31-data-mining-vs-profiling.jpg" loading="lazy" decoding="async" alt="Data mining vs. profiling" />
+                </span>
                 <figcaption><span class="notes-num">31</span>Data mining vs. profiling</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./32-internet-of-things-exam-questions.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./32-internet-of-things-exam-questions.jpg" loading="lazy" decoding="async" alt="Internet of things exam questions" />
+            <a class="notes-card" href="./32-internet-of-things-exam-questions.jpg" data-note="32" data-caption="Internet of things exam questions">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./32-internet-of-things-exam-questions.jpg" loading="lazy" decoding="async" alt="Internet of things exam questions" />
+                </span>
                 <figcaption><span class="notes-num">32</span>Internet of things exam questions</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./33-e-government-advantages-and-privacy-concerns.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./33-e-government-advantages-and-privacy-concerns.jpg" loading="lazy" decoding="async" alt="E-government advantages and privacy concerns" />
+            <a class="notes-card" href="./33-e-government-advantages-and-privacy-concerns.jpg" data-note="33" data-caption="E-government advantages and privacy concerns">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./33-e-government-advantages-and-privacy-concerns.jpg" loading="lazy" decoding="async" alt="E-government advantages and privacy concerns" />
+                </span>
                 <figcaption><span class="notes-num">33</span>E-government advantages and privacy concerns</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./34-biometrics-advantages-and-privacy-risks.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./34-biometrics-advantages-and-privacy-risks.jpg" loading="lazy" decoding="async" alt="Biometrics advantages and privacy risks" />
+            <a class="notes-card" href="./34-biometrics-advantages-and-privacy-risks.jpg" data-note="34" data-caption="Biometrics advantages and privacy risks">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./34-biometrics-advantages-and-privacy-risks.jpg" loading="lazy" decoding="async" alt="Biometrics advantages and privacy risks" />
+                </span>
                 <figcaption><span class="notes-num">34</span>Biometrics advantages and privacy risks</figcaption>
               </figure>
             </a>
@@ -1361,15 +1451,19 @@
             <span class="notes-group-count">2 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./35-social-media-advantages-in-organizations.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./35-social-media-advantages-in-organizations.jpg" loading="lazy" decoding="async" alt="Social media advantages in organizations" />
+            <a class="notes-card" href="./35-social-media-advantages-in-organizations.jpg" data-note="35" data-caption="Social media advantages in organizations">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./35-social-media-advantages-in-organizations.jpg" loading="lazy" decoding="async" alt="Social media advantages in organizations" />
+                </span>
                 <figcaption><span class="notes-num">35</span>Social media advantages in organizations</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./36-social-networking-policy-four-questions.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./36-social-networking-policy-four-questions.jpg" loading="lazy" decoding="async" alt="Social networking policy four questions" />
+            <a class="notes-card" href="./36-social-networking-policy-four-questions.jpg" data-note="36" data-caption="Social networking policy four questions">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./36-social-networking-policy-four-questions.jpg" loading="lazy" decoding="async" alt="Social networking policy four questions" />
+                </span>
                 <figcaption><span class="notes-num">36</span>Social networking policy four questions</figcaption>
               </figure>
             </a>
@@ -1381,21 +1475,27 @@
             <span class="notes-group-count">3 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./37-importance-of-business-ethics.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./37-importance-of-business-ethics.jpg" loading="lazy" decoding="async" alt="Importance of business ethics" />
+            <a class="notes-card" href="./37-importance-of-business-ethics.jpg" data-note="37" data-caption="Importance of business ethics">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./37-importance-of-business-ethics.jpg" loading="lazy" decoding="async" alt="Importance of business ethics" />
+                </span>
                 <figcaption><span class="notes-num">37</span>Importance of business ethics</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./38-business-ethics-vs-code-of-ethics.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./38-business-ethics-vs-code-of-ethics.jpg" loading="lazy" decoding="async" alt="Business ethics vs. code of ethics" />
+            <a class="notes-card" href="./38-business-ethics-vs-code-of-ethics.jpg" data-note="38" data-caption="Business ethics vs. code of ethics">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./38-business-ethics-vs-code-of-ethics.jpg" loading="lazy" decoding="async" alt="Business ethics vs. code of ethics" />
+                </span>
                 <figcaption><span class="notes-num">38</span>Business ethics vs. code of ethics</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./39-ethical-decision-making-model-example.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./39-ethical-decision-making-model-example.jpg" loading="lazy" decoding="async" alt="Ethical decision making model example" />
+            <a class="notes-card" href="./39-ethical-decision-making-model-example.jpg" data-note="39" data-caption="Ethical decision making model example">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./39-ethical-decision-making-model-example.jpg" loading="lazy" decoding="async" alt="Ethical decision making model example" />
+                </span>
                 <figcaption><span class="notes-num">39</span>Ethical decision making model example</figcaption>
               </figure>
             </a>
@@ -1407,15 +1507,19 @@
             <span class="notes-group-count">2 notes</span>
           </div>
           <div class="notes-grid">
-            <a class="notes-card" href="./40-anti-cyber-crime-law-articles-and-penalties.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./40-anti-cyber-crime-law-articles-and-penalties.jpg" loading="lazy" decoding="async" alt="Anti cyber crime law articles and penalties" />
+            <a class="notes-card" href="./40-anti-cyber-crime-law-articles-and-penalties.jpg" data-note="40" data-caption="Anti cyber crime law articles and penalties">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./40-anti-cyber-crime-law-articles-and-penalties.jpg" loading="lazy" decoding="async" alt="Anti cyber crime law articles and penalties" />
+                </span>
                 <figcaption><span class="notes-num">40</span>Anti cyber crime law articles and penalties</figcaption>
               </figure>
             </a>
-            <a class="notes-card" href="./41-cyber-crime-definition-lecture-screenshot.jpg" target="_blank" rel="noopener noreferrer">
-              <figure style="margin:0">
-                <img src="./41-cyber-crime-definition-lecture-screenshot.jpg" loading="lazy" decoding="async" alt="Cyber crime definition lecture screenshot" />
+            <a class="notes-card" href="./41-cyber-crime-definition-lecture-screenshot.jpg" data-note="41" data-caption="Cyber crime definition lecture screenshot">
+              <figure>
+                <span class="notes-thumb">
+                  <img src="./41-cyber-crime-definition-lecture-screenshot.jpg" loading="lazy" decoding="async" alt="Cyber crime definition lecture screenshot" />
+                </span>
                 <figcaption><span class="notes-num">41</span>Cyber crime definition lecture screenshot</figcaption>
               </figure>
             </a>
@@ -1424,6 +1528,97 @@
         <div class="notes-foot">
           <a class="btn btn-secondary" href="/academics/other-courses/ethcs303/extra-resources/">[ &lt;- BACK TO INDEX ]</a>
         </div>
+        <div class="notes-lightbox" id="notes-lightbox" hidden role="dialog"
+          aria-modal="true" aria-label="Note viewer">
+          <div class="notes-lb-bar">
+            <span class="notes-lb-count" id="notes-lb-count"></span>
+            <span class="notes-lb-caption" id="notes-lb-caption"></span>
+            <a class="notes-lb-btn" id="notes-lb-open" href="#" target="_blank"
+              rel="noopener noreferrer">Open file</a>
+            <button class="notes-lb-btn" type="button" id="notes-lb-close"
+              aria-label="Close viewer">Close</button>
+          </div>
+          <div class="notes-lb-stage">
+            <button class="notes-lb-btn notes-lb-nav notes-lb-nav-prev" type="button" id="notes-lb-prev"
+              aria-label="Previous note">&lt;</button>
+            <img id="notes-lb-img" src="" alt="" />
+            <button class="notes-lb-btn notes-lb-nav notes-lb-nav-next" type="button" id="notes-lb-next"
+              aria-label="Next note">&gt;</button>
+          </div>
+        </div>
+        <script>
+          (function () {
+            var cards = Array.prototype.slice.call(
+              document.querySelectorAll(".notes-card")
+            );
+            var box = document.getElementById("notes-lightbox");
+            if (!cards.length || !box) return;
+            var img = document.getElementById("notes-lb-img");
+            var caption = document.getElementById("notes-lb-caption");
+            var count = document.getElementById("notes-lb-count");
+            var open = document.getElementById("notes-lb-open");
+            var prev = document.getElementById("notes-lb-prev");
+            var next = document.getElementById("notes-lb-next");
+            var close = document.getElementById("notes-lb-close");
+            var at = -1;
+            var opener = null;
+
+            function show(i) {
+              if (i < 0 || i >= cards.length) return;
+              at = i;
+              var card = cards[i];
+              var href = card.getAttribute("href");
+              img.src = href;
+              img.alt = card.getAttribute("data-caption") || "";
+              caption.textContent = card.getAttribute("data-caption") || "";
+              count.textContent =
+                card.getAttribute("data-note") + " / " + cards.length;
+              open.href = href;
+              prev.disabled = i === 0;
+              next.disabled = i === cards.length - 1;
+            }
+
+            function openAt(i, source) {
+              opener = source || null;
+              box.hidden = false;
+              document.body.style.overflow = "hidden";
+              show(i);
+              close.focus();
+            }
+
+            function shut() {
+              box.hidden = true;
+              document.body.style.overflow = "";
+              img.src = "";
+              if (opener) opener.focus();
+            }
+
+            cards.forEach(function (card, i) {
+              card.addEventListener("click", function (event) {
+                // Let modified clicks (new tab, download) behave normally.
+                if (
+                  event.metaKey || event.ctrlKey || event.shiftKey ||
+                  event.altKey || event.button !== 0
+                ) return;
+                event.preventDefault();
+                openAt(i, card);
+              });
+            });
+
+            prev.addEventListener("click", function () { show(at - 1); });
+            next.addEventListener("click", function () { show(at + 1); });
+            close.addEventListener("click", shut);
+            box.addEventListener("click", function (event) {
+              if (event.target === box || event.target.parentNode === box) shut();
+            });
+            document.addEventListener("keydown", function (event) {
+              if (box.hidden) return;
+              if (event.key === "Escape") shut();
+              else if (event.key === "ArrowLeft") show(at - 1);
+              else if (event.key === "ArrowRight") show(at + 1);
+            });
+          })();
+        </script>
       </main>
     </div>
     <script>
