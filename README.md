@@ -25,14 +25,18 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 
 ## Tech Stack
 
-* **Python 3**
-* [MkDocs](https://www.mkdocs.org/)
-* [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-* [mkdocs-static-i18n](https://github.com/ultrabug/mkdocs-static-i18n)
-* **HTML / CSS / JavaScript**
-* **GitHub Actions**
-* **GitHub Pages**
-* **Cloudflare**
+- **Python 3**
+- **HTML**
+- **CSS**
+- **JavaScript**
+- [MkDocs](https://www.mkdocs.org/)
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+- [mkdocs-static-i18n](https://github.com/ultrabug/mkdocs-static-i18n)
+- **Firebase Authentication**
+- **Firebase**
+- **GitHub Actions**
+- **GitHub Pages**
+- **Cloudflare**
 
 ## Repository Structure
 
