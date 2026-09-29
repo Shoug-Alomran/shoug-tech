@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the ACM Programming Jam 2026 (JAM.26) pages under /workshops/ai-programming-jam/.
+"""Build the WebForge 2026 (WEBFORGE.26) pages under /workshops/webforge/.
 
 Content is written once as a single-page BODY and split into the hub plus four
 sub-pages; the shared chrome, CSS and page shells come from event_page_kit.
@@ -22,13 +22,13 @@ from event_page_kit import (
     write,
 )
 
-ROOT = DOCS / "workshops" / "ai-programming-jam"
-BASE = "/workshops/ai-programming-jam/"
-EVENT_LABEL = "ACM Programming Jam 2026"
+ROOT = DOCS / "workshops" / "webforge"
+BASE = "/workshops/webforge/"
+EVENT_LABEL = "WebForge 2026"
 
-TITLE = "ACM Programming Jam 2026 // SHOUG.TECH"
+TITLE = "WebForge 2026 // SHOUG.TECH"
 DESCRIPTION = (
-    "ACM Programming Jam 2026 (JAM.26) at Prince Sultan University — an AI-assisted "
+    "WebForge 2026 (WEBFORGE.26) at Prince Sultan University — an AI-assisted "
     "web engineering event. Three workshop days on planning, full-stack development and "
     "debugging, and deployment, all written and taught by Shoug Alomran, plus the "
     "competition format, rubric, rules and FAQ."
@@ -775,10 +775,10 @@ THEME_CSS = """
 
 ABOUT = {
     "@type": "Event",
-    "name": "ACM Programming Jam 2026 (JAM.26)",
+    "name": "WebForge 2026 (WEBFORGE.26)",
     "description": "An AI-assisted web engineering event: three preparation workshop days followed by a one-day team competition.",
-    "startDate": "2026-09-15",
-    "endDate": "2026-09-19",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-17",
     "eventStatus": "https://schema.org/EventScheduled",
     "organizer": {
         "@type": "Organization",
@@ -786,7 +786,7 @@ ABOUT = {
     },
     "performer": {"@type": "Person", "name": "Shoug Alomran"},
     "location": {"@type": "Place", "name": "Prince Sultan University", "address": "Riyadh, Saudi Arabia"},
-    "url": "https://ai-programming-jam.shoug-tech.com/",
+    "url": "https://acmchapter-psu.github.io/acm-webforge-2026/",
 }
 
 
@@ -798,30 +798,30 @@ __HEADER__
     <main id="main-content" tabindex="-1">
         <div class="wrap">
             <div class="breadcrumb">
-                <a href="/workshops/">Workshops</a><span class="sep">/</span><span>ACM Programming Jam 2026</span>
+                <a href="/workshops/">Workshops</a><span class="sep">/</span><span>WebForge 2026</span>
             </div>
 __SUBNAV__
 
             <section class="hero">
                 <div>
                     <div class="kicker"><span class="dot"></span>Workshop_04 &nbsp;//&nbsp; Authored &amp; Taught</div>
-                    <h1><span class="brace">&lt;</span>AI Programming Jam<span class="brace">/&gt;</span></h1>
+                    <h1><span class="brace">&lt;</span>WebForge<span class="brace">/&gt;</span></h1>
                     <div class="hero-tagline">// Code. Construct. Create.</div>
                     <p class="hero-lede">
-                        ACM Programming Jam 2026 (JAM.26) is an AI-assisted web engineering event at Prince Sultan
+                        WebForge 2026 (WEBFORGE.26) is an AI-assisted web engineering event at Prince Sultan
                         University. Every team receives the same application brief, then plans it, designs it, builds
                         it, deploys it, and presents it. I wrote the content for all three preparation workshop days,
                         taught them, and built the official event website.
                     </p>
                     <div class="hero-facts">
                         <span>3 Workshop Days</span>
-                        <span>15 &middot; 16 &middot; 17 Sep 2026</span>
-                        <span>Competition 19 Sep 2026</span>
+                        <span>11 &middot; 12 &middot; 14 Oct 2026</span>
+                        <span>Competition 17 Oct 2026</span>
                         <span>PSU CCIS &middot; ACM</span>
                     </div>
                     <div class="hero-actions">
-                        <a class="btn btn-primary" href="https://ai-programming-jam.shoug-tech.com/" target="_blank" rel="noopener">[ Visit the event site -&gt; ]</a>
-                        <a class="btn btn-ghost" href="/workshops/ai-programming-jam/workshop-days/">[ Workshop days ]</a>
+                        <a class="btn btn-primary" href="https://acmchapter-psu.github.io/acm-webforge-2026/" target="_blank" rel="noopener">[ Visit the event site -&gt; ]</a>
+                        <a class="btn btn-ghost" href="/workshops/webforge/workshop-days/">[ Workshop days ]</a>
                         <a class="btn btn-ghost" href="/workshops/">[ &lt;- All workshops ]</a>
                     </div>
                 </div>
@@ -829,7 +829,7 @@ __SUBNAV__
                 <div class="win" aria-hidden="true">
                     <div class="win-bar">
                         <span class="win-dots"><i></i><i></i><i></i></span>
-                        <span>jam26 &mdash; build.js</span>
+                        <span>webforge &mdash; build.js</span>
                     </div>
                     <div class="win-body code">
 <span class="ln"><span class="c">// one brief, four phases</span></span>
@@ -848,7 +848,7 @@ __SUBNAV__
             <div class="meta-strip">
                 <div class="meta-item">
                     <span class="meta-label">Event</span>
-                    <span class="meta-value">ACM Programming Jam 2026 &mdash; JAM.26</span>
+                    <span class="meta-value">WebForge 2026 &mdash; WEBFORGE.26</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Host</span>
@@ -868,7 +868,7 @@ __SUBNAV__
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Schedule</span>
-                    <span class="meta-value">Workshops 15, 16 &amp; 17 September 2026 &middot; Competition 19 September 2026 &middot; Time &amp; location announced by the organizers</span>
+                    <span class="meta-value">Workshops 11, 12 &amp; 14 October 2026 &middot; 4:00&ndash;6:00 PM &middot; Room E231 &middot; Competition 17 October 2026</span>
                 </div>
             </div>
         </div>
@@ -894,7 +894,7 @@ __SUBNAV__
                     <ul class="contrib">
                         <li><span class="mark">[&gt;]</span> <span>I <strong>wrote the content for all three workshop days</strong> &mdash; planning and development workflow, full-stack development and debugging, and deployment with production readiness &mdash; including the objectives, walkthroughs, and hands-on steps for each session.</span></li>
                         <li><span class="mark">[&gt;]</span> <span>I <strong>taught every one of the three days</strong>. The event site states it plainly: all workshops are developed and taught by Shoug Alomran.</span></li>
-                        <li><span class="mark">[&gt;]</span> <span>I <strong>designed and built the official JAM.26 website</strong> at ai-programming-jam.shoug-tech.com &mdash; the workshop pages, competition breakdown, rules, FAQ with search, and the team registration flow.</span></li>
+                        <li><span class="mark">[&gt;]</span> <span>I <strong>designed and built the official WEBFORGE.26 website</strong> at acmchapter-psu.github.io/acm-webforge-2026 &mdash; the workshop pages, competition breakdown, rules, FAQ with search, and the team registration flow.</span></li>
                         <li><span class="mark">[&gt;]</span> <span>I structured the workshops so that the three days rehearse the exact workflow teams use on competition day, rather than teaching tools in isolation.</span></li>
                     </ul>
                     <div class="win term" aria-hidden="true">
@@ -903,15 +903,15 @@ __SUBNAV__
                             <span>run_training_sequence.sh</span>
                         </div>
                         <div class="win-body">
-<span class="prompt">jam26@sys:~$</span> ./run_training_sequence.sh
+<span class="prompt">webforge@sys:~$</span> ./run_training_sequence.sh
 <span class="ok">[ok]</span> <span class="out">day_01 &mdash; planning &amp; workflow</span>
 <span class="ok">[ok]</span> <span class="out">day_02 &mdash; build &amp; debug</span>
 <span class="ok">[ok]</span> <span class="out">day_03 &mdash; deploy &amp; measure</span>
 <span class="out">----------------------------------------</span>
 <span class="out">build status:</span> <span class="ok">ready</span>
 <span class="out">team status: </span> <span class="ok">ready</span>
-<span class="out">jam status:  </span> <span class="warn">awaiting challenge</span>
-<span class="prompt">jam26@sys:~$</span> <span class="caret"></span>
+<span class="out">event status:</span> <span class="warn">awaiting challenge</span>
+<span class="prompt">webforge@sys:~$</span> <span class="caret"></span>
                         </div>
                     </div>
                 </div>
@@ -925,25 +925,25 @@ __SUBNAV__
                 <div class="grid-2">
                     <div class="card">
                         <div class="card-num">Phase_01</div>
-                        <span class="when">15 September 2026</span>
+                        <span class="when">11 October 2026</span>
                         <h3>Understand &amp; Plan</h3>
                         <p>Read the requirements, map how the system works in Excalidraw, and design the interface in Variant.</p>
                     </div>
                     <div class="card">
                         <div class="card-num">Phase_02</div>
-                        <span class="when">16 September 2026</span>
+                        <span class="when">12 October 2026</span>
                         <h3>Build &amp; Connect</h3>
                         <p>Develop in VS Code with Codex and Claude Code. Add authentication and persistent data with Firebase.</p>
                     </div>
                     <div class="card">
                         <div class="card-num">Phase_03</div>
-                        <span class="when">17 September 2026</span>
+                        <span class="when">14 October 2026</span>
                         <h3>Deploy &amp; Measure</h3>
                         <p>Version with GitHub, deploy to Vercel, configure the domain in Cloudflare, then measure with PageSpeed Insights.</p>
                     </div>
                     <div class="card">
                         <div class="card-num">Phase_04</div>
-                        <span class="when">19 September 2026 &middot; Competition</span>
+                        <span class="when">17 October 2026 &middot; Competition</span>
                         <h3>Adapt &amp; Present</h3>
                         <p>Respond to the unexpected change request, then demonstrate and explain what you built.</p>
                     </div>
@@ -958,7 +958,7 @@ __SUBNAV__
 
                 <div class="day">
                     <div>
-                        <div class="day-index">Day_01 // 15 September 2026</div>
+                        <div class="day-index">Day_01 // 11 October 2026 &middot; 4:00&ndash;6:00 PM &middot; E231</div>
                         <h3>Planning &amp; Development Workflow</h3>
                         <p class="focus">Turning a problem into a structured development plan before writing code.</p>
                         <ul class="objectives">
@@ -973,7 +973,7 @@ __SUBNAV__
                     <div class="win" aria-hidden="true">
                         <div class="win-bar">
                             <span class="win-dots"><i></i><i></i><i></i></span>
-                            <span>jam_project &mdash; requirements.md</span>
+                            <span>webforge_project &mdash; requirements.md</span>
                         </div>
                         <div class="win-body code">
 <span class="ln"><span class="k"># requirements.md</span></span>
@@ -993,7 +993,7 @@ __SUBNAV__
 
                 <div class="day">
                     <div>
-                        <div class="day-index">Day_02 // 16 September 2026</div>
+                        <div class="day-index">Day_02 // 12 October 2026 &middot; 4:00&ndash;6:00 PM &middot; E231</div>
                         <h3>Full-Stack Development &amp; Debugging</h3>
                         <p class="focus">Turning the plan into a working application and learning how to diagnose problems when things break.</p>
                         <ul class="objectives">
@@ -1008,7 +1008,7 @@ __SUBNAV__
                     <div class="win term" aria-hidden="true">
                         <div class="win-bar">
                             <span class="win-dots"><i></i><i></i><i></i></span>
-                            <span>~/jam_project/server</span>
+                            <span>~/webforge_project/server</span>
                         </div>
                         <div class="win-body">
 <span class="prompt">$</span> npm run dev
@@ -1025,7 +1025,7 @@ __SUBNAV__
 
                 <div class="day">
                     <div>
-                        <div class="day-index">Day_03 // 17 September 2026</div>
+                        <div class="day-index">Day_03 // 14 October 2026 &middot; 4:00&ndash;6:00 PM &middot; E231</div>
                         <h3>Deployment, Domains &amp; Production Readiness</h3>
                         <p class="focus">The final preparation stage: take the application from localhost to a real production
                             URL, point a domain at it, make it discoverable, and measure it.</p>
@@ -1036,7 +1036,7 @@ __SUBNAV__
                             <li>Measure performance with PageSpeed Insights</li>
                             <li>Verify the production build before it is judged</li>
                         </ul>
-                        <div class="status-line">Module focus: deploy &rarr; domain &rarr; index &rarr; measure &nbsp;//&nbsp; Status: jam_ready</div>
+                        <div class="status-line">Module focus: deploy &rarr; domain &rarr; index &rarr; measure &nbsp;//&nbsp; Status: webforge_ready</div>
                     </div>
                     <div class="win term" aria-hidden="true">
                         <div class="win-bar">
@@ -1045,8 +1045,8 @@ __SUBNAV__
                         </div>
                         <div class="win-body">
 <span class="prompt">$</span> vercel --prod
-<span class="ok">&#10003;</span> <span class="out">production: https://team.jam26.dev</span>
-<span class="prompt">$</span> jam check --readiness
+<span class="ok">&#10003;</span> <span class="out">production: https://team.webforge.dev</span>
+<span class="prompt">$</span> webforge check --readiness
 <span class="out">core features&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="ok">pass</span>
 <span class="out">error handling&nbsp;&nbsp;&nbsp;</span> <span class="ok">pass</span>
 <span class="out">ui polish&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="warn">in_progress</span>
@@ -1079,7 +1079,7 @@ __SUBNAV__
             </section>
 
             <section class="block" id="competition">
-                <div class="sect-label">// Competition day &middot; 19 September 2026</div>
+                <div class="sect-label">// Competition day &middot; 17 October 2026</div>
                 <h2 class="sect-title">No tutorial this time. You build it.</h2>
                 <p class="sect-intro">Competition day puts everything from the workshops into practice. A team receives the
                     challenge, plans a solution, builds a working web application, adapts to a mid-event change, and presents
@@ -1202,7 +1202,7 @@ __SUBNAV__
             <section class="block" id="rules">
                 <div class="sect-label">// Rules</div>
                 <h2 class="sect-title">Build freely. Compete fairly.</h2>
-                <p class="sect-intro">This is an AI programming jam: AI may generate part or all of an application, and there
+                <p class="sect-intro">This is an AI WebForge: AI may generate part or all of an application, and there
                     is no requirement to hand-write a set amount of code. The restrictions exist to keep that freedom fair,
                     not to limit AI-assisted development. If something is not prohibited, it is generally permitted &mdash;
                     and when a team is unsure, they ask an organizer first.</p>
@@ -1230,7 +1230,7 @@ __SUBNAV__
                     </div>
                 </div>
                 <p class="sect-intro" style="margin-top: 16px;">The same principle applies to equivalent plans from other AI
-                    providers. AI is part of the jam; pay-to-win is not.</p>
+                    providers. AI is part of WebForge; pay-to-win is not.</p>
 
                 <div class="grid-3" style="margin-top: 28px;">
                     <div class="rule">
@@ -1309,7 +1309,7 @@ __SUBNAV__
 
                 <div class="faq-group">
                     <div class="faq-group-title">01 / Getting started</div>
-                    <details class="faq"><summary>Do I need web development experience?</summary><div class="answer"><b>No.</b> The Programming Jam is designed to be approachable for participants who are still learning. The preparation workshops introduce the development workflow and the tools used throughout the event.</div></details>
+                    <details class="faq"><summary>Do I need web development experience?</summary><div class="answer"><b>No.</b> The WebForge is designed to be approachable for participants who are still learning. The preparation workshops introduce the development workflow and the tools used throughout the event.</div></details>
                     <details class="faq"><summary>Do I need to be an experienced programmer?</summary><div class="answer"><b>No.</b> You should be willing to learn, experiment, solve problems, and work with your team. AI is intentionally part of the development process.</div></details>
                     <details class="faq"><summary>Who can participate?</summary><div class="answer">University students who complete registration may participate. Final eligibility details are confirmed by the organizers before the event.</div></details>
                     <details class="faq"><summary>What should I bring?</summary><div class="answer">A laptop, charger, and access to the email and development accounts you plan to use. Install a modern browser, Visual Studio Code, Git, and Node.js in advance.</div></details>
@@ -1357,12 +1357,12 @@ __SUBNAV__
 
         <div class="wrap">
             <div class="cta">
-                <div class="sect-label">// jam.26</div>
+                <div class="sect-label">// webforge.26</div>
                 <h2>Think. Build. Adapt. Ship.</h2>
                 <p>The workshops give teams the workflow. Competition day tests what they can do with it &mdash; without the
                     tutorial wheels.</p>
                 <div class="hero-actions">
-                    <a class="btn btn-primary" href="https://ai-programming-jam.shoug-tech.com/" target="_blank" rel="noopener">[ ai-programming-jam.shoug-tech.com ]</a>
+                    <a class="btn btn-primary" href="https://acmchapter-psu.github.io/acm-webforge-2026/" target="_blank" rel="noopener">[ acmchapter-psu.github.io/acm-webforge-2026 ]</a>
                     <a class="btn btn-ghost" href="/workshops/">[ &lt;- All workshops ]</a>
                 </div>
             </div>
@@ -1382,29 +1382,29 @@ HUB_CARDS = """
                     how competition day runs and is scored, the rules that govern AI use, and the questions participants
                     ask most.</p>
                 <div class="hub-grid">
-                    <a class="hub-card" href="/workshops/ai-programming-jam/workshop-days/">
+                    <a class="hub-card" href="/workshops/webforge/workshop-days/">
                         <div class="hub-card-top"><span>01 // Workshops</span><span class="file">days.md</span></div>
                         <h3>Workshop Days</h3>
                         <p>Three days that take a participant from an idea to a working, deployed web application:
                             planning and workflow, full-stack development and debugging, then deployment, domains and
                             production readiness.</p>
-                        <div class="hub-meta"><span>15 &middot; 16 &middot; 17 Sep 2026</span><span class="arrow">-&gt;</span></div>
+                        <div class="hub-meta"><span>11 &middot; 12 &middot; 14 Oct 2026</span><span class="arrow">-&gt;</span></div>
                     </a>
-                    <a class="hub-card" href="/workshops/ai-programming-jam/competition/">
-                        <div class="hub-card-top"><span>02 // Competition</span><span class="file">jam.md</span></div>
+                    <a class="hub-card" href="/workshops/webforge/competition/">
+                        <div class="hub-card-top"><span>02 // Competition</span><span class="file">competition.md</span></div>
                         <h3>Competition Day</h3>
                         <p>The six-step competition loop, the 100-point rubric across seven categories, the timeline of
                             the day, what judges verify, and the full submission checklist.</p>
-                        <div class="hub-meta"><span>19 Sep 2026</span><span class="arrow">-&gt;</span></div>
+                        <div class="hub-meta"><span>17 Oct 2026</span><span class="arrow">-&gt;</span></div>
                     </a>
-                    <a class="hub-card" href="/workshops/ai-programming-jam/rules/">
+                    <a class="hub-card" href="/workshops/webforge/rules/">
                         <div class="hub-card-top"><span>03 // Rules</span><span class="file">rules.md</span></div>
                         <h3>Rules &amp; AI Policy</h3>
                         <p>AI may write the whole application &mdash; within limits. The AI access tiers, and the eleven
                             things a team cannot do.</p>
                         <div class="hub-meta"><span>11 rules</span><span class="arrow">-&gt;</span></div>
                     </a>
-                    <a class="hub-card" href="/workshops/ai-programming-jam/faq/">
+                    <a class="hub-card" href="/workshops/webforge/faq/">
                         <div class="hub-card-top"><span>04 // FAQ</span><span class="file">faq.md</span></div>
                         <h3>Questions</h3>
                         <p>Experience needed, team size and formation, which AI plans are allowed, what the workshops
@@ -1418,12 +1418,12 @@ HUB_CARDS = """
 CTA = """
         <div class="wrap">
             <div class="cta">
-                <div class="sect-label">// jam.26</div>
+                <div class="sect-label">// webforge.26</div>
                 <h2>Think. Build. Adapt. Ship.</h2>
                 <p>The workshops give teams the workflow. Competition day tests what they can do with it &mdash; without the
                     tutorial wheels.</p>
                 <div class="hero-actions">
-                    <a class="btn btn-primary" href="https://ai-programming-jam.shoug-tech.com/" target="_blank" rel="noopener">[ ai-programming-jam.shoug-tech.com ]</a>
+                    <a class="btn btn-primary" href="https://acmchapter-psu.github.io/acm-webforge-2026/" target="_blank" rel="noopener">[ acmchapter-psu.github.io/acm-webforge-2026 ]</a>
                     <a class="btn btn-ghost" href="/workshops/">[ &lt;- All workshops ]</a>
                 </div>
             </div>
@@ -1443,13 +1443,13 @@ PAGES = (
         slug="workshop-days/",
         label="Workshop days",
         filename="workshop-days",
-        title="JAM.26 Workshop Days // SHOUG.TECH",
+        title="WEBFORGE.26 Workshop Days // SHOUG.TECH",
         description=(
-            "The three ACM Programming Jam 2026 workshop days, written and taught by Shoug Alomran: planning and "
+            "The three WebForge 2026 workshop days, written and taught by Shoug Alomran: planning and "
             "development workflow, full-stack development and debugging, and deployment, domains and production "
             "readiness, plus the toolchain taught across them."
         ),
-        eyebrow="ACM Programming Jam 2026 // Section 01",
+        eyebrow="WebForge 2026 // Section 01",
         heading="Workshop Days",
         sections=("days", "toolchain"),
     ),
@@ -1457,12 +1457,12 @@ PAGES = (
         slug="competition/",
         label="Competition",
         filename="competition",
-        title="JAM.26 Competition Day // SHOUG.TECH",
+        title="WEBFORGE.26 Competition Day // SHOUG.TECH",
         description=(
-            "How ACM Programming Jam 2026 competition day runs: the six-step competition loop, the 100-point rubric "
+            "How WebForge 2026 competition day runs: the six-step competition loop, the 100-point rubric "
             "across seven categories, the timeline of the day, what judges verify, and the submission checklist."
         ),
-        eyebrow="ACM Programming Jam 2026 // Section 02",
+        eyebrow="WebForge 2026 // Section 02",
         heading="Competition Day",
         sections=("competition",),
     ),
@@ -1470,12 +1470,12 @@ PAGES = (
         slug="rules/",
         label="Rules",
         filename="rules",
-        title="JAM.26 Rules &amp; AI Policy // SHOUG.TECH",
+        title="WEBFORGE.26 Rules &amp; AI Policy // SHOUG.TECH",
         description=(
-            "The ACM Programming Jam 2026 rules: which AI plans and tiers teams may use, and the eleven prohibited "
+            "The WebForge 2026 rules: which AI plans and tiers teams may use, and the eleven prohibited "
             "actions that keep AI-assisted development fair between teams."
         ),
-        eyebrow="ACM Programming Jam 2026 // Section 03",
+        eyebrow="WebForge 2026 // Section 03",
         heading="Rules",
         sections=("rules",),
     ),
@@ -1483,12 +1483,12 @@ PAGES = (
         slug="faq/",
         label="FAQ",
         filename="faq",
-        title="JAM.26 FAQ // SHOUG.TECH",
+        title="WEBFORGE.26 FAQ // SHOUG.TECH",
         description=(
-            "Frequently asked questions about ACM Programming Jam 2026: experience required, teams and team size, "
+            "Frequently asked questions about WebForge 2026: experience required, teams and team size, "
             "permitted AI tools and plans, what the workshops teach, competition day, and what each team submits."
         ),
-        eyebrow="ACM Programming Jam 2026 // Section 04",
+        eyebrow="WebForge 2026 // Section 04",
         heading="FAQ",
         sections=("faq",),
     ),
