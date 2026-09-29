@@ -6,7 +6,7 @@ lifted at build time from an existing hand-written workshop page, so these pages
 stay in sync with the rest of the site. Each event builder supplies its own
 content, accent palette and page list; everything structural lives here.
 
-Used by build_ai_programming_jam.py, build_psu_ctf_3.py and build_acm_psu_platform.py.
+Used by build_webforge.py, build_psu_ctf_3.py and build_acm_psu_platform.py.
 """
 
 from __future__ import annotations

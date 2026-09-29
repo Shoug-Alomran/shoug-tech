@@ -471,7 +471,7 @@ __HEADER__
                 <div><span class="k">Platform</span><span class="v">ACM PSU &mdash; club platform and digital archive</span></div>
                 <div><span class="k">For</span><span class="v">ACM Student Chapter, College of Computer &amp; Information Sciences</span></div>
                 <div><span class="k">Audience</span><span class="v">Prospective members, current members, and anyone looking up the chapter's past work</span></div>
-                <div><span class="k">Documents</span><span class="v">ACM Programming Jam 2026 &middot; ACM/CyberTech CTF 3.0 &middot; the CTF 2.0 record</span></div>
+                <div><span class="k">Documents</span><span class="v">WebForge 2026 &middot; ACM/CyberTech CTF 3.0 &middot; the CTF 2.0 record</span></div>
                 <div><span class="k">Sections</span><span class="v">Join &middot; Positions &middot; Projects &middot; Archive &middot; Team &middot; Member portal</span></div>
                 <div><span class="k">Live at</span><span class="v">acm-psu.shoug-tech.com</span></div>
             </div>
@@ -535,9 +535,9 @@ __HEADER__
                 <div class="registry" style="margin-top: 44px;">
                     <div class="rhead"><span>Live registry &mdash; open assignments</span><span>Places remaining</span></div>
                     <ul>
-                        <li><span>Event operations &mdash; <em>ACM Programming Jam 2026</em></span><span class="places">3 of 3</span></li>
-                        <li><span>Registration &amp; participant support &mdash; <em>Programming Jam</em></span><span class="places">3 of 3</span></li>
-                        <li><span>Workshop presenter &mdash; <em>Programming Jam</em></span><span class="places">2 of 2</span></li>
+                        <li><span>Event operations &mdash; <em>WebForge 2026</em></span><span class="places">3 of 3</span></li>
+                        <li><span>Registration &amp; participant support &mdash; <em>WebForge</em></span><span class="places">3 of 3</span></li>
+                        <li><span>Workshop presenter &mdash; <em>WebForge</em></span><span class="places">2 of 2</span></li>
                         <li><span>Challenge tester &mdash; <em>ACM/CyberTech CTF 3.0</em></span><span class="places">2 of 2</span></li>
                         <li><span>CTF floor support &mdash; <em>CTF 3.0</em></span><span class="places">4 of 4</span></li>
                         <li><span>Media &amp; documentation &mdash; <em>CTF 3.0</em></span><span class="places">2 of 2</span></li>
@@ -575,7 +575,7 @@ __HEADER__
                         <div class="rid">03 / Projects</div>
                         <div>
                             <h3>Technical collection</h3>
-                            <p>Case studies for what the chapter builds &mdash; the Programming Jam, CTF 3.0, the CTF 2.0
+                            <p>Case studies for what the chapter builds &mdash; the WebForge, CTF 3.0, the CTF 2.0
                                 results archive, and the workshop programmes behind them.</p>
                         </div>
                         <div class="when">Public</div>
@@ -626,14 +626,14 @@ __HEADER__
                 <p class="intro">The platform indexes the events I have pages for here, and the earlier editions that came
                     before them.</p>
                 <div class="catalogue">
-                    <a class="record" href="/workshops/ai-programming-jam/">
-                        <div class="rid">JAM.26</div>
+                    <a class="record" href="/workshops/webforge/">
+                        <div class="rid">WEBFORGE.26</div>
                         <div>
-                            <h3>ACM Programming Jam 2026</h3>
+                            <h3>WebForge 2026</h3>
                             <p>An AI-assisted web engineering competition with three preparation workshop days. I wrote
                                 and taught all three days and built the event website.</p>
                         </div>
-                        <div class="when">19 Sep 2026</div>
+                        <div class="when">17 Oct 2026</div>
                         <div class="go">&rarr;</div>
                     </a>
                     <a class="record" href="/workshops/psu-ctf-3/">
