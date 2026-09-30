@@ -45,6 +45,7 @@ EXTRA_CSS = """
         .dir-title:has(.dir-folder-icon) { display: flex; align-items: center; gap: 10px; }
         .dir-folder-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--text-tertiary); transition: color 0.15s ease; }
         .dir-row:hover .dir-folder-icon { color: var(--brand-purple); }
+        .status-tag { white-space: nowrap; }
         .status-tag.png { color: #14b8a6; border-color: rgba(20,184,166,0.4); background: rgba(20,184,166,0.08); }
         .status-tag.available { color: #22c55e; border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.08); }
         .status-tag.coming-soon { color: #eab308; border-color: rgba(234,179,8,0.4); background: rgba(234,179,8,0.08); }
@@ -108,8 +109,24 @@ def tabs(course, active):
 
 
 def add_extra_css(html):
-    anchor = '        .dir-arrow { justify-self: end;'
-    return html.replace(anchor, EXTRA_CSS.rstrip('\n') + '\n' + anchor, 1)
+    """Insert EXTRA_CSS into the template's stylesheet.
+
+    The anchor used to be a single-line `.dir-arrow { justify-self: end;`.  A
+    formatter run reflowed the template to one declaration per line, the match
+    silently stopped happening, and every generated listing lost the rule that
+    sizes .dir-folder-icon, so the folder SVG expanded to fill its cell.  Match
+    the selector regardless of formatting and fail loudly instead.
+    """
+    if '.dir-folder-icon' in html:  # already carries the block
+        return html
+    block = EXTRA_CSS.rstrip('\n') + '\n'
+    anchor = re.search(r'^[ \t]*\.dir-arrow\s*\{', html, re.M)
+    if anchor:
+        return html[:anchor.start()] + block + html[anchor.start():]
+    closing = html.find('</style>')
+    if closing < 0:
+        raise SystemExit('add_extra_css: template has no <style> block to extend')
+    return html[:closing] + block + html[closing:]
 
 
 def head(html, title, url, template_title, template_url):

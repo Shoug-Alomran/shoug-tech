@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <script>
+      if (localStorage.getItem("shoug-theme") === "light") {
+        document.documentElement.style.background = "#f6f4fb";
+        document.documentElement.style.color = "#16111f";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SE423 // Examples of Classic Mistakes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-void: #05020a;
+        --bg-surface: #0a0514;
+        --bg-elevated: #110822;
+        --brand-purple: #b829ea;
+        --alert-red: #ff2a4b;
+        --text-primary: #ffffff;
+        --text-secondary: #a09fa6;
+        --text-tertiary: #5d5c66;
+        --text-purple-bright: #d978ff;
+        --border-dim: rgba(255, 255, 255, 0.06);
+        --border-med: rgba(255, 255, 255, 0.12);
+        --border-hard: #2a1b3d;
+        --font-mono: "JetBrains Mono", monospace;
+        --font-display: "Rajdhani", sans-serif;
+        --font-ui: "Inter", sans-serif;
+        --header-h: 64px;
+        --sidebar-w: 280px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg-void);
+        color: var(--text-primary);
+        font-family: var(--font-ui);
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      body {
+        padding-top: 68px;
+      }
+      body:has(.app-layout) {
+        height: auto !important;
+        min-height: 100vh;
+        display: block !important;
+        overflow-y: auto !important;
+      }
+      body:has(.app-layout) .app-layout {
+        min-height: calc(100vh - 68px);
+        height: auto !important;
+        overflow: visible !important;
+        align-items: stretch;
+      }
+      .app-layout {
+        display: flex;
+        padding-top: 0 !important;
+      }
+      .app-layout .sidebar {
+        position: sticky;
+        top: 68px;
+        height: calc(100vh - 68px) !important;
+        align-self: flex-start;
+      }
+      .sys-main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background: var(--bg-void);
+        min-height: calc(100vh - 68px);
+      }
+      .content-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 40px;
+        border-bottom: 1px solid var(--border-dim);
+        background: rgba(5, 2, 10, 0.9);
+        backdrop-filter: blur(4px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .breadcrumb {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--text-tertiary);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .breadcrumb .current {
+        color: var(--text-primary);
+      }
+      .breadcrumb-link {
+        color: var(--text-dim, #8b7ea8);
+        text-decoration: none;
+      }
+      .breadcrumb-link:hover {
+        color: var(--brand-purple, #b829ea);
+      }
+      .sys-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--brand-purple);
+        font-weight: 700;
+        border: 1px solid var(--border-accent);
+        padding: 4px 12px;
+        background: rgba(184, 41, 234, 0.05);
+        letter-spacing: 1px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .page-header {
+        padding: 32px 40px 24px;
+        border-bottom: 1px solid var(--border-dim);
+      }
+      .ch-label {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--brand-purple);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .ch-title {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: 1px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 160ms ease;
+        text-decoration: none;
+      }
+      .btn-primary {
+        color: var(--brand-purple);
+        border-color: rgba(184, 41, 234, 0.5);
+        background: rgba(184, 41, 234, 0.08);
+      }
+      .btn-primary:hover {
+        background: rgba(184, 41, 234, 0.2);
+        border-color: var(--brand-purple);
+        color: #fff;
+      }
+      .btn-secondary {
+        color: var(--text-secondary);
+        border-color: rgba(255, 255, 255, 0.15);
+        background: transparent;
+      }
+      .btn-secondary:hover {
+        color: var(--text-primary);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .nav-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 40px;
+        border-bottom: 1px solid var(--border-dim);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .nav-link {
+        transition: color 160ms ease;
+      }
+      .nav-link.prev {
+        color: var(--text-secondary);
+      }
+      .nav-link.prev:hover {
+        color: var(--text-primary);
+      }
+      .nav-link.next {
+        color: var(--brand-purple);
+      }
+      .nav-link.next:hover {
+        color: #fff;
+      }
+      .nav-link.disabled {
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      .embed-area-wrapper {
+        flex: 1;
+        padding: 20px 40px 40px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .embed-container {
+        flex: 1;
+        width: 100%;
+        border: 1px solid var(--border-hard);
+        background: var(--bg-elevated);
+        position: relative;
+        display: flex;
+        min-height: 80vh;
+      }
+      .embed-container iframe {
+        flex: 1;
+        width: 100%;
+        border: none;
+        min-height: 80vh;
+        display: block;
+      }
+      .shoug-site-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 68px;
+        z-index: 10000;
+        background: rgba(5, 5, 8, 0.92);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(14px);
+      }
+      .shoug-header-inner {
+        width: min(1440px, calc(100% - 48px));
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+      .shoug-header-logo {
+        color: #f8f7fb;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.86rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .shoug-header-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(14px, 2vw, 30px);
+        flex: 1;
+      }
+      .shoug-header-nav a {
+        color: #8f8b9a;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: color 160ms ease;
+      }
+      .shoug-header-nav a:hover,
+      .shoug-header-nav a.active {
+        color: #b829ea;
+      }
+      .shoug-header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .shoug-icon-btn,
+      .shoug-lang-btn,
+      .shoug-theme-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.02);
+        color: #f8f7fb;
+        text-decoration: none;
+        font-family: monospace;
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        transition:
+          border-color 160ms ease,
+          color 160ms ease,
+          background 160ms ease;
+      }
+      .shoug-icon-btn:hover,
+      .shoug-lang-btn:hover,
+      .shoug-theme-btn:hover {
+        color: #b829ea;
+        border-color: rgba(184, 41, 234, 0.55);
+        background: rgba(184, 41, 234, 0.08);
+      }
+      .shoug-icon-btn svg,
+      .shoug-theme-btn svg {
+        width: 15px;
+        height: 15px;
+        display: block;
+      }
+      .shoug-contact-btn {
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 16px;
+        border: 1px solid #ff2a4b;
+        background: transparent;
+        color: #ff2a4b;
+        font-family: monospace;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 160ms;
+      }
+      .shoug-contact-btn:hover {
+        background: #ff2a4b;
+        color: #050508;
+      }
+      .academic-sidebar {
+        width: 280px;
+        flex: 0 0 280px;
+        display: flex !important;
+        flex-direction: column;
+        background: var(--bg-surface, #0a0514);
+        border-right: 1px solid rgba(184, 41, 234, 0.24);
+        color: #8f8b9a;
+        font-family: "JetBrains Mono", monospace;
+        z-index: 20;
+      }
+      .academic-sidebar .sidebar-header {
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0 20px;
+        border-bottom: 1px solid rgba(184, 41, 234, 0.24);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .academic-sidebar .file-tree {
+        display: block !important;
+        flex: 1 1 auto;
+        padding: 28px 0 34px;
+        overflow-y: auto;
+        max-height: calc(100vh - 124px);
+      }
+      .sidebar-collapse-button {
+        appearance: none;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(184, 41, 234, 0.34);
+        background: rgba(184, 41, 234, 0.06);
+        color: #b829ea;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      body.sidebar-collapsed .academic-sidebar {
+        width: 58px;
+        flex-basis: 58px;
+        overflow: hidden;
+      }
+      body.sidebar-collapsed .academic-sidebar .sidebar-title,
+      body.sidebar-collapsed .academic-sidebar .file-tree {
+        display: none !important;
+      }
+      body.sidebar-collapsed .sidebar-collapse-button::before {
+        content: ">";
+      }
+      body.sidebar-collapsed .sidebar-collapse-button .collapse-icon {
+        display: none;
+      }
+      .academic-sidebar ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .academic-sidebar .tree-item {
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        padding: 4px 20px;
+        color: #8f8b9a;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1.45;
+      }
+      .academic-sidebar .root-dir {
+        color: #f8f7fb;
+        margin-bottom: 12px;
+      }
+      .academic-sidebar .tree-course-link,
+      .academic-sidebar .tree-file {
+        color: inherit;
+        text-decoration: none;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 160ms ease;
+      }
+      .academic-sidebar .tree-toggle-button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .academic-sidebar .tree-course-link:hover,
+      .academic-sidebar .tree-file:hover {
+        color: #b829ea;
+      }
+      .academic-sidebar .tree-toggle {
+        color: #b829ea;
+      }
+      .academic-sidebar .cyber-track {
+        color: #ff2a4b;
+      }
+      .academic-sidebar .tree-children {
+        display: none;
+        margin: 0 0 10px 20px;
+        padding-left: 8px;
+        border-left: 1px solid rgba(184, 41, 234, 0.28);
+      }
+      .academic-sidebar .tree-children.is-open,
+      .academic-sidebar .section-children {
+        display: block;
+      }
+      .academic-sidebar .section-children {
+        margin-left: 54px;
+        margin-bottom: 12px;
+      }
+      .academic-sidebar .section-children .tree-item {
+        padding-left: 14px;
+        font-size: 0.68rem;
+      }
+      .academic-sidebar .file-active {
+        color: #b829ea;
+        background: rgba(184, 41, 234, 0.08);
+        text-shadow: 0 0 16px rgba(184, 41, 234, 0.3);
+        border-left: 2px solid #b829ea;
+      }
+      .academic-sidebar .status-dot {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        background: #ff2a4b;
+        box-shadow: 0 0 12px rgba(255, 42, 75, 0.65);
+        display: inline-block;
+      }
+      .academic-sidebar .tree-item.has-children {
+        display: block;
+        padding-right: 0;
+      }
+      .academic-sidebar .tree-item.has-children > .tree-course-link,
+      .academic-sidebar .tree-item.has-children > .tree-file {
+        min-height: 28px;
+      }
+      .academic-sidebar .tree-item.has-children > .tree-children {
+        margin-top: 4px;
+      }
+      .academic-sidebar .tree-item.has-children.file-active {
+        background: transparent;
+        border-left: 0;
+        text-shadow: none;
+      }
+      .academic-sidebar .tree-item.has-children.file-active > .tree-file {
+        color: #b829ea;
+        background: rgba(184, 41, 234, 0.08);
+        border-left: 2px solid #b829ea;
+        text-shadow: 0 0 16px rgba(184, 41, 234, 0.3);
+        padding-left: 12px;
+        margin-left: -14px;
+      }
+      .academic-sidebar .tree-viewer {
+        text-transform: none;
+        letter-spacing: 0.02em;
+        font-size: 0.65rem;
+      }
+      body.shoug-light-mode {
+        --bg-void: #f6f4fb;
+        --bg-surface: #ffffff;
+        --bg-elevated: #ebe7f4;
+        --text-primary: #16111f;
+        --text-secondary: #534a61;
+        --text-tertiary: #6d6478;
+        --border-dim: rgba(22, 17, 31, 0.1);
+        --border-hard: rgba(22, 17, 31, 0.26);
+        background: #f6f4fb !important;
+        color: #16111f !important;
+      }
+      body.shoug-light-mode .academic-sidebar {
+        background: #f8f6fc !important;
+        border-color: rgba(22, 17, 31, 0.12) !important;
+        color: #16111f !important;
+      }
+      body.shoug-light-mode .shoug-site-header {
+        background: rgba(246, 244, 251, 0.97) !important;
+        color: #16111f !important;
+        border-color: rgba(22, 17, 31, 0.14) !important;
+      }
+      body.shoug-light-mode .shoug-header-logo {
+        color: #16111f !important;
+      }
+      body.shoug-light-mode .shoug-icon-btn,
+      .shoug-light-mode .shoug-theme-btn {
+        color: #16111f !important;
+        border-color: rgba(22, 17, 31, 0.16) !important;
+        background: rgba(255, 255, 255, 0.8) !important;
+      }
+      body.shoug-light-mode .shoug-header-nav a {
+        color: #6d6478 !important;
+      }
+      body.shoug-light-mode .content-topbar,
+      .shoug-light-mode .nav-strip,
+      .shoug-light-mode .page-header {
+        background-color: #ffffff !important;
+        border-color: rgba(22, 17, 31, 0.12) !important;
+        color: #16111f !important;
+      }
+      body.shoug-light-mode .ch-label {
+        color: #b829ea !important;
+      }
+      body.shoug-light-mode .ch-title {
+        color: #16111f !important;
+        text-shadow: none !important;
+      }
+      body.shoug-light-mode .btn-secondary {
+        color: #534a61 !important;
+        border-color: rgba(22, 17, 31, 0.3) !important;
+      }
+      body.shoug-light-mode .nav-link.prev {
+        color: #534a61 !important;
+      }
+      body.shoug-light-mode .embed-container {
+        border-color: rgba(22, 17, 31, 0.15) !important;
+        background: #f6f4fb !important;
+      }
+      body.shoug-light-mode .breadcrumb .current {
+        color: #16111f !important;
+      }
+      body.shoug-light-mode .breadcrumb-link {
+        color: #534a61 !important;
+      }
+      @media (max-width: 1024px) {
+        .academic-sidebar {
+          width: 240px;
+          flex: 0 0 240px;
+        }
+        .academic-sidebar .section-children {
+          margin-left: 44px;
+        }
+        .content-topbar {
+          padding: 12px 24px;
+        }
+        .embed-area-wrapper {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .page-header {
+          padding: 40px 24px 28px;
+        }
+        .ch-title {
+          font-size: 3.5rem;
+        }
+      }
+      @media (max-width: 768px) {
+        .academic-sidebar {
+          position: fixed !important;
+          top: 68px;
+          left: 0;
+          height: calc(100vh - 68px) !important;
+          z-index: 200;
+          transform: translateX(-100%);
+          transition: transform 220ms ease;
+          width: 280px !important;
+          flex-basis: 280px !important;
+        }
+        body.sidebar-open .academic-sidebar {
+          transform: translateX(0);
+          box-shadow: 8px 0 32px rgba(0, 0, 0, 0.6);
+        }
+        body.sidebar-open::before {
+          content: "";
+          position: fixed;
+          inset: 68px 0 0 0;
+          background: rgba(0, 0, 0, 0.55);
+          z-index: 199;
+        }
+        .app-layout {
+          flex-direction: column;
+        }
+        .sys-main {
+          min-height: calc(100vh - 68px);
+          width: 100%;
+        }
+        .mobile-sidebar-toggle {
+          display: inline-flex !important;
+          align-items: center;
+          justify-content: center;
+          width: 34px;
+          height: 34px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.02);
+          color: #f8f7fb;
+          cursor: pointer;
+          font-size: 1rem;
+          flex-shrink: 0;
+        }
+        .content-topbar {
+          padding: 10px 16px;
+          font-size: 0.65rem;
+        }
+        .page-header {
+          padding: 32px 16px 20px;
+        }
+        .embed-area-wrapper {
+          padding: 12px 16px 24px;
+        }
+        .nav-strip {
+          padding: 10px 16px;
+        }
+        .ch-title {
+          font-size: 1.8rem;
+        }
+        .btn {
+          font-size: 0.65rem;
+          padding: 8px 14px;
+        }
+        .embed-container {
+          min-height: 50vh;
+        }
+        .embed-container iframe {
+          min-height: 50vh;
+        }
+      }
+      @media (max-width: 480px) {
+        .shoug-header-nav {
+          display: none;
+        }
+        .ch-title {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+    <style id="academic-sidebar-embed-fix">
+    .academic-sidebar {
+        display: flex !important;
+        flex-direction: column !important;
+        align-self: stretch !important;
+        overflow: hidden !important;
+    }
+    .academic-sidebar .file-tree {
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        padding: 28px 0 34px !important;
+        overflow-y: auto !important;
+    }
+    .academic-sidebar .tree-node {
+        display: block !important;
+        align-items: initial !important;
+        gap: 0 !important;
+        cursor: default !important;
+        color: inherit !important;
+    }
+    .academic-sidebar .tree-node:hover {
+        color: inherit !important;
+    }
+    .academic-sidebar .tree-item {
+        margin-top: 0 !important;
+    }
+    </style>
+    <link rel="stylesheet" href="/styles/light-mode.css" />
+    <meta
+      name="description"
+      content="SE423 | Examples of Classic Mistakes - study material from Shoug&#x27;s Digital Garden."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/"
+    />
+    <meta property="og:title" content="SE423 | Examples of Classic Mistakes" />
+    <meta
+      property="og:description"
+      content="SE423 | Examples of Classic Mistakes - study material from Shoug&#x27;s Digital Garden."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="SE423 | Examples of Classic Mistakes"
+    />
+    <meta
+      name="twitter:description"
+      content="SE423 | Examples of Classic Mistakes - study material from Shoug&#x27;s Digital Garden."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/",
+        "name": "SE423 | Examples of Classic Mistakes",
+        "description": "SE423 | Examples of Classic Mistakes - study material from Shoug's Digital Garden.",
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "Shoug's Digital Garden",
+          "url": "https://shoug-tech.com/"
+        }
+      }
+    </script>
+
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/?lang=ar"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://shoug-tech.com/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/"
+    />
+
+    <link rel="stylesheet" href="/styles/mobile-fixes.css" />
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+    <link rel="stylesheet" href="/styles/a11y.css" />
+
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#050508" />
+    <script src="/javascripts/translation-launch-guard.js"></script>
+  
+<style id="office-document-style">
+.doc-view{padding:clamp(18px,3vw,40px);overflow:auto}
+.doc-paper{max-width:900px;margin:0 auto;padding:clamp(24px,4vw,56px);background:var(--bg-elevated,#0a0611);border:1px solid var(--border-med,rgba(255,255,255,.12));color:var(--text-primary,#fff);font-size:.95rem;line-height:1.75}
+.doc-paper h1,.doc-paper h2,.doc-paper h3,.doc-paper h4,.doc-paper h5,.doc-paper h6{font-family:var(--font-display,"Rajdhani",sans-serif);line-height:1.25;margin:1.6em 0 .6em;color:#fff}
+.doc-paper h1{font-size:1.8rem}.doc-paper h2{font-size:1.45rem}.doc-paper h3{font-size:1.2rem}
+.doc-paper h4,.doc-paper h5,.doc-paper h6{font-size:1.02rem}
+.doc-paper>*:first-child{margin-top:0}
+.doc-paper p{margin:0 0 1em}
+.doc-paper ul,.doc-paper ol{margin:0 0 1em;padding-inline-start:1.5em}
+.doc-paper li{margin:.3em 0}
+.doc-paper a{color:#d978ff}
+.doc-paper img{max-width:100%;height:auto;margin:1em 0;border:1px solid var(--border-dim,rgba(255,255,255,.1))}
+.doc-table-wrap{overflow-x:auto;margin:0 0 1.4em}
+.doc-table{border-collapse:collapse;width:100%;min-width:420px;font-size:.88rem}
+.doc-table th,.doc-table td{border:1px solid var(--border-med,rgba(255,255,255,.14));padding:9px 12px;text-align:start;vertical-align:top}
+.doc-table th{background:rgba(184,41,234,.12);font-weight:600}
+.doc-note{max-width:900px;margin:0 auto 16px;font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary,#a09fa6)}
+body.shoug-light-mode .doc-paper{background:#fff;color:#16121c}
+body.shoug-light-mode .doc-paper h1,body.shoug-light-mode .doc-paper h2,body.shoug-light-mode .doc-paper h3,body.shoug-light-mode .doc-paper h4{color:#16121c}
+@media(max-width:700px){.doc-view{padding:12px}.doc-paper{padding:18px}.doc-table{font-size:.8rem;min-width:320px}}
+</style>
+</head>
+  <body>
+    <a class="shoug-skip-link" href="#main-content">Skip to content</a>
+    <script>
+      if (localStorage.getItem("shoug-theme") === "light")
+        document.body.classList.add("shoug-light-mode");
+    </script>
+    <header class="shoug-site-header">
+      <div class="shoug-header-inner">
+        <a class="shoug-header-logo" href="/">SHOUG.TECH</a>
+        <nav
+          class="shoug-header-nav"
+          id="shoug-mobile-nav"
+          aria-label="Primary"
+        >
+          <a href="/">Home</a>
+          <a href="/academics/" class="active">Academics</a>
+          <a href="/work/">Work</a>
+          <a href="/workshops/">Workshops</a>
+          <a href="/resources/">Resources</a>
+          <a href="/about/">About</a>
+        </nav>
+        <div class="shoug-header-actions">
+          <button
+            class="shoug-header-menu-btn"
+            type="button"
+            aria-label="Open site menu"
+            aria-controls="shoug-mobile-nav"
+            aria-expanded="false"
+          >
+            Menu
+          </button>
+          <button
+            class="shoug-directory-btn"
+            type="button"
+            aria-label="Open academic directory"
+            aria-expanded="false"
+          >
+            Dir
+          </button>
+          <a class="shoug-icon-btn" href="/?q=" aria-label="Search"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="square"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" /></svg
+          ></a>
+          <a
+            class="shoug-icon-btn"
+            href="https://github.com/Shoug-Alomran"
+            aria-label="GitHub"
+            ><svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 .5A12 12 0 0 0 8.2 23.9c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.2-1.7-1.2-1.7-1-.7.1-.7.1-.7 1.1.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.3 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.7 4.4 18.7 4.7 18.7 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v4.1c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
+              /></svg
+          ></a>
+          <a
+            class="shoug-icon-btn"
+            href="https://www.linkedin.com/in/shoug-alomran/"
+            aria-label="LinkedIn"
+            ><svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.3 2.4 4.3 5.5v6.2ZM5.3 7.4a2.1 2.1 0 1 1 0-4.1 2.1 2.1 0 0 1 0 4.1Zm1.8 13H3.6V9h3.5v11.4ZM22.2 0H1.8C.8 0 0 .8 0 1.7v20.5C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.8V1.7C24 .8 23.2 0 22.2 0Z"
+              /></svg
+          ></a>
+          <button
+            class="shoug-theme-btn"
+            type="button"
+            aria-label="Toggle dark and light mode"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="square"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+              />
+            </svg>
+          </button>
+          <button
+            class="shoug-lang-btn"
+            type="button"
+            data-lang-toggle
+            aria-label="Switch to Arabic"
+          >
+            AR
+          </button>
+          <a
+            class="shoug-contact-btn"
+            href="mailto:shoug.alomran@shoug-tech.com"
+            >Contact</a
+          >
+        </div>
+      </div>
+      <div class="shoug-header-backdrop" data-mobile-overlay></div>
+    </header>
+    <div class="app-layout">
+      <nav class="sidebar academic-sidebar" aria-label="Academic directory"><div class="sidebar-header"><span class="sidebar-title">SYSTEM_DIRECTORY</span><button class="sidebar-collapse-button" type="button" data-sidebar-collapse aria-expanded="true"><span class="collapse-icon">&lt;</span></button></div><div class="file-tree"><ul class="tree-node"><li class="tree-item root-dir"><a class="tree-course-link" href="/academics/">ACADEMICS/</a></li><li class="tree-item"><a class="tree-file" href="/academic-plan-themes/academic-plan/">ACADEMIC PLAN</a></li><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-computer-science" aria-expanded="false"><span class="tree-toggle">[+]</span> COMPUTER SCIENCE/</button></li><ul id="tree-computer-science" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs101/">CS101</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs102/">CS102</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs210/">CS210</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs285/">CS285</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs330/">CS330</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs331/">CS331</a></li><li class="tree-item"><a class="tree-file" href="/academics/computer-science/cs340/">CS340</a></li></ul><li class="tree-item dir-open"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-software-engineering" aria-expanded="true"><span class="tree-toggle">[-]</span> SOFTWARE ENGINEERING/</button></li><ul id="tree-software-engineering" class="tree-children is-open"><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se201/">SE201</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se311/">SE311</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se322/">SE322</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se365/">SE365</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se371/">SE371</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se401/">SE401</a></li><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se411/">SE411</a></li><li class="tree-item file-active"><a class="tree-file" href="/academics/software-engineering/se423/"><span class="status-dot"></span>SE423</a></li><ul class="tree-children section-children"><li class="tree-item tree-section"><a class="tree-file" href="/academics/software-engineering/se423/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/software-engineering/se423/slide-breakdowns/" data-en-text="SLIDE BREAKDOWNS" data-ar-text="تفكيك الشرائح">SLIDE BREAKDOWNS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/academics/software-engineering/se423/slides/" data-en-text="SLIDES" data-ar-text="الشرائح">SLIDES</a></li><li class="tree-item tree-section file-active"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/" data-en-text="STUDY MATERIAL" data-ar-text="المواد الدراسية"><span class="status-dot"></span>STUDY MATERIAL</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/study-guide/">Study Guide</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/mindmaps/" data-en-text="Mindmaps" data-ar-text="الخرائط الذهنية">Mindmaps</a></li><li class="tree-item tree-viewer file-active"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/"><span class="status-dot"></span>Activity</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/solved/">Solved</a></li><li class="tree-item tree-viewer file-active"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/"><span class="status-dot"></span>Unsolved</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer file-active"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/"><span class="status-dot"></span>Activity 2</a></li><ul class="tree-children item-children is-open"><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/case-study-giga-safe/">Case Study - Giga Safe</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/classic-mistakes/">Classic Mistakes</a></li><li class="tree-item tree-viewer file-active"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/examples-of-classic-mistakes/"><span class="status-dot"></span>Examples of Classic Mistakes</a></li></ul><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-7/">Activity 7</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-1/">Activity 1</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-4/">Activity 4</a></li><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-6/">Activity 6</a></li></ul></ul><li class="tree-item tree-viewer"><a class="tree-file" href="/academics/software-engineering/se423/extra-resources/project/">Project</a></li></ul><li class="tree-item tree-section"><a class="tree-file" href="/academics/software-engineering/se423/exams/" data-en-text="EXAMS" data-ar-text="الاختبارات">EXAMS</a></li></ul><li class="tree-item"><a class="tree-file" href="/academics/software-engineering/se499/">SE499</a></li></ul><li class="tree-item cyber-track"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-cybersecurity" aria-expanded="false"><span class="tree-toggle">[+]</span> CYBERSECURITY/</button></li><ul id="tree-cybersecurity" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys401/">CYS401</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys402/">CYS402</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys403/">CYS403</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys405/">CYS405</a></li><li class="tree-item"><a class="tree-file" href="/academics/cybersecurity/cys406/">CYS406</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-math" aria-expanded="false"><span class="tree-toggle">[+]</span> MATH/</button></li><ul id="tree-math" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/math/stat101/">STAT101</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/math221/">MATH221</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy105/">PHY105</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/phy205/">PHY205</a></li><li class="tree-item"><a class="tree-file" href="/academics/math/sci101/">SCI101</a></li></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-other-courses" aria-expanded="false"><span class="tree-toggle">[+]</span> OTHER COURSES/</button></li><ul id="tree-other-courses" class="tree-children"><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-english" aria-expanded="false"><span class="tree-toggle">[+]</span> ENGLISH HUB/</button></li><ul id="tree-english" class="tree-children"><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/" data-en-text="OVERVIEW" data-ar-text="نظرة عامة">OVERVIEW</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng101/">ENG101</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/english/eng103/">ENG103</a></li></ul><li class="tree-item"><a class="tree-file" href="/academics/other-courses/ethcs303/">ETHCS303</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/com201/">COM201</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc113/">ISC113</a></li><li class="tree-item"><a class="tree-file" href="/academics/other-courses/isc213/">ISC213</a></li></ul></ul></div></nav>
+      <main class="sys-main" id="main-content" tabindex="-1">
+        <div class="content-topbar">
+          <div class="breadcrumb"><a class="breadcrumb-link" href="/academics/">Academics</a> / <a class="breadcrumb-link" href="/academics/software-engineering/">Software Engineering</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se423/">SE423</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se423/extra-resources/">Study Material</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se423/extra-resources/activity/">Activity</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/">Unsolved</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/">Activity 2</a> / <span class="current">Examples of Classic Mistakes</span></div>
+          <div class="sys-time" id="live-clock">SYS_TIME [ 00 00 00 ]</div>
+        </div>
+        <div class="page-header">
+          <div class="ch-label">ACTIVITY // UNSOLVED</div>
+          <h1 class="ch-title">Examples of Classic Mistakes</h1>
+          <div class="action-buttons">
+            <a
+              class="btn btn-primary"
+              href="./examples-of-classic-mistakes.docx"
+              target="_blank"
+              rel="noopener noreferrer"
+              >[ OPEN IN NEW TAB -&gt; ]</a
+            >
+            <a
+              class="btn btn-secondary"
+              href="/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/"
+              >[ &lt;- BACK TO INDEX ]</a
+            >
+          </div>
+        </div>
+        <div class="nav-strip">
+                <a href="/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/" class="nav-link prev">&lt;- BACK TO INDEX</a>
+                <span class="nav-link next disabled">NEXT -&gt;</span>
+            </div>
+        <div class="doc-view" data-doc-src="./examples-of-classic-mistakes.docx">
+          <p class="doc-note">Rendered from the original file. Use Open in New Tab for the download.</p>
+          <article class="doc-paper">
+<div class="doc-table-wrap"><table class="doc-table"><tr><th><strong>Classic Mistakes Enumeratedhttp://www.stevemcconnell.com/rdenum.htm</strong></th></tr><tr><td>Some ineffective development practices have been chosen so often, by so many people, with such predictable, bad results that they deserve to be called &quot;classic mistakes.&quot; Most of the mistakes have a seductive appeal. Do you need to rescue a project that&#x27;s behind schedule? Add more people! Do you want to reduce your schedule? Schedule more aggressively! Is one of your key contributors aggravating the rest of the team? Wait until the end of the project to fire him! Do you have a rush project to complete? Take whatever developers are available right now and get started as soon as possible! Developers, managers, and customers usually have good reasons for making the decisions they do, and the seductive appeal of the classic mistakes is part of the reason these mistakes have been made so often. But because they have been made so many times, their consequences have become easy to predict, and they rarely produce the results that people hope for. <br />This section enumerates three dozen classic mistakes. For ease of reference, the list has been divided along the dimensions of people, process, product, and technology.<br /><strong>PEOPLE</strong><strong>: </strong>Here are some of the people-related classic mistakes.<br /><strong>#1: Undermined motivation</strong>. Study after study has shown that motivation probably has a larger effect on productivity and quality than any other factor (Boehm 1981). <br /><strong>#2: Weak personnel</strong>. After motivation, either the individual capabilities of the team members or their relationship as a team probably has the greatest influence on productivity (Boehm 1981, Lakhanpal 1993). Hiring from the bottom of the barrel will threaten a rapid development effort. In the case study, personnel selections were made with an eye toward who could be hired fastest instead of who would get the most work done over the life of the project. That practice gets the project off to a quick start but doesn&#x27;t set it up for rapid completion.<br /><strong>#3: Uncontrolled problem employees</strong>. Failure to deal with problem personnel also threatens development speed. This is a common problem and has been well-understood at least since Gerald Weinberg published <em>Psychology of Computer Programming </em>in 1971. Failure to take action to deal with a problem employee is the most common complaint that team members have about their leaders (Larson and LaFasto 1989).</td></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th><strong> </strong><strong>#4: Heroics</strong>. Some software developers place a high emphasis on project heroics, thinking that the certain kinds of heroics can be beneficial (Bach 1995). But I think that emphasizing heroics in any form usually does more harm than good. eMarco 1995).<br /><strong>#5: Adding people to a late project</strong>. This is perhaps the most classic of the classic mistakes. When a project is behind, adding people can take more productivity away from existing team members than it adds through new ones. Fred Brooks likened adding people to a late project to pouring gasoline on a fire (Brooks 1975).<br /><strong>#6: Noisy, crowded offices</strong>. Most developers rate their working conditions as unsatisfactory. About 60 percent report that they are neither sufficiently quiet nor sufficiently private (DeMarco and Lister 1987). Workers who occupy quiet, private offices tend to perform significantly better than workers who occupy noisy, crowded work bays or cubicles. Noisy, crowded work environments lengthen development schedules.<br /><strong>#7: Friction between developers and customers</strong>. Friction between developers and customers can arise in several ways. Customers may feel that developers are not cooperative when they refuse to sign up for the development schedule that the customers want, or when they fail to deliver on their promises. Developers may feel that customers unreasonably insisting on unrealistic schedules or requirements changes after requirements have been baselined. There might simply be personality conflicts between the two groups.  primary effect of this friction is poor communication, and the secondary effects of poor communication include poorly understood requirements, poor user-interface design, and, in the worst case, customers&#x27; refusing to accept the completed product. On average, friction between customers and software developers is so severe that both parties consider canceling the project (Jones 1994). Such friction is time-consuming to overcome, and it distracts both customers and developers from the real work of the project.<br /><strong>#8: Unrealistic expectations</strong>. One of the most common causes of friction between developers and their customers or managers is unrealistic expectations.<br /><strong>#9: Lack of effective project sponsorship</strong>. High-level project sponsorship is necessary to support many aspects of rapid development including realistic planning, change control, and the introduction of new</th></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th>development practices. Without an effective project sponsor, other high-level personnel in your organization can force you to accept unrealistic deadlines or make changes that undermine your project. Australian consultant Rob Thomsett argues that lack of an effective project sponsor virtually guarantees project failure (Thomsett 1995).<br /><strong>#10: Lack of stakeholder buy-in</strong>. All of the major players in a software-development effort must buy in to the project. That includes the executive sponsor, team leader, team members, marketing, end-users, customers, and anyone else who has a stake in it. The close cooperation that occurs only when you have complete buy-in from all stakeholders allows for precise coordination of a rapid development effort that is impossible to attain without good buy-in.<br /><strong>#11: Lack of user input</strong>. The Standish Group survey found that the number one reason that IS projects succeed is because of user involvement (Standish Group 1994).<br /><strong>#12: Politics placed over substance</strong>. Larry Constantine reported on four teams that had four different kinds of political orientations (Constantine 1995a). &quot;Politicians&quot; specialized in &quot;managing up,&quot; concentrating on relationships with their managers. &quot;Researchers&quot; concentrated on scouting out and gathering information. &quot;Isolationists&quot; kept to themselves, creating project boundaries that they kept closed to non-team members. &quot;Generalists&quot; did a little bit of everything: they tended their relationships with their managers, performed research and scouting activities, and coordinated with other teams through the course of their normal workflow. Constantine reported that initially the political and generalist teams were both well regarded by top management. But after a year and a half, the political team was ranked dead last. Putting politics over results is fatal to speed-oriented development.<br /><strong>#13: Wishful thinking</strong>. I am amazed at how many problems in software development boil down to wishful thinking. How many times have you heard statements like these:&quot;None of the team members really believed that they could complete the project according to the schedule they were given, but they thought that maybe if everyone worked hard, and nothing went wrong, and they got a few lucky breaks, they just might be able to pull it off.&quot;&quot;Our team hasn&#x27;t done very much work to coordinate the interfaces among the different parts of the product, but we&#x27;ve all been in good communication about other things, and the interfaces are relatively simple, so it&#x27;ll probably take only a day or two to shake out the bugs.&quot;&quot;We know that we went with the low-ball contractor on the database subsystem and it was hard to see how they were going to complete the work with the staffing levels they specified in their proposal. They didn&#x27;t have as much experience as some of the other contractors, but maybe they can make up in energy what they lack in experience. They&#x27;ll probably deliver on time.&quot;&quot;We don&#x27;t need to show the final round of changes to the prototype to the customer. I&#x27;m sure we know what they want by now.&quot;&quot;The team is saying that it will take an extraordinary effort to meet the deadline, and they missed their first milestone by a few days, but I think they can bring this one in on time.&quot;Wishful thinking isn&#x27;t just optimism. It&#x27;s closing your eyes and hoping something works when you have no reasonable basis for thinking it will. Wishful thinking at the beginning of a project leads to big blowups at the end of a project. It undermines meaningful planning and may be at the root of more software problems than all other causes combined.</th></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th><strong>PROCESS</strong><br />Process-related mistakes slow down projects because they squander people&#x27;s talents and efforts. Here are some of the worst process-related mistakes.<br /><strong>#14: Overly optimistic schedules</strong>. The challenges faced by someone building a three-month application are quite different than the challenges faced by someone building a one-year application. Setting an overly optimistic schedule sets a project up for failure by underscoping the project, undermining effective planning, and abbreviating critical upstream development activities such as requirements analysis and design. It also puts excessive pressure on developers, which hurts developer morale and productivity.<br /><strong>#15: Insufficient risk management</strong>. Some mistakes have been made often enough to be considered classics. Others are unique to specific projects. As with the classic mistakes, if you don&#x27;t actively manage risks, only one thing has to go wrong to change your project from a rapid-development project to a slow-development one. Failure to manage risks is one of the most common classic mistakes.<br /><strong>#16: Contractor failure</strong>. Companies sometimes contract out pieces of a project when they are too rushed to do the work in-house. But contractors frequently deliver work that&#x27;s late, that&#x27;s of unacceptably low quality, or that fails to meet specifications (Boehm 1989). Risks such as unstable requirements or ill-defined interfaces can be magnified when you bring a contractor into the picture. If the contractor relationship isn&#x27;t managed carefully, the use of contractors can slow a project down rather than speed it up.<br /><strong>#17: Insufficient planning</strong>. If you don&#x27;t plan to achieve rapid development, you can&#x27;t expect to achieve it.<strong>#</strong><strong>18: Abandonment of planning under pressure</strong>. Projects make plans and then routinely abandon them when they run into schedule trouble (Humphrey 1989). The problem isn&#x27;t so much in abandoning the plan as in failing to create a substitute and then falling into code-and-fix mode instead.<br /><strong>#19: Wasted time during the fuzzy front end</strong>. The &quot;fuzzy front end&quot; is the time before the project starts, the time normally spent in the approval and budgeting process. It&#x27;s not uncommon for a project to spend months or years in the fuzzy front end and then to come out of the gates with an aggressive schedule. It&#x27;s much easier and cheaper and less risky to save a few weeks or months in the fuzzy front end than it is to compress a development schedule by the same amount.<br /><strong>#20: Shortchanged upstream activities</strong>. Projects that are in a hurry try to cut out nonessential activities, and since requirements analysis, architecture, and design don&#x27;t directly produce code, they are easy targets. On one disaster project that I took over, I asked to see the design. The team lead told me, &quot;We didn&#x27;t have time to do a design.&quot;Also known as &quot;jumping into coding,&quot; the results of this mistake are all too predictable. In the case study, a design hack in the bar-chart report was substituted for quality design work. Before the product could be released, the hack work had to be thrown out and the higher quality work had to be done anyway. Projects that skimp on upstream activities typically have to do the same work downstream at anywhere from 10 to 100 times the cost of doing it properly in the first place (Fagan 1976; Boehm and Papaccio 1988). If you can&#x27;t find the 5 extra hours to do the job right the first time, where are you going to find the 50 extra hours to do it right later?</th></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th><strong>#21: Inadequate design</strong>. A special case of shortchanging upstream activities is inadequate design. Rush projects undermine design by not allocating enough time for it and by creating a pressure-cooker environment that makes thoughtful consideration of design alternatives difficult. The design emphasis is on expediency rather than quality, so you tend to need several ultimately time-consuming design cycles before you finally complete the system<br /><strong>#22: Shortchanged quality assurance</strong>. Projects that are in a hurry often cut corners by eliminating design and code reviews, eliminating test planning, and performing only perfunctory testing. In the case study, design reviews and code reviews were given short shrift in order to achieve a perceived schedule advantage. As it turned out, when the project reached its feature-complete milestone it was still too buggy to release for five more months. This result is typical. Short-cutting a day of QA activity early in the project is likely to cost you 3 to 10 days of activity downstream (Jones 1994). This inefficiency undermines development speed.<br /><strong>#23: Insufficient management controls</strong>. In the case study, there were few management controls in place to provide timely warnings of impending schedule slips, and the few controls there were in place at the beginning were abandoned once the project ran into trouble. Before you can keep a project on track, you have to be able to tell whether it&#x27;s on track.<br /><strong>#24: Premature or too frequent convergence</strong>. Shortly before a product is scheduled to be released there is a push to prepare the product for release--improve the product&#x27;s performance, print final documentation, incorporate final help-system hooks, polish the installation program, stub out functionality that&#x27;s not going to be ready on time, and so on. On rush projects, there is a tendency to force convergence early. Since it&#x27;s not possible to force the product to converge when desired, some rapid development projects try to force convergence a half dozen times or more before they finally succeed. The extra convergence attempts don&#x27;t benefit the product. They just waste time and prolong the schedule.<br /><strong>#25: Omitting necessary tasks from estimates</strong>. If people don&#x27;t keep careful records of previous projects, they forget about the less visible tasks, but those tasks add up. Omitted effort often adds about 20 to 30 percent to a development schedule (van Genuchten 1991).<br /><strong>#26: Planning to catch up later</strong>. If you&#x27;re working on a six-month project, and it takes you three months to meet your two-month milestone, what do you do? Many projects simply plan to catch up later, but they never do. You learn more about the product as you build it, including more about what it will take to build it. That learning needs to be reflected in the schedule.Another kind of reestimation mistake arises from product changes. If the product you&#x27;re building changes, the amount of time you need to build it changes too<br /><strong>#27: Code-like-hell programming</strong>. Some organizations think that fast, loose, all-as-you-go coding is a route to rapid development. If the developers are sufficiently motivated, they reason, they can overcome any obstacles. For reasons that will become clear throughout this book, this is far from the truth. The entrepreneurial model is often a cover for the old code-and-fix paradigm combined with an ambitious schedule, and that combination almost never works. It&#x27;s an example of two wrongs not making a right.<br /><strong>PRODUCT</strong><br />Here are some classic mistakes are related to the way the product is defined.<br /><strong>#28: Requirements gold-plating</strong>. Some projects have more requirements than they need right from the beginning. Performance is stated as a requirement more often than it needs to be, and that can unnecessarily</th></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th>lengthen a software schedule. Users tend to be less interested in complex features than marketing and development are, and complex features add disproportionately to a development schedule.<br /><strong>#29: Feature creep</strong>. Even if you&#x27;re successful at avoiding requirements gold-plating, the average project experiences about a 25-percent change in requirement over its lifetime (Jones 1994). Such a change can produce at least a 25-percent addition to the software schedule, which can be fatal to a rapid development project.<br /><strong>#30: Developer gold-plating</strong>. Developers are fascinated by new technology and are sometimes anxious to try out new features of their language or environment or to create their own implementation of a slick feature they saw in another product--whether or not it&#x27;s required in their product. The effort required to design, implement, test, document, and support features that are not required lengthens the schedule.<br /><strong>#31: Push me, pull me negotiation</strong>. One bizarre negotiating ploy occurs when a manager approves a schedule slip on a project that&#x27;s progressing slower than expected and then adds completely new tasks after the schedule change. The underlying reason for this is hard to fathom because the manager who approves the schedule slip is implicitly acknowledging that the schedule was in error. But once the schedule has been corrected, the same person takes explicit action to make it wrong again. This can&#x27;t help but undermine the schedule.<br /><strong>#32: Research-oriented development</strong>. Seymour Cray, the designer of the Cray supercomputers, says that he does not attempt to exceed engineering limits in more than two areas at a time because the risk of failure is too high (Gilb 1988). Many software projects could learn a lesson from Cray. If your project strains the limits of computer science by requiring the creation of new algorithms or new computing practices, you&#x27;re not doing software development; you&#x27;re doing software research. Software-development schedules are reasonably predictable; software research schedules are not even theoretically predictable.If you have product goals that push the state of the art--algorithms, speed, memory usage, and so on--you should expect great uncertainty in your scheduling. If you&#x27;re pushing the state of the art and you have any other weaknesses in your project--personnel shortages, personnel weaknesses, vague requirements, unstable interfaces with outside contractors--you can throw predictable scheduling out the window. If you want to advance the state of the art, by all means, do it. But don&#x27;t expect to do it rapidly!<br /><strong>TECHNOLOGY</strong><br />The remaining classic mistakes have to do with the use and misuse of modern technology.<br /><strong>#33: Silver-bullet syndrome</strong>. In the case study there was too much reliance on the advertised benefits of previously unused technologies (report generator, object oriented design, and C++) and too little information about how well they would do in this particular development environment. When project teams latch onto a single new methodology or new technology and expect it to solve their schedule problems, they are inevitably disappointed (Jones 1994).<br /><strong>#34: Overestimated savings from new tools or methods</strong>. Organizations seldom improve their productivity in giant leaps, no matter how good or how many new tools or methods they adopt. Benefits of new practices are partially offset by the learning curves associated with them, and learning to use new practices to their maximum advantage takes time. New practices also entail new risks, which you&#x27;re likely to discover only by using them. You are more likely to experience slow, steady improvement on the order of a few percent per project than you are to experience dramatic gains. </th></tr></table></div>
+<div class="doc-table-wrap"><table class="doc-table"><tr><th><strong>#35: Switching tools in the middle of a project</strong>. This is an old standby that hardly ever works. Sometimes it can make sense to upgrade incrementally within the same product line, from version 3 to version 3.1 or sometimes even to version 4. But the learning curve, rework, and inevitable mistakes made with a totally new tool usually cancel out any benefit when you&#x27;re in the middle of a project.<br /><strong>#36: Lack of automated source-code control</strong>. Failure to use automated source-code control exposes projects to needless risks. Without it, if two developers are working on the same part of the program, they have to coordinate their work manually. They might agree to put the latest versions of each file into a master directory and to check with each other before copying files into that directory. But someone always overwrites someone else&#x27;s work. People develop new code to out-of-date interfaces and then have to redesign their code when they discover that they were using the wrong version of the interface. Users report defects that you can&#x27;t reproduce because you have no way to recreate the build they were using. On average, source code changes at a rate of about 10 percent per month, and manual source-code control can&#x27;t keep up (Jones 1994).</th></tr></table></div>
+          </article>
+        </div>
+      </main>
+    </div>
+    <script>
+      (function () {
+        var sc = document.querySelector("[data-sidebar-collapse]");
+        document.body.classList.remove("sidebar-collapsed");
+        if (sc) {
+          sc.addEventListener("click", function () {
+            document.body.classList.toggle("sidebar-collapsed");
+          });
+        }
+        document.querySelectorAll("[data-tree-toggle]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var t = document.getElementById(b.getAttribute("data-tree-toggle"));
+            if (!t) return;
+            var o = t.classList.toggle("is-open");
+            b.setAttribute("aria-expanded", o ? "true" : "false");
+            var m = b.querySelector(".tree-toggle");
+            if (m) m.textContent = o ? "[-]" : "[+]";
+          });
+        });
+        var toggle = document.querySelector(".shoug-theme-btn");
+        if (localStorage.getItem("shoug-theme") === "light")
+          document.body.classList.add("shoug-light-mode");
+        if (toggle) {
+          toggle.addEventListener("click", function () {
+            document.body.classList.toggle("shoug-light-mode");
+            localStorage.setItem(
+              "shoug-theme",
+              document.body.classList.contains("shoug-light-mode")
+                ? "light"
+                : "dark",
+            );
+          });
+        }
+        setInterval(function () {
+          var e = document.getElementById("live-clock");
+          if (!e) return;
+          var n = new Date(),
+            s = n.toLocaleTimeString("en-US", { hour12: false }),
+            ms = n
+              .getMilliseconds()
+              .toString()
+              .padStart(3, "0")
+              .substring(0, 2);
+          var p = s.split(":");
+          e.textContent =
+            "SYS_TIME [ " + p[0] + "  " + p[1] + "  " + p[2] + " ]";
+        }, 50);
+      })();
+    </script>
+    <script src="/javascripts/arabic-localization.js" defer></script>
+
+    <script src="/javascripts/mobile-navigation.js" defer></script>
+    <script src="/javascripts/pdf-embed.js" defer></script>
+    <script src="/javascripts/register-sw.js" defer></script>
+    <script src="/javascripts/recent-pages.js" defer></script>
+  </body>
+</html>
