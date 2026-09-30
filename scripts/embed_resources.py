@@ -47,6 +47,7 @@ from urllib.parse import quote, unquote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_activity_and_project_pages as tpl  # noqa: E402  (shared ENG103 templates)
+import office_to_html  # noqa: E402  (inline Word/Excel rendering)
 
 REPO = tpl.REPO
 DOCS = tpl.DOCS
@@ -64,6 +65,10 @@ ROW_RE = re.compile(
     r'<a\b([^>]*)>\s*<div class="dir-num">.*?</div>\s*<div class="dir-title">(.*?)</div>\s*'
     r'<div class="dir-status">', re.S)
 PDF_SRC_RE = re.compile(r'data-pdf-src="([^"]+)"')
+DOC_SRC_RE = re.compile(r'data-doc-src="([^"]+)"')
+# Word/Excel files a browser would download instead of showing: these get a
+# generated viewer that renders their content inline (scripts/office_to_html.py).
+OFFICE_EXT = {'docx': 'DOCX', 'xlsx': 'XLSX'}
 
 
 # --------------------------------------------------------------------------- #
@@ -124,35 +129,43 @@ def is_viewer_dir(path):
     if not os.path.isdir(path):
         return False
     names = [n for n in os.listdir(path) if n not in ('.DS_Store',)]
-    return names == ['index.html'] and 'data-pdf-src=' in read(os.path.join(path, 'index.html'))
+    if names != ['index.html']:
+        return False
+    text = read(os.path.join(path, 'index.html'))
+    return 'data-pdf-src=' in text or 'data-doc-src=' in text
 
 
-def owned_pdf(path):
-    """The PDF a folder's own viewer shows when that PDF sits beside it, else None.
+def owned_doc(path):
+    """The document a folder's own viewer shows when it sits beside it, else None.
 
-    Such a folder is one file, not a folder: its parent lists it as a PDF row."""
+    Such a folder is one file, not a folder: its parent lists it as a file row
+    (see scripts/sort_academic_folder_rows.py and the folders-before-files rule).
+    Covers PDFs and the Office files rendered by office_to_html."""
     index = os.path.join(path, 'index.html')
     if not os.path.isdir(path):
         return None
-    match = PDF_SRC_RE.search(read(index)) if os.path.isfile(index) else None
-    pdf = os.path.normpath(os.path.join(path, unquote(match.group(1)))) if match else None
-    if pdf and os.path.dirname(pdf) == os.path.normpath(path) and os.path.isfile(pdf):
-        return pdf
-    return lone_pdf(path)
+    match = viewer_src(read(index)) if os.path.isfile(index) else None
+    doc = os.path.normpath(os.path.join(path, unquote(match))) if match else None
+    if doc and os.path.dirname(doc) == os.path.normpath(path) and os.path.isfile(doc):
+        return doc
+    return lone_doc(path)
 
 
 def is_own_viewer(path):
     index = os.path.join(path, 'index.html')
-    match = os.path.isfile(index) and PDF_SRC_RE.search(read(index))
-    return bool(match) and os.path.normpath(os.path.join(path, unquote(match.group(1)))) == lone_pdf(path)
+    match = viewer_src(read(index)) if os.path.isfile(index) else None
+    return bool(match) and os.path.normpath(os.path.join(path, unquote(match))) == lone_doc(path)
 
 
-def lone_pdf(path):
-    """<name>/<name>.pdf with nothing else beside it but its (listing) page and generated viewers."""
+def lone_doc(path):
+    """<name>/<name>.<ext> with nothing beside it but its page and generated viewers."""
     names = [n for n in os.listdir(path) if n not in IGNORED and not n.startswith('.')
              and not is_viewer_dir(os.path.join(path, n))]
-    pdf = os.path.join(path, os.path.basename(path) + '.pdf')
-    return pdf if names == [os.path.basename(pdf)] and os.path.isfile(pdf) else None
+    for ext in ('.pdf',) + tuple('.' + e for e in OFFICE_EXT):
+        doc = os.path.join(path, os.path.basename(path) + ext)
+        if names == [os.path.basename(doc)] and os.path.isfile(doc):
+            return doc
+    return None
 
 
 # --------------------------------------------------------------------------- #
@@ -183,7 +196,7 @@ def content_files(folder, allowed):
         if name in IGNORED or name.startswith('.'):
             continue
         if os.path.isdir(path):
-            pdf = owned_pdf(path)
+            pdf = owned_doc(path)
             if pdf:
                 if allowed is None or pdf in allowed:
                     files.append(path)
@@ -219,6 +232,12 @@ def dump_json(path, data):
     return True
 
 
+def viewer_src(text):
+    """The file a generated viewer shows: a PDF embed or a rendered document."""
+    match = PDF_SRC_RE.search(text) or DOC_SRC_RE.search(text)
+    return match.group(1) if match else None
+
+
 def harvest(sections, titles):
     """Copy titles already shown on the pages into the manifest (missing keys only)."""
     found = {}
@@ -226,8 +245,8 @@ def harvest(sections, titles):
         for page in glob.glob(os.path.join(sec, '**', 'index.html'), recursive=True):
             here = os.path.dirname(page)
             text = read(page)
-            if 'data-pdf-src=' in text:          # viewer: its h1 titles its PDF
-                src = PDF_SRC_RE.search(text).group(1)
+            src = viewer_src(text)
+            if src:                              # viewer: its h1 titles its file
                 h1 = re.search(r'<h1 class="ch-title">(.*?)</h1>', text, re.S)
                 if h1:
                     target = os.path.normpath(os.path.join(here, unquote(src)))
@@ -243,8 +262,9 @@ def harvest(sections, titles):
                 if os.path.basename(target) in STATES:
                     continue
                 if is_viewer_dir(target):
-                    src = PDF_SRC_RE.search(read(os.path.join(target, 'index.html'))).group(1)
-                    target = os.path.normpath(os.path.join(target, unquote(src)))
+                    src = viewer_src(read(os.path.join(target, 'index.html')))
+                    if src:
+                        target = os.path.normpath(os.path.join(target, unquote(src)))
                 found[rel(target)] = strip_tags(title)   # a row title beats a viewer h1
     added = 0
     for key, title in found.items():
@@ -341,6 +361,52 @@ def viewer_html(url, ctx, item_label, title, trail, pdf_src, back_url):
     return page.replace('ENG103 | Group Work Log and Deadlines', html.escape(name, quote=True))
 
 
+DOC_STYLE = """
+<style id="office-document-style">
+.doc-view{padding:clamp(18px,3vw,40px);overflow:auto}
+.doc-paper{max-width:900px;margin:0 auto;padding:clamp(24px,4vw,56px);background:var(--bg-elevated,#0a0611);border:1px solid var(--border-med,rgba(255,255,255,.12));color:var(--text-primary,#fff);font-size:.95rem;line-height:1.75}
+.doc-paper h1,.doc-paper h2,.doc-paper h3,.doc-paper h4,.doc-paper h5,.doc-paper h6{font-family:var(--font-display,"Rajdhani",sans-serif);line-height:1.25;margin:1.6em 0 .6em;color:#fff}
+.doc-paper h1{font-size:1.8rem}.doc-paper h2{font-size:1.45rem}.doc-paper h3{font-size:1.2rem}
+.doc-paper h4,.doc-paper h5,.doc-paper h6{font-size:1.02rem}
+.doc-paper>*:first-child{margin-top:0}
+.doc-paper p{margin:0 0 1em}
+.doc-paper ul,.doc-paper ol{margin:0 0 1em;padding-inline-start:1.5em}
+.doc-paper li{margin:.3em 0}
+.doc-paper a{color:#d978ff}
+.doc-paper img{max-width:100%;height:auto;margin:1em 0;border:1px solid var(--border-dim,rgba(255,255,255,.1))}
+.doc-table-wrap{overflow-x:auto;margin:0 0 1.4em}
+.doc-table{border-collapse:collapse;width:100%;min-width:420px;font-size:.88rem}
+.doc-table th,.doc-table td{border:1px solid var(--border-med,rgba(255,255,255,.14));padding:9px 12px;text-align:start;vertical-align:top}
+.doc-table th{background:rgba(184,41,234,.12);font-weight:600}
+.doc-note{max-width:900px;margin:0 auto 16px;font-family:var(--font-mono,"JetBrains Mono",monospace);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary,#a09fa6)}
+body.shoug-light-mode .doc-paper{background:#fff;color:#16121c}
+body.shoug-light-mode .doc-paper h1,body.shoug-light-mode .doc-paper h2,body.shoug-light-mode .doc-paper h3,body.shoug-light-mode .doc-paper h4{color:#16121c}
+@media(max-width:700px){.doc-view{padding:12px}.doc-paper{padding:18px}.doc-table{font-size:.8rem;min-width:320px}}
+</style>
+"""
+
+
+def document_html(url, ctx, item_label, title, trail, doc_name, back_url, body, inline=False):
+    """A viewer page that renders a Word/Excel file inline.
+
+    Mirrors viewer_html, but the PDF embed area is replaced by the converted
+    document. The original file stays downloadable from the header button.
+    `inline` means the file sits in this folder rather than the parent one.
+    """
+    src = ('./%s' if inline else '../%s') % doc_name
+    page = viewer_html(url, ctx, item_label, title, trail, src, back_url)
+    page = re.sub(r'<div class="embed-area-wrapper">.*?</div>\s*</main>',
+                  lambda _m: ('<div class="doc-view" data-doc-src="%s">\n'
+                              '          <p class="doc-note">Rendered from the original file. '
+                              'Use Open in New Tab for the download.</p>\n'
+                              '          <article class="doc-paper">\n%s\n          </article>\n'
+                              '        </div>\n      </main>') % (src, body),
+                  page, count=1, flags=re.S)
+    if 'id="office-document-style"' not in page:
+        page = page.replace('</head>', DOC_STYLE + '</head>', 1)
+    return page
+
+
 def viewer_slug(pdf, taken):
     stem = os.path.splitext(os.path.basename(pdf))[0]
     parent = os.path.basename(os.path.dirname(pdf))
@@ -433,7 +499,7 @@ class Build:
         files, dirs = content_files(folder, self.allowed)
         url = url_of(folder)
         # A dedicated viewer now owns its PDF; keep it a viewer on rebuild.
-        if owned_pdf(folder):
+        if owned_doc(folder):
             return
         taken = {os.path.basename(p).lower() for p in dirs + files if os.path.isdir(p)}
         rows, sidebar_rows, viewers = [], [], set()
@@ -447,20 +513,29 @@ class Build:
             self.folder(d, ctx, sec_title, labels + [t], trail[:-1] + [(trail[-1][0], url), (t, url_of(d))])
 
         for f in files:
-            if os.path.isdir(f):         # a viewer folder holding its own PDF is a file row
-                t = title_for(owned_pdf(f), folder, self.titles, self.notes)
-                if lone_pdf(f) and not is_own_viewer(f):
-                    # a PDF just moved into its own folder: that folder becomes its viewer
+            if os.path.isdir(f):         # a viewer folder holding its own file is a file row
+                doc = owned_doc(f)
+                t = title_for(doc, folder, self.titles, self.notes)
+                doc_ext = os.path.splitext(doc or '')[1].lstrip('.').lower()
+                if lone_doc(f) and not is_own_viewer(f):
+                    # the file just moved into its own folder: that folder is now its viewer
                     for name in os.listdir(f):
                         if is_viewer_dir(os.path.join(f, name)):
                             self.remove_dir(os.path.join(f, name))
                             self.drop_children(url_of(os.path.join(f, name)))
-                    self.put(os.path.join(f, 'index.html'), viewer_html(
-                        url_of(f), ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
-                        trail[:-1] + [(trail[-1][0], url), (t, None)],
-                        quote(os.path.basename(lone_pdf(f))), url))
+                    src = quote(os.path.basename(lone_doc(f)))
+                    head = '%s // %s' % (sec_title.upper(), labels[0].upper())
+                    crumbs = trail[:-1] + [(trail[-1][0], url), (t, None)]
+                    if doc_ext in OFFICE_EXT:
+                        self.put(os.path.join(f, 'index.html'), document_html(
+                            url_of(f), ctx, head, t, crumbs, src, url,
+                            office_to_html.convert(lone_doc(f)), inline=True))
+                    else:
+                        self.put(os.path.join(f, 'index.html'), viewer_html(
+                            url_of(f), ctx, head, t, crumbs, src, url))
                     self.drop_children(url_of(f))
-                rows.append((t, './%s/' % quote(os.path.basename(f)), 'PDF', 'pdf', False, False))
+                rows.append((t, './%s/' % quote(os.path.basename(f)),
+                             OFFICE_EXT.get(doc_ext, 'PDF'), doc_ext or 'pdf', False, False))
                 sidebar_rows.append((url_of(f), t))
                 continue
             t = title_for(f, folder, self.titles, self.notes)
@@ -477,6 +552,26 @@ class Build:
                     v_url, ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
                     trail[:-1] + [(trail[-1][0], url), (t, None)],
                     '../%s' % quote(os.path.basename(f)), url))
+            elif ext in OFFICE_EXT:
+                # Render Word/Excel inline; a bare link would just download them.
+                try:
+                    body = office_to_html.convert(f)
+                except office_to_html.ConversionError as exc:
+                    self.notes.append('could not render %s (%s); left as a download' % (rel(f), exc))
+                    href = './%s' % quote(os.path.basename(f))
+                    rows.append((t, href, ext.upper(), ext, False, True))
+                    sidebar_rows.append((url + quote(os.path.basename(f)), t))
+                    continue
+                slug = viewer_slug(f, taken)
+                taken.add(slug)
+                viewers.add(slug)
+                v_url = url + slug + '/'
+                rows.append((t, './%s/' % slug, OFFICE_EXT[ext], ext, False, False))
+                sidebar_rows.append((v_url, t))
+                self.put(os.path.join(folder, slug, 'index.html'), document_html(
+                    v_url, ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
+                    trail[:-1] + [(trail[-1][0], url), (t, None)],
+                    quote(os.path.basename(f)), url, body))
             else:
                 href = './%s' % quote(os.path.basename(f))
                 rows.append((t, href, ext.upper() or 'FILE', IMAGE_TAG.get(ext, ext), False, True))
