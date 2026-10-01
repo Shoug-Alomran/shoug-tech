@@ -11,7 +11,7 @@
     )
       return;
   } catch (_) {}
-  const base = "/academics/other-courses/ethcs303/video-explanations/";
+  const base = document.querySelector("[data-lesson-base]")?.getAttribute("data-lesson-base") || "/academics/other-courses/ethcs303/video-explanations/";
   const path = location.pathname.replace(/index\.html$/, "");
   const ar =
     document.documentElement.lang.startsWith("ar") ||
@@ -181,7 +181,8 @@
   }
   getJSON(base + "study-tools.json")
     .then((index) => {
-      const detail = index.lessons.find((v) => v.page === path);
+      const selectedId = document.querySelector("[data-lesson-id]")?.getAttribute("data-lesson-id");
+      const detail = index.lessons.find((v) => selectedId ? v.id === selectedId : v.page === path);
       if (detail) {
         const media = document.querySelector("[data-video-lesson] video");
         if (media) {

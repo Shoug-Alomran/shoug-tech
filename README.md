@@ -10,18 +10,18 @@ I’m **Shoug Fawaz Alomran**, a Software Engineering and Cybersecurity student 
 
 My primary areas of interest include:
 
-* **Software Engineering** — designing and developing structured, maintainable software systems
-* **Cybersecurity** — developing practical skills in penetration testing, security analysis, and defensive awareness
-* **Technical Documentation** — transforming complex academic and technical material into structured, accessible resources
-* **Knowledge Systems** — building platforms and workflows that organize learning, projects, and technical information
-* **Technical Workshops** — creating and delivering practical learning experiences around development and technology
+- **Software Engineering** — designing and developing structured, maintainable software systems
+- **Cybersecurity** — developing practical skills in penetration testing, security analysis, and defensive awareness
+- **Technical Documentation** — transforming complex academic and technical material into structured, accessible resources
+- **Knowledge Systems** — building platforms and workflows that organize learning, projects, and technical information
+- **Technical Workshops** — creating and delivering practical learning experiences around development and technology
 
 SHOUG.TECH documents that work through real projects, academic material, technical resources, workshops, and continuously evolving documentation.
 
 ## Live Site
 
-* [SHOUG.TECH](https://shoug-tech.com/)
-* [GitHub Pages Deployment](https://shoug-alomran.github.io/shoug-tech/)
+- [SHOUG.TECH](https://shoug-tech.com/)
+- [GitHub Pages Deployment](https://shoug-alomran.github.io/shoug-tech/)
 
 ## Tech Stack
 
@@ -65,11 +65,11 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 
 ### Key Files
 
-* `docs/` — website content, academic resources, projects, assets, custom styling, scripts, and Arabic pages
-* `mkdocs.yml` — navigation, theme configuration, plugins, extensions, and internationalization settings
-* `scripts/` — validation, localization, synchronization, and pre-release QA utilities
-* `.github/workflows/deploy-mkdocs.yml` — automated build and deployment workflow
-* `site/` — generated MkDocs output
+- `docs/` — website content, academic resources, projects, assets, custom styling, scripts, and Arabic pages
+- `mkdocs.yml` — navigation, theme configuration, plugins, extensions, and internationalization settings
+- `scripts/` — validation, localization, synchronization, and pre-release QA utilities
+- `.github/workflows/deploy-mkdocs.yml` — automated build and deployment workflow
+- `site/` — generated MkDocs output
 
 ## Platform Sections
 
@@ -77,31 +77,31 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 
 Structured academic resources covering university coursework in areas including:
 
-* Software Engineering
-* Cybersecurity
-* Computer Science
-* Mathematics
-* Supporting university courses
+- Software Engineering
+- Cybersecurity
+- Computer Science
+- Mathematics
+- Supporting university courses
 
 Course resources may include:
 
-* Slide breakdowns
-* Chapter summaries
-* Mind maps
-* Practice exams
-* Revision material
-* Study guides
-* Reference resources
+- Slide breakdowns
+- Chapter summaries
+- Mind maps
+- Practice exams
+- Revision material
+- Study guides
+- Reference resources
 
 ### Work
 
 A professional overview of my technical work, including:
 
-* Software projects
-* Cybersecurity work
-* Technical platforms
-* Development experience
-* Professional and academic contributions
+- Software projects
+- Cybersecurity work
+- Technical platforms
+- Development experience
+- Professional and academic contributions
 
 ### Workshops
 
@@ -235,15 +235,15 @@ bash scripts/preflight_qa.sh
 
 The QA process includes:
 
-* English/Arabic parity validation
-* Missing Arabic-page detection
-* Strict MkDocs builds
-* Clean build generation
-* Theme asset validation
-* Logo and favicon validation
-* Route validation
-* Internal-link validation
-* Static-asset validation
+- English/Arabic parity validation
+- Missing Arabic-page detection
+- Strict MkDocs builds
+- Clean build generation
+- Theme asset validation
+- Logo and favicon validation
+- Route validation
+- Internal-link validation
+- Static-asset validation
 
 ## Deployment
 
@@ -282,14 +282,14 @@ Copyright © 2026 **Shoug Fawaz Alomran**. All rights reserved.
 
 You may:
 
-* View and reference this repository for personal and educational purposes
-* Use the published material as a learning reference with appropriate attribution
+- View and reference this repository for personal and educational purposes
+- Use the published material as a learning reference with appropriate attribution
 
 You may not:
 
-* Reproduce or redistribute substantial portions of the repository without permission
-* Republish the site's original content as your own
-* Use the content commercially without prior written consent
+- Reproduce or redistribute substantial portions of the repository without permission
+- Republish the site's original content as your own
+- Use the content commercially without prior written consent
 
 For permissions or inquiries:
 

@@ -639,6 +639,13 @@ class Build:
         if added:
             self.notes.append('harvested %d existing title(s) into scripts/resource-titles.json' % added)
         for sec in sections:
+            # A course still being set up can have resource folders before its
+            # Study Material page exists; skip it instead of failing the run.
+            hub = os.path.join(os.path.dirname(os.path.dirname(sec)), 'extra-resources', 'index.html')
+            if not os.path.isfile(hub):
+                self.notes.append('skipped %s: its course has no extra-resources/index.html yet'
+                                  % os.path.relpath(sec, DOCS))
+                continue
             self.section(sec)
 
         if self.check:

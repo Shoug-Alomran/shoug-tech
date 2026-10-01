@@ -271,7 +271,8 @@ def breakdown_page(ch, ref: str) -> str:
 def breakdown_wrapper(ch, ref: str, hrefs: list[str], index: int) -> str:
     name = esc(label(ch))
     folder = breakdown_folder(ch)
-    t = retarget(ref, [("03-chapter-3-scanning/chapter-3-scanning.html", f"{folder}/chapter-{ch.NUMBER}-{ch.SLUG}.html"),
+    # The wrapper links its page relatively ("./chapter-3-scanning.html").
+    t = retarget(ref, [("./chapter-3-scanning.html", f"./chapter-{ch.NUMBER}-{ch.SLUG}.html"),
                        ("03-chapter-3-scanning/", f"{folder}/"), ("Breakdown: Chapter 3 Scanning", f"Breakdown: {name}"),
                        ("Chapter Chapter 3 Scanning", name), ("Chapter 3 Scanning", name), ("ITEM_03", f"ITEM_{ch.NUMBER:02d}")])
     t = with_nav(t, hrefs, index, f"{URL}/slide-breakdowns/")
@@ -321,7 +322,10 @@ def quiz_sections(quiz: dict) -> list[dict]:
     for _text, _tag, pairs in quiz.get("match", []):
         if any('"' in d for _t, d in pairs):
             raise SystemExit("matching definitions cannot contain double quotes (used as option values)")
-    add("Multiple choice", [dict(zip(("type", "text", "opts", "ans", "exp", "tag"), ("mcq", t, *spread_answer(t, o, a), e, g)))
+    # Past papers keep their printed A/B/C/D lettering; generated practice quizzes
+    # spread the answer so it isn't always in the same slot.
+    place = (lambda t, o, a: (o, a)) if quiz.get("keep_order") else spread_answer
+    add("Multiple choice", [dict(zip(("type", "text", "opts", "ans", "exp", "tag"), ("mcq", t, *place(t, o, a), e, g)))
                             for t, o, a, e, g in quiz.get("mcq", [])])
     add("True or false", [{"type": "tf", "text": t, "ans": a, "exp": e, "tag": g} for t, a, e, g in quiz.get("tf", [])])
     add("Fill in the blank", fill(quiz.get("fill", [])))
@@ -337,23 +341,40 @@ def quiz_page(name: str, short: str, heading: str, scope: str, quiz: dict, url: 
     count = sum(len(s["qs"]) for s in sections)
     types = {q["type"] for s in sections for q in s["qs"]}
     desc = f"{scope} — exam-style practice covering " + ", ".join(s["label"].lower() for s in sections) + ", with instant feedback."
-    t = swap(template, "ETHC303 · Business Ethics Quiz", esc(f"CYS403 · {name}"), count=4)
-    t = swap(t, "Based on the Business Ethics chapter — past exam questions and exam-style practice.", esc(desc), count=5)
+    # Counts are not pinned: the shared quiz template is edited independently.
+    t = swap(template, "ETHC303 · Business Ethics Quiz", esc(f"CYS403 · {name}"), count=None)
+    # Reformatting re-wraps this sentence across lines, so match it whitespace-tolerantly.
+    blurb = "Based on the Business Ethics chapter — past exam questions and exam-style practice."
+    blurb_re = re.compile(r"\s+".join(map(re.escape, blurb.split())))
+    t, hits = blurb_re.subn(esc(desc), t)
+    if not hits:
+        raise SystemExit("template drift: quiz description blurb not found")
     t = swap(t, QUIZ_TEMPLATE_URL, url, count=None)
     t = swap(t, "Business <span>Ethics</span>", f"CYS403 <span>{esc(short)}</span>")
     t = swap(t, '<div class="progress-pill" id="prog-pill">0 / 30</div>', f'<div class="progress-pill" id="prog-pill">0 / {count}</div>')
-    t = swap(t, '<button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>',
-             f'<button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">{maps_core.MOON}</button>')
-    t = swap(t, "function toggleTheme() {", f"const THEME_ICONS = {THEME_ICONS};\n\n        function toggleTheme() {{")
-    t = swap(t, "document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';",
-             "document.getElementById('theme-btn').innerHTML = isDark ? THEME_ICONS.dark : THEME_ICONS.light;")
+    # The shared template has already had its emoji replaced by icons in some copies,
+    # so the emoji swaps only apply when they are still there.
+    def optional(text: str, old_text: str, new_text: str) -> str:
+        return text.replace(old_text, new_text) if old_text in text else text
+
+    t = optional(t, '<button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>',
+                 f'<button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">{maps_core.MOON}</button>')
+    if "const THEME_ICONS" not in t:
+        t = swap(t, "function toggleTheme() {", f"const THEME_ICONS = {THEME_ICONS};\n\n        function toggleTheme() {{")
+    t = optional(t, "document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';",
+                 "document.getElementById('theme-btn').innerHTML = isDark ? THEME_ICONS.dark : THEME_ICONS.light;")
     t = swap(t, "<h1>Exam prep quiz</h1>", f"<h1>{esc(heading)}</h1>")
     t = swap(t, '<span class="dot"></span> 30 questions', f'<span class="dot"></span> {count} questions')
     t = swap(t, '<span class="dot amber"></span> 5 question types', f'<span class="dot amber"></span> {len(types)} question types')
     for emoji in ["🎉 ", "📖 ", "💪 "]:
-        t = swap(t, f"'{emoji}", "'")
+        t = optional(t, f"'{emoji}", "'")
     t = swap(t, "Business Ethics Study Tool", f"CYS403 {esc(short)} Study Tool")
-    start, end = t.index("const SECTIONS = "), t.index("        let submitted = false;")
+    # The template gets reformatted, so match the boundary regardless of indentation.
+    start = t.index("const SECTIONS = ")
+    end_match = re.search(r"\n[ \t]*let submitted = false;", t)
+    if end_match is None:
+        raise SystemExit("template drift: end of SECTIONS block not found")
+    end = end_match.start() + 1
     t = t[:start] + "const SECTIONS = " + json.dumps(sections, ensure_ascii=False, indent=4) + ";\n\n" + t[end:]
     assert_clean(t, name, "Business Ethics", "ETHC303", "ethcs303")
     return t

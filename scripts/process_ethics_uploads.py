@@ -34,14 +34,14 @@ def main():
         parser.error('The local Whisper executable and model are required.')
     rows = json.loads(REGISTRY.read_text())
     aws = ['aws', '--endpoint-url', ENDPOINT]
-    objects = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'videos', '--output', 'json']))
+    objects = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'shoug-ethics-private', '--output', 'json']))
     existing = {x['Key'] for x in objects.get('Contents', [])}
     for video in rows:
         if video.get('ready'):
             continue
         # Recheck before each lesson: the owner may upload files while this
         # long-running caption batch is processing an earlier recording.
-        objects = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'videos', '--prefix', video['video'], '--output', 'json']))
+        objects = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'shoug-ethics-private', '--prefix', video['video'], '--output', 'json']))
         existing.update(x['Key'] for x in objects.get('Contents', []))
         path = args.source / video['source']
         local = path.exists() and not (getattr(path.stat(), 'st_flags', 0) & 0x40000000)
@@ -61,8 +61,8 @@ def main():
             if video['video'] not in existing:
                 output = temp / 'video.mp4'
                 subprocess.run(['ffmpeg', '-v', 'error', '-nostdin', '-i', source, '-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', str(output)], check=True)
-                subprocess.run(aws + ['s3', 'cp', str(output), 's3://videos/' + video['video'], '--content-type', 'video/mp4', '--no-progress'], check=True)
-                head = json.loads(run(aws + ['s3api', 'head-object', '--bucket', 'videos', '--key', video['video']]))
+                subprocess.run(aws + ['s3', 'cp', str(output), 's3://shoug-ethics-private/' + video['video'], '--content-type', 'video/mp4', '--no-progress'], check=True)
+                head = json.loads(run(aws + ['s3api', 'head-object', '--bucket', 'shoug-ethics-private', '--key', video['video']]))
                 if head['ContentLength'] != output.stat().st_size:
                     raise RuntimeError('Upload size mismatch')
             audio = temp / 'audio.wav'

@@ -4,6 +4,7 @@ window.SHOUG_COURSE_ROUTES = {
   cs101: "/academics/computer-science/cs101/",
   cs102: "/academics/computer-science/cs102/",
   cs210: "/academics/computer-science/cs210/",
+  cs223: "/academics/math/cs223/",
   cs285: "/academics/computer-science/cs285/",
   cs330: "/academics/computer-science/cs330/",
   cs331: "/academics/computer-science/cs331/",

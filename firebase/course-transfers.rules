@@ -1,0 +1,56 @@
+// Merge these matches/functions into the existing database documents match.
+// Do NOT replace existing production rules with this standalone test ruleset.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function transferAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.uid == get(/databases/$(database)/documents/courseCommerce/ethics).data.adminUid;
+    }
+    function transferBuyer(uid) {
+      return request.auth != null && request.auth.uid == uid
+        && request.auth.token.email_verified == true;
+    }
+    function validTransfer(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'email', 'fullName', 'phone', 'course', 'amount', 'currency', 'status', 'receipt', 'submittedAt', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && d.keys().hasOnly(['uid', 'email', 'fullName', 'phone', 'course', 'amount', 'currency', 'status', 'receipt', 'submittedAt', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && d.fullName is string && d.fullName.size() >= 2 && d.fullName.size() <= 120
+        && d.fullName.matches('.*[^ ].*')
+        && d.phone is string && d.phone.matches('[+][1-9][0-9]{7,14}')
+        && d.uid == uid && d.email == request.auth.token.email
+        && d.course == 'ethics' && d.amount == 32500 && d.currency == 'SAR'
+        && d.status == 'pending' && d.submittedAt == request.time
+        && d.reviewedAt == null && d.reviewedBy == '' && d.reviewNote == ''
+        && d.receipt is string && d.receipt.size() <= 700000
+        && d.receipt.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
+    }
+    match /courseCommerce/ethics {
+      allow get: if request.auth != null;
+      // Configure bank details/admin UID using a trusted console or Admin SDK.
+      allow list, write: if false;
+    }
+    match /courseTransfers/{uid} {
+      allow get: if transferBuyer(uid) || transferAdmin();
+      allow list: if transferAdmin() && request.query.limit <= 10;
+      allow create: if transferBuyer(uid) && validTransfer(uid)
+        && get(/databases/$(database)/documents/courseCommerce/ethics).data.enabled == true;
+      allow update: if (
+        transferBuyer(uid) && resource.data.status == 'rejected'
+        && validTransfer(uid)
+        && get(/databases/$(database)/documents/courseCommerce/ethics).data.enabled == true
+      ) || (
+        transferAdmin() && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.reviewedAt == request.time
+        && request.resource.data.reviewedBy == request.auth.uid
+        && request.resource.data.reviewNote is string
+        && request.resource.data.reviewNote.size() <= 500
+      );
+      allow delete: if false;
+    }
+  }
+}
