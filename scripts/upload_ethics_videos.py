@@ -12,7 +12,7 @@ import tempfile
 from pathlib import Path
 
 ENDPOINT = 'https://8baba61b0b1e25d88220970b015bab81.r2.cloudflarestorage.com'
-PUBLIC = 'https://pub-1ae2691df7364eea93afb4e67996d97c.r2.dev'
+PUBLIC = 'https://shoug-tech.com/course-media'
 
 
 def run(args):
@@ -40,7 +40,7 @@ def main():
     if pending:
         print('Skipping cloud-only files; uploading available recordings.', flush=True)
     aws = ['aws', '--endpoint-url', ENDPOINT]
-    listing = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'videos', '--prefix', 'ethics/', '--output', 'json']))
+    listing = json.loads(run(aws + ['s3api', 'list-objects-v2', '--bucket', 'shoug-ethics-private', '--prefix', 'ethics/', '--output', 'json']))
     existing = {x['Key'] for x in listing.get('Contents', [])}
     for source in files:
         if source in pending:
@@ -59,8 +59,8 @@ def main():
         with tempfile.TemporaryDirectory(prefix='ethics-video-') as temp:
             output = Path(temp) / 'video.mp4'
             subprocess.run(['ffmpeg', '-v', 'error', '-nostdin', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', str(output)], check=True)
-            subprocess.run(aws + ['s3', 'cp', str(output), 's3://videos/' + key, '--content-type', 'video/mp4', '--no-progress'], check=True)
-            remote = json.loads(run(aws + ['s3api', 'head-object', '--bucket', 'videos', '--key', key, '--output', 'json']))
+            subprocess.run(aws + ['s3', 'cp', str(output), 's3://shoug-ethics-private/' + key, '--content-type', 'video/mp4', '--no-progress'], check=True)
+            remote = json.loads(run(aws + ['s3api', 'head-object', '--bucket', 'shoug-ethics-private', '--key', key, '--output', 'json']))
             if remote['ContentLength'] != output.stat().st_size:
                 raise SystemExit('Uploaded size mismatch: ' + key)
             print('Uploaded: ' + PUBLIC + '/' + key, flush=True)

@@ -3,6 +3,9 @@
 
   if (window.__shougFirebaseAuthBooted) return;
   window.__shougFirebaseAuthBooted = true;
+  if (document.querySelector(".shoug-site-header") && !document.querySelector('link[href="/styles/site-shell.css"]')) {
+    var shellStyle = document.createElement("link"); shellStyle.rel = "stylesheet"; shellStyle.href = "/styles/site-shell.css"; document.head.appendChild(shellStyle);
+  }
 
   var FB_VERSION = "10.12.0";
   var FB_BASE =
@@ -61,6 +64,8 @@
 
   function isContentPage() {
     var path = window.location.pathname;
+    if (document.body && document.body.hasAttribute("data-transfer-page"))
+      return false;
     if (isLegalPage()) return false;
     if (
       path === "/" ||
@@ -1212,6 +1217,13 @@
         "</div>",
       ].join("");
       actions.insertBefore(el, actions.firstChild);
+      // The menu reflects the trusted configuration; Firestore still enforces authorization.
+      firebase.firestore().collection("courseCommerce").doc("ethics").get().then(function(snapshot) {
+        if (!el.isConnected || firebase.auth().currentUser?.uid !== user.uid || snapshot.data()?.adminUid !== user.uid) return;
+        var link = document.createElement("a"); link.className = "shoug-drop-link";
+        link.href = "/admin/transfers/"; link.textContent = "Manage course payments";
+        el.querySelector("#shoug-signout").before(link);
+      }).catch(function() {});
 
       // Open/close itself is handled by mobile-navigation.js — same
       // body-class mechanism as the MENU and Dir toggles, so all three
@@ -3774,6 +3786,12 @@
       });
 
     firebase.auth().onAuthStateChanged(function (user) {
+      if (!user && /^(www\.)?shoug-tech\.com$/.test(location.hostname)) {
+        fetch("/course-access/session", {
+          method: "DELETE",
+          credentials: "same-origin",
+        }).catch(function () {});
+      }
       try {
         if (user) localStorage.setItem("shoug-was-signed-in", "1");
         else localStorage.removeItem("shoug-was-signed-in");
@@ -3790,10 +3808,12 @@
       removeCommentSection();
       if (user) {
         syncAccountCache(user);
-        injectCompleteBtn(user);
-        injectPageIcons(user);
-        injectAppNav(user);
-        injectCommentSection(user);
+        if (!document.body.hasAttribute("data-transfer-page")) {
+          injectCompleteBtn(user);
+          injectPageIcons(user);
+          injectAppNav(user);
+          injectCommentSection(user);
+        }
         startExamReminder(user);
       }
       injectThemeToggle();

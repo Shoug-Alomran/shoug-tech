@@ -13,7 +13,7 @@
  *
  * Bump CACHE_VERSION to invalidate everything after a deploy.
  */
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2-private-courses";
 const SHELL_CACHE = `shoug-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `shoug-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `shoug-assets-${CACHE_VERSION}`;
@@ -110,6 +110,28 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Never serve paid lessons or transfer information from an offline cache.
+  if (
+    url.pathname.startsWith("/academics/other-courses/ethcs303") ||
+    url.pathname.startsWith("/course-access") ||
+    url.pathname.startsWith("/course-media/") ||
+    url.pathname.startsWith("/checkout/") ||
+    url.pathname.startsWith("/admin/") ||
+    url.pathname.startsWith("/ai-context/academics/other-courses/ethcs303") ||
+    url.pathname === "/javascripts/past-exam-practice.js"
+  ) {
+    event.respondWith(
+      fetch(request, { cache: "no-store" }).catch(
+        () =>
+          new Response("Sign in online to access this course.", {
+            status: 503,
+            headers: { "Cache-Control": "no-store" },
+          }),
+      ),
+    );
+    return;
+  }
 
   // PDFs are the bulk of the site by bytes and would evict everything else.
   if (url.pathname.toLowerCase().endsWith(".pdf")) return;

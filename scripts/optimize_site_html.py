@@ -334,6 +334,9 @@ def add_alternates(html: str, path: Path) -> str:
 
 def add_clarity(html: str) -> str:
     """Install Microsoft's official Clarity snippet once on every HTML page."""
+    # Payment proof and buyer emails must never enter session replay.
+    if 'data-transfer-page=' in html:
+        return html
     if "www.clarity.ms/tag/" in html and "xub0eqmvs9" in html:
         return html
     return insert_before_head_close(html, "\n" + CLARITY_ASSETS)

@@ -44,7 +44,7 @@ DOCS = REPO / 'docs'
 SECTION = DOCS / 'academics/other-courses/ethcs303/video-explanations'
 SECTION_URL = '/academics/other-courses/ethcs303/video-explanations/'
 SITE = 'https://shoug-tech.com'
-R2 = 'https://pub-1ae2691df7364eea93afb4e67996d97c.r2.dev'
+R2 = 'https://shoug-tech.com/course-media'
 BREAKDOWNS = '/academics/other-courses/ethcs303/slide-breakdowns/'
 
 # Folder -> the title the slide breakdown page itself carries.
