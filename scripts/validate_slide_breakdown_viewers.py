@@ -53,9 +53,24 @@ def attr_points_to(text: str, tag: str, attr: str, expected: str, required_class
     return False
 
 
+# A paid course replaces its viewer pages with a sign-in gate. Such a page
+# deliberately embeds nothing, so it is valid rather than a broken viewer; the
+# authored file still has to exist behind the gate.
+LOCKED_RE = re.compile(r'data-course-locked=["\']true["\']|data-transfer-page=["\']access["\']', re.I)
+
+
+def is_locked(text: str) -> bool:
+    return bool(LOCKED_RE.search(text))
+
+
 def validate_viewer(index: Path, source: Path, errors: list[str]) -> None:
     text = index.read_text(encoding="utf-8", errors="ignore")
     expected = relative_href(source, index)
+
+    if is_locked(text):
+        if not source.is_file():
+            errors.append(f"authored breakdown disappeared: {source.relative_to(ROOT)}")
+        return
 
     if COMING_SOON in text or re.search(
         r'<div\b[^>]*class=["\'][^"\']*\bcoming-soon-panel\b', text, re.I
