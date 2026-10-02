@@ -119,7 +119,7 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/checkout/") ||
     url.pathname.startsWith("/admin/") ||
     url.pathname.startsWith("/ai-context/academics/other-courses/ethcs303") ||
-    url.pathname === "/javascripts/past-exam-practice.js"
+    ["/javascripts/course-transfers.js", "/styles/course-transfers.css", "/javascripts/email-verification.js", "/javascripts/firebase-auth.js", "/styles/site-shell.css", "/javascripts/past-exam-practice.js"].includes(url.pathname)
   ) {
     event.respondWith(
       fetch(request, { cache: "no-store" }).catch(
