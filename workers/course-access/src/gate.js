@@ -21,6 +21,19 @@
         destination = url.pathname + url.search;
     } catch {}
   }
+  // Static previews cannot set the live site's secure, host-only session cookie.
+  // Do not request a token or POST it to a server that cannot handle sessions.
+  if (!["shoug-tech.com", "www.shoug-tech.com"].includes(location.hostname)) {
+    signIn.hidden = true;
+    check.hidden = true;
+    status.textContent = "You’re viewing a local preview. Open the live website and sign in with your approved account to access the course.";
+    const live = document.createElement("a");
+    live.className = "button primary";
+    live.href = "https://shoug-tech.com/course-access/?next=" + encodeURIComponent(destination);
+    live.textContent = "Open my course on shoug-tech.com →";
+    check.parentElement.append(live);
+    return;
+  }
   async function verify(user) {
     const version = ++generation;
     if (!user) {
