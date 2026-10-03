@@ -7,6 +7,7 @@ breakdown. Keep `ready` false until processing succeeds.
 Run the integrated upload workflow:
 
 ```sh
+export ETHICS_CONTENT_ROOT="$PWD/.private-courses/ethics"
 python3 scripts/process_ethics_uploads.py --whisper /path/to/whisper.cpp
 ```
 
@@ -16,8 +17,18 @@ and builds the lesson pages, transcript data and listening controls. Caption
 review failures keep the new lesson unpublished. Download cloud-only files in
 Finder and rerun; completed lessons are skipped.
 
-Review the generated pages and caption files, then deploy through the existing
-GitHub Pages workflow. Register replacements with a new slug and R2 key so
+Paid lesson pages and captions must be generated into the private course source:
+
+```sh
+export ETHICS_CONTENT_ROOT="$PWD/.private-courses/ethics"
+python3 scripts/build_ethics_video_pages.py
+python3 scripts/build_ethics_study_tools.py
+python3 scripts/secure_ethics_content.py --build-worker --check
+```
+
+Review the private pages and caption files, then deploy the course-access Worker.
+Do not publish paid HTML, captions, or transcripts through GitHub Pages.
+Register replacements with a new slug and R2 key so
 captions cannot accidentally refer to the previous recording.
 
 This is a local upload-and-caption workflow. Uploading directly in Cloudflare's

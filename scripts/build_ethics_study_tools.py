@@ -268,13 +268,13 @@ def main():
             slide=re.sub(r'^\d+-','',bd)
             if slide=='intellectual-property-laws/':pass
             route=BASE+'slides/'+slide
-            if (ROOT/'docs'/route.strip('/')/'index.html').exists():routes.setdefault(route,[]).append(v['slug'])
-    out=ROOT/'docs/academics/other-courses/ethcs303/video-explanations/study-tools.json'
+            if (p.DOCS/route.strip('/')/'index.html').exists():routes.setdefault(route,[]).append(v['slug'])
+    out=p.SECTION/'study-tools.json'
     out.write_text(json.dumps({'lessons':lessons,'routes':routes},ensure_ascii=False,separators=(',',':')))
     assets='<link rel="stylesheet" href="/styles/ethics-study-tools.css">\n<script src="/javascripts/ethics-study-tools.js" defer></script>\n'
     paths={p.page_path(v) for v in p.VIDEOS}
     for route in routes:
-        directory=ROOT/'docs'/route.strip('/')
+        directory=p.DOCS/route.strip('/')
         paths.update(directory.glob('*.html'))
     for path in paths:
         if not path.exists():continue

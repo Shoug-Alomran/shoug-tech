@@ -32,6 +32,7 @@ folder); the committed JPEGs are what the pages use, so --thumbnails is only
 needed when a recording changes.
 """
 
+import os
 import argparse
 import html
 import json
@@ -40,7 +41,7 @@ import subprocess
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DOCS = REPO / 'docs'
+DOCS = Path(os.environ.get('ETHICS_CONTENT_ROOT', str(REPO / 'docs')))
 SECTION = DOCS / 'academics/other-courses/ethcs303/video-explanations'
 SECTION_URL = '/academics/other-courses/ethcs303/video-explanations/'
 SITE = 'https://shoug-tech.com'
@@ -58,6 +59,7 @@ BREAKDOWN_LABELS = {
         'Ethical Issues in Systems Analysis and Software Engineering',
     '09-privacy-issues-in-cyberspace/': 'Privacy Issues in Cyberspace',
     '11-social-engineering/': 'Social Engineering',
+    '13-business-ethics/': 'Business Ethics',
     '14-intellectual-property-laws/': 'Intellectual Property Laws',
     '15-cyber-laws-in-saudi-arabia/': 'Cyber Laws in Saudi Arabia',
 }
