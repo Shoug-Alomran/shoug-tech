@@ -415,7 +415,9 @@ def viewer_slug(pdf, taken):
         slug = slug[len(parent) + 1:]
     slug = re.sub(r'[^a-z0-9]+', '-', slug.lower()).strip('-') or 'document'
     if slug in taken:
-        slug += '-pdf'
+        # Office files get viewers too, so name the clash after this file's own
+        # type; a hardcoded '-pdf' put the spreadsheet at <name>-pdf/.
+        slug += '-' + (os.path.splitext(pdf)[1].lstrip('.').lower() or 'file')
     return slug
 
 
