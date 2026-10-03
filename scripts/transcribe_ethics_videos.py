@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Transcribe the ETHCS303 recordings into WebVTT caption tracks.
 
-The narration is Arabic (Saudi dialect) with English technical terms, so the
-captions are Arabic and the pages mark the track srclang="ar".
+The narration mixes Arabic (Saudi dialect) and English. Transcribe the original
+speech without translating it; review both languages before publishing.
 
 Captions land in docs/.../video-explanations/captions/<slug>.vtt, which is where
 build_ethics_video_pages.py looks when deciding whether a player gets a <track>.
@@ -39,7 +39,7 @@ spec.loader.exec_module(pages)
 
 CAPTIONS = pages.SECTION / 'captions'
 MODEL = 'ggml-large-v3-turbo.bin'
-NOTE = 'NOTE Auto-transcribed with Whisper (large-v3-turbo). Arabic narration; may contain errors.'
+NOTE = 'NOTE Auto-transcribed with Whisper (large-v3-turbo). Original-language Arabic and English; may contain errors.'
 
 
 def extract_audio(source, target):
@@ -65,7 +65,7 @@ def main():
                         default=Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/Ethics')
     parser.add_argument('--whisper', type=Path, required=True,
                         help='whisper.cpp checkout holding build/bin/whisper-cli and models/')
-    parser.add_argument('--language', default='ar', help='spoken language (default: ar)')
+    parser.add_argument('--language', default='ar', help='primary spoken language (default: ar; English terms remain in English)')
     parser.add_argument('--threads', type=int, default=8)
     parser.add_argument('--only', action='append', default=[], help='slug to transcribe; repeatable')
     parser.add_argument('--force', action='store_true', help='re-transcribe even if a .vtt exists')
@@ -107,6 +107,7 @@ def main():
                 # Reset text context between audio windows so a mistaken phrase
                 # cannot seed repetition across the rest of a recording.
                 '-mc', '0',
+                '--prompt', 'شرح بالعربية والإنجليزية. Ethics, cybersecurity, systems analysis, software engineering, business ethics.',
                 '-ovtt', '-of', str(target.with_suffix('')),
             ], check=True, stdout=subprocess.DEVNULL)
         annotate(target)

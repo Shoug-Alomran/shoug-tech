@@ -75,7 +75,9 @@ BREAKDOWN_LABELS = {
 GROUPS = [
     ('Ethical theories', 'النظريات الأخلاقية'),
     ('Professional practice', 'الممارسة المهنية'),
+    ('Chapter 4 · Technical and Ethical Issues with Systems Analysis and Software Development', 'الفصل الرابع · القضايا التقنية والأخلاقية في تحليل النظم وتطوير البرمجيات'),
     ('Privacy in cyberspace', 'الخصوصية في الفضاء السيبراني'),
+    ('Chapter 9 · Business Ethics', 'الفصل التاسع · أخلاقيات الأعمال'),
     ('Social engineering', 'الهندسة الاجتماعية'),
     ('Intellectual property', 'الملكية الفكرية'),
     ('Cyber law', 'القوانين السيبرانية'),
@@ -550,6 +552,14 @@ EXTRA_RECORDINGS = REPO / 'scripts' / 'ethics-new-recordings.json'
 if EXTRA_RECORDINGS.exists():
     VIDEOS.extend(v for v in json.loads(EXTRA_RECORDINGS.read_text()) if v.get('ready'))
 
+# Match the syllabus decks rather than combining unrelated chapters.
+for video in VIDEOS:
+    if video.get('breakdown') == '06-ethical-issues-in-systems-analysis-and-software-engineering/':
+        video['group'] = 'Chapter 4 · Technical and Ethical Issues with Systems Analysis and Software Development'
+    elif video.get('breakdown') == '13-business-ethics/':
+        video['group'] = 'Chapter 9 · Business Ethics'
+
+
 # The folder a recording's page lives in, by what is on screen: `slide-breakdowns`
 # when it walks through the HTML slide breakdown pages, `slides` when it
 # annotates the original lecture slides.
@@ -1006,8 +1016,10 @@ def detail_body(video, previous, following):
     if (SECTION / 'captions' / (video['slug'] + '.vtt')).exists():
         # The narration is Arabic; `default` turns the track on so the player
         # shows its captions control without the reader hunting for it.
-        track = ('<track kind="captions" srclang="ar" label="العربية (تلقائية)" default '
-                 'src="%scaptions/%s.vtt">' % (SECTION_URL, video['slug']))
+        caption_text = (SECTION / 'captions' / (video['slug'] + '.vtt')).read_text()
+        label = 'العربية / English (automatic)' if 'original-language arabic and english' in caption_text.lower() else 'العربية (تلقائية)'
+        track = ('<track kind="captions" srclang="ar" label="%s" default '
+                 'src="%scaptions/%s.vtt">' % (label, SECTION_URL, video['slug']))
     parts = [
         '<section id="section-video-explanations" class="video-detail" data-video-lesson '
         'data-reaction-key="ethcs303-%s" aria-labelledby="video-heading">' % video['slug'],

@@ -6,6 +6,7 @@ workflow; manual uploads to the R2 dashboard do not execute local software.
 Caption review failures leave the recording unpublished, ready for correction.
 """
 import argparse
+import os
 import json
 import subprocess
 import tempfile
@@ -16,7 +17,8 @@ from validate_video_captions import read_cues, repair_timing, format_cues, audit
 
 ROOT = Path(__file__).resolve().parent.parent
 REGISTRY = ROOT / 'scripts/ethics-new-recordings.json'
-SECTION = ROOT / 'docs/academics/other-courses/ethcs303/video-explanations'
+os.environ.setdefault('ETHICS_CONTENT_ROOT', str(ROOT / '.private-courses/ethics'))
+SECTION = Path(os.environ['ETHICS_CONTENT_ROOT']) / 'academics/other-courses/ethcs303/video-explanations'
 
 
 def run(args):
@@ -74,7 +76,7 @@ def main():
             cues = format_cues(repair_timing(cues))
             caption = SECTION / 'captions' / (video['slug'] + '.vtt')
             caption.parent.mkdir(parents=True, exist_ok=True)
-            caption.write_text('\n\n'.join(['WEBVTT', 'NOTE Automatic Arabic captions generated locally with Whisper; may contain errors.'] + [f'{a} --> {b}\n{t}' for a,b,t in cues]) + '\n')
+            caption.write_text('\n\n'.join(['WEBVTT', 'NOTE Automatic original-language Arabic and English captions generated locally with Whisper; may contain errors.'] + [f'{a} --> {b}\n{t}' for a,b,t in cues]) + '\n')
             errors = audit(cues)
             if errors:
                 print('CAPTION REVIEW: ' + video['slug'] + ': ' + '; '.join(errors), flush=True)

@@ -11,7 +11,7 @@ export ETHICS_CONTENT_ROOT="$PWD/.private-courses/ethics"
 python3 scripts/process_ethics_uploads.py --whisper /path/to/whisper.cpp
 ```
 
-It reuses existing R2 objects, uploads missing MP4 files, generates Arabic
+It reuses existing R2 objects, uploads missing MP4 files, generates original-language Arabic/English
 captions locally, checks caption timing and repeated text, generates a poster,
 and builds the lesson pages, transcript data and listening controls. Caption
 review failures keep the new lesson unpublished. Download cloud-only files in
@@ -39,3 +39,19 @@ service is configured.
 when available and finds topic mentions for other recordings. Future recordings
 receive automatic topic markers until an outline is added to `CURATED_CHAPTERS`.
 Caption/transcript wording is automatic and can still contain recognition errors.
+
+Mixed-language recordings require transcription in the original spoken languages,
+not translation. Review English passages as well as Arabic before publishing;
+automatic language detection alone does not guarantee accurate code-switching.
+
+For Arabic–English recordings, draft captions with short pause-aligned windows:
+
+```sh
+python3 scripts/transcribe_ethics_bilingual.py \
+  --only introduction-to-business-ethics --output-dir /tmp/ethics-caption-review
+```
+
+This requires `mlx-whisper`, `numpy`, and `ffmpeg` on Apple Silicon. The larger
+multilingual model runs locally. Validate timing, review mixed-language passages,
+and copy approved drafts into the private captions directory before rebuilding.
+Do not assume a language auto-detection result guarantees faithful transcription.
