@@ -98,8 +98,8 @@
           "p",
           "ethics-caption-note",
           text(
-            "Automatic Arabic transcript; may contain errors. Select a line to jump to that moment.",
-            "نص عربي مُفرّغ آليًا وقد يحتوي أخطاء. اختر سطرًا للانتقال إليه.",
+            "Automatic transcript; may contain recognition errors. Select a line to jump to that moment.",
+            "نص مُفرّغ آليًا وقد يحتوي أخطاء في التعرّف على الكلام. اختر سطرًا للانتقال إليه.",
           ),
         ),
       );
