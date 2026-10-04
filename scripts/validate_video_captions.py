@@ -44,6 +44,8 @@ def audit(cues):
             errors.append(f'cue {i + 1}: nonpositive duration')
         if not text:
             errors.append(f'cue {i + 1}: empty text')
+        if re.search(r'\b(\w+(?:\W+\w+){0,3})(?:\W+\1){7,}\b', text, re.I):
+            errors.append(f'cue {i + 1}: repeated words within cue; review transcription')
         if i and seconds(start) < seconds(cues[i - 1][0]):
             errors.append(f'cue {i + 1}: out of order')
     longest = max(len(list(g)) for _, g in itertools.groupby(cues, key=lambda c: c[2]))

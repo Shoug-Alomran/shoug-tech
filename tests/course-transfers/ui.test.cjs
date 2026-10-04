@@ -206,6 +206,11 @@ test("receipt is required and a valid upload is tied to authenticated email as p
   $("transfer-name").value = "Test Buyer";
   $("transfer-phone").value = "0531007472";
   $("transfer-consent").checked = true;
+  assert.equal($("transfer-personal-access").required, true);
+  $("transfer-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
+  await flush();
+  assert.equal(f.saved(), undefined, "personal access agreement is required");
+  $("transfer-personal-access").checked = true;
   $("transfer-form").dispatchEvent(new w.Event("submit", { cancelable: true }));
   await flush();
   assert.equal(f.saved().email, "buyer@example.com");

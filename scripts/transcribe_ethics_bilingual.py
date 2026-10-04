@@ -8,7 +8,7 @@ import argparse,json,subprocess,sys,re
 from pathlib import Path
 import numpy as np
 import mlx_whisper
-from validate_video_captions import audit
+from validate_video_captions import audit, read_cues
 import build_ethics_video_pages as pages
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--source',type=Path,default=Path.home()/'Library/Mobile Documents/com~apple~CloudDocs/Ethics')
@@ -21,8 +21,13 @@ rows=[v for v in pages.VIDEOS if v['slug'] in args.only]
 if set(args.only)!={v['slug'] for v in rows}:parser.error('Unknown lesson slug')
 def stamp(t):
  n=round(t*1000);return f'{n//3600000:02}:{n//60000%60:02}:{n//1000%60:02}.{n%1000:03}'
+failures=[]
 for v in rows:
- if (out/(v['slug']+'.vtt')).exists():continue
+ if (out/(v['slug']+'.vtt')).exists():
+  _,existing=read_cues(out/(v['slug']+'.vtt'))
+  errors=audit(existing)
+  if errors:failures.append((v['slug'],errors))
+  continue
  f=args.source/v['source']
  raw=subprocess.check_output(['ffmpeg','-v','error','-i',str(f),'-vn','-ac','1','-ar','16000','-f','f32le','pipe:1']);audio=np.frombuffer(raw,dtype=np.float32);duration=len(audio)/16000
  silence=subprocess.run(['ffmpeg','-hide_banner','-i',str(f),'-vn','-af','silencedetect=noise=-32dB:d=0.12','-f','null','-'],capture_output=True,text=True).stderr
@@ -38,4 +43,7 @@ for v in rows:
    if end>start and s['text'].strip():segments.append([stamp(start),stamp(end),s['text'].strip()])
   if i%10==0:print(v['slug'],i+1,'/',len(cuts)-1,flush=True)
  (out/(v['slug']+'.vtt')).write_text('WEBVTT\n\nNOTE Automatic original-language Arabic and English captions. Whisper large-v3-turbo with short speech windows; may contain recognition errors.\n\n'+'\n\n'.join(f'{a} --> {b}\n{t}' for a,b,t in segments)+'\n')
- print('DONE',v['slug'],'audit',audit(segments),flush=True)
+ errors=audit(segments)
+ if errors:failures.append((v['slug'],errors))
+ print('DONE',v['slug'],'audit',errors,flush=True)
+if failures:raise SystemExit('Drafts need review: '+str(failures))
