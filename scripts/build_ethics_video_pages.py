@@ -646,15 +646,20 @@ PAGE_CSS = """<style>
 #section-video-explanations { margin: 32px 0 56px; padding: 0 32px; scroll-margin-top: 24px; }
 #section-video-explanations .text-block { max-width: 70ch; color: var(--text-secondary); line-height: 1.7; }
 
-.video-group { margin-top: 36px; }
+.video-group { margin-top: 48px; }
 .video-group-label {
-    display: flex; align-items: baseline; gap: 12px;
-    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--text-tertiary); margin-bottom: 16px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px;
+    font-family: var(--font-sans, sans-serif); font-size: clamp(22px, 2vw, 30px); font-weight: 800;
+    line-height: 1.35; letter-spacing: -0.02em; text-transform: none;
+    color: var(--text-primary); margin-bottom: 24px;
+    padding: 18px 22px; border-inline-start: 4px solid var(--accent-purple, #bf5af2);
+    border-radius: 0 10px 10px 0; background: rgba(168, 85, 247, 0.10);
 }
-.video-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border-dim); }
-.video-group-count { font-size: 10px; letter-spacing: 0.1em; color: var(--text-tertiary); }
+.video-group-count {
+    flex-shrink: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    line-height: 1.5; letter-spacing: 0.04em; color: var(--text-secondary);
+    padding: 5px 10px; border: 1px solid var(--border-dim); border-radius: 999px;
+}
 
 .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(288px, 1fr)); gap: 20px; }
 .video-card {

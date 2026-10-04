@@ -284,6 +284,10 @@
       );
       return;
     }
+    if (!$("transfer-personal-access")?.checked) {
+      message("Please agree that course access and materials are for your personal use only.");
+      return;
+    }
     if (lastOrder && lastOrder.status !== "rejected") return;
     const fullName = $("transfer-name").value.trim();
     let phone = $("transfer-phone").value.replace(/[\s()-]/g, "");
