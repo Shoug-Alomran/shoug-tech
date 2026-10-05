@@ -3,8 +3,14 @@
 
   if (window.__shougFirebaseAuthBooted) return;
   window.__shougFirebaseAuthBooted = true;
-  if (document.querySelector(".shoug-site-header") && !document.querySelector('link[href="/styles/site-shell.css"]')) {
-    var shellStyle = document.createElement("link"); shellStyle.rel = "stylesheet"; shellStyle.href = "/styles/site-shell.css"; document.head.appendChild(shellStyle);
+  if (
+    document.querySelector(".shoug-site-header") &&
+    !document.querySelector('link[href="/styles/site-shell.css"]')
+  ) {
+    var shellStyle = document.createElement("link");
+    shellStyle.rel = "stylesheet";
+    shellStyle.href = "/styles/site-shell.css";
+    document.head.appendChild(shellStyle);
   }
 
   var FB_VERSION = "10.12.0";
@@ -1218,12 +1224,25 @@
       ].join("");
       actions.insertBefore(el, actions.firstChild);
       // The menu reflects the trusted configuration; Firestore still enforces authorization.
-      firebase.firestore().collection("courseCommerce").doc("ethics").get().then(function(snapshot) {
-        if (!el.isConnected || firebase.auth().currentUser?.uid !== user.uid || snapshot.data()?.adminUid !== user.uid) return;
-        var link = document.createElement("a"); link.className = "shoug-drop-link";
-        link.href = "/admin/transfers/"; link.textContent = "Manage course payments";
-        el.querySelector("#shoug-signout").before(link);
-      }).catch(function() {});
+      firebase
+        .firestore()
+        .collection("courseCommerce")
+        .doc("ethics")
+        .get()
+        .then(function (snapshot) {
+          if (
+            !el.isConnected ||
+            firebase.auth().currentUser?.uid !== user.uid ||
+            snapshot.data()?.adminUid !== user.uid
+          )
+            return;
+          var link = document.createElement("a");
+          link.className = "shoug-drop-link";
+          link.href = "/admin/transfers/";
+          link.textContent = "Manage course payments";
+          el.querySelector("#shoug-signout").before(link);
+        })
+        .catch(function () {});
 
       // Open/close itself is handled by mobile-navigation.js — same
       // body-class mechanism as the MENU and Dir toggles, so all three

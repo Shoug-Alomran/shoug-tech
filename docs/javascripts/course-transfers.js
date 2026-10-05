@@ -13,7 +13,11 @@
     lastOrder = null,
     cursor = null;
   let verification = null;
-  let reviewStatus = "pending", reviewEmail = "", pageStarts = [null], pageIndex = 0, requestVersion = 0;
+  let reviewStatus = "pending",
+    reviewEmail = "",
+    pageStarts = [null],
+    pageIndex = 0,
+    requestVersion = 0;
   const show = (id, visible) => {
     if ($(id)) $(id).hidden = !visible;
   };
@@ -285,7 +289,9 @@
       return;
     }
     if (!$("transfer-personal-access")?.checked) {
-      message("Please agree that course access and materials are for your personal use only.");
+      message(
+        "Please agree that course access and materials are for your personal use only.",
+      );
       return;
     }
     if (lastOrder && lastOrder.status !== "rejected") return;
@@ -363,8 +369,25 @@
       card = element("details", "", "card admin-row");
     const row = element("summary", "", "review-row");
     const buyer = element("span", "", "review-buyer");
-    buyer.append(element("strong", order.fullName || "Name not provided"), element("span", order.email));
-    row.append(buyer, element("span", order.submittedAt?.toDate().toLocaleDateString() || "—", "review-date"), element("span", "SAR 325", "review-amount"), element("span", order.status === "pending" ? "Request" : order.status, "review-badge " + order.status), element("span", "View ↓", "review-open"));
+    buyer.append(
+      element("strong", order.fullName || "Name not provided"),
+      element("span", order.email),
+    );
+    row.append(
+      buyer,
+      element(
+        "span",
+        order.submittedAt?.toDate().toLocaleDateString() || "—",
+        "review-date",
+      ),
+      element("span", "SAR 325", "review-amount"),
+      element(
+        "span",
+        order.status === "pending" ? "Request" : order.status,
+        "review-badge " + order.status,
+      ),
+      element("span", "View ↓", "review-open"),
+    );
     card.append(row);
     const statusLine = element("p", "SAR 325 · " + order.status.toUpperCase());
     card.append(
@@ -477,38 +500,67 @@
   }
 
   async function loadOrders(first) {
-    const version = generation, request = ++requestVersion;
+    const version = generation,
+      request = ++requestVersion;
     if (settings?.adminUid !== user?.uid) return;
-    if (first) { pageIndex = 0; pageStarts = [null]; cursor = null; }
+    if (first) {
+      pageIndex = 0;
+      pageStarts = [null];
+      cursor = null;
+    }
     $("transfer-reload").disabled = $("transfer-more").disabled = true;
-    message("Loading " + (reviewStatus === "all" ? "all payments" : reviewStatus === "pending" ? "requests" : reviewStatus + " payments") + "…");
+    message(
+      "Loading " +
+        (reviewStatus === "all"
+          ? "all payments"
+          : reviewStatus === "pending"
+            ? "requests"
+            : reviewStatus + " payments") +
+        "…",
+    );
     $("transfer-orders").setAttribute("aria-busy", "true");
     try {
-      let query = db
-        .collection("courseTransfers")
-        .limit(10);
-      if (reviewStatus !== "all") query = query.where("status", "==", reviewStatus);
+      let query = db.collection("courseTransfers").limit(10);
+      if (reviewStatus !== "all")
+        query = query.where("status", "==", reviewStatus);
       if (reviewEmail) query = query.where("email", "==", reviewEmail);
-      if (pageStarts[pageIndex]) query = query.startAfter(pageStarts[pageIndex]);
+      if (pageStarts[pageIndex])
+        query = query.startAfter(pageStarts[pageIndex]);
       const result = await query.get({ source: "server" });
       if (!isCurrent(version) || request !== requestVersion) return;
       $("transfer-orders").replaceChildren(...result.docs.map(orderCard));
       cursor = result.docs[result.docs.length - 1] || null;
       show("transfer-more", result.size === 10);
       if ($("transfer-prev")) $("transfer-prev").disabled = pageIndex === 0;
-      if ($("review-page")) $("review-page").textContent = "Page " + (pageIndex + 1);
+      if ($("review-page"))
+        $("review-page").textContent = "Page " + (pageIndex + 1);
       message(
         result.empty
-          ? "No " + (reviewStatus === "all" ? "payments" : reviewStatus === "pending" ? "requests" : reviewStatus + " payments") + (reviewEmail ? " for this email." : " to show.")
+          ? "No " +
+              (reviewStatus === "all"
+                ? "payments"
+                : reviewStatus === "pending"
+                  ? "requests"
+                  : reviewStatus + " payments") +
+              (reviewEmail ? " for this email." : " to show.")
           : "Showing " +
               result.size +
-              " " + (reviewStatus === "all" ? "payments" : reviewStatus === "pending" ? "requests" : reviewStatus + " payments") + " on this page.",
+              " " +
+              (reviewStatus === "all"
+                ? "payments"
+                : reviewStatus === "pending"
+                  ? "requests"
+                  : reviewStatus + " payments") +
+              " on this page.",
       );
     } catch (error) {
-      if (isCurrent(version) && request === requestVersion) message(errorText(error));
-    } finally {
       if (isCurrent(version) && request === requestVersion)
-        { $("transfer-reload").disabled = $("transfer-more").disabled = false; $("transfer-orders").setAttribute("aria-busy", "false"); }
+        message(errorText(error));
+    } finally {
+      if (isCurrent(version) && request === requestVersion) {
+        $("transfer-reload").disabled = $("transfer-more").disabled = false;
+        $("transfer-orders").setAttribute("aria-busy", "false");
+      }
     }
   }
 
@@ -520,16 +572,39 @@
     verification?.resend(),
   );
   $("transfer-reload")?.addEventListener("click", () => loadOrders(true));
-  $("transfer-more")?.addEventListener("click", () => { if (!cursor) return; pageStarts[++pageIndex] = cursor; loadOrders(false); });
-  $("transfer-prev")?.addEventListener("click", () => { if (pageIndex > 0) { pageIndex--; loadOrders(false); } });
-  document.querySelectorAll("[data-status]").forEach(button => button.addEventListener("click", () => {
-    reviewStatus = button.dataset.status;
-    document.querySelectorAll("[data-status]").forEach(tab => tab.setAttribute("aria-pressed", String(tab === button)));
-    $("transfer-orders").replaceChildren();
+  $("transfer-more")?.addEventListener("click", () => {
+    if (!cursor) return;
+    pageStarts[++pageIndex] = cursor;
+    loadOrders(false);
+  });
+  $("transfer-prev")?.addEventListener("click", () => {
+    if (pageIndex > 0) {
+      pageIndex--;
+      loadOrders(false);
+    }
+  });
+  document.querySelectorAll("[data-status]").forEach((button) =>
+    button.addEventListener("click", () => {
+      reviewStatus = button.dataset.status;
+      document
+        .querySelectorAll("[data-status]")
+        .forEach((tab) =>
+          tab.setAttribute("aria-pressed", String(tab === button)),
+        );
+      $("transfer-orders").replaceChildren();
+      loadOrders(true);
+    }),
+  );
+  $("review-search")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    reviewEmail = $("review-email").value.trim();
     loadOrders(true);
-  }));
-  $("review-search")?.addEventListener("submit", event => { event.preventDefault(); reviewEmail = $("review-email").value.trim(); loadOrders(true); });
-  $("review-clear")?.addEventListener("click", () => { $("review-email").value = ""; reviewEmail = ""; loadOrders(true); });
+  });
+  $("review-clear")?.addEventListener("click", () => {
+    $("review-email").value = "";
+    reviewEmail = "";
+    loadOrders(true);
+  });
   function boot() {
     if (fb) return;
     fb = window.__shoug_fb;
