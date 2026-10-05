@@ -76,8 +76,13 @@ async function fixture(
   };
   const filters = {};
   const query = {
-    where(field, op, value) { filters[field] = value; return this; },
-    startAfter() { return this; },
+    where(field, op, value) {
+      filters[field] = value;
+      return this;
+    },
+    startAfter() {
+      return this;
+    },
     orderBy() {
       return this;
     },
@@ -85,14 +90,18 @@ async function fixture(
       return this;
     },
     get: async () => ({
-      docs: current && Object.entries(filters).every(([key,value]) => current[key] === value) ? [snapshot()] : [],
+      docs:
+        current &&
+        Object.entries(filters).every(([key, value]) => current[key] === value)
+          ? [snapshot()]
+          : [],
       size: current ? 1 : 0,
       empty: !current,
     }),
   };
   const db = {
     collection(name) {
-      Object.keys(filters).forEach(key => delete filters[key]);
+      Object.keys(filters).forEach((key) => delete filters[key]);
       reads++;
       return name === "courseCommerce"
         ? {
@@ -261,15 +270,35 @@ test("admin sees email and proof together; approval needs explicit bank verifica
   assert.equal(list.children.length, 0);
 });
 
- test("admin status tabs query the selected status and email", async t => {
- const f = await fixture(t, {page:"admin", order:{uid:"buyer",email:"buyer@example.com",status:"approved",receipt:"data:image/jpeg;base64,/9j/AA=="}});
- assert.equal(f.$("transfer-orders").children.length,0);
- f.w.document.querySelector('[data-status="approved"]').click(); await flush();
- assert.match(f.$("transfer-orders").textContent,/buyer@example.com/);
- assert.equal(f.w.document.querySelector('[data-status="approved"]').getAttribute("aria-pressed"),"true");
- f.$("review-email").value="absent@example.com"; f.$("review-search").dispatchEvent(new f.w.Event("submit",{cancelable:true})); await flush();
- assert.equal(f.$("transfer-orders").children.length,0);
- f.$("review-clear").click(); await flush();
- f.w.document.querySelector('[data-status="all"]').click(); await flush();
- assert.match(f.$("transfer-orders").textContent,/buyer@example.com/);
- });
+test("admin status tabs query the selected status and email", async (t) => {
+  const f = await fixture(t, {
+    page: "admin",
+    order: {
+      uid: "buyer",
+      email: "buyer@example.com",
+      status: "approved",
+      receipt: "data:image/jpeg;base64,/9j/AA==",
+    },
+  });
+  assert.equal(f.$("transfer-orders").children.length, 0);
+  f.w.document.querySelector('[data-status="approved"]').click();
+  await flush();
+  assert.match(f.$("transfer-orders").textContent, /buyer@example.com/);
+  assert.equal(
+    f.w.document
+      .querySelector('[data-status="approved"]')
+      .getAttribute("aria-pressed"),
+    "true",
+  );
+  f.$("review-email").value = "absent@example.com";
+  f.$("review-search").dispatchEvent(
+    new f.w.Event("submit", { cancelable: true }),
+  );
+  await flush();
+  assert.equal(f.$("transfer-orders").children.length, 0);
+  f.$("review-clear").click();
+  await flush();
+  f.w.document.querySelector('[data-status="all"]').click();
+  await flush();
+  assert.match(f.$("transfer-orders").textContent, /buyer@example.com/);
+});

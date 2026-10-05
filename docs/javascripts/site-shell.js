@@ -1,1 +1,10 @@
-(() => { document.documentElement.style.removeProperty('background');document.documentElement.style.removeProperty('color');if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');document.querySelector('.shoug-theme-btn')?.addEventListener('click',()=>{const light=document.body.classList.toggle('shoug-light-mode');localStorage.setItem('shoug-theme',light?'light':'dark');});})();
+(() => {
+  document.documentElement.style.removeProperty("background");
+  document.documentElement.style.removeProperty("color");
+  if (localStorage.getItem("shoug-theme") === "light")
+    document.body.classList.add("shoug-light-mode");
+  document.querySelector(".shoug-theme-btn")?.addEventListener("click", () => {
+    const light = document.body.classList.toggle("shoug-light-mode");
+    localStorage.setItem("shoug-theme", light ? "light" : "dark");
+  });
+})();

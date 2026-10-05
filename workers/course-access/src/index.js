@@ -38,7 +38,10 @@ export async function authorize(token, env, fetcher = fetch) {
       env.FIREBASE_API_KEY,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json", Referer: "https://shoug-tech.com/" },
+      headers: {
+        "Content-Type": "application/json",
+        Referer: "https://shoug-tech.com/",
+      },
       body: JSON.stringify({ idToken: token }),
     },
   );
@@ -106,31 +109,29 @@ async function gate(env, status = 200) {
   });
 }
 async function serveVideo(request, env, key) {
-      const metadata = await env.VIDEOS.head(key);
-      if (!metadata) return json({ error: "Not found" }, 404);
-      const rangeHeader = request.headers.get("Range"),
-        range = rangeHeader
-          ? parseRange(rangeHeader, metadata.size)
-          : undefined;
-      if (rangeHeader && !range)
-        return privateResponse(null, 416, {
-          "Content-Range": "bytes */" + metadata.size,
-        });
-      const headers = {
-        "Content-Type": metadata.httpMetadata?.contentType || "video/mp4",
-        "Accept-Ranges": "bytes",
-        "Content-Length": String(range?.length ?? metadata.size),
-      };
-      if (range)
-        headers["Content-Range"] =
-          `bytes ${range.offset}-${range.offset + range.length - 1}/${metadata.size}`;
-      const object =
-        request.method === "HEAD"
-          ? null
-          : await env.VIDEOS.get(key, range ? { range } : {});
-      if (request.method !== "HEAD" && !object)
-        return json({ error: "Not found" }, 404);
-      return privateResponse(object?.body || null, range ? 206 : 200, headers);
+  const metadata = await env.VIDEOS.head(key);
+  if (!metadata) return json({ error: "Not found" }, 404);
+  const rangeHeader = request.headers.get("Range"),
+    range = rangeHeader ? parseRange(rangeHeader, metadata.size) : undefined;
+  if (rangeHeader && !range)
+    return privateResponse(null, 416, {
+      "Content-Range": "bytes */" + metadata.size,
+    });
+  const headers = {
+    "Content-Type": metadata.httpMetadata?.contentType || "video/mp4",
+    "Accept-Ranges": "bytes",
+    "Content-Length": String(range?.length ?? metadata.size),
+  };
+  if (range)
+    headers["Content-Range"] =
+      `bytes ${range.offset}-${range.offset + range.length - 1}/${metadata.size}`;
+  const object =
+    request.method === "HEAD"
+      ? null
+      : await env.VIDEOS.get(key, range ? { range } : {});
+  if (request.method !== "HEAD" && !object)
+    return json({ error: "Not found" }, 404);
+  return privateResponse(object?.body || null, range ? 206 : 200, headers);
 }
 export async function handle(request, env, fetcher = fetch) {
   const url = new URL(request.url);
@@ -146,9 +147,14 @@ export async function handle(request, env, fetcher = fetch) {
   )
     return json({ error: "Invalid path" }, 400);
   if (path.startsWith("/course-access/samples/")) {
-    if (!["GET", "HEAD"].includes(request.method)) return json({error:"Method not allowed"},405);
+    if (!["GET", "HEAD"].includes(request.method))
+      return json({ error: "Method not allowed" }, 405);
     if (path === "/course-access/samples/intro-video.mp4") {
-      return serveVideo(request, env, "ethics/Moral Systems, Ethical Concepts, and Theories/Divine Command Theory.mp4");
+      return serveVideo(
+        request,
+        env,
+        "ethics/Moral Systems, Ethical Concepts, and Theories/Divine Command Theory.mp4",
+      );
     }
     return env.ASSETS.fetch(request);
   }
@@ -163,7 +169,12 @@ export async function handle(request, env, fetcher = fetch) {
     "/javascripts/course-transfers.js",
     "/javascripts/email-verification.js",
     "/javascripts/firebase-auth.js",
-    "/sw.js", "/styles/site-shell.css", "/javascripts/site-shell.js", "/javascripts/mobile-navigation.js", "/styles/ethics-study-tools.css", "/javascripts/ethics-study-tools.js",
+    "/sw.js",
+    "/styles/site-shell.css",
+    "/javascripts/site-shell.js",
+    "/javascripts/mobile-navigation.js",
+    "/styles/ethics-study-tools.css",
+    "/javascripts/ethics-study-tools.js",
   ];
   if (publicFiles.includes(path)) {
     const asset = await env.ASSETS.fetch(request);

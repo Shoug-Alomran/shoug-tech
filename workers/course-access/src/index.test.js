@@ -202,10 +202,21 @@ test("unknown routes cannot be used to reach asset binding", async () => {
   assert.equal(protectedPath("/academics/math/stat101/"), false);
 });
 
-test('only the selected sample video is available without payment', async () => {
+test("only the selected sample video is available without payment", async () => {
   const f = fixture();
-  const sample = await handle(new Request('https://shoug-tech.com/course-access/samples/intro-video.mp4', {headers:{Range:'bytes=0-9'}}), f.env, f.fetcher);
+  const sample = await handle(
+    new Request(
+      "https://shoug-tech.com/course-access/samples/intro-video.mp4",
+      { headers: { Range: "bytes=0-9" } },
+    ),
+    f.env,
+    f.fetcher,
+  );
   assert.equal(sample.status, 206);
-  const privateVideo = await handle(new Request('https://shoug-tech.com/course-media/ethics/other.mp4'), f.env, f.fetcher);
+  const privateVideo = await handle(
+    new Request("https://shoug-tech.com/course-media/ethics/other.mp4"),
+    f.env,
+    f.fetcher,
+  );
   assert.equal(privateVideo.status, 401);
 });

@@ -631,7 +631,7 @@ def build_thumbnails(source_root):
 # page chrome
 # --------------------------------------------------------------------------- #
 
-STYLE_RE = re.compile(r'<style>\n#section-video-explanations.*?</style>(?=</head>)', re.S)
+STYLE_RE = re.compile(r'<style>\s*#section-video-explanations\b.*?</style>', re.S)
 SECTION_RE = re.compile(r'<section id="section-video-explanations".*?</section>', re.S)
 CRUMB_RE = re.compile(r'<span class="current" data-en-text="Video Explanations"[^>]*>[^<]*</span>')
 LAZY_RE = re.compile(r'<script>\n\(\(\) => \{\n  const section = document\.getElementById.*?</script>\n', re.S)
