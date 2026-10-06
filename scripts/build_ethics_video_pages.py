@@ -72,16 +72,9 @@ BREAKDOWN_LABELS = {
 # actually walks through.
 # --------------------------------------------------------------------------- #
 
-GROUPS = [
-    ('Ethical theories', 'النظريات الأخلاقية'),
-    ('Professional practice', 'الممارسة المهنية'),
-    ('Chapter 4 · Technical and Ethical Issues with Systems Analysis and Software Development', 'الفصل الرابع · القضايا التقنية والأخلاقية في تحليل النظم وتطوير البرمجيات'),
-    ('Privacy in cyberspace', 'الخصوصية في الفضاء السيبراني'),
-    ('Chapter 9 · Business Ethics', 'الفصل التاسع · أخلاقيات الأعمال'),
-    ('Social engineering', 'الهندسة الاجتماعية'),
-    ('Intellectual property', 'الملكية الفكرية'),
-    ('Cyber law', 'القوانين السيبرانية'),
-]
+from ethics_course_structure import CHAPTERS, chapter, clean_title
+GROUPS = CHAPTERS
+
 
 VIDEOS = [
     {
@@ -552,12 +545,14 @@ EXTRA_RECORDINGS = REPO / 'scripts' / 'ethics-new-recordings.json'
 if EXTRA_RECORDINGS.exists():
     VIDEOS.extend(v for v in json.loads(EXTRA_RECORDINGS.read_text()) if v.get('ready'))
 
-# Match the syllabus decks rather than combining unrelated chapters.
+# One syllabus taxonomy for the paid library and public catalog.
 for video in VIDEOS:
-    if video.get('breakdown') == '06-ethical-issues-in-systems-analysis-and-software-engineering/':
-        video['group'] = 'Chapter 4 · Technical and Ethical Issues with Systems Analysis and Software Development'
-    elif video.get('breakdown') == '13-business-ethics/':
-        video['group'] = 'Chapter 9 · Business Ethics'
+    video['group'] = GROUPS[chapter(video['slug'], video['title'])][0]
+    video['title'] = clean_title(video['title'])
+    if video['slug'].startswith('ethical-security-issues-part-'):
+        video['title'] = 'Systems Analysis & Software Development — Part ' + video['slug'][-1]
+    elif video['slug'].startswith('systems-analysis-software-engineering-part-'):
+        video['title'] = 'Systems Analysis & Software Development — Part ' + str(int(video['slug'][-1]) + 2)
 
 
 # The folder a recording's page lives in, by what is on screen: `slide-breakdowns`
