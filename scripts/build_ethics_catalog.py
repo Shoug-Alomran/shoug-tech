@@ -16,6 +16,7 @@ def build():
     if not SOURCE.exists():
         raise SystemExit('Private course source is required to refresh the catalog.')
     sections = []
+    all_chapters = {}
     for folder, label in GROUPS.items():
         entries = []
         grouped = {}
@@ -43,16 +44,16 @@ def build():
             title = re.sub(r'\s*[—–|]\s*(?:Mind\s*Map|Slide Breakdown|Study Guide)$', '', title, flags=re.I)
             grouped.setdefault(index, []).append((title, resource_type))
             entries.append(title)
+        for index, rows in grouped.items():
+            all_chapters.setdefault(index, []).extend(rows)
+    for index, rows in sorted(all_chapters.items()):
         body = []
-        for index in sorted(grouped):
-            body.append('<section class="catalog-chapter"><h3>' + html.escape(CHAPTERS[index][0]) + '</h3><ul>')
-            for title, resource_type in sorted(grouped[index], key=lambda row: sort_key(row[0])):
-                body.append('<li><span>' + html.escape(title) + '<small class="catalog-format">' + resource_type + '</small></span><span class="catalog-lock">Locked · Full course</span></li>')
-            body.append('</ul></section>')
-        sections.append(f'<details class="catalog-group"><summary>{label}<span>{len(entries)} resources <b aria-hidden="true">+</b></span></summary>{"".join(body)}</details>')
+        for title, resource_type in sorted(rows, key=lambda row: (row[1], sort_key(row[0]))):
+            body.append('<li><span>' + html.escape(title) + '<small class="catalog-format">' + resource_type + '</small></span><span class="catalog-lock">Locked</span></li>')
+        sections.append('<details class="catalog-group"><summary><span class="chapter-number">' + str(len(sections)+1).zfill(2) + '</span><strong>' + html.escape(CHAPTERS[index][0]) + '</strong><span class="chapter-meta">' + str(len(rows)) + ' resources</span><b class="chapter-chevron" aria-hidden="true">⌄</b></summary><ul>' + ''.join(body) + '</ul></details>')
     fragment = START + '''
 <section id="course-catalog" aria-labelledby="catalog-title">
-<div class="sample-heading"><div><p class="eyebrow">Explore before you enroll</p><h2 id="catalog-title">Everything in your course.</h2></div><p>Browse the complete resource list. Only the three selected samples below open for free.</p></div>
+<div class="sample-heading"><div><p class="eyebrow">Explore before you enroll</p><h2 id="catalog-title">Explore the course content.</h2></div><p>Browse the complete resource list. Only the three selected samples below open for free.</p></div>
 <div class="catalog-samples"><strong>Available to preview</strong><a href="#free-samples">Video lesson ↗</a><a href="/course-access/samples/mindmap.html">Mindmap ↗</a><a href="/course-access/samples/breakdown.html">Slide breakdown ↗</a></div>
 ''' + ''.join(sections) + '</section>\n' + END
     source = GATE.read_text()
