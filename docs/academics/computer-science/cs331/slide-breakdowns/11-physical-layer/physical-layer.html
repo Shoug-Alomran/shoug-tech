@@ -1,0 +1,2850 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Physical Layer - CS331 Study Guide</title>
+    <script id="cs331-theme-preload">
+      (function () {
+        var keys = [
+          "shoug-theme",
+          "cs331-study-theme",
+          "cs331-mindmap-theme",
+          "cs331-chapter-mindmap-theme",
+        ];
+        function normalize(value) {
+          if (value === "slate" || value === "dark") return "dark";
+          if (value === "default" || value === "light") return "light";
+          return null;
+        }
+        function parentTheme() {
+          try {
+            if (
+              window.parent &&
+              window.parent !== window &&
+              window.parent.document
+            ) {
+              var b = window.parent.document.body;
+              if (b && b.classList.contains("shoug-light-mode")) return "light";
+              var el = window.parent.document.documentElement;
+              return normalize(
+                el.getAttribute("data-md-color-scheme") ||
+                  el.dataset.theme ||
+                  el.getAttribute("data-theme"),
+              );
+            }
+          } catch (e) {}
+          return null;
+        }
+        function savedTheme() {
+          var shougTheme = normalize(localStorage.getItem("shoug-theme"));
+          if (shougTheme) return shougTheme;
+          for (var i = 0; i < keys.length; i++) {
+            var value = normalize(localStorage.getItem(keys[i]));
+            if (value) return value;
+          }
+          return null;
+        }
+        var systemTheme =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme =
+          parentTheme() || savedTheme() || systemTheme;
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --paper: #fff;
+        --paper-2: #eef4ff;
+        --text: #172033;
+        --muted: #5c6b80;
+        --line: #dbe4ef;
+        --accent: #2563eb;
+        --accent-2: #0f766e;
+        --exam: #c2410c;
+        --warn: #a16207;
+        --ok: #047857;
+        --shadow: 0 20px 45px rgba(23, 32, 51, 0.1);
+        --radius: 18px;
+        --mono:
+          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      [data-theme="dark"] {
+        --bg: #10151f;
+        --paper: #161d2a;
+        --paper-2: #1d2938;
+        --text: #edf4ff;
+        --muted: #a8b6cc;
+        --line: #2d3a4d;
+        --accent: #7aa2ff;
+        --accent-2: #58d5c9;
+        --exam: #ff9a69;
+        --warn: #f4c56a;
+        --ok: #7dd3a8;
+        --shadow: 0 20px 45px rgba(0, 0, 0, 0.32);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.68;
+      }
+      a {
+        color: inherit;
+      }
+      .wrap,
+      main {
+        width: 100%;
+        max-width: 1320px;
+        margin: 0 auto;
+        padding-left: clamp(14px, 3vw, 40px);
+        padding-right: clamp(14px, 3vw, 40px);
+      }
+      .hero {
+        background: linear-gradient(135deg, var(--paper-2), var(--bg));
+        border-bottom: 1px solid var(--line);
+        padding: 18px 0 22px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .toggle {
+        font:
+          600 13px Inter,
+          sans-serif;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .kicker {
+        font: 700 12px var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .hero h1 {
+        font-size: clamp(32px, 5vw, 54px);
+        line-height: 1.05;
+        margin: 8px 0 10px;
+        letter-spacing: -0.02em;
+      }
+      .hero-copy {
+        max-width: none;
+        color: var(--muted);
+        font-size: 17px;
+        margin: 0;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 10px;
+        margin: 16px 0;
+      }
+      .metric {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 13px;
+        font-size: 14px;
+      }
+      .metric strong {
+        display: block;
+        font: 700 11px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .navchips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .navchips a {
+        text-decoration: none;
+        font:
+          600 13px Inter,
+          sans-serif;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+      .navchips a:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .section {
+        padding: 28px 0 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-heading span {
+        font: 700 12px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent-2);
+      }
+      .section-heading h2 {
+        font-size: clamp(24px, 3vw, 34px);
+        margin: 4px 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .section-heading p {
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+      h3.sub {
+        font-size: 21px;
+        margin: 24px 0 10px;
+      }
+      .study-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+        gap: 14px;
+        margin: 12px 0;
+      }
+      .study-card,
+      .cheat-card,
+      .converter {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px 20px;
+        min-width: 0;
+      }
+      .study-card.wide {
+        grid-column: 1/-1;
+      }
+      .study-card h3,
+      .converter h3 {
+        margin: 2px 0 8px;
+        font-size: 18px;
+      }
+      .study-card ul {
+        padding-left: 20px;
+        margin: 6px 0;
+      }
+      .card-kicker {
+        font: 700 11px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .small {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .formula {
+        font: 600 15.5px var(--mono);
+        background: var(--paper-2);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--accent);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        overflow-wrap: anywhere;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin: 10px 0;
+        font:
+          600 13px Inter,
+          sans-serif;
+      }
+      .flow span {
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--paper-2);
+      }
+      .flow .ch {
+        border-color: var(--accent);
+      }
+      .flow i {
+        font-style: normal;
+        color: var(--muted);
+      }
+      .callout {
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 12px 0;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+      .callout strong {
+        display: block;
+        font: 700 11px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .callout p {
+        margin: 4px 0 0;
+      }
+      .callout.exam {
+        border-left: 4px solid var(--exam);
+      }
+      .callout.exam strong {
+        color: var(--exam);
+      }
+      .callout.confusion {
+        border-left: 4px solid var(--warn);
+      }
+      .callout.confusion strong {
+        color: var(--warn);
+      }
+      .callout.memory {
+        border-left: 4px solid var(--ok);
+      }
+      .callout.memory strong {
+        color: var(--ok);
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin: 12px 0;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--paper);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        font: 700 11.5px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--paper-2);
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      td:first-child {
+        font-weight: 650;
+      }
+      table.conv td:nth-child(3),
+      table.conv td:nth-child(4),
+      table.conv td:nth-child(5) {
+        font-family: var(--mono);
+        font-size: 13.5px;
+      }
+      table.conv tr.base td {
+        background: var(--paper-2);
+      }
+      .examples {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+        gap: 12px;
+        margin: 12px 0;
+      }
+      .examples.big {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+      }
+      .ex {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--ok);
+        border-radius: 14px;
+        padding: 12px 15px;
+        min-width: 0;
+      }
+      .ex > b {
+        display: block;
+        font: 700 12px var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ok);
+      }
+      .ex p {
+        margin: 6px 0 0;
+        font-size: 14.5px;
+      }
+      pre,
+      .ex pre {
+        font: 13px/1.6 var(--mono);
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin: 6px 0 0;
+      }
+      pre.mini {
+        background: var(--paper-2);
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      pre.tree {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .ladder {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin: 6px 0;
+        font: 600 13px var(--mono);
+      }
+      .ladder span {
+        padding: 5px 10px;
+        border-radius: 8px;
+        background: var(--paper-2);
+        border: 1px solid var(--line);
+      }
+      .ladder i {
+        font-style: normal;
+        color: var(--accent);
+      }
+      .ladder.rev i {
+        color: var(--accent-2);
+      }
+      .svgbox {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+        margin: 12px 0;
+      }
+      .svgbox svg,
+      .study-card svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 260px;
+      }
+      .s-accent {
+        stroke: var(--accent);
+      }
+      .s-accent2 {
+        stroke: var(--accent-2);
+      }
+      .s-muted {
+        stroke: var(--muted);
+      }
+      .f-accent2 {
+        fill: var(--accent-2);
+      }
+      .t-muted {
+        fill: var(--muted);
+        font-family: Inter, sans-serif;
+      }
+      .t-text {
+        fill: var(--text);
+        font-family: Inter, sans-serif;
+      }
+      .imp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: 12px;
+        margin: 12px 0;
+      }
+      .imp {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+      }
+      .imp-name {
+        font:
+          700 16px Inter,
+          sans-serif;
+      }
+      .imp svg {
+        width: 100%;
+        height: auto;
+        margin: 6px 0;
+      }
+      .imp p {
+        margin: 4px 0;
+        font-size: 14.5px;
+      }
+      .imp .fix {
+        color: var(--ok);
+      }
+      .converter {
+        margin: 14px 0;
+      }
+      .conv-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .conv-row input,
+      .conv-row select {
+        font: 600 16px var(--mono);
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--paper-2);
+        color: var(--text);
+        min-width: 0;
+      }
+      .conv-row input {
+        flex: 1 1 160px;
+      }
+      .conv-out {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .conv-out div {
+        background: var(--paper-2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 11px;
+        font: 600 14.5px var(--mono);
+        overflow-wrap: anywhere;
+      }
+      .conv-out div.self {
+        border-color: var(--accent);
+      }
+      .conv-out span {
+        display: block;
+        font: 700 11.5px var(--mono);
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .spectrum {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr 1.2fr;
+        border-radius: 14px;
+        overflow: hidden;
+        margin: 12px 0;
+        border: 1px solid var(--line);
+      }
+      .band {
+        padding: 12px 14px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+      }
+      .band span {
+        font: 600 13px var(--mono);
+        opacity: 0.9;
+      }
+      .b1 {
+        background: #2f6fd6;
+      }
+      .b2 {
+        background: #7b4bd1;
+      }
+      .b3 {
+        background: #c2410c;
+      }
+      .arrowline {
+        font:
+          600 13px Inter,
+          sans-serif;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .qa {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        margin: 8px 0;
+        padding: 0 16px;
+      }
+      .qa summary {
+        cursor: pointer;
+        font-weight: 650;
+        padding: 12px 0;
+      }
+      .qa-body {
+        border-top: 1px dashed var(--line);
+        padding: 8px 0 12px;
+      }
+      .qa-body p {
+        margin: 4px 0;
+      }
+      .cheat-card p {
+        margin: 8px 0 0;
+        color: var(--muted);
+      }
+      .sfx-figure {
+        max-width: 880px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer-note {
+        color: var(--muted);
+        font-size: 13.5px;
+        padding: 18px 0 40px;
+      }
+      @media (max-width: 640px) {
+        .spectrum {
+          grid-template-columns: 1fr;
+        }
+        .hero-copy {
+          font-size: 16px;
+        }
+        th,
+        td {
+          padding: 8px 9px;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/styles/light-mode.css" />
+    <link rel="stylesheet" href="/styles/slide-figures.css?v=522a72411a" />
+    <meta
+      name="description"
+      content="CS331 Chapter 2 physical layer, rebuilt as a study guide: signals, bit rate, impairments, propagation and transmission time, bandwidth-delay product, a full unit conversion table with a live converter, transmission media and practice questions."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs331/slide-breakdowns/11-physical-layer/"
+    />
+    <meta property="og:title" content="Physical Layer - CS331 Study Guide" />
+    <meta
+      property="og:description"
+      content="CS331 Chapter 2 physical layer, rebuilt as a study guide: signals, bit rate, impairments, propagation and transmission time, bandwidth-delay product, a full unit conversion table with a live converter, transmission media and practice questions."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs331/slide-breakdowns/11-physical-layer/"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://shoug-tech.com/academics/computer-science/cs331/slide-breakdowns/11-physical-layer/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://shoug-tech.com/academics/computer-science/cs331/slide-breakdowns/11-physical-layer/"
+    />
+  </head>
+  <body>
+    <a class="shoug-skip-link" href="#main-content">Skip to content</a>
+
+    <header class="hero">
+      <div class="wrap">
+        <div class="topbar">
+          <button class="toggle" id="themeToggle">Dark mode</button>
+        </div>
+        <div class="kicker">Chapter 02 · Upgraded Study Guide</div>
+        <h1>Physical Layer</h1>
+        <p class="hero-copy">
+          Everything from both physical-layer slide decks, rebuilt to be easier
+          than the slides: what each idea means in plain words, a worked example
+          for every formula, a complete unit-conversion table with a live
+          converter, and practice questions in the style of the tutorials.
+        </p>
+        <div class="metrics">
+          <div class="metric">
+            <strong>Covers</strong>Part 1 (signals, impairments, performance) +
+            Part 2 (transmission media)
+          </div>
+          <div class="metric">
+            <strong>Exam skill</strong>Convert units, then plug into 6 formulas
+          </div>
+          <div class="metric">
+            <strong>Memory hook</strong>Propagation = distance · Transmission =
+            size
+          </div>
+          <div class="metric">
+            <strong>Best use</strong>Read once, then do the practice at the end
+          </div>
+        </div>
+        <nav class="navchips">
+          <a href="#role">Role</a><a href="#signals">Signals</a
+          ><a href="#digital">Bit rate</a> <a href="#impair">Impairments</a
+          ><a href="#perf">Performance</a><a href="#units">Conversions</a>
+          <a href="#media">Media</a><a href="#wireless">Wireless</a
+          ><a href="#cheat">Cheat sheet</a><a href="#practice">Practice</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main-content" tabindex="-1">
+      <!-- ================================================================ ROLE -->
+      <section id="role" class="section">
+        <div class="section-heading">
+          <span>01 · The job</span>
+          <h2>What the physical layer actually does</h2>
+          <p>
+            Every layer above it thinks in messages, packets and frames. The
+            physical layer is the only one that touches the real world: it turns
+            bits into something that can travel through a wire, a glass fibre or
+            the air, and turns it back into bits at the other end.
+          </p>
+        </div>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">One sentence</div>
+            <h3>Bits ⇄ signals</h3>
+            <p>
+              To be transmitted, data
+              <strong>must be transformed to electromagnetic signals</strong>.
+              Copper carries electrical signals; fibre carries light pulses;
+              wireless carries radio, microwave or infrared waves.
+            </p>
+            <div class="flow">
+              <span>Transmitter</span><i>→</i
+              ><span class="ch">communication channel</span><i>→</i
+              ><span>Receiver</span>
+            </div>
+            <ul>
+              <li>
+                <b>Transmitter</b> converts information into a signal and
+                injects energy into the medium (a NIC turns bits into current or
+                light; a phone turns voice into current).
+              </li>
+              <li>
+                <b>Receiver</b> takes energy from the medium and converts it
+                back (current or light → bits; current → voice).
+              </li>
+            </ul>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">What it defines</div>
+            <h3>The physical characteristics</h3>
+            <ul>
+              <li>
+                How devices connect to each other and to the link
+                (<b>topology</b>)
+              </li>
+              <li>
+                Shape, size and number of pins of <b>connectors</b> (e.g. RJ-45)
+              </li>
+              <li>
+                The <b>voltages and currents</b> used, and the
+                <b>type of medium</b>
+              </li>
+              <li>
+                <b>Transmission mode</b>: simplex, half duplex, full duplex
+              </li>
+              <li>
+                <b>Representation of bits</b>: encoding into electrical or
+                optical signals
+              </li>
+              <li>
+                <b>Data rate</b> (bits per second) and
+                <b>bit synchronisation</b> of sender and receiver clocks
+              </li>
+            </ul>
+            <p class="small">
+              Devices that live here: <b>NIC, hub, repeater</b>.
+            </p>
+          </article>
+          <aside class="callout memory">
+            <strong>Memory hook</strong>
+            <p>
+              The physical layer is a translator with no opinions: it doesn't
+              read addresses or check errors. It just moves
+              <em>individual bits</em> from one hop to the next.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================================================================ SIGNALS -->
+      <section id="signals" class="section">
+        <div class="section-heading">
+          <span>02 · Signals</span>
+          <h2>Analog vs digital, periodic vs aperiodic</h2>
+          <p>
+            Four words get mixed up all the time. Keep data (what you want to
+            send) separate from signals (how it travels).
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Analog</th>
+                <th>Digital</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Data</td>
+                <td>Continuous values: sound, light, temperature</td>
+                <td>Discrete values: text, integers, symbols</td>
+              </tr>
+              <tr>
+                <td>Signal</td>
+                <td>
+                  Continuously varying wave; <b>infinite</b> number of values
+                  over a period
+                </td>
+                <td>
+                  Series of voltage pulses (square wave); <b>limited</b> number
+                  of values; holds a level, then jumps
+                </td>
+              </tr>
+              <tr>
+                <td>Usually</td>
+                <td><b>Periodic</b> (repeats in identical cycles)</td>
+                <td><b>Aperiodic</b> (no repeating pattern)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="svgbox">
+          <svg
+            viewBox="0 0 640 150"
+            role="img"
+            aria-label="Left: a smooth analog sine wave. Right: a square digital signal jumping between two levels."
+          >
+            <g fill="none" stroke-width="2.4">
+              <path
+                class="s-accent"
+                d="M20 75 C45 15 70 15 95 75 S145 135 170 75 S220 15 245 75 S295 135 300 105"
+              />
+              <path
+                class="s-accent2"
+                d="M360 110 H400 V40 H460 V110 H490 V40 H530 V110 H600 V40 H620"
+              />
+            </g>
+            <g class="t-muted" font-size="13">
+              <text x="20" y="145">analog: smooth, any value</text>
+              <text x="360" y="145">digital: two levels (1 / 0)</text>
+            </g>
+          </svg>
+        </div>
+        <aside class="callout exam">
+          <strong>Exam sentence</strong>
+          <p>
+            In data communication we commonly use
+            <b>periodic analog signals</b> and <b>aperiodic digital signals</b>.
+          </p>
+        </aside>
+
+        <h3 class="sub">Frequency and period</h3>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Meaning</div>
+            <h3>Two views of the same wave</h3>
+            <p>
+              <b>Period (T)</b> = how long one cycle takes (seconds).
+              <b>Frequency (f)</b> = how many cycles happen every second (Hz).
+              They are the inverse of each other.
+            </p>
+            <div class="formula">
+              f = 1 / T &nbsp;&nbsp;·&nbsp;&nbsp; T = 1 / f
+            </div>
+            <p>
+              Frequency is the <b>rate of change with time</b>: changing in a
+              short time = high frequency; changing over a long time = low
+              frequency.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Picture it</div>
+            <svg
+              viewBox="0 0 320 170"
+              role="img"
+              aria-label="Top: a slow wave with one long period T. Bottom: a fast wave fitting four cycles in the same time."
+            >
+              <g fill="none" stroke-width="2.2">
+                <path
+                  class="s-accent"
+                  d="M10 45 C40 0 70 0 100 45 S160 90 190 45 S250 0 280 45"
+                />
+                <path
+                  class="s-accent2"
+                  d="M10 130 C22 100 34 100 46 130 S70 160 82 130 S106 100 118 130 S142 160 154 130 S178 100 190 130 S214 160 226 130 S250 100 262 130 S286 160 298 130"
+                />
+              </g>
+              <g class="s-muted" stroke-width="1.4">
+                <path d="M10 16 V24 M190 16 V24 M10 20 H190" />
+              </g>
+              <g class="t-muted" font-size="12">
+                <text x="200" y="12">one period T</text>
+                <text x="10" y="98">top: low f · bottom: high f</text>
+              </g>
+            </svg>
+          </article>
+        </div>
+        <div class="examples">
+          <div class="ex">
+            <b>Example 1 · home power (slide)</b>
+            <pre>
+f = 60 Hz
+T = 1 / 60 = 0.0166 s
+  = 0.0166 × 1000 ms = 16.6 ms</pre>
+          </div>
+          <div class="ex">
+            <b>Example 2 · period → kHz (slide)</b>
+            <pre>
+T = 100 ms = 100 / 1000 s = 0.1 s
+f = 1 / 0.1 = 10 Hz
+  = 10 / 1000 kHz = 0.01 kHz</pre>
+          </div>
+          <div class="ex">
+            <b>Example 3 · tutorial</b>
+            <pre>
+f = 5 kHz = 5 × 1000 = 5000 Hz
+T = 1 / 5000 = 0.0002 s
+  = 0.0002 × 10⁶ μs = 200 μs</pre>
+          </div>
+          <div class="ex">
+            <b>Example 4 · fast signal</b>
+            <pre>
+f = 2 GHz = 2 × 10⁹ Hz
+T = 1 / (2 × 10⁹) = 0.5 × 10⁻⁹ s
+  = 0.5 ns</pre>
+          </div>
+        </div>
+        <aside class="callout confusion">
+          <strong>Common mistake</strong>
+          <p>
+            Always convert to <b>seconds and Hz</b> before using 1/x. 1/100 =
+            0.01 is wrong if T was 100 <i>ms</i>: the answer would be off by
+            1000.
+          </p>
+        </aside>
+
+        <h3 class="sub">Simple vs composite signals</h3>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Simple</div>
+            <h3>One frequency</h3>
+            <p>
+              A single sine wave; every cycle takes the same time. Example: a
+              pure tone.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Composite</div>
+            <h3>Many frequencies</h3>
+            <p>
+              Made of several sine waves with different frequencies, amplitudes
+              or phases added together. Real data signals (voice, a digital
+              square wave) are composite.
+            </p>
+          </article>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Analog vs digital signals: a continuous wave on the left, discrete levels on the right."
+          >
+            <img
+              src="figures/p1-slide-07.png"
+              alt="Analog vs digital signals: a continuous wave on the left, discrete levels on the right."
+              width="1243"
+              height="914"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=7"
+              >Part 1 · slide 7</a
+            >Analog vs digital signals: a continuous wave on the left, discrete
+            levels on the right.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ================================================================ DIGITAL -->
+      <section id="digital" class="section">
+        <div class="section-heading">
+          <span>03 · Digital signals</span>
+          <h2>Bit rate and bit interval</h2>
+          <p>
+            Most digital signals are aperiodic, so "frequency" isn't the right
+            tool. We describe them with bit rate and bit interval instead.
+          </p>
+        </div>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Definitions</div>
+            <h3>Two inverses again</h3>
+            <p>
+              <b>Bit rate</b> (digital bandwidth = transmission speed = link
+              capacity): number of bits sent per second, in <b>bps</b>.
+            </p>
+            <p>
+              <b>Bit interval</b> (the digital "period"): time needed to send
+              <b>one</b> bit, in seconds.
+            </p>
+            <div class="formula">
+              bit interval = 1 / bit rate &nbsp;·&nbsp; bit rate = 1 / bit
+              interval
+            </div>
+            <p>Here <b>1 = positive voltage</b>, <b>0 = zero voltage</b>.</p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Picture it</div>
+            <svg
+              viewBox="0 0 320 150"
+              role="img"
+              aria-label="A square wave carrying 1 0 1 1 0 0 0 1, each bit taking one equal time slot, the bit interval."
+            >
+              <path
+                class="s-accent"
+                fill="none"
+                stroke-width="2.4"
+                d="M10 40 H40 V100 H70 V40 H130 V100 H220 V40 H250"
+              />
+              <g class="s-muted" stroke-width="1" stroke-dasharray="3 4">
+                <path
+                  d="M40 20 V120 M70 20 V120 M100 20 V120 M130 20 V120 M160 20 V120 M190 20 V120 M220 20 V120 M250 20 V120"
+                />
+              </g>
+              <g class="t-text" font-size="13" text-anchor="middle">
+                <text x="25" y="32">1</text>
+                <text x="55" y="32">0</text>
+                <text x="85" y="32">1</text>
+                <text x="115" y="32">1</text>
+                <text x="145" y="32">0</text>
+                <text x="175" y="32">0</text>
+                <text x="205" y="32">0</text>
+                <text x="235" y="32">1</text>
+              </g>
+              <g class="s-accent2" stroke-width="1.6">
+                <path d="M70 132 H100 M70 127 V137 M100 127 V137" />
+              </g>
+              <text class="t-muted" font-size="12" x="106" y="137">
+                bit interval
+              </text>
+            </svg>
+            <p class="small">
+              8 bits in 1 s → bit rate 8 bps → bit interval 1/8 s.
+            </p>
+          </article>
+        </div>
+        <div class="examples">
+          <div class="ex">
+            <b>Example 1 · slide</b>
+            <pre>
+Bit rate = 2000 bps
+Bit interval = 1 / 2000 = 0.0005 s
+             = 0.0005 × 10⁶ μs = 500 μs</pre>
+          </div>
+          <div class="ex">
+            <b>Example 2 · tutorial</b>
+            <pre>
+Bit interval = 50 μs = 50 × 10⁻⁶ s
+Bit rate = 1 / 0.00005 = 20,000 bps
+         = 20,000 / 1000 = 20 Kbps</pre>
+          </div>
+          <div class="ex">
+            <b>Example 3 · fast link</b>
+            <pre>
+Bit rate = 1 Gbps = 10⁹ bps
+Bit interval = 1 / 10⁹ s = 1 ns</pre>
+          </div>
+          <div class="ex">
+            <b>Example 4 · more levels (slide 15)</b>
+            <pre>
+2 levels → 1 bit per level  → 8 bps
+4 levels → 2 bits per level → 16 bps
+bits per level = log₂(levels)</pre>
+          </div>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Bit rate and bit interval: eight equal bit slots in one second give 8 bps."
+          >
+            <img
+              src="figures/p1-slide-16.png"
+              alt="Bit rate and bit interval: eight equal bit slots in one second give 8 bps."
+              width="1206"
+              height="500"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=16"
+              >Part 1 · slide 16</a
+            >Bit rate and bit interval: eight equal bit slots in one second give
+            8 bps.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: A two-level signal carries 1 bit per level; a four-level signal carries 2 bits per level, doubling the bit rate."
+          >
+            <img
+              src="figures/p1-slide-15.png"
+              alt="A two-level signal carries 1 bit per level; a four-level signal carries 2 bits per level, doubling the bit rate."
+              width="1193"
+              height="482"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=15"
+              >Part 1 · slide 15</a
+            >A two-level signal carries 1 bit per level; a four-level signal
+            carries 2 bits per level, doubling the bit rate.
+          </figcaption>
+        </figure>
+        <div class="study-grid">
+          <article class="study-card wide">
+            <div class="card-kicker">Why digital wins</div>
+            <h3>Advantages of digital transmission</h3>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>Low cost</td>
+                    <td>Digital technology is inexpensive</td>
+                  </tr>
+                  <tr>
+                    <td>Longer distances</td>
+                    <td>Repeaters regenerate the signal</td>
+                  </tr>
+                  <tr>
+                    <td>Security &amp; privacy</td>
+                    <td>Data can be encrypted</td>
+                  </tr>
+                  <tr>
+                    <td>Noise removal</td>
+                    <td>A clean signal can be regenerated</td>
+                  </tr>
+                  <tr>
+                    <td>Multiplexing</td>
+                    <td>Cheaper, easier: many sources share one link</td>
+                  </tr>
+                  <tr>
+                    <td>One computer for all</td>
+                    <td>
+                      Analog data (voice, video) and digital data can both be
+                      processed by computers
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================================================================ IMPAIRMENTS -->
+      <section id="impair" class="section">
+        <div class="section-heading">
+          <span>04 · Impairments</span>
+          <h2>Why the received signal isn't what was sent</h2>
+          <p>
+            No medium passes every frequency safely: it may pass some, block
+            others and weaken others. The differences between sent and received
+            signals come from three impairments.
+          </p>
+        </div>
+        <div class="imp-grid">
+          <article class="imp">
+            <div class="imp-name">Attenuation</div>
+            <svg viewBox="0 0 220 70" aria-hidden="true">
+              <path
+                class="s-accent"
+                fill="none"
+                stroke-width="2"
+                d="M5 35 C15 5 25 5 35 35 S55 65 65 35 C75 15 85 15 95 35 S115 55 125 35 C135 25 145 25 155 35 S175 45 185 35 C195 30 205 30 215 35"
+              />
+            </svg>
+            <p>
+              <b>Loss of energy</b> as the signal resists the medium; strength
+              falls with distance and gets worse at <b>higher frequency</b>. The
+              wire warms up.
+            </p>
+            <p class="fix">
+              <b>Fix:</b> amplifier (analog) · <b>repeater</b> (digital:
+              regenerates a clean copy)
+            </p>
+          </article>
+          <article class="imp">
+            <div class="imp-name">Distortion</div>
+            <svg viewBox="0 0 220 70" aria-hidden="true">
+              <path
+                class="s-accent"
+                fill="none"
+                stroke-width="2"
+                d="M5 55 H30 V15 H70 V55 H95"
+              />
+              <path
+                class="s-accent2"
+                fill="none"
+                stroke-width="2"
+                d="M120 55 C135 55 135 18 150 16 C170 14 168 52 185 54 H215"
+              />
+            </svg>
+            <p>
+              The signal <b>changes shape</b>. Its frequency components arrive
+              at different times, so neighbouring bits overlap. Example: a video
+              call with smeared, delayed audio.
+            </p>
+          </article>
+          <article class="imp">
+            <div class="imp-name">Noise</div>
+            <svg viewBox="0 0 220 70" aria-hidden="true">
+              <path
+                class="s-accent"
+                fill="none"
+                stroke-width="2"
+                d="M5 35 L15 20 L22 45 L30 15 L38 50 L45 28 L55 40 L62 10 L70 55 L78 30 L90 38 L100 22 L110 46 L120 34 L130 18 L140 52 L150 30 L162 40 L175 12 L185 50 L200 28 L215 36"
+              />
+            </svg>
+            <p>Unwanted energy added to the signal. Four kinds, below.</p>
+          </article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Noise type</th>
+                <th>Cause</th>
+                <th>Everyday example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Thermal</td>
+                <td>
+                  Random motion of electrons in a wire creates an extra signal
+                </td>
+                <td>Always present, can't be removed entirely</td>
+              </tr>
+              <tr>
+                <td>Induced</td>
+                <td>Motors and electrical equipment</td>
+                <td>A cable running past heavy machinery</td>
+              </tr>
+              <tr>
+                <td>Crosstalk</td>
+                <td>One wire's signal leaks into the wire beside it</td>
+                <td>Hearing another conversation faintly on your phone call</td>
+              </tr>
+              <tr>
+                <td>Impulse</td>
+                <td>
+                  Short, high-amplitude spikes from power lines or lightning
+                </td>
+                <td>The <b>main source of errors</b> in digital data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Attenuation: an amplifier boosts an analog signal (and its noise); a repeater regenerates a clean digital signal."
+          >
+            <img
+              src="figures/p1-slide-21.png"
+              alt="Attenuation: an amplifier boosts an analog signal (and its noise); a repeater regenerates a clean digital signal."
+              width="1163"
+              height="957"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=21"
+              >Part 1 · slide 21</a
+            >Attenuation: an amplifier boosts an analog signal (and its noise);
+            a repeater regenerates a clean digital signal.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Noise added between two points changes the received signal."
+          >
+            <img
+              src="figures/p1-slide-23.png"
+              alt="Noise added between two points changes the received signal."
+              width="1177"
+              height="307"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=23"
+              >Part 1 · slide 23</a
+            >Noise added between two points changes the received signal.
+          </figcaption>
+        </figure>
+        <aside class="callout exam">
+          <strong>Scenario keywords</strong>
+          <p>
+            "Weaker after a long cable / wire gets warm" → <b>attenuation</b>.
+            "Shape changed, bits overlap" → <b>distortion</b>. "Background
+            conversation" → <b>crosstalk</b>. "Near motors" →
+            <b>induced noise</b>. "Lightning, power lines" →
+            <b>impulse noise</b>.
+          </p>
+        </aside>
+        <aside class="callout confusion">
+          <strong>Amplifier vs repeater</strong>
+          <p>
+            An amplifier makes everything louder, <i>including the noise</i>. A
+            repeater reads the digital bits and sends a fresh, clean copy.
+            That's one reason digital transmission goes further.
+          </p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ PERFORMANCE -->
+      <section id="perf" class="section">
+        <div class="section-heading">
+          <span>05 · Performance</span>
+          <h2>Propagation, transmission, latency, bandwidth–delay</h2>
+          <p>
+            These are the calculation marks. The trick is knowing which formula
+            a question wants, so each one comes with a plain-words test.
+          </p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Propagation time</div>
+            <h3>How long ONE bit takes to travel</h3>
+            <div class="formula">
+              propagation time = distance / propagation speed
+            </div>
+            <p>
+              Depends on the <b>length of the link</b> and the medium, not on
+              the message. Light travels at <b>3 × 10⁸ m/s</b> in a vacuum,
+              slower in air, and about <b>2/3 of that (≈ 2 × 10⁸ m/s)</b> in a
+              cable.
+            </p>
+            <p class="small">
+              Plain-words test: "how far, how fast?" → propagation.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Transmission time</div>
+            <h3>How long it takes to PUSH the whole message onto the link</h3>
+            <div class="formula">
+              transmission time = message size (bits) / bandwidth (bps)
+            </div>
+            <p>
+              Depends on the <b>message size</b> and the <b>bit rate</b>, not on
+              distance.
+            </p>
+            <p class="small">
+              Plain-words test: "how big, how fast a link?" → transmission.
+            </p>
+          </article>
+        </div>
+        <div class="svgbox">
+          <svg
+            viewBox="0 0 640 170"
+            role="img"
+            aria-label="Timeline: the sender pushes bits onto the link for the transmission time; the first bit then needs the propagation time to reach the receiver."
+          >
+            <g class="s-muted" stroke-width="1.5">
+              <path d="M60 20 V150 M580 20 V150" />
+            </g>
+            <g class="t-text" font-size="13">
+              <text x="20" y="16">Sender</text>
+              <text x="548" y="16">Receiver</text>
+            </g>
+            <path
+              class="f-accent2"
+              d="M60 40 L140 40 L140 60 L60 60 Z"
+              opacity="0.85"
+            />
+            <text class="t-muted" font-size="12" x="150" y="55">
+              transmission time: pushing the bits out
+            </text>
+            <path
+              class="s-accent"
+              stroke-width="2.4"
+              fill="none"
+              d="M60 70 L580 120"
+            />
+            <path
+              class="s-accent"
+              fill="none"
+              stroke-width="2.4"
+              d="M568 112 L580 120 L566 124"
+            />
+            <text class="t-muted" font-size="12" x="330" y="76">
+              propagation time: first bit crossing the link
+            </text>
+            <path
+              class="s-accent2"
+              fill="none"
+              stroke-width="2.4"
+              d="M140 80 L580 140"
+            />
+            <text class="t-muted" font-size="12" x="250" y="160">
+              last bit arrives after transmission + propagation
+            </text>
+          </svg>
+        </div>
+        <article class="study-card wide">
+          <div class="card-kicker">Latency (total delay)</div>
+          <h3>Everything added together</h3>
+          <div class="formula">
+            latency = transmission time + propagation time + queuing time +
+            processing time
+          </div>
+          <p>
+            <b>Queuing time</b> is the time a message waits at each intermediate
+            device before it is processed. Unless a question gives queuing or
+            processing figures, latency is just transmission + propagation.
+          </p>
+        </article>
+
+        <h3 class="sub">Worked examples</h3>
+        <div class="examples big">
+          <div class="ex">
+            <b>A · short e-mail, fast link (slides)</b>
+            <p>
+              2.5-kbyte message, bandwidth 1 Gbps, distance 12,000 km, speed 2.4
+              × 10⁸ m/s.
+            </p>
+            <pre>
+Convert: 2.5 kbyte = 2500 bytes = 2500 × 8 = 20,000 bits
+         12,000 km = 12,000 × 1000 = 1.2 × 10⁷ m
+Propagation  = 1.2 × 10⁷ / 2.4 × 10⁸ = 0.05 s  = 50 ms
+Transmission = 20,000 / 10⁹          = 0.00002 s = 0.02 ms</pre>
+            <p>
+              <b>Propagation dominates</b> (50 ms vs 0.02 ms): the message is
+              short and the link is fast, so transmission can be ignored.
+            </p>
+          </div>
+          <div class="ex">
+            <b>B · big image, slow link (slides)</b>
+            <p>5-Mbyte message, bandwidth 1 Mbps, same distance and speed.</p>
+            <pre>
+Convert: 5 Mbyte = 5 × 10⁶ × 8 = 4 × 10⁷ bits
+Propagation  = 0.05 s = 50 ms         (same link, same answer)
+Transmission = 4 × 10⁷ / 10⁶ = 40 s</pre>
+            <p>
+              <b>Transmission dominates</b> (40 s vs 0.05 s): a long message on
+              a slow link.
+            </p>
+          </div>
+          <div class="ex">
+            <b>C · satellite (slide 31)</b>
+            <p>
+              Computers A and B talk through a satellite. Bandwidth 1 Gbps,
+              frame 2000 bytes, satellite 36,000 km above each ground station,
+              speed 3 × 10⁸ m/s.
+            </p>
+            <pre>
+Distance = up 36,000 km + down 36,000 km = 72,000 km = 7.2 × 10⁷ m
+Propagation  = 7.2 × 10⁷ / 3 × 10⁸ = 0.24 s = 240 ms
+Transmission = 2000 × 8 / 10⁹       = 0.000016 s = 16 μs
+Latency ≈ 0.24 s + 0.000016 s ≈ 0.240016 s</pre>
+            <p>
+              The trap: the signal goes <b>up and back down</b>, so the distance
+              doubles.
+            </p>
+          </div>
+          <div class="ex">
+            <b>D · tutorial questions</b>
+            <pre>
+Propagation: 2,000 km at 2.0 × 10⁸ m/s
+  2,000 km = 2 × 10⁶ m
+  2 × 10⁶ / 2 × 10⁸ = 0.01 s = 10 ms
+
+Transmission: 1 MB file on a 1 Mbps link
+  1 MB = 8 Mb = 8 × 10⁶ bits
+  8 × 10⁶ / 10⁶ = 8 s</pre>
+          </div>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Propagation time: the time for one bit to travel the distance d between t1 and t2."
+          >
+            <img
+              src="figures/p1-slide-25.png"
+              alt="Propagation time: the time for one bit to travel the distance d between t1 and t2."
+              width="1121"
+              height="421"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=25"
+              >Part 1 · slide 25</a
+            >Propagation time: the time for one bit to travel the distance d
+            between t1 and t2.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Transmission time, queuing time and the full latency formula."
+          >
+            <img
+              src="figures/p1-slide-26.png"
+              alt="Transmission time, queuing time and the full latency formula."
+              width="1129"
+              height="601"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=26"
+              >Part 1 · slide 26</a
+            >Transmission time, queuing time and the full latency formula.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Satellite example: 36,000 km to the satellite, 2000-byte frame, 1 Gbps."
+          >
+            <img
+              src="figures/p1-slide-31.png"
+              alt="Satellite example: 36,000 km to the satellite, 2000-byte frame, 1 Gbps."
+              width="872"
+              height="824"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=31"
+              >Part 1 · slide 31</a
+            >Satellite example: 36,000 km to the satellite, 2000-byte frame, 1
+            Gbps.
+          </figcaption>
+        </figure>
+
+        <h3 class="sub">Bandwidth–delay product</h3>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Meaning</div>
+            <h3>How many bits fill the link</h3>
+            <div class="formula">
+              bandwidth–delay product = bandwidth × delay &nbsp;(bits)
+            </div>
+            <p>
+              Think of the link as a pipe: <b>bandwidth</b> is how wide it is
+              (bits entering per second), <b>delay</b> is how long it is
+              (seconds to cross), so their product is
+              <b>how many bits fit inside</b> — the length of the link measured
+              in bits.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Picture it</div>
+            <svg
+              viewBox="0 0 320 130"
+              role="img"
+              aria-label="A pipe: its diameter is the bandwidth, its length is the delay, and its volume is the bandwidth-delay product."
+            >
+              <g fill="none" class="s-accent" stroke-width="2">
+                <ellipse cx="40" cy="65" rx="16" ry="34" />
+                <path d="M40 31 H270 M40 99 H270" />
+                <ellipse cx="270" cy="65" rx="16" ry="34" />
+              </g>
+              <g class="s-muted" stroke-width="1.4">
+                <path
+                  d="M12 31 V99 M8 31 H16 M8 99 H16 M40 116 H270 M40 111 V121 M270 111 V121"
+                />
+              </g>
+              <g class="t-muted" font-size="12">
+                <text x="2" y="20">width = bandwidth</text>
+                <text x="110" y="128">length = delay</text>
+                <text x="95" y="70">volume = bits in the pipe</text>
+              </g>
+            </svg>
+          </article>
+        </div>
+        <div class="examples">
+          <div class="ex">
+            <b>Case 1 (slides)</b>
+            <pre>
+bandwidth 1 bps, delay 5 s
+1 × 5 = 5 bits fill the link</pre>
+          </div>
+          <div class="ex">
+            <b>Case 2 (slides + tutorial)</b>
+            <pre>
+bandwidth 5 bps, delay 5 s
+5 × 5 = 25 bits fill the link</pre>
+          </div>
+          <div class="ex">
+            <b>Real link</b>
+            <pre>
+bandwidth 100 Mbps, delay 20 ms
+10⁸ × 0.02 = 2 × 10⁶ bits
+           = 2,000,000 bits in flight</pre>
+          </div>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Filling the link in case 2: 5 bps for 5 seconds puts 25 bits on the link."
+          >
+            <img
+              src="figures/p1-slide-34.png"
+              alt="Filling the link in case 2: 5 bps for 5 seconds puts 25 bits on the link."
+              width="1274"
+              height="904"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-1/chapter-02-physical-layer-part-1.pdf#page=34"
+              >Part 1 · slide 34</a
+            >Filling the link in case 2: 5 bps for 5 seconds puts 25 bits on the
+            link.
+          </figcaption>
+        </figure>
+
+        <h3 class="sub">Wavelength</h3>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Meaning</div>
+            <h3>The distance one cycle occupies</h3>
+            <div class="formula">
+              λ = propagation speed × period = propagation speed / frequency
+            </div>
+            <p>
+              Depends on the signal's frequency <b>and</b> the medium. Higher
+              frequency → shorter wavelength.
+            </p>
+          </article>
+          <div class="examples">
+            <div class="ex">
+              <b>Example</b>
+              <pre>
+f = 100 MHz in air, speed 3 × 10⁸ m/s
+λ = 3 × 10⁸ / 10⁸ = 3 m
+
+Same 100 MHz in a cable (2 × 10⁸ m/s)
+λ = 2 × 10⁸ / 10⁸ = 2 m</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ CONVERSIONS -->
+      <section id="units" class="section">
+        <div class="section-heading">
+          <span>06 · Conversions</span>
+          <h2>The conversion table</h2>
+          <p>
+            Almost every lost mark in this chapter is a unit slip, not a wrong
+            formula. Convert everything to <b>base units</b> first — seconds,
+            metres, bits, bps, Hz — then use the formula, then convert the
+            answer to whatever unit the question asks for.
+          </p>
+        </div>
+
+        <div class="table-wrap">
+          <table class="conv">
+            <thead>
+              <tr>
+                <th>Prefix</th>
+                <th>Symbol</th>
+                <th>Power of 10</th>
+                <th>As a number</th>
+                <th>To base unit</th>
+                <th>Used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>tera</td>
+                <td>T</td>
+                <td>10¹²</td>
+                <td>1,000,000,000,000</td>
+                <td>× 10¹²</td>
+                <td>THz (infrared)</td>
+              </tr>
+              <tr>
+                <td>giga</td>
+                <td>G</td>
+                <td>10⁹</td>
+                <td>1,000,000,000</td>
+                <td>× 10⁹</td>
+                <td>Gbps, GHz</td>
+              </tr>
+              <tr>
+                <td>mega</td>
+                <td>M</td>
+                <td>10⁶</td>
+                <td>1,000,000</td>
+                <td>× 10⁶</td>
+                <td>Mbps, MHz, Mbyte</td>
+              </tr>
+              <tr>
+                <td>kilo</td>
+                <td>k</td>
+                <td>10³</td>
+                <td>1,000</td>
+                <td>× 10³</td>
+                <td>kbps, kHz, km, kbyte</td>
+              </tr>
+              <tr class="base">
+                <td>(none)</td>
+                <td>—</td>
+                <td>10⁰</td>
+                <td>1</td>
+                <td>base unit</td>
+                <td>s, m, bit, bps, Hz</td>
+              </tr>
+              <tr>
+                <td>milli</td>
+                <td>m</td>
+                <td>10⁻³</td>
+                <td>0.001</td>
+                <td>× 10⁻³ (÷ 1000)</td>
+                <td>ms</td>
+              </tr>
+              <tr>
+                <td>micro</td>
+                <td>μ</td>
+                <td>10⁻⁶</td>
+                <td>0.000001</td>
+                <td>× 10⁻⁶</td>
+                <td>μs</td>
+              </tr>
+              <tr>
+                <td>nano</td>
+                <td>n</td>
+                <td>10⁻⁹</td>
+                <td>0.000000001</td>
+                <td>× 10⁻⁹</td>
+                <td>ns</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Time ladder</div>
+            <h3>Each step is × 1000</h3>
+            <div class="ladder">
+              <span>s</span><i>× 1000 →</i><span>ms</span><i>× 1000 →</i
+              ><span>μs</span><i>× 1000 →</i><span>ns</span>
+            </div>
+            <div class="ladder rev">
+              <span>ns</span><i>÷ 1000 →</i><span>μs</span><i>÷ 1000 →</i
+              ><span>ms</span><i>÷ 1000 →</i><span>s</span>
+            </div>
+            <pre class="mini">
+0.05 s     = 50 ms    = 50,000 μs
+0.0005 s   = 0.5 ms   = 500 μs
+0.000016 s = 0.016 ms = 16 μs</pre>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Data size</div>
+            <h3>Bytes → bits: × 8</h3>
+            <div class="formula">1 byte = 8 bits</div>
+            <pre class="mini">
+2.5 kbyte = 2.5 × 10³ × 8 = 20,000 bits
+5 Mbyte   = 5 × 10⁶ × 8   = 4 × 10⁷ bits
+1 MB      = 8 Mb</pre>
+            <p class="small">
+              Capital <b>B</b> = byte, small <b>b</b> = bit: 1 MB = 8 Mb.
+            </p>
+            <p class="small">
+              The course uses decimal prefixes: 1 kbyte = 1000 bytes (not 1024).
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Rates, distance, frequency</div>
+            <h3>Same prefixes, different units</h3>
+            <pre class="mini">
+1 Gbps    = 10⁹ bps
+1 Mbps    = 10⁶ bps
+20 Kbps   = 20,000 bps
+1 km      = 10³ m
+12,000 km = 1.2 × 10⁷ m
+5 kHz     = 5000 Hz
+2 MHz     = 2,000,000 Hz</pre>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">The rule of thumb</div>
+            <h3>Smaller unit → bigger number</h3>
+            <p>
+              Going to a <b>smaller</b> unit makes the number
+              <b>bigger</b> (multiply); going to a <b>bigger</b> unit makes it
+              <b>smaller</b> (divide).
+            </p>
+            <pre class="mini">
+2 MHz → Hz  : 2 × 10⁶ = 2,000,000 Hz
+2 μs  → s   : 2 × 10⁻⁶ = 0.000002 s
+500 μs → ms : 500 ÷ 1000 = 0.5 ms</pre>
+          </article>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Powers of 10 shortcut</th>
+                <th>Rule</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Multiply</td>
+                <td>Add the exponents</td>
+                <td>2 × 10⁶ × 10³ = 2 × 10⁹</td>
+              </tr>
+              <tr>
+                <td>Divide</td>
+                <td>Subtract the exponents</td>
+                <td>1.2 × 10⁷ / 2.4 × 10⁸ = 0.5 × 10⁻¹ = 0.05</td>
+              </tr>
+              <tr>
+                <td>1 over</td>
+                <td>Flip the sign of the exponent</td>
+                <td>1 / 10⁹ = 10⁻⁹ s = 1 ns</td>
+              </tr>
+              <tr>
+                <td>Write it nicely</td>
+                <td>Move the decimal, change the exponent to match</td>
+                <td>0.5 × 10⁻⁹ s = 0.5 ns = 500 ps</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="converter" id="converter">
+          <div class="card-kicker">Live converter</div>
+          <h3>Type a value, see every unit</h3>
+          <div class="conv-row">
+            <input
+              id="cv-val"
+              type="text"
+              inputmode="decimal"
+              value="2.5"
+              aria-label="Value"
+            />
+            <select id="cv-unit" aria-label="Unit">
+              <optgroup label="Time">
+                <option value="t:1">s</option>
+                <option value="t:1e-3">ms</option>
+                <option value="t:1e-6">μs</option>
+                <option value="t:1e-9">ns</option>
+              </optgroup>
+              <optgroup label="Data size">
+                <option value="d:1">bits</option>
+                <option value="d:8">bytes</option>
+                <option value="d:8e3" selected>kbytes</option>
+                <option value="d:8e6">Mbytes</option>
+                <option value="d:8e9">Gbytes</option>
+                <option value="d:1e3">kbits</option>
+                <option value="d:1e6">Mbits</option>
+              </optgroup>
+              <optgroup label="Data rate">
+                <option value="r:1">bps</option>
+                <option value="r:1e3">kbps</option>
+                <option value="r:1e6">Mbps</option>
+                <option value="r:1e9">Gbps</option>
+              </optgroup>
+              <optgroup label="Frequency">
+                <option value="f:1">Hz</option>
+                <option value="f:1e3">kHz</option>
+                <option value="f:1e6">MHz</option>
+                <option value="f:1e9">GHz</option>
+                <option value="f:1e12">THz</option>
+              </optgroup>
+              <optgroup label="Distance">
+                <option value="m:1">m</option>
+                <option value="m:1e3">km</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="conv-out" id="cv-out" aria-live="polite"></div>
+          <p class="small">Accepts plain numbers, 2.4e8 or 2.4 x 10^8.</p>
+        </div>
+      </section>
+
+      <!-- ================================================================ MEDIA -->
+      <section id="media" class="section">
+        <div class="section-heading">
+          <span>07 · Transmission media</span>
+          <h2>Guided (wired) media</h2>
+          <p>
+            The transmission medium is the physical path between transmitter and
+            receiver. It sits <b>below</b> the physical layer and is
+            <b>controlled by</b> it.
+          </p>
+        </div>
+        <pre class="tree">
+TRANSMISSION MEDIA
+├── GUIDED (wired)
+│   ├── Twisted pair ── UTP, STP
+│   ├── Coaxial
+│   └── Fibre optic
+└── UNGUIDED (wireless)
+    ├── Radio waves
+    ├── Microwaves
+    └── Infrared</pre>
+        <div class="study-grid">
+          <article class="study-card">
+            <div class="card-kicker">Twisted pair</div>
+            <h3>Two insulated copper wires, twisted</h3>
+            <p>
+              The pair acts as one link. <b>Twisting</b> makes interference hit
+              both wires equally, so it cancels out:
+              <b>more twists = better quality</b> (7.5–10 cm twist vs 0.6–0.85
+              cm). Used for the telephone subscriber loop and LANs. Connector:
+              <b>RJ-45</b>.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>UTP</th>
+                    <th>STP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Shield</td>
+                    <td>None</td>
+                    <td>Metal braid / foil</td>
+                  </tr>
+                  <tr>
+                    <td>Cost</td>
+                    <td>Cheapest</td>
+                    <td>More expensive</td>
+                  </tr>
+                  <tr>
+                    <td>Install</td>
+                    <td>Easiest</td>
+                    <td>Harder (thick, heavy)</td>
+                  </tr>
+                  <tr>
+                    <td>EMI</td>
+                    <td>Suffers from it</td>
+                    <td>Reduced</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Categories</div>
+            <h3>UTP categories</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cat</th>
+                    <th>Bandwidth</th>
+                    <th>Max rate</th>
+                    <th>Shielding</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CAT5e</td>
+                    <td>100 MHz</td>
+                    <td>1000 Mbps</td>
+                    <td>UTP or STP</td>
+                  </tr>
+                  <tr>
+                    <td>CAT6</td>
+                    <td>250 MHz</td>
+                    <td>1000 Mbps</td>
+                    <td>UTP or STP</td>
+                  </tr>
+                  <tr>
+                    <td>CAT6a</td>
+                    <td>500 MHz</td>
+                    <td>10 Gbps</td>
+                    <td>UTP or STP</td>
+                  </tr>
+                  <tr>
+                    <td>CAT7</td>
+                    <td>600 MHz</td>
+                    <td>10 Gbps</td>
+                    <td>Shielded only</td>
+                  </tr>
+                  <tr>
+                    <td>CAT8</td>
+                    <td>2000 MHz</td>
+                    <td>25 / 40 Gbps</td>
+                    <td>Shielded only (40 Gbps up to 24 m)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small">
+              Notice: "bandwidth" here is in <b>MHz</b> (the cable's frequency
+              range), while "max rate" is in <b>bps</b>.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Ethernet cabling</div>
+            <h3>Straight-through vs crossover</h3>
+            <p>
+              <b>Straight-through</b> joins <b>different</b> kinds of device: PC
+              ↔ switch/hub, router ↔ switch/hub.
+            </p>
+            <p>
+              <b>Crossover</b> joins <b>similar</b> devices: PC ↔ PC, hub ↔ hub,
+              switch ↔ switch, hub ↔ switch, and router ↔ PC.
+            </p>
+            <p class="small">
+              Why: a crossover cable connects one end's transmit pins (TD+/TD−)
+              to the other end's receive pins (RD+/RD−). Two PCs both transmit
+              on the same pins, so the wires must cross.
+            </p>
+          </article>
+          <article class="study-card">
+            <div class="card-kicker">Coaxial &amp; fibre</div>
+            <h3>Copper core vs glass core</h3>
+            <p>
+              <b>Coaxial:</b> a copper core, insulation, a braided or foil
+              copper shield and an outer jacket.
+            </p>
+            <p>
+              <b>Optical fibre:</b> three concentric sections — the
+              <b>core</b> (thin glass or plastic strands), the
+              <b>cladding</b> (a coating with different optical properties that
+              keeps the light bouncing inside the core) and the
+              <b>jacket</b> (protects against moisture and crushing). It carries
+              <b>light pulses</b>.
+            </p>
+          </article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fibre advantages</th>
+                <th>Fibre disadvantages</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  Higher bandwidth (hundreds of Gbps) · smaller and lighter ·
+                  lower attenuation, so repeaters can be farther apart (50 km or
+                  more without one) · no crosstalk · not affected by noise ·
+                  highly secure (no light leaks)
+                </td>
+                <td>
+                  Needs special skills to install · expensive interfaces
+                  compared with electrical ones
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>UTP</th>
+                <th>Fibre</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bandwidth</td>
+                <td>10 Mb/s – 10 Gb/s</td>
+                <td>10 Mb/s – 100 Gb/s</td>
+              </tr>
+              <tr>
+                <td>Distance</td>
+                <td>1 – 100 m</td>
+                <td>1 – 100,000 m</td>
+              </tr>
+              <tr>
+                <td>EMI / RF immunity</td>
+                <td>Low</td>
+                <td>High (completely immune)</td>
+              </tr>
+              <tr>
+                <td>Electrical hazards</td>
+                <td>Low immunity</td>
+                <td>High (completely immune)</td>
+              </tr>
+              <tr>
+                <td>Media and connector cost</td>
+                <td>Lowest</td>
+                <td>Highest</td>
+              </tr>
+              <tr>
+                <td>Installation skill</td>
+                <td>Lowest</td>
+                <td>Highest</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Classes of transmission media: guided (twisted pair, coaxial, fibre) and unguided (radio, microwave, infrared)."
+          >
+            <img
+              src="figures/p2-slide-03.png"
+              alt="Classes of transmission media: guided (twisted pair, coaxial, fibre) and unguided (radio, microwave, infrared)."
+              width="1245"
+              height="358"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-2/chapter-02-physical-layer-part-2.pdf#page=3"
+              >Part 2 · slide 3</a
+            >Classes of transmission media: guided (twisted pair, coaxial,
+            fibre) and unguided (radio, microwave, infrared).
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: UTP has a plastic cover only; STP adds a metal shield."
+          >
+            <img
+              src="figures/p2-slide-09.png"
+              alt="UTP has a plastic cover only; STP adds a metal shield."
+              width="1214"
+              height="911"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-2/chapter-02-physical-layer-part-2.pdf#page=9"
+              >Part 2 · slide 9</a
+            >UTP has a plastic cover only; STP adds a metal shield.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Straight-through cabling for different devices, crossover cabling for similar devices."
+          >
+            <img
+              src="figures/p2-slide-15.png"
+              alt="Straight-through cabling for different devices, crossover cabling for similar devices."
+              width="1224"
+              height="790"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-2/chapter-02-physical-layer-part-2.pdf#page=15"
+              >Part 2 · slide 15</a
+            >Straight-through cabling for different devices, crossover cabling
+            for similar devices.
+          </figcaption>
+        </figure>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: Optical fibre: core, cladding and jacket, with light reflecting along the core."
+          >
+            <img
+              src="figures/p2-slide-17.png"
+              alt="Optical fibre: core, cladding and jacket, with light reflecting along the core."
+              width="1170"
+              height="837"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-2/chapter-02-physical-layer-part-2.pdf#page=17"
+              >Part 2 · slide 17</a
+            >Optical fibre: core, cladding and jacket, with light reflecting
+            along the core.
+          </figcaption>
+        </figure>
+        <aside class="callout exam">
+          <strong>Scenario keywords</strong>
+          <p>
+            "Cheap, easy, inside an office, under 100 m" → <b>UTP</b>. "Near
+            interference but still copper" → <b>STP</b>. "Long distance, immune
+            to EMI, very high speed, secure" → <b>fibre</b>. Always name the
+            trade-off: fibre costs more and needs skilled installers.
+          </p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ WIRELESS -->
+      <section id="wireless" class="section">
+        <div class="section-heading">
+          <span>08 · Unguided media</span>
+          <h2>Wireless: radio, microwave, infrared</h2>
+          <p>
+            Unguided signals travel through the air and reach anyone with a
+            suitable receiver. Moving up the spectrum, frequency rises,
+            wavelength shrinks, and the waves become more directional and worse
+            at passing through walls.
+          </p>
+        </div>
+        <div
+          class="spectrum"
+          aria-label="Spectrum from low to high frequency: radio below 300 MHz, microwave 300 MHz to 300 GHz, infrared 300 GHz to 400 THz."
+        >
+          <div class="band b1"><b>Radio</b><span>&lt; 300 MHz</span></div>
+          <div class="band b2">
+            <b>Microwave</b><span>300 MHz – 300 GHz</span>
+          </div>
+          <div class="band b3">
+            <b>Infrared</b><span>300 GHz – 400 THz</span>
+          </div>
+        </div>
+        <div class="arrowline">
+          lower frequency · longer wavelength · passes walls &nbsp;→&nbsp;
+          higher frequency · shorter wavelength · line of sight
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Wave</th>
+                <th>Direction</th>
+                <th>Strength</th>
+                <th>Used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Radio</td>
+                <td><b>Omnidirectional</b> (all directions)</td>
+                <td>Long distances</td>
+                <td><b>Multicast</b>: AM/FM radio, TV</td>
+              </tr>
+              <tr>
+                <td>Microwave</td>
+                <td><b>Unidirectional</b>, line of sight</td>
+                <td>High frequencies can't pass walls</td>
+                <td>
+                  <b>Unicast</b>: cellular phones, satellite, wireless LANs,
+                  point-to-point between buildings
+                </td>
+              </tr>
+              <tr>
+                <td>Infrared</td>
+                <td>Line of sight</td>
+                <td>Short range, can't pass walls, unusable in sunlight</td>
+                <td>
+                  Remote controls, wireless keyboards and mice (IrDA: 75 kbps up
+                  to 8 m; 1.15–4 Mbps at 1 m)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figure class="sfx-figure" data-slide-figure>
+          <button
+            type="button"
+            class="sfx-zoom"
+            aria-label="Enlarge figure: The electromagnetic spectrum: radio and microwave, then infrared, then visible light."
+          >
+            <img
+              src="figures/p2-slide-23.png"
+              alt="The electromagnetic spectrum: radio and microwave, then infrared, then visible light."
+              width="1280"
+              height="940"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <a
+              class="sfx-tag"
+              href="../../slides/physical-layer-part-2/chapter-02-physical-layer-part-2.pdf#page=23"
+              >Part 2 · slide 23</a
+            >The electromagnetic spectrum: radio and microwave, then infrared,
+            then visible light.
+          </figcaption>
+        </figure>
+        <aside class="callout memory">
+          <strong>Memory hook</strong>
+          <p>
+            <b>R</b>adio <b>R</b>eaches everyone (broadcast). <b>M</b>icrowave
+            goes to <b>M</b>e (unicast, point at a target). <b>I</b>nfrared
+            stays <b>I</b>n the room.
+          </p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ CHEAT -->
+      <section id="cheat" class="section">
+        <div class="section-heading">
+          <span>09 · Cheat sheet</span>
+          <h2>Everything on one card</h2>
+        </div>
+        <div class="cheat-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Find</th>
+                  <th>Formula</th>
+                  <th>Answer unit</th>
+                  <th>Convert first</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Frequency</td>
+                  <td>f = 1 / T</td>
+                  <td>Hz</td>
+                  <td>T into seconds</td>
+                </tr>
+                <tr>
+                  <td>Period</td>
+                  <td>T = 1 / f</td>
+                  <td>s</td>
+                  <td>f into Hz</td>
+                </tr>
+                <tr>
+                  <td>Bit interval</td>
+                  <td>1 / bit rate</td>
+                  <td>s</td>
+                  <td>rate into bps</td>
+                </tr>
+                <tr>
+                  <td>Bit rate</td>
+                  <td>1 / bit interval</td>
+                  <td>bps</td>
+                  <td>interval into s</td>
+                </tr>
+                <tr>
+                  <td>Propagation time</td>
+                  <td>distance / speed</td>
+                  <td>s</td>
+                  <td>km → m</td>
+                </tr>
+                <tr>
+                  <td>Transmission time</td>
+                  <td>size (bits) / bandwidth</td>
+                  <td>s</td>
+                  <td>bytes × 8; rate into bps</td>
+                </tr>
+                <tr>
+                  <td>Latency</td>
+                  <td>transmission + propagation + queuing + processing</td>
+                  <td>s</td>
+                  <td>all in seconds</td>
+                </tr>
+                <tr>
+                  <td>Bandwidth–delay</td>
+                  <td>bandwidth × delay</td>
+                  <td>bits</td>
+                  <td>bps and s</td>
+                </tr>
+                <tr>
+                  <td>Wavelength</td>
+                  <td>speed × T = speed / f</td>
+                  <td>m</td>
+                  <td>Hz, m/s</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Light: 3 × 10⁸ m/s in a vacuum, ≈ 2 × 10⁸ m/s in cable. 1 byte = 8
+            bits. Prefixes are powers of 1000.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================================================================ PRACTICE -->
+      <section id="practice" class="section">
+        <div class="section-heading">
+          <span>10 · Practice</span>
+          <h2>Tutorial-style questions</h2>
+          <p>Try each one on paper, then open the answer.</p>
+        </div>
+        <details class="qa">
+          <summary>
+            1. A signal has a period of 4 ms. Find its frequency.
+          </summary>
+          <div class="qa-body">
+            <pre>
+4 ms = 4 / 1000 = 0.004 s
+f = 1 / 0.004 = 250 Hz</pre>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            2. A digital signal has a bit rate of 4 Mbps. What is the bit
+            interval in μs?
+          </summary>
+          <div class="qa-body">
+            <pre>
+4 Mbps = 4 × 10⁶ bps
+bit interval = 1 / (4 × 10⁶) = 0.25 × 10⁻⁶ s = 0.25 μs</pre>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            3. A sender and receiver are 3,000 km apart over a cable (speed 2 ×
+            10⁸ m/s). Find the propagation time.
+          </summary>
+          <div class="qa-body">
+            <pre>
+3,000 km = 3 × 10⁶ m
+3 × 10⁶ / 2 × 10⁸ = 0.015 s = 15 ms</pre>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            4. How long does it take to send a 2.5 MB file over a 10 Mbps link
+            (ignore propagation)?
+          </summary>
+          <div class="qa-body">
+            <pre>
+2.5 MB = 2.5 × 10⁶ × 8 = 2 × 10⁷ bits
+2 × 10⁷ / 10⁷ = 2 s</pre>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            5. A 1-kbyte frame travels 6,000 km over a 100 Mbps link at 2 × 10⁸
+            m/s. Find both times, the latency, and which one dominates.
+          </summary>
+          <div class="qa-body">
+            <pre>
+Size: 1 kbyte = 1000 × 8 = 8000 bits
+Propagation  = 6 × 10⁶ / 2 × 10⁸ = 0.03 s = 30 ms
+Transmission = 8000 / 10⁸ = 0.00008 s = 0.08 ms
+Latency ≈ 30.08 ms</pre>
+            <p>Propagation dominates: a small frame on a fast link.</p>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            6. A link has a bandwidth of 10 Mbps and a delay of 3 ms. How many
+            bits can fill it?
+          </summary>
+          <div class="qa-body"><pre>10⁷ × 0.003 = 30,000 bits</pre></div>
+        </details>
+        <details class="qa">
+          <summary>
+            7. A 2 GHz signal travels in a cable at 2 × 10⁸ m/s. What is its
+            wavelength?
+          </summary>
+          <div class="qa-body">
+            <pre>λ = 2 × 10⁸ / 2 × 10⁹ = 0.1 m = 10 cm</pre>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            8. Scenario: you hear another call faintly in the background. Name
+            the impairment and its broader category.
+          </summary>
+          <div class="qa-body">
+            <p>
+              <b>Crosstalk</b>, a type of <b>noise</b>: the signal on a
+              neighbouring wire leaks into yours. Twisted pairs, shielding (STP)
+              or fibre reduce it.
+            </p>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            9. Scenario: a factory network beside heavy motors has many errors.
+            Which impairment, and which medium would you choose?
+          </summary>
+          <div class="qa-body">
+            <p>
+              <b>Induced noise</b> (electromagnetic interference). Choose
+              <b>fibre optic</b>: it carries light, so it is completely immune
+              to EMI. STP is a cheaper copper alternative that reduces it.
+            </p>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            10. Why is a repeater better than an amplifier for a long digital
+            link?
+          </summary>
+          <div class="qa-body">
+            <p>
+              An amplifier boosts the weakened signal
+              <i>and the noise with it</i>. A repeater reads the bits and
+              transmits a freshly <b>regenerated</b> clean signal, so noise
+              doesn't accumulate over distance.
+            </p>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            11. Which cable joins a PC to a switch? A PC to another PC?
+          </summary>
+          <div class="qa-body">
+            <p>
+              PC to switch: <b>straight-through</b> (different devices). PC to
+              PC: <b>crossover</b> (similar devices, so transmit must be crossed
+              to receive).
+            </p>
+          </div>
+        </details>
+        <details class="qa">
+          <summary>
+            12. Which wireless wave would you use for a TV broadcast, for a link
+            between two buildings, and for a TV remote?
+          </summary>
+          <div class="qa-body">
+            <p>
+              TV broadcast: <b>radio waves</b> (omnidirectional, multicast).
+              Between buildings: <b>microwaves</b> (line of sight, point to
+              point). Remote control: <b>infrared</b> (short range, one room).
+            </p>
+          </div>
+        </details>
+      </section>
+      <p class="footer-note">
+        Built from CS331 Chapter 2, Physical Layer, Parts 1 and 2 (Forouzan,
+        <i>Data Communications and Networking</i>, 6th ed.) and the
+        physical-layer tutorial. Slide figures link to the original PDF page.
+      </p>
+    </main>
+
+    <script>
+      const root = document.documentElement;
+      const btn = document.getElementById("themeToggle");
+      const saved = localStorage.getItem("cs331-study-theme");
+      if (saved) {
+        root.dataset.theme = saved;
+        btn.textContent = saved === "dark" ? "Light mode" : "Dark mode";
+      }
+      btn.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        localStorage.setItem("cs331-study-theme", next);
+        try {
+          localStorage.setItem("shoug-theme", next);
+        } catch (_e) {}
+        btn.textContent = next === "dark" ? "Light mode" : "Dark mode";
+      });
+    </script>
+
+    <script id="cs331-theme-sync">
+      (function () {
+        var root = document.documentElement;
+        var keys = [
+          "shoug-theme",
+          "cs331-study-theme",
+          "cs331-mindmap-theme",
+          "cs331-chapter-mindmap-theme",
+        ];
+        function normalize(value) {
+          if (value === "slate" || value === "dark") return "dark";
+          if (value === "default" || value === "light") return "light";
+          return null;
+        }
+        function parentTheme() {
+          try {
+            if (
+              window.parent &&
+              window.parent !== window &&
+              window.parent.document
+            ) {
+              var b = window.parent.document.body;
+              if (b && b.classList.contains("shoug-light-mode")) return "light";
+              var el = window.parent.document.documentElement;
+              return normalize(
+                el.getAttribute("data-md-color-scheme") ||
+                  el.dataset.theme ||
+                  el.getAttribute("data-theme"),
+              );
+            }
+          } catch (e) {}
+          return null;
+        }
+        function savedTheme() {
+          var shougTheme = normalize(localStorage.getItem("shoug-theme"));
+          if (shougTheme) return shougTheme;
+          for (var i = 0; i < keys.length; i++) {
+            var value = normalize(localStorage.getItem(keys[i]));
+            if (value) return value;
+          }
+          return null;
+        }
+        function buttonLabel(button, theme) {
+          if (!button) return;
+          if (button.id === "themeBtn") {
+            button.textContent =
+              theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+          } else {
+            button.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+          }
+        }
+        function updateButtons(theme) {
+          document
+            .querySelectorAll("#themeToggle, #themeBtn")
+            .forEach(function (button) {
+              buttonLabel(button, theme);
+            });
+        }
+        function applyTheme(theme, persist) {
+          theme = normalize(theme) || "dark";
+          root.dataset.theme = theme;
+          root.setAttribute("data-theme", theme);
+          if (persist)
+            keys.forEach(function (key) {
+              localStorage.setItem(key, theme);
+            });
+          updateButtons(theme);
+        }
+        function currentTheme() {
+          return (
+            normalize(root.dataset.theme || root.getAttribute("data-theme")) ||
+            "dark"
+          );
+        }
+        applyTheme(parentTheme() || savedTheme() || currentTheme(), false);
+        document
+          .querySelectorAll("#themeToggle, #themeBtn")
+          .forEach(function (button) {
+            button.addEventListener("click", function () {
+              window.setTimeout(function () {
+                applyTheme(currentTheme(), true);
+              }, 0);
+            });
+          });
+        try {
+          if (
+            window.parent &&
+            window.parent !== window &&
+            window.parent.document
+          ) {
+            var parentRoot = window.parent.document.documentElement;
+            new MutationObserver(function () {
+              var theme = parentTheme();
+              if (theme) applyTheme(theme, false);
+            }).observe(parentRoot, {
+              attributes: true,
+              attributeFilter: ["data-md-color-scheme", "data-theme"],
+            });
+            var parentBodyEl = window.parent.document.body;
+            if (parentBodyEl) {
+              new MutationObserver(function () {
+                var theme = parentTheme();
+                if (theme) applyTheme(theme, false);
+              }).observe(parentBodyEl, {
+                attributes: true,
+                attributeFilter: ["class"],
+              });
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var NAMES = {
+          t: [
+            ["s", 1],
+            ["ms", 1e-3],
+            ["μs", 1e-6],
+            ["ns", 1e-9],
+          ],
+          d: [
+            ["bits", 1],
+            ["bytes", 8],
+            ["kbits", 1e3],
+            ["kbytes", 8e3],
+            ["Mbits", 1e6],
+            ["Mbytes", 8e6],
+            ["Gbytes", 8e9],
+          ],
+          r: [
+            ["bps", 1],
+            ["kbps", 1e3],
+            ["Mbps", 1e6],
+            ["Gbps", 1e9],
+          ],
+          f: [
+            ["Hz", 1],
+            ["kHz", 1e3],
+            ["MHz", 1e6],
+            ["GHz", 1e9],
+            ["THz", 1e12],
+          ],
+          m: [
+            ["m", 1],
+            ["km", 1e3],
+          ],
+        };
+        var val = document.getElementById("cv-val"),
+          unit = document.getElementById("cv-unit"),
+          out = document.getElementById("cv-out");
+        function parse(s) {
+          s = String(s)
+            .replace(/,/g, "")
+            .replace(/\s+/g, "")
+            .replace(/[×xX*]10\^?/, "e");
+          var v = Number(s);
+          return isFinite(v) ? v : NaN;
+        }
+        var SUP = {
+          "-": "⁻",
+          0: "⁰",
+          1: "¹",
+          2: "²",
+          3: "³",
+          4: "⁴",
+          5: "⁵",
+          6: "⁶",
+          7: "⁷",
+          8: "⁸",
+          9: "⁹",
+        };
+        function fmt(x) {
+          if (x === 0) return "0";
+          var a = Math.abs(x);
+          if (a >= 1e-3 && a < 1e9)
+            return Number(x.toPrecision(6)).toLocaleString("en-US", {
+              maximumFractionDigits: 9,
+            });
+          var e = Math.floor(Math.log10(a)),
+            m = x / Math.pow(10, e);
+          return (
+            Number(m.toPrecision(4)) +
+            " × 10" +
+            String(e)
+              .split("")
+              .map(function (c) {
+                return SUP[c];
+              })
+              .join("")
+          );
+        }
+        function run() {
+          var v = parse(val.value),
+            parts = unit.value.split(":"),
+            fam = parts[0],
+            factor = Number(parts[1]);
+          if (isNaN(v)) {
+            out.innerHTML = "<div>Type a number, e.g. 2.5 or 2.4e8</div>";
+            return;
+          }
+          var base = v * factor;
+          out.innerHTML = NAMES[fam]
+            .map(function (p) {
+              var self = p[1] === factor ? ' class="self"' : "";
+              return (
+                "<div" +
+                self +
+                "><span>" +
+                p[0] +
+                "</span>" +
+                fmt(base / p[1]) +
+                "</div>"
+              );
+            })
+            .join("");
+        }
+        val.addEventListener("input", run);
+        unit.addEventListener("change", run);
+        run();
+      })();
+    </script>
+
+    <script src="/javascripts/slide-figures.js?v=b8dda7aa7b" defer></script>
+  </body>
+</html>
