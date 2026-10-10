@@ -34,6 +34,17 @@ def build():
         redirects[f'{se423}{old}/'] = f'{se423}{new}/'
         redirects[f'{se423}{old}/{old}.pdf'] = f'{se423}{new}/{old}.pdf'
     redirects[f'{se423}software-engineering/'] = f'{se423}chapter-2/'
+    # Chapter 1 parts 1.2 and 1.3 were merged into the Chapter 1 page of each section (2026-10-11).
+    sec = '/academics/software-engineering/se423/'
+    for old, new in {
+        'slide-breakdowns/02-project-performance-domains/': 'slide-breakdowns/01-introduction/',
+        'slide-breakdowns/03-tailoring-models-methods-and-artifacts/': 'slide-breakdowns/01-introduction/',
+        'extra-resources/mindmaps/05-project-performance-domains/': 'extra-resources/mindmaps/04-introduction/',
+        'extra-resources/mindmaps/11-tailoring-models-methods-and-artifacts/': 'extra-resources/mindmaps/04-introduction/',
+        'exams/05-project-performance-domains-quiz/': 'exams/04-introduction-quiz/',
+        'exams/11-tailoring-models-methods-and-artifacts-quiz/': 'exams/04-introduction-quiz/',
+    }.items():
+        redirects[sec + old] = sec + new
     canonicals = {}
     candidates = {}
     for pdf in sorted(DOCS.rglob('*.pdf')):
