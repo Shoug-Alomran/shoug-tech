@@ -19,6 +19,7 @@ HUB = QUIZZES / "index.html"
 
 EXAMS = [
     ("04-introduction-quiz", "Introduction, Performance Domains & Tailoring Quiz - Chapter 1"),
+    ("13-organizational-context-quiz", "The Organizational Context Quiz - Chapter 2"),
     ("12-team-quiz", "Team Quiz - Chapter 3"),
     ("02-development-approach-quiz", "Development Approach Quiz - Chapter 4"),
     ("07-risk-management-quiz", "Risk Management Quiz - Chapter 5"),

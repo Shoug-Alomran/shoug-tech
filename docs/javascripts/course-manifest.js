@@ -9970,6 +9970,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/exams/13-organizational-context-quiz/",
+    title: "SE423 | The Organizational Context Quiz - Chapter 2",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/exams/12-team-quiz/",
     title: "SE423 | Team Quiz - Chapter 3",
     track: "software-engineering",
@@ -10078,6 +10087,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/extra-resources/mindmaps/13-organizational-context/",
+    title: "SE423 | The Organizational Context - Chapter 2",
+    track: "software-engineering",
+    course: "se423",
+    section: "extra-resources",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/12-team/",
     title: "SE423 | Team - Chapter 3",
     track: "software-engineering",
@@ -10162,6 +10180,15 @@ var COURSE_PAGES = [
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/04-software-engineering/",
     title: "SE423 | Software Engineering - Old Chapter 2",
+    track: "software-engineering",
+    course: "se423",
+    section: "slide-breakdowns",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
+    url: "/academics/software-engineering/se423/slide-breakdowns/13-organizational-context/",
+    title: "SE423 | The Organizational Context - Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10377,7 +10404,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 51,
+  se423: 54,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10407,5 +10434,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 51,
+  "software-engineering/se423": 54,
 };
