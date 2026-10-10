@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Render the SE423 Project folder, and hold the shared ENG103 page templates.
+"""Render the SE322 and SE423 Project folders, and hold the shared ENG103 page templates.
 
 Activity / Labs / Tutorials folders (anything with solved/ and unsolved/) are
 built from the files on disk by scripts/embed_resources.py, which imports the
-template helpers below. This script only renders the SE423 "Project" folder:
-the project description and its "Scenario" sub-folder.
+template helpers below. This script only renders the "Project" folders: SE322's
+description and deliverables, and SE423's description, artifacts and "Scenario"
+sub-folder.
 
 The pages are stamped from the ENG103 study-material templates, which are the
 smallest self-contained listing/viewer pages on the site. The sidebar stamped in
@@ -237,6 +238,33 @@ SCENARIOS = [
 ]
 
 
+# Group submissions, one folder each: <slug>/<slug>.pdf beside its viewer.
+SE423_ARTIFACTS = [
+    ('Artifact 1: Overview, Organizational Structure, and Scope', 'artifact-1'),
+]
+
+SE322_PROJECT = [
+    ('Project Description', 'description', 'project-description'),
+    ('Project Deliverable 1: Intaliq Requirements (SRS)', 'deliverable-1', 'project-deliverable-1'),
+]
+
+
+def build_se322_project():
+    base = SE322 + 'extra-resources/project/'
+
+    listing_page(
+        base, 'se322', 'SE322', 'Project',
+        se322_trail(('Project', None)),
+        rows([(label, './%s/' % folder, 'PDF', 'pdf', False, False)
+              for label, folder, _ in SE322_PROJECT]),
+        'SE322 | Project')
+
+    for label, folder, pdf in SE322_PROJECT:
+        viewer_page(
+            base + folder + '/', 'se322', 'PROJECT // STUDY MATERIAL', label,
+            se322_trail(('Project', base), (label, None)),
+            './%s.pdf' % pdf, base)
+
 
 def build_se423_project():
     base = SE423 + 'extra-resources/project/'
@@ -244,14 +272,21 @@ def build_se423_project():
     listing_page(
         base, 'se423', 'SE423', 'Project',
         se423_trail(('Project', None)),
-        rows([('Project Description', './description/', 'PDF', 'pdf', False, False),
-              ('Scenario', './scenario/', '10 FILES', 'available', True, False)]),
+        rows([('Project Description', './description/', 'PDF', 'pdf', False, False)]
+             + [(label, './%s/' % slug, 'PDF', 'pdf', False, False) for label, slug in SE423_ARTIFACTS]
+             + [('Scenario', './scenario/', '10 FILES', 'available', True, False)]),
         'SE423 | Project')
 
     viewer_page(
         base + 'description/', 'se423', 'PROJECT // STUDY MATERIAL', 'Project Description',
         se423_trail(('Project', base), ('Project Description', None)),
         './project-description.pdf', base)
+
+    for label, slug in SE423_ARTIFACTS:
+        viewer_page(
+            base + slug + '/', 'se423', 'PROJECT // ARTIFACT', label,
+            se423_trail(('Project', base), (label, None)),
+            './%s.pdf' % slug, base)
 
     entries, viewers = [], []
     for label, slug, kind in SCENARIOS:
@@ -274,6 +309,7 @@ def build_se423_project():
 
 
 def main():
+    build_se322_project()
     build_se423_project()
 
 
