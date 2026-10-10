@@ -58,6 +58,7 @@ SIDEBAR_BUILDER = os.path.join(REPO, 'scripts', 'build_academic_sidebar.py')
 
 STATES = ('solved', 'unsolved')
 IGNORED = {'.DS_Store', 'index.html', 'Thumbs.db'}
+LOCK_PREFIX = '~$'  # Office owner/lock files left while a document is open
 IMAGE_TAG = {'png': 'png', 'jpg': 'png', 'jpeg': 'png', 'gif': 'png', 'webp': 'png', 'svg': 'png'}
 
 NAV_RE = re.compile(r'<nav class="[^"]*academic-sidebar[^"]*"[^>]*>.*?</nav>', re.S)
@@ -159,7 +160,7 @@ def is_own_viewer(path):
 
 def lone_doc(path):
     """<name>/<name>.<ext> with nothing beside it but its page and generated viewers."""
-    names = [n for n in os.listdir(path) if n not in IGNORED and not n.startswith('.')
+    names = [n for n in os.listdir(path) if n not in IGNORED and not n.startswith(('.', LOCK_PREFIX))
              and not is_viewer_dir(os.path.join(path, n))]
     for ext in ('.pdf',) + tuple('.' + e for e in OFFICE_EXT):
         doc = os.path.join(path, os.path.basename(path) + ext)
@@ -193,7 +194,7 @@ def content_files(folder, allowed):
     files, dirs = [], []
     for name in sorted(os.listdir(folder), key=natural_key):
         path = os.path.join(folder, name)
-        if name in IGNORED or name.startswith('.'):
+        if name in IGNORED or name.startswith(('.', LOCK_PREFIX)):
             continue
         if os.path.isdir(path):
             pdf = owned_doc(path)
