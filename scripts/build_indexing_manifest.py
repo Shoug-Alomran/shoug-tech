@@ -16,6 +16,24 @@ def build():
         '/Academics/software-engineering/SE201/Chapter-2/Software-Processes.html':
         '/academics/software-engineering/se201/slide-breakdowns/02-chapter-2-software-processes/',
     }
+    # SE423 slide folders were renamed to chapter numbers (2026-10-10).
+    se423 = '/academics/software-engineering/se423/slides/'
+    for old, new in {
+        'introduction': 'chapter-1',
+        'project-performance-domains': 'chapter-1.2',
+        'tailoring-models-methods-and-artifacts': 'chapter-1.3',
+        'team': 'chapter-3',
+        'development-approach': 'chapter-4',
+        'risk-management': 'chapter-5',
+        'estimation': 'chapter-6',
+        'scheduling-and-tracking': 'chapter-6.2',
+        'quality': 'chapter-7',
+        'stakeholders': 'chapter-8',
+        'change-management': 'chapter-9',
+    }.items():
+        redirects[f'{se423}{old}/'] = f'{se423}{new}/'
+        redirects[f'{se423}{old}/{old}.pdf'] = f'{se423}{new}/{old}.pdf'
+    redirects[f'{se423}software-engineering/'] = f'{se423}chapter-2/'
     canonicals = {}
     candidates = {}
     for pdf in sorted(DOCS.rglob('*.pdf')):

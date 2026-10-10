@@ -39,7 +39,7 @@ test("renamed physics PDF encodes # and spaces without losing query", async () =
 test("PDF bytes/range status survive canonical header injection", async () => {
   const res = await handle(
     request(
-      "/academics/software-engineering/se423/slides/change-management/change-management.pdf",
+      "/academics/software-engineering/se423/slides/chapter-9/change-management.pdf",
     ),
     async () =>
       new Response("pdf bytes", {
@@ -51,7 +51,7 @@ test("PDF bytes/range status survive canonical header injection", async () => {
   assert.equal(res.headers.get("content-range"), "bytes 0-8/100");
   assert.equal(
     res.headers.get("link"),
-    '<https://shoug-tech.com/academics/software-engineering/se423/slides/change-management/>; rel="canonical"',
+    '<https://shoug-tech.com/academics/software-engineering/se423/slides/chapter-9/>; rel="canonical"',
   );
   assert.equal(await res.text(), "pdf bytes");
 });
@@ -60,7 +60,7 @@ test("never attach PDF canonicals to missing files or server errors", async () =
   for (const status of [404, 500]) {
     const res = await handle(
       request(
-        "/academics/software-engineering/se423/slides/change-management/change-management.pdf",
+        "/academics/software-engineering/se423/slides/chapter-9/change-management.pdf",
       ),
       async () => new Response("error", { status }),
     );
