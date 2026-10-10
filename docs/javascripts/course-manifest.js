@@ -9890,7 +9890,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/01-change-management-quiz/",
-    title: "SE423 | Chapter 1: Change Management Quiz",
+    title: "SE423 | Change Management Quiz - Chapter 9",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9899,7 +9899,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/02-development-approach-quiz/",
-    title: "SE423 | Chapter 2: Development Approach Quiz",
+    title: "SE423 | Development Approach Quiz - Chapter 4",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9908,7 +9908,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/03-estimation-quiz/",
-    title: "SE423 | Chapter 3: Estimation Quiz",
+    title: "SE423 | Estimation Quiz - Chapter 6",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9917,16 +9917,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/04-introduction-quiz/",
-    title: "SE423 | Chapter 4: Introduction Quiz",
-    track: "software-engineering",
-    course: "se423",
-    section: "exams",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/exams/05-project-performance-domains-quiz/",
-    title: "SE423 | Chapter 5: Project Performance Domains Quiz",
+    title: "SE423 | Introduction, Performance Domains & Tailoring Quiz - Chapter 1",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9935,7 +9926,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/06-quality-quiz/",
-    title: "SE423 | Chapter 6: Quality Quiz",
+    title: "SE423 | Quality Quiz - Chapter 7",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9944,7 +9935,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/07-risk-management-quiz/",
-    title: "SE423 | Chapter 7: Risk Management Quiz",
+    title: "SE423 | Risk Management Quiz - Chapter 5",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9953,7 +9944,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/08-scheduling-and-tracking-quiz/",
-    title: "SE423 | Chapter 8: Scheduling and Tracking Quiz",
+    title: "SE423 | Scheduling and Tracking Quiz - Chapter 6.2",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9962,7 +9953,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/09-software-engineering-quiz/",
-    title: "SE423 | Chapter 9: Software Engineering Quiz",
+    title: "SE423 | Software Engineering Quiz - Old Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9971,16 +9962,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/10-stakeholders-quiz/",
-    title: "SE423 | Chapter 10: Stakeholders Quiz",
-    track: "software-engineering",
-    course: "se423",
-    section: "exams",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/exams/11-tailoring-models-methods-and-artifacts-quiz/",
-    title: "SE423 | Chapter 11: Tailoring Models, Methods & Artifacts Quiz",
+    title: "SE423 | Stakeholders Quiz - Chapter 8",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -9989,7 +9971,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/12-team-quiz/",
-    title: "SE423 | Chapter 12: Team Quiz",
+    title: "SE423 | Team Quiz - Chapter 3",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -10016,7 +9998,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/01-change-management/",
-    title: "SE423 | Change Management",
+    title: "SE423 | Change Management - Chapter 9",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10025,7 +10007,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/02-development-approach/",
-    title: "SE423 | Development Approach",
+    title: "SE423 | Development Approach - Chapter 4",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10034,7 +10016,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/03-estimation/",
-    title: "SE423 | Estimation",
+    title: "SE423 | Estimation - Chapter 6",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10043,16 +10025,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/04-introduction/",
-    title: "SE423 | Introduction",
-    track: "software-engineering",
-    course: "se423",
-    section: "extra-resources",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/extra-resources/mindmaps/05-project-performance-domains/",
-    title: "SE423 | Project Performance Domains",
+    title: "SE423 | Introduction, Performance Domains & Tailoring - Chapter 1",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10061,7 +10034,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/06-quality/",
-    title: "SE423 | Quality",
+    title: "SE423 | Quality - Chapter 7",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10070,7 +10043,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/07-risk-management/",
-    title: "SE423 | Risk Management",
+    title: "SE423 | Risk Management - Chapter 5",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10079,7 +10052,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/08-scheduling-and-tracking/",
-    title: "SE423 | Scheduling and Tracking",
+    title: "SE423 | Scheduling and Tracking - Chapter 6.2",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10088,7 +10061,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/09-software-engineering/",
-    title: "SE423 | Software Engineering",
+    title: "SE423 | Software Engineering - Old Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10097,16 +10070,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/10-stakeholders/",
-    title: "SE423 | Stakeholders",
-    track: "software-engineering",
-    course: "se423",
-    section: "extra-resources",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/extra-resources/mindmaps/11-tailoring-models-methods-and-artifacts/",
-    title: "SE423 | Tailoring Models, Methods, and Artifacts",
+    title: "SE423 | Stakeholders - Chapter 8",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10115,7 +10079,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/12-team/",
-    title: "SE423 | Team",
+    title: "SE423 | Team - Chapter 3",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",
@@ -10188,25 +10152,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/01-introduction/",
-    title: "SE423 | Introduction",
-    track: "software-engineering",
-    course: "se423",
-    section: "slide-breakdowns",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/slide-breakdowns/02-project-performance-domains/",
-    title: "SE423 | Project Performance Domains",
-    track: "software-engineering",
-    course: "se423",
-    section: "slide-breakdowns",
-    courseUrl: "/academics/software-engineering/se423/",
-    courseTitle: "SE423 // Software Project Management",
-  },
-  {
-    url: "/academics/software-engineering/se423/slide-breakdowns/03-tailoring-models-methods-and-artifacts/",
-    title: "SE423 | Tailoring Models Methods And Artifacts",
+    title: "SE423 | Introduction, Performance Domains & Tailoring - Chapter 1",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10215,7 +10161,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/04-software-engineering/",
-    title: "SE423 | Software Engineering",
+    title: "SE423 | Software Engineering - Old Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10224,7 +10170,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/05-team/",
-    title: "SE423 | Team",
+    title: "SE423 | Team - Chapter 3",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10233,7 +10179,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/06-development-approach/",
-    title: "SE423 | Development Approach",
+    title: "SE423 | Development Approach - Chapter 4",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10242,7 +10188,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/07-risk-management/",
-    title: "SE423 | Risk Management",
+    title: "SE423 | Risk Management - Chapter 5",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10251,7 +10197,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/08-estimation/",
-    title: "SE423 | Estimation",
+    title: "SE423 | Estimation - Chapter 6",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10260,7 +10206,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/09-scheduling-and-tracking/",
-    title: "SE423 | Scheduling And Tracking",
+    title: "SE423 | Scheduling and Tracking - Chapter 6.2",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10269,7 +10215,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/10-quality/",
-    title: "SE423 | Quality",
+    title: "SE423 | Quality - Chapter 7",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10278,7 +10224,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/11-stakeholders/",
-    title: "SE423 | Stakeholders",
+    title: "SE423 | Stakeholders - Chapter 8",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10287,7 +10233,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slide-breakdowns/12-change-management/",
-    title: "SE423 | Change Management",
+    title: "SE423 | Change Management - Chapter 9",
     track: "software-engineering",
     course: "se423",
     section: "slide-breakdowns",
@@ -10296,7 +10242,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-1/",
-    title: "SE423 | Chapter 1: Introduction",
+    title: "SE423 | Introduction - Chapter 1",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10305,7 +10251,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-1.2/",
-    title: "SE423 | Chapter 1.2: Project Performance Domains",
+    title: "SE423 | Project Performance Domains - Chapter 1.2",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10314,7 +10260,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-1.3/",
-    title: "SE423 | Chapter 1.3: Tailoring, Models, Methods, and Artifacts",
+    title: "SE423 | Tailoring, Models, Methods, and Artifacts - Chapter 1.3",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10323,7 +10269,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-2/",
-    title: "SE423 | Chapter 2: The Project Management and Software Engineering Process Context",
+    title: "SE423 | The Project Management and Software Engineering Process Context - Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10332,7 +10278,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-3/",
-    title: "SE423 | Chapter 3: Team",
+    title: "SE423 | Team - Chapter 3",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10341,7 +10287,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-4/",
-    title: "SE423 | Chapter 4: Development Approach",
+    title: "SE423 | Development Approach - Chapter 4",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10350,7 +10296,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-5/",
-    title: "SE423 | Chapter 5: Risk Management",
+    title: "SE423 | Risk Management - Chapter 5",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10359,7 +10305,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-6/",
-    title: "SE423 | Chapter 6: Estimation",
+    title: "SE423 | Estimation - Chapter 6",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10368,7 +10314,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-6.2/",
-    title: "SE423 | Chapter 6.2: Scheduling and Tracking",
+    title: "SE423 | Scheduling and Tracking - Chapter 6.2",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10377,7 +10323,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-7/",
-    title: "SE423 | Chapter 7: Quality",
+    title: "SE423 | Quality - Chapter 7",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10386,7 +10332,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-8/",
-    title: "SE423 | Chapter 8: Stakeholders",
+    title: "SE423 | Stakeholders - Chapter 8",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10395,7 +10341,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-9/",
-    title: "SE423 | Chapter 9: Change Management",
+    title: "SE423 | Change Management - Chapter 9",
     track: "software-engineering",
     course: "se423",
     section: "slides",
@@ -10431,7 +10377,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 57,
+  se423: 51,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10461,5 +10407,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 57,
+  "software-engineering/se423": 51,
 };

@@ -18,18 +18,16 @@ HUB = QUIZZES / "index.html"
 
 
 EXAMS = [
-    ("01-change-management-quiz", "Chapter 1: Change Management Quiz"),
-    ("02-development-approach-quiz", "Chapter 2: Development Approach Quiz"),
-    ("03-estimation-quiz", "Chapter 3: Estimation Quiz"),
-    ("04-introduction-quiz", "Chapter 4: Introduction Quiz"),
-    ("05-project-performance-domains-quiz", "Chapter 5: Project Performance Domains Quiz"),
-    ("06-quality-quiz", "Chapter 6: Quality Quiz"),
-    ("07-risk-management-quiz", "Chapter 7: Risk Management Quiz"),
-    ("08-scheduling-and-tracking-quiz", "Chapter 8: Scheduling and Tracking Quiz"),
-    ("09-software-engineering-quiz", "Chapter 9: Software Engineering Quiz"),
-    ("10-stakeholders-quiz", "Chapter 10: Stakeholders Quiz"),
-    ("11-tailoring-models-methods-and-artifacts-quiz", "Chapter 11: Tailoring Models, Methods & Artifacts Quiz"),
-    ("12-team-quiz", "Chapter 12: Team Quiz"),
+    ("04-introduction-quiz", "Introduction, Performance Domains & Tailoring Quiz - Chapter 1"),
+    ("12-team-quiz", "Team Quiz - Chapter 3"),
+    ("02-development-approach-quiz", "Development Approach Quiz - Chapter 4"),
+    ("07-risk-management-quiz", "Risk Management Quiz - Chapter 5"),
+    ("03-estimation-quiz", "Estimation Quiz - Chapter 6"),
+    ("08-scheduling-and-tracking-quiz", "Scheduling and Tracking Quiz - Chapter 6.2"),
+    ("06-quality-quiz", "Quality Quiz - Chapter 7"),
+    ("10-stakeholders-quiz", "Stakeholders Quiz - Chapter 8"),
+    ("01-change-management-quiz", "Change Management Quiz - Chapter 9"),
+    ("09-software-engineering-quiz", "Software Engineering Quiz - Old Chapter 2"),
 ]
 
 
