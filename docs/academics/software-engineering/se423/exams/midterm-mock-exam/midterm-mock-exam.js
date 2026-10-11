@@ -86,7 +86,7 @@
 
   var M = window.MOCK;
   var STORE = "se423-mock-midterm-v1";
-  var state = { v: {}, graded: false };
+  var state = { v: {}, graded: false, checked: {} };
   try { state = JSON.parse(localStorage.getItem(STORE)) || state; } catch (e) {}
   function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
   var LETTERS = ["A", "B", "C", "D"];
@@ -108,7 +108,7 @@
     var html = '<div class="q-top"><span class="pts" data-pts>1 pt</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><div class="opts">' +
       order.map(function (o, k) {
         return '<label class="opt" data-o="' + o + '"><input type="radio" name="' + id + '" value="' + o + '"' + (state.v[id] === String(o) ? " checked" : "") + '><span class="letter">' + LETTERS[k] + '</span><span>' + esc(q.opts[o]) + "</span></label>";
-      }).join("") + '</div><div class="feedback" hidden></div>';
+      }).join("") + '</div><div class="q-actions"><button class="btn primary" type="button" data-check>Check answer</button></div><div class="feedback" hidden></div>';
     var el = card(id, html); document.getElementById("qa").appendChild(el);
     all.push({ type: "mcq", q: q, id: id, el: el, max: 1 });
   });
@@ -117,20 +117,20 @@
     var html = '<div class="q-top"><span class="pts" data-pts>1 pt</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><div class="opts tf">' +
       ["true", "false"].map(function (v) {
         return '<label class="opt" data-o="' + v + '"><input type="radio" name="' + id + '" value="' + v + '"' + (state.v[id] === v ? " checked" : "") + "><span>" + (v === "true" ? "True" : "False") + "</span></label>";
-      }).join("") + '</div><div class="feedback" hidden></div>';
+      }).join("") + '</div><div class="q-actions"><button class="btn primary" type="button" data-check>Check answer</button></div><div class="feedback" hidden></div>';
     var el = card(id, html); document.getElementById("qb").appendChild(el);
     all.push({ type: "tf", q: q, id: id, el: el, max: 1 });
   });
   M.list.forEach(function (q, i) {
     n++; var id = "c" + i;
-    var html = '<div class="q-top"><span class="pts" data-pts>' + LIST_PTS + ' pts</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><textarea aria-label="Your list" placeholder="One item per line or separated by commas">' + esc(state.v[id] || "") + '</textarea><div class="feedback" hidden></div>';
+    var html = '<div class="q-top"><span class="pts" data-pts>' + LIST_PTS + ' pts</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><textarea aria-label="Your list" placeholder="One item per line or separated by commas">' + esc(state.v[id] || "") + '</textarea><div class="q-actions"><button class="btn primary" type="button" data-check>Check answer</button></div><div class="feedback" hidden></div>';
     var el = card(id, html); document.getElementById("qc").appendChild(el);
     all.push({ type: "list", q: q, id: id, el: el, max: LIST_PTS });
   });
   var dTotal = 0;
   M.short.forEach(function (q, i) {
     n++; var id = "d" + i; dTotal += q.max;
-    var html = '<div class="q-top"><span class="pts" data-pts>' + q.max + ' pts</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><textarea aria-label="Your answer" placeholder="Explain in 2–4 sentences: what, how, and why.">' + esc(state.v[id] || "") + '</textarea><div class="words" data-words></div><div class="feedback" hidden></div>';
+    var html = '<div class="q-top"><span class="pts" data-pts>' + q.max + ' pts</span></div><p class="q-text"><span class="num">' + n + '.</span>' + esc(q.q) + '</p><textarea aria-label="Your answer" placeholder="Explain in 2–4 sentences: what, how, and why.">' + esc(state.v[id] || "") + '</textarea><div class="words" data-words></div><div class="q-actions"><button class="btn primary" type="button" data-check>Check answer</button></div><div class="feedback" hidden></div>';
     var el = card(id, html); document.getElementById("qd").appendChild(el);
     all.push({ type: "short", q: q, id: id, el: el, max: q.max });
   });
@@ -151,9 +151,22 @@
     } else state.v[item.id] = item.el.querySelector("textarea").value;
     save(); progress();
   }
+  function checkOne(item) {
+    capture(item);
+    grade(item);
+    state.checked = state.checked || {};
+    state.checked[item.id] = true;
+    save();
+    progress();
+  }
+  all.forEach(function (item) {
+    item.el.querySelector("[data-check]").addEventListener("click", function () { checkOne(item); });
+  });
   function progress() {
     var done = all.filter(function (it) { var v = state.v[it.id]; return v != null && String(v).trim() !== ""; }).length;
-    if (!state.graded) document.getElementById("progress").textContent = done + " of " + all.length + " questions answered. Answers are saved in this browser.";
+    var ck = all.filter(function (it) { return state.checked && state.checked[it.id] && it.pts != null; });
+    var got = ck.reduce(function (a, it) { return a + it.pts; }, 0), mx = ck.reduce(function (a, it) { return a + it.max; }, 0);
+    if (!state.graded) document.getElementById("progress").textContent = done + " of " + all.length + " answered" + (ck.length ? " · " + ck.length + " checked: " + got + " / " + mx + " points so far" : "") + ". Answers are saved in this browser.";
   }
 
   function pill(frac) {
@@ -247,5 +260,9 @@
     try { localStorage.removeItem(STORE); } catch (e) {}
     location.reload();
   });
-  if (state.graded) gradeAll(); else progress();
+  if (state.graded) gradeAll();
+  else {
+    all.forEach(function (it) { if (state.checked && state.checked[it.id]) grade(it); });
+    progress();
+  }
 })();
