@@ -9916,6 +9916,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/exams/midterm-mock-exam/",
+    title: "SE423 | Midterm Mock Exam - Chapters 1–3",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/exams/04-introduction-quiz/",
     title: "SE423 | Introduction, Performance Domains & Tailoring Quiz - Chapter 1",
     track: "software-engineering",
@@ -10413,7 +10422,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 55,
+  se423: 56,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10443,5 +10452,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 55,
+  "software-engineering/se423": 56,
 };
