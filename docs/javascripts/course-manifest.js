@@ -10160,6 +10160,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/extra-resources/summary-tables/",
+    title: "SE423 | Summary Tables (Chapters 1–2)",
+    track: "software-engineering",
+    course: "se423",
+    section: "extra-resources",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/extra-resources/study-guide/",
     title: "SE423 | Study Guide",
     track: "software-engineering",
@@ -10404,7 +10413,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 54,
+  se423: 55,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10434,5 +10443,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 54,
+  "software-engineering/se423": 55,
 };
