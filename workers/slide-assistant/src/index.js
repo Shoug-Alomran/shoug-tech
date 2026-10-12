@@ -1,4 +1,5 @@
 import { translateRequest } from "./translation.js";
+import { handleAbout } from "./about.js";
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
 const MAX_CONTEXT = 26000;
@@ -805,7 +806,13 @@ export default {
       return json({ error: "Not found." }, 404, origin);
     const isCalendar = url.pathname === "/v1/calendar-assistant";
     const isTranslation = url.pathname === "/v1/breakdown-translation";
-    if (url.pathname !== "/v1/slide-assistant" && !isCalendar && !isTranslation)
+    const isAbout = url.pathname === "/v1/about-assistant";
+    if (
+      url.pathname !== "/v1/slide-assistant" &&
+      !isCalendar &&
+      !isTranslation &&
+      !isAbout
+    )
       return json({ error: "Not found." }, 404, origin);
     const length = Number(request.headers.get("content-length") || 0);
     if (length > (isCalendar ? 60000 : isTranslation ? 18000 : 12000))
@@ -822,6 +829,8 @@ export default {
               await bindings.AI.run("@cf/google/gemma-4-26b-a4b-it", input),
             ),
         );
+      if (isAbout)
+        return await handleAbout(request, env, origin, json, runTextGeneration);
       return isCalendar
         ? await handleCalendar(request, env, origin)
         : await handle(request, env, origin);

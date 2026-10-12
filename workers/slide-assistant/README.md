@@ -45,6 +45,20 @@ they are public configuration, not secrets. `CONTENT_ORIGIN` and
   are capped.
 - The model is instructed to answer only from the selected source chunks.
 
+## About assistant
+
+`POST /v1/about-assistant` accepts `{ "question": string, "history": [...] }`
+and answers questions about Shoug for the chat box on `/about/`. The model only
+sees `PUBLIC_PROFILE` in `src/about.js`, which repeats facts already published
+on the site, so private details (GPA, grades, family, age, location, contact
+numbers, health) are never available to it. Questions on those topics are also
+refused by `isPrivateQuestion()` before the model is called. Edit
+`PUBLIC_PROFILE` to change what it knows, and only add public facts. It shares
+`AI_RATE_LIMIT` with the slide assistant.
+
+Deploy this Worker update before publishing the About page; the old Worker
+returns "Not found." for this route.
+
 ## Breakdown translation
 
 `POST /v1/breakdown-translation` accepts `{ "texts": ["English text", ...] }`
