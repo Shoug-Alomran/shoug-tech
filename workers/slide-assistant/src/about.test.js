@@ -56,6 +56,8 @@ test("questions about public work are allowed", () => {
     "Is Shoug available for freelance websites?",
     "How can I contact Shoug?",
     "What is the ethics protocol?",
+    "Is PSU highly ranked?",
+    "What is PSU's QS ranking?",
     "أخبرني عن مشاريع شوق",
   ].forEach((q) => assert.equal(isPrivateQuestion(q), false, q));
 });

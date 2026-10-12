@@ -10170,7 +10170,7 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/extra-resources/summary-tables/",
-    title: "SE423 | Summary Tables (Chapters 1–2)",
+    title: "SE423 | Summary Tables (Chapters 1–3)",
     track: "software-engineering",
     course: "se423",
     section: "extra-resources",

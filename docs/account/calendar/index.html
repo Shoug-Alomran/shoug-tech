@@ -2486,6 +2486,10 @@
         margin-top: 14px;
       }
 
+      .field #grade-course-other {
+        margin-top: 8px;
+      }
+
       .grade-course-card {
         padding: 12px;
         border: 1px solid var(--line);
@@ -3016,7 +3020,12 @@
                 <div class="grid-2">
                   <div class="field">
                     <label>Course</label
-                    ><input id="grade-course" placeholder="SE 322" />
+                    ><select id="grade-course"></select
+                    ><input
+                      id="grade-course-other"
+                      placeholder="Course code, e.g. SE 322"
+                      hidden
+                    />
                   </div>
                   <div class="field">
                     <label>Assessment</label
@@ -4478,6 +4487,7 @@
             assignmentDuration(i) + "-day work window",
             "Due " + prettyDate(due) + (i.end ? " at " + timeLabel(i.end) : ""),
           ];
+          if (i.course) parts.unshift(i.course);
           if (i.location) parts.push(i.location);
           return parts.join(" · ");
         }
@@ -4882,21 +4892,49 @@
           calendarNeedsCleanup =
             classesChanged || rawItems.length !== items.length;
         }
+        // Firestore rejects the whole write if any field is undefined, so
+        // plain data is copied without them before saving.
+        function firestoreSafe(value) {
+          if (Array.isArray(value))
+            return value
+              .filter(function (v) {
+                return v !== undefined;
+              })
+              .map(firestoreSafe);
+          if (value && typeof value === "object" && value.constructor === Object) {
+            var out = {};
+            Object.keys(value).forEach(function (k) {
+              if (value[k] !== undefined) out[k] = firestoreSafe(value[k]);
+            });
+            return out;
+          }
+          return value;
+        }
         function persist(extra) {
           var payload = {
-            calendarClassSchedules: classes,
-            calendarEvents: items,
-            calendarGrades: grades,
-            calendarCourseCredits: courseCredits,
-            calendarClassAttendance: classAttendance,
-            calendarClassOverrides: classOverrides,
+            calendarClassSchedules: firestoreSafe(classes),
+            calendarEvents: firestoreSafe(items),
+            calendarGrades: firestoreSafe(grades),
+            calendarCourseCredits: firestoreSafe(courseCredits),
+            calendarClassAttendance: firestoreSafe(classAttendance),
+            calendarClassOverrides: firestoreSafe(classOverrides),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
           Object.keys(extra || {}).forEach(function (k) {
             payload[k] = extra[k];
           });
           if (!profileRef) return Promise.resolve();
-          return profileRef.set(payload, { merge: true });
+          var write;
+          try {
+            write = profileRef.set(payload, { merge: true });
+          } catch (e) {
+            write = Promise.reject(e);
+          }
+          return write.catch(function (e) {
+            console.error("Calendar save failed", e);
+            toast("Could not save. Check your connection and try again.");
+            throw e;
+          });
         }
         function futureExams() {
           var t = todayKey();
@@ -6309,9 +6347,10 @@
           if (!wrap) return;
           var groups = {};
           grades.forEach(function (g) {
-            var c = (g.course || "OTHER").toUpperCase();
+            var c = courseLabel(g.course) || "OTHER";
             (groups[c] || (groups[c] = [])).push(g);
           });
+          renderGradeCourseOptions();
           var names = Object.keys(groups).sort(),
             courseGpas = names.map(function (course) {
               var weighted = 0,
@@ -6473,6 +6512,51 @@
             "</div>"
           );
         }
+        // "cs331", "CS-331" and "CS 331 lecture" all become "CS 331".
+        function courseLabel(value) {
+          var raw = String(value || "").trim(),
+            m = raw.match(/([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)/);
+          return m ? m[1].toUpperCase() + " " + m[2].toUpperCase() : raw.toUpperCase();
+        }
+        // Courses the calendar already knows about: classes, exams, due work
+        // and earlier grades.
+        function knownCourses() {
+          var seen = {};
+          function add(v) {
+            var label = courseLabel(v);
+            if (label && /\d{3}/.test(label)) seen[label] = true;
+          }
+          classes.forEach(function (c) {
+            add(c && c.title);
+          });
+          exams.forEach(function (e) {
+            add(e && e.course);
+          });
+          items.forEach(function (it) {
+            if (it && it.course) add(it.course);
+          });
+          grades.forEach(function (g) {
+            add(g && g.course);
+          });
+          return Object.keys(seen).sort();
+        }
+        function renderGradeCourseOptions() {
+          var select = $("grade-course");
+          if (!select) return;
+          var current = select.value,
+            courses = knownCourses();
+          select.innerHTML =
+            (courses.length ? "" : '<option value="">Choose a course</option>') +
+            courses
+              .map(function (c) {
+                return '<option value="' + esc(c) + '">' + esc(c) + "</option>";
+              })
+              .join("") +
+            '<option value="__other">Other course...</option>';
+          if (current && (current === "__other" || courses.indexOf(current) > -1))
+            select.value = current;
+          $("grade-course-other").hidden = select.value !== "__other";
+        }
         function creditHours(course) {
           var h = Number(courseCredits[course]);
           return isFinite(h) && h >= 0 && courseCredits[course] !== undefined
@@ -6480,7 +6564,10 @@
             : 3;
         }
         function addGrade() {
-          var course = $("grade-course").value.trim().toUpperCase(),
+          var picked = $("grade-course").value,
+            course = courseLabel(
+              picked === "__other" ? $("grade-course-other").value : picked,
+            ),
             title = $("grade-title").value.trim(),
             earned = Number($("grade-earned").value),
             possible = Number($("grade-possible").value),
@@ -6513,8 +6600,12 @@
           ].forEach(function (id) {
             $(id).value = "";
           });
+          if (picked === "__other") $("grade-course-other").value = "";
+          // Show it straight away; persist() reports a failed save itself.
+          renderGradebook();
+          $("grade-course").value = course;
+          $("grade-course-other").hidden = true;
           persist().then(function () {
-            renderGradebook();
             toast("Grade added");
           });
         }
@@ -7245,7 +7336,7 @@
             linkedExamId: data.linkedExamId || "",
             linkedAssignmentId: data.linkedAssignmentId || "",
             submitted: Boolean(data.submitted),
-            remindersEnabled: isWork(data) ? true : undefined,
+            remindersEnabled: isWork(data),
             course: data.course || "",
             priority: data.priority || "medium",
             difficulty: data.difficulty || "medium",
@@ -7874,6 +7965,11 @@
         });
         $("auto-plan-week-btn").addEventListener("click", autoPlanDueWork);
         $("add-grade-btn").addEventListener("click", addGrade);
+        $("grade-course").addEventListener("change", function () {
+          var other = this.value === "__other";
+          $("grade-course-other").hidden = !other;
+          if (other) $("grade-course-other").focus();
+        });
         $("class-remove-close").addEventListener("click", closeClassRemoval);
         $("class-remove-editor").addEventListener("click", function (e) {
           if (e.target === $("class-remove-editor")) closeClassRemoval();
