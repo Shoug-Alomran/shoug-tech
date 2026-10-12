@@ -56,6 +56,15 @@ refused by `isPrivateQuestion()` before the model is called. Edit
 `PUBLIC_PROFILE` to change what it knows, and only add public facts. It shares
 `AI_RATE_LIMIT` with the slide assistant.
 
+LinkedIn blocks automated reads (it answers bots with status 999), so the
+assistant cannot fetch the profile live. To refresh it, download LinkedIn's
+data export (Settings > Data privacy > Get a copy of your data) and run
+`python3 scripts/sync_linkedin_profile.py <export.zip>`. That writes
+`docs/ai-context/about/linkedin.json` from an allowlist of public fields
+(headline, summary, positions, school and degree, certifications, skills);
+the Worker reads it with a one-hour cache once the site is published, so no
+redeploy is needed.
+
 Deploy this Worker update before publishing the About page; the old Worker
 returns "Not found." for this route.
 
