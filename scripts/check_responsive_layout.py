@@ -111,6 +111,9 @@ PROBE = r"""(() => {
     for (const e of document.querySelectorAll('body *')) {
       const cs = getComputedStyle(e);
       if (cs.position !== 'fixed' && cs.position !== 'sticky') continue;
+      // Decorative backdrops (ambient glows, grid overlays) don't take clicks
+      // and don't cover content the way a header does.
+      if (cs.pointerEvents === 'none') continue;
       const r = e.getBoundingClientRect();
       // Closed off-canvas panels (e.g. the slide assistant) sit translated past an edge.
       if (r.left >= vw - 1 || r.right <= 1) continue;

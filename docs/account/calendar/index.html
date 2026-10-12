@@ -861,6 +861,15 @@
         font-size: 0.92rem;
       }
 
+      .field input:-webkit-autofill,
+      .field input:-webkit-autofill:hover,
+      .field input:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--text);
+        -webkit-box-shadow: 0 0 0 1000px var(--input) inset;
+        caret-color: var(--text);
+        transition: background-color 9999s ease-out 0s;
+      }
+
       .field textarea {
         min-width: 0;
         background: var(--input);
@@ -1010,6 +1019,13 @@
         font-size: 0.86rem;
         color: var(--muted);
         padding: 12px 0;
+      }
+
+      /* Let the title/legend column use the free space beside the month
+         controls, so the legend chips stay on one line when they fit. */
+      #calendar-month-panel > .panel-head > div:first-child {
+        flex: 1 1 auto;
+        min-width: 0;
       }
 
       .attendance-strip,
@@ -2506,7 +2522,26 @@
 
       .grade-credits input {
         width: 4.5em;
-        padding: 4px 6px;
+        height: 30px;
+        padding: 0 8px;
+        background: var(--input);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--text);
+        font:
+          800 0.78rem "JetBrains Mono",
+          monospace;
+        outline: none;
+        color-scheme: dark;
+      }
+
+      html.calendar-light .grade-credits input {
+        color-scheme: light;
+      }
+
+      .grade-credits input:focus {
+        border-color: rgba(184, 41, 234, 0.75);
+        box-shadow: 0 0 0 3px rgba(184, 41, 234, 0.16);
       }
 
       .grade-entry button {
@@ -3229,6 +3264,7 @@
                     </div>
                   </div>
                 </div>
+                <div class="grid-2">
                 <div class="field">
                   <label>Type</label
                   ><select id="event-kind">
@@ -3241,12 +3277,22 @@
                     <option value="academic">Academic calendar</option>
                   </select>
                 </div>
-                <div class="grid-2">
+                <div class="field">
+                  <label>Course <span class="optional-note">optional</span></label
+                  ><input id="event-course" placeholder="SE 322" />
+                </div>
+                </div>
+                <label class="filter-toggle class-online-toggle"
+                  ><input id="event-all-day" type="checkbox" />All day</label
+                >
+                <div class="grid-2" id="event-time-row">
                   <div class="field">
-                    <label>Start</label><input id="event-start" type="time" />
+                    <label>Start <span class="optional-note">optional</span></label
+                    ><input id="event-start" type="time" />
                   </div>
                   <div class="field">
-                    <label>End</label><input id="event-end" type="time" />
+                    <label>End <span class="optional-note">optional</span></label
+                    ><input id="event-end" type="time" />
                   </div>
                 </div>
                 <div class="field">
@@ -3593,6 +3639,7 @@
               </div>
             </div>
           </div>
+          <div class="grid-2">
           <div class="field">
             <label>Type</label
             ><select id="event-edit-kind">
@@ -3605,12 +3652,25 @@
               <option value="academic">Academic calendar</option>
             </select>
           </div>
-          <div class="grid-2">
+          <div class="field">
+            <label>Course <span class="optional-note">optional</span></label
+            ><input id="assignment-edit-course" placeholder="SE 322" />
+          </div>
+          </div>
+          <label
+            class="filter-toggle class-online-toggle"
+            id="event-edit-all-day-toggle"
+            ><input id="event-edit-all-day" type="checkbox" />All day</label
+          >
+          <div class="grid-2" id="event-edit-time-row">
             <div class="field" id="event-edit-start-time-field">
-              <label>Start</label><input id="event-edit-start" type="time" />
+              <label>Start <span class="optional-note">optional</span></label
+              ><input id="event-edit-start" type="time" />
             </div>
             <div class="field">
-              <label id="event-edit-end-time-label">End</label
+              <label
+                ><span id="event-edit-end-time-label">End</span>
+                <span class="optional-note">optional</span></label
               ><input id="event-edit-end" type="time" />
             </div>
           </div>
@@ -3621,10 +3681,6 @@
           <div id="assignment-extra-fields">
             <div class="grid-2">
               <div class="field">
-                <label>Course</label
-                ><input id="assignment-edit-course" placeholder="SE 322" />
-              </div>
-              <div class="field">
                 <label>Priority</label
                 ><select id="assignment-edit-priority">
                   <option value="high">High</option>
@@ -3632,8 +3688,6 @@
                   <option value="low">Low</option>
                 </select>
               </div>
-            </div>
-            <div class="grid-2">
               <div class="field">
                 <label>Difficulty</label
                 ><select id="assignment-edit-difficulty">
@@ -3642,6 +3696,8 @@
                   <option value="easy">Easy</option>
                 </select>
               </div>
+            </div>
+            <div class="grid-2">
               <div class="field">
                 <label>Estimated hours</label
                 ><input
@@ -4301,6 +4357,7 @@
         function eventMeta(i) {
           if (i.kind === "assignment") return assignmentWindowMeta(i);
           var parts = [timeRange(i.start, i.end)];
+          if (i.course) parts.unshift(i.course);
           if (i.endDate && i.endDate !== i.date)
             parts.push(dateRange(i.date, i.endDate));
           if (i.location) parts.push(i.location);
@@ -7116,10 +7173,12 @@
             start: $("event-start").value,
             end: $("event-end").value,
             location: $("event-location").value.trim(),
+            course: $("event-course").value.trim().toUpperCase(),
           }).then(function (saved) {
             if (saved) {
               [
                 "event-title",
+                "event-course",
                 "event-start",
                 "event-end",
                 "event-location",
@@ -7128,6 +7187,8 @@
               });
               setDatePickerValue("event-date", "");
               setDatePickerValue("event-end-date", "");
+              $("event-all-day").checked = false;
+              syncAllDay("event");
             }
           });
         }
@@ -7219,13 +7280,16 @@
             : "Ends";
           $("event-edit-start-time-field").style.display = isAssignment
             ? "none"
-            : "flex";
+            : "";
           $("event-edit-end-time-label").textContent = isAssignment
             ? "Due time"
             : "End";
           $("event-edit-start").value = "";
           $("event-edit-end").value = "";
+          $("event-edit-all-day").checked = false;
+          syncAllDay("event-edit");
           $("event-edit-location").value = "";
+          $("assignment-edit-course").value = "";
           setAssignmentFields({}, isAssignment);
           $("event-editor-title").textContent = isAssignment
             ? "Add Assignment"
@@ -7287,6 +7351,7 @@
             start: $("event-edit-start").value,
             end: $("event-edit-end").value,
             location: $("event-edit-location").value.trim(),
+            course: $("assignment-edit-course").value.trim().toUpperCase(),
           };
           var existingAssignment = editingEventId
             ? items.find(function (entry) {
@@ -7600,11 +7665,20 @@
         });
         $("save-event-btn").addEventListener("click", saveEventEditor);
         $("event-edit-kind").addEventListener("change", function () {
-          var assignment = this.value === "assignment";
-          setAssignmentFields({}, assignment);
+          var assignment = this.value === "assignment",
+            course = $("assignment-edit-course").value;
+          setAssignmentFields({ course: course }, assignment);
+          var noun = assignment ? "Assignment" : "Event";
+          $("event-editor-title").textContent =
+            (editingEventId ? "Edit " : "Add ") + noun;
+          $("save-event-btn").textContent =
+            (editingEventId ? "Update " : "Save ") + noun;
+          $("event-editor-sub").textContent = assignment
+            ? "Choose when work opens and the final due date. It will display as a compact work window."
+            : "Set an end date to make a connected range.";
           $("event-edit-start-time-field").style.display = assignment
             ? "none"
-            : "flex";
+            : "";
           $("event-edit-start-date-label").textContent = assignment
             ? "Available from"
             : "Starts";
@@ -7614,6 +7688,30 @@
           $("event-edit-end-time-label").textContent = assignment
             ? "Due time"
             : "End";
+          syncAllDay("event-edit");
+        });
+        // "All day" just clears and hides the times; an event with no
+        // start or end time already renders as all day.
+        function syncAllDay(prefix) {
+          var check = $(prefix + "-all-day"),
+            assignment =
+              prefix === "event-edit" &&
+              $("event-edit-kind").value === "assignment",
+            allDay = check.checked && !assignment;
+          if (prefix === "event-edit")
+            $("event-edit-all-day-toggle").style.display = assignment
+              ? "none"
+              : "";
+          $(prefix + "-time-row").style.display = allDay ? "none" : "";
+          if (allDay) {
+            $(prefix + "-start").value = "";
+            $(prefix + "-end").value = "";
+          }
+        }
+        ["event", "event-edit"].forEach(function (prefix) {
+          $(prefix + "-all-day").addEventListener("change", function () {
+            syncAllDay(prefix);
+          });
         });
         $("auto-plan-week-btn").addEventListener("click", autoPlanDueWork);
         $("add-grade-btn").addEventListener("click", addGrade);
