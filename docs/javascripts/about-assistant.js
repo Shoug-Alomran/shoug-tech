@@ -48,6 +48,58 @@
     el.appendChild(document.createTextNode(text.slice(last)));
   }
 
+  // **bold** inside a line, links handled by appendRich.
+  function appendInline(el, text) {
+    String(text)
+      .split(/\*\*(.+?)\*\*/g)
+      .forEach(function (part, i) {
+        if (!part) return;
+        if (i % 2) {
+          var b = document.createElement("strong");
+          appendRich(b, part);
+          el.appendChild(b);
+        } else appendRich(el, part);
+      });
+  }
+
+  // Plain-text answers: blank lines split paragraphs, lines starting with
+  // "- ", "* " or "1." become list items.
+  function renderAnswer(body, text) {
+    var list = null,
+      para = null;
+    String(text)
+      .replace(/\r/g, "")
+      .split("\n")
+      .forEach(function (raw) {
+        var line = raw.trim(),
+          bullet = line.match(/^(?:[-*\u2022]|(\d+)[.)])\s+(.*)$/);
+        if (!line) {
+          list = para = null;
+          return;
+        }
+        if (bullet) {
+          var tag = bullet[1] ? "OL" : "UL";
+          if (!list || list.tagName !== tag) {
+            list = document.createElement(tag);
+            body.appendChild(list);
+          }
+          para = null;
+          var li = document.createElement("li");
+          appendInline(li, bullet[2]);
+          list.appendChild(li);
+          return;
+        }
+        list = null;
+        line = line.replace(/^#+\s*/, "");
+        if (para) para.appendChild(document.createElement("br"));
+        else {
+          para = document.createElement("p");
+          body.appendChild(para);
+        }
+        appendInline(para, line);
+      });
+  }
+
   function say(role, text, extra) {
     var row = document.createElement("div");
     row.className = "aa-msg aa-" + role + (extra ? " " + extra : "");
@@ -63,13 +115,7 @@
           : "ASSISTANT";
     var body = document.createElement("div");
     body.className = "aa-text";
-    String(text)
-      .split(/\n{2,}/)
-      .forEach(function (para) {
-        var p = document.createElement("p");
-        appendRich(p, para);
-        body.appendChild(p);
-      });
+    renderAnswer(body, text);
     row.appendChild(who);
     row.appendChild(body);
     log.appendChild(row);
