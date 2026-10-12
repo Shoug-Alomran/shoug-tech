@@ -424,6 +424,13 @@
         border-color: rgba(184, 41, 234, 0.42);
       }
 
+      .panel-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
       .panel.is-collapsed .panel-body {
         display: none;
       }
@@ -621,6 +628,11 @@
         color: var(--green);
       }
 
+      .event.project {
+        background: rgba(244, 114, 182, 0.16);
+        color: #f472b6;
+      }
+
       .event.travel {
         background: rgba(45, 212, 191, 0.18);
         color: var(--teal);
@@ -672,6 +684,11 @@
       .range-bar.personal {
         background: rgba(52, 199, 89, 0.14);
         color: var(--green);
+      }
+
+      .range-bar.project {
+        background: rgba(244, 114, 182, 0.16);
+        color: #f472b6;
       }
 
       .range-bar.travel {
@@ -844,8 +861,26 @@
         font-size: 0.92rem;
       }
 
+      .field textarea {
+        min-width: 0;
+        background: var(--input);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        color: var(--text);
+        padding: 10px 12px;
+        outline: none;
+        font: inherit;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .field textarea::placeholder {
+        color: var(--muted);
+      }
+
       .field input:focus,
-      .field select:focus {
+      .field select:focus,
+      .field textarea:focus {
         border-color: rgba(184, 41, 234, 0.75);
         box-shadow: 0 0 0 3px rgba(184, 41, 234, 0.16);
       }
@@ -1051,6 +1086,10 @@
 
       .legend-chip.assignment {
         color: #c084fc;
+      }
+
+      .legend-chip.project {
+        color: #f472b6;
       }
 
       .legend-chip.personal {
@@ -1531,6 +1570,10 @@
         border-left-color: var(--green);
       }
 
+      .day-card.project {
+        border-left-color: #f472b6;
+      }
+
       .day-card.travel {
         border-left-color: var(--teal);
       }
@@ -1711,6 +1754,11 @@
       .timeline-event.personal {
         background: rgba(52, 199, 89, 0.16);
         color: var(--green);
+      }
+
+      .timeline-event.project {
+        background: rgba(244, 114, 182, 0.16);
+        color: #f472b6;
       }
 
       .timeline-event.travel {
@@ -2376,11 +2424,41 @@
       }
 
       .reminder-options label {
+        position: relative;
         border: 1px solid var(--line);
-        padding: 8px 10px;
+        border-radius: 10px;
+        padding: 9px 14px;
+        color: var(--dim);
+        cursor: pointer;
         font:
-          700 0.65rem "JetBrains Mono",
+          800 0.68rem/1 "JetBrains Mono",
           monospace;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+
+      .reminder-options input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .reminder-options label:has(input:checked) {
+        border-color: var(--brand);
+        color: #0a0514;
+        background: var(--brand);
+      }
+
+      .reminder-options label:has(input:focus-visible) {
+        box-shadow: 0 0 0 3px rgba(184, 41, 234, 0.3);
+      }
+
+      html.calendar-light .reminder-options label:has(input:checked) {
+        border-color: rgba(184, 41, 234, 0.42);
+        color: #8a20b0;
+        background: rgba(184, 41, 234, 0.08);
       }
 
       .grade-summary {
@@ -2415,6 +2493,20 @@
         margin-top: 7px;
         color: var(--muted);
         font-size: 0.68rem;
+      }
+
+      .grade-credits {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .grade-credits input {
+        width: 4.5em;
+        padding: 4px 6px;
       }
 
       .grade-entry button {
@@ -2652,6 +2744,8 @@
                       ><span class="legend-dot"></span>Study</span
                     ><span class="legend-chip assignment"
                       ><span class="legend-dot"></span>Assignment</span
+                    ><span class="legend-chip project"
+                      ><span class="legend-dot"></span>Project</span
                     ><span class="legend-chip personal"
                       ><span class="legend-dot"></span>Personal</span
                     ><span class="legend-chip academic"
@@ -2890,15 +2984,6 @@
                     Repeats during the matching PSU term
                   </div>
                 </div>
-                <button
-                  class="panel-collapse"
-                  type="button"
-                  id="class-panel-toggle"
-                  aria-controls="calendar-class-panel"
-                  aria-expanded="true"
-                >
-                  Hide
-                </button>
               </div>
               <div class="panel-body">
                 <div class="field">
@@ -3037,7 +3122,7 @@
                 </button>
               </div>
             </section>
-            <section class="panel">
+            <section class="panel" id="calendar-event-panel">
               <div class="panel-head">
                 <div>
                   <div class="panel-title">Add Event</div>
@@ -3148,6 +3233,7 @@
                   <label>Type</label
                   ><select id="event-kind">
                     <option value="assignment">Assignment</option>
+                    <option value="project">Project</option>
                     <option value="travel">Travel</option>
                     <option value="study">Study</option>
                     <option value="personal">Personal</option>
@@ -3170,7 +3256,7 @@
                 <button class="btn solid" id="add-event-btn">Add Event</button>
               </div>
             </section>
-            <section class="panel">
+            <section class="panel" id="calendar-exams-panel">
               <div class="panel-head">
                 <div>
                   <div class="panel-title">Upcoming Exams</div>
@@ -3511,6 +3597,7 @@
             <label>Type</label
             ><select id="event-edit-kind">
               <option value="assignment">Assignment</option>
+              <option value="project">Project</option>
               <option value="travel">Travel</option>
               <option value="study">Study</option>
               <option value="personal">Personal</option>
@@ -3790,6 +3877,7 @@
           classes = [],
           items = [],
           grades = [],
+          courseCredits = {},
           classAttendance = [],
           classOverrides = [],
           examMap = {},
@@ -3909,6 +3997,7 @@
             class: true,
             study: true,
             assignment: true,
+            project: true,
             personal: true,
             academic: true,
           };
@@ -4426,6 +4515,7 @@
           if (e.kind === "class") return "class";
           if (e.kind === "study") return "study";
           if (e.kind === "assignment") return "assignment";
+          if (e.kind === "project") return "project";
           if (e.kind === "academic") return "academic";
           return "personal";
         }
@@ -4622,6 +4712,11 @@
           grades = Array.isArray(data.calendarGrades)
             ? data.calendarGrades
             : [];
+          courseCredits =
+            data.calendarCourseCredits &&
+            typeof data.calendarCourseCredits === "object"
+              ? data.calendarCourseCredits
+              : {};
           items = rawItems.filter(function (i) {
             return i.source !== "psu-academic";
           });
@@ -4633,6 +4728,7 @@
             calendarClassSchedules: classes,
             calendarEvents: items,
             calendarGrades: grades,
+            calendarCourseCredits: courseCredits,
             calendarClassAttendance: classAttendance,
             calendarClassOverrides: classOverrides,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -5629,6 +5725,7 @@
             class: "Classes",
             study: "Study",
             assignment: "Assignments",
+            project: "Projects",
             personal: "Personal",
             academic: "PSU",
           };
@@ -6065,15 +6162,26 @@
               });
               return gradeToGpa(used ? (weighted / used) * 100 : 0);
             }),
-            overallGpa = courseGpas.length
-              ? courseGpas.reduce(function (a, b) {
-                  return a + b;
-                }, 0) / courseGpas.length
-              : 0;
+            totalCredits = 0,
+            totalPoints = 0;
+          names.forEach(function (course, i) {
+            var h = creditHours(course);
+            totalCredits += h;
+            totalPoints += courseGpas[i] * h;
+          });
+          var overallGpa = totalCredits ? totalPoints / totalCredits : 0;
           wrap.innerHTML = names.length
             ? '<div class="grade-course-card"><div class="grade-course-head"><span>Estimated GPA</span><span class="grade-ok">' +
               overallGpa.toFixed(2) +
-              '/4.00</span></div><div class="item-meta">Equal-course estimate based on grades entered below</div></div>' +
+              '/4.00</span></div><div class="item-meta">Weighted by credit hours · ' +
+              totalCredits +
+              " credit hour" +
+              (totalCredits === 1 ? "" : "s") +
+              " across " +
+              names.length +
+              " course" +
+              (names.length === 1 ? "" : "s") +
+              "</div></div>" +
               names
                 .map(function (course) {
                   var rows = groups[course],
@@ -6102,7 +6210,11 @@
                       : current < 80
                         ? "Watch closely"
                         : "On track") +
-                    "</div>" +
+                    '</div><label class="grade-credits">Credit hours<input type="number" min="0" max="12" step="1" data-grade-credits="' +
+                    esc(course) +
+                    '" value="' +
+                    creditHours(course) +
+                    '" /></label>' +
                     rows
                       .map(function (g) {
                         return (
@@ -6133,6 +6245,26 @@
               persist().then(renderGradebook);
             });
           });
+          wrap
+            .querySelectorAll("[data-grade-credits]")
+            .forEach(function (input) {
+              input.addEventListener("change", function () {
+                var h = Math.round(Number(input.value));
+                if (!isFinite(h) || h < 0 || h > 12) {
+                  input.value = creditHours(input.dataset.gradeCredits);
+                  toast("Credit hours must be between 0 and 12");
+                  return;
+                }
+                courseCredits[input.dataset.gradeCredits] = h;
+                persist().then(renderGradebook);
+              });
+            });
+        }
+        function creditHours(course) {
+          var h = Number(courseCredits[course]);
+          return isFinite(h) && h >= 0 && courseCredits[course] !== undefined
+            ? h
+            : 3;
         }
         function addGrade() {
           var course = $("grade-course").value.trim().toUpperCase(),
@@ -7550,37 +7682,62 @@
         // sanitized snapshot (no ids, no links, no attendance) and applies any
         // accepted proposal through the same save paths the forms use, so
         // validation and persistence stay in one place.
-        // The class form is really only used at the start of a term, so it can be
-        // folded away. The choice is per-browser, like the view filters above.
-        function setClassPanelOpen(open) {
-          var panel = $("calendar-class-panel"),
-            toggle = $("class-panel-toggle");
-          if (!panel || !toggle) return;
-          panel.classList.toggle("is-collapsed", !open);
-          toggle.textContent = open ? "Hide" : "Show";
-          toggle.setAttribute("aria-expanded", open ? "true" : "false");
-          toggle.setAttribute(
-            "aria-label",
-            (open ? "Hide" : "Show") + " the add class form",
-          );
+        // Every side panel can be folded away. A Hide/Show button is added to
+        // each panel head; the choice is per-browser, like the view filters.
+        (function initSidePanels() {
+          var KEY = "calendar-panels-collapsed",
+            collapsed = {};
           try {
-            localStorage.setItem("calendar-class-panel-open", open ? "1" : "0");
+            collapsed = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
+            // Carry over the old class-panel-only setting.
+            if (
+              localStorage.getItem("calendar-class-panel-open") === "0" &&
+              collapsed["calendar-class-panel"] === undefined
+            )
+              collapsed["calendar-class-panel"] = true;
           } catch (e) {}
-        }
-        (function initClassPanel() {
-          var stored = "1";
-          try {
-            stored = localStorage.getItem("calendar-class-panel-open") || "1";
-          } catch (e) {}
-          setClassPanelOpen(stored !== "0");
-          var toggle = $("class-panel-toggle");
-          if (toggle) {
-            toggle.addEventListener("click", function () {
-              setClassPanelOpen(
-                $("calendar-class-panel").classList.contains("is-collapsed"),
-              );
+          document.querySelectorAll(".side > .panel[id]").forEach(function (panel) {
+            var head = panel.querySelector(":scope > .panel-head"),
+              title = panel.querySelector(".panel-title");
+            if (!head) return;
+            var name = title ? title.textContent.trim() : "panel",
+              toggle = document.createElement("button");
+            toggle.className = "panel-collapse";
+            toggle.type = "button";
+            toggle.setAttribute("aria-controls", panel.id);
+            // Keep any existing head action (e.g. Add Assignment) beside the toggle.
+            var extras = Array.prototype.filter.call(head.children, function (c) {
+              return c !== head.firstElementChild;
             });
-          }
+            if (extras.length) {
+              var actions = document.createElement("div");
+              actions.className = "panel-head-actions";
+              extras.forEach(function (c) {
+                actions.appendChild(c);
+              });
+              actions.appendChild(toggle);
+              head.appendChild(actions);
+            } else head.appendChild(toggle);
+            function set(open, save) {
+              panel.classList.toggle("is-collapsed", !open);
+              toggle.textContent = open ? "Hide" : "Show";
+              toggle.setAttribute("aria-expanded", open ? "true" : "false");
+              toggle.setAttribute(
+                "aria-label",
+                (open ? "Hide " : "Show ") + name,
+              );
+              if (!save) return;
+              if (open) delete collapsed[panel.id];
+              else collapsed[panel.id] = true;
+              try {
+                localStorage.setItem(KEY, JSON.stringify(collapsed));
+              } catch (e) {}
+            }
+            set(!collapsed[panel.id], false);
+            toggle.addEventListener("click", function () {
+              set(panel.classList.contains("is-collapsed"), true);
+            });
+          });
         })();
 
         window.__shougCalendarAI = {
