@@ -95,18 +95,8 @@
     document.head.appendChild(el);
   }
 
-  function render() {
-    if (window.location.pathname !== "/academics/") return;
-    var entries = read();
-    if (!entries.length) return;
-
-    var host =
-      document.querySelector("main .container") ||
-      document.querySelector("main");
-    if (!host) return;
-
+  function buildSection(entries, heading) {
     injectStyles();
-
     var section = document.createElement("section");
     section.className = "shoug-resume";
     section.setAttribute("aria-label", "Continue where you left off");
@@ -114,12 +104,20 @@
     var head = document.createElement("div");
     head.className = "shoug-resume__head";
     var label = document.createElement("span");
-    label.textContent = "[ Continue where you left off ]";
+    label.textContent = heading;
     var clear = document.createElement("button");
     clear.type = "button";
     clear.textContent = "Clear";
     clear.addEventListener("click", function () {
-      write([]);
+      var gone = {};
+      entries.forEach(function (e) {
+        gone[e.course] = true;
+      });
+      write(
+        read().filter(function (e) {
+          return !gone[e.course];
+        }),
+      );
       section.remove();
     });
     head.appendChild(label);
@@ -144,14 +142,83 @@
 
     section.appendChild(head);
     section.appendChild(grid);
+    return section;
+  }
 
-    // Sits after the hero so the page still leads with its own heading.
-    var hero = host.querySelector(".hero");
-    if (hero && hero.nextSibling) {
-      host.insertBefore(section, hero.nextSibling);
-    } else {
-      host.insertBefore(section, host.firstChild);
+  function insertAfter(node, ref) {
+    ref.parentNode.insertBefore(node, ref.nextSibling);
+  }
+
+  // "Review mistakes" link, from quiz-mistakes.js's store.
+  function reviewLink() {
+    var list = [];
+    try {
+      list = JSON.parse(localStorage.getItem("shoug-quiz-mistakes")) || [];
+    } catch (e) {}
+    if (!Array.isArray(list) || !list.length) return null;
+    var now = Date.now(),
+      due = list.filter(function (m) {
+        return m && m.due <= now;
+      }).length;
+    injectStyles();
+    var a = document.createElement("a");
+    a.className = "shoug-resume__card shoug-resume__review";
+    a.href = "/academics/review/";
+    var c = document.createElement("span");
+    c.className = "shoug-resume__course";
+    c.textContent = "REVIEW MISTAKES";
+    var t = document.createElement("span");
+    t.className = "shoug-resume__title";
+    t.textContent = due
+      ? due + " missed question" + (due === 1 ? "" : "s") + " due for review"
+      : list.length + " saved, none due yet";
+    a.appendChild(c);
+    a.appendChild(t);
+    return a;
+  }
+
+  // Shown on the Academics hub and the account page (every course), and on
+  // each course's own hub (that course only).
+  function render() {
+    var path = window.location.pathname,
+      entries = read(),
+      review = path === "/academics/" || path === "/account/" ? reviewLink() : null;
+    if (!entries.length && !review) return;
+
+    if (path === "/academics/") {
+      var host =
+        document.querySelector("main .container") ||
+        document.querySelector("main");
+      if (!host) return;
+      var section = buildSection(entries, "[ Continue where you left off ]");
+      if (review) section.querySelector(".shoug-resume__grid").appendChild(review);
+      // Sits after the hero so the page still leads with its own heading.
+      var hero = host.querySelector(".hero");
+      if (hero && hero.nextSibling) insertAfter(section, hero);
+      else host.insertBefore(section, host.firstChild);
+      return;
     }
+
+    if (path === "/account/") {
+      var sub = document.querySelector("main .page-sub");
+      if (!sub) return;
+      var mine = buildSection(entries, "[ Continue where you left off ]");
+      if (review) mine.querySelector(".shoug-resume__grid").appendChild(review);
+      insertAfter(mine, sub);
+      return;
+    }
+
+    var m = path.match(COURSE);
+    if (!entries.length || !m || path !== "/academics/" + m[1] + "/" + m[2] + "/") return;
+    var mine = entries.filter(function (e) {
+      return e.course === m[2].toUpperCase();
+    });
+    if (!mine.length) return;
+    var anchor =
+      document.querySelector("main .course-header") ||
+      (document.querySelector("main h1") || {}).parentNode;
+    if (anchor && anchor.parentNode)
+      insertAfter(buildSection(mine, "[ Continue in " + mine[0].course + " ]"), anchor);
   }
 
   function init() {

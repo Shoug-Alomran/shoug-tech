@@ -6,6 +6,7 @@ import {
   PRIVATE_REFUSAL,
   PUBLIC_PROFILE,
   renderLinkedIn,
+  topicOf,
 } from "./about.js";
 
 // The handler fetches the synced LinkedIn file; never reach the network here.
@@ -152,4 +153,26 @@ test("synced LinkedIn data reaches the model; a missing file does not break answ
   linkedinFile = { headline: "SE student", positions: [{ title: "Trainee", company: "MDD" }] };
   assert.match(await ask(), /LINKEDIN[\s\S]*Trainee at MDD/);
   linkedinFile = null;
+});
+
+test("questions are counted by topic only", async () => {
+  assert.equal(topicOf("What projects has Shoug built?"), "projects");
+  assert.equal(topicOf("How can I contact Shoug?"), "contact");
+  assert.equal(topicOf("Tell me about MDD"), "experience");
+  assert.equal(topicOf("What is CCIS?"), "university");
+  assert.equal(topicOf("hello"), "other");
+  assert.equal(topicOf("What is her GPA?", true), "private");
+
+  const points = [];
+  const env = { ABOUT_STATS: { writeDataPoint: (p) => points.push(p) } };
+  await handleAbout(request({ question: "What is her GPA?" }), env, "", json, async () => "x");
+  await handleAbout(request({ question: "Which projects should I see?" }), env, "", json, async () => "x");
+  assert.deepEqual(points.map((p) => p.blobs), [["private"], ["projects"]]);
+  // Only the topic label is written: no question text, no IP.
+  assert.ok(points.every((p) => p.blobs.length === 1 && !p.doubles));
+
+  // A failing analytics binding never breaks the answer.
+  const broken = { ABOUT_STATS: { writeDataPoint: () => { throw new Error("down"); } } };
+  const res = await handleAbout(request({ question: "What does Shoug do?" }), broken, "", json, async () => "ok");
+  assert.equal((await res.json()).answer, "ok");
 });

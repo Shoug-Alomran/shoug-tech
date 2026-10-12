@@ -34,6 +34,8 @@
     />
     <link rel="stylesheet" href="/styles/light-mode.css" />
     <script src="/javascripts/course-manifest.js"></script>
+    <script src="/javascripts/url-moves.js"></script>
+    <script src="/javascripts/recent-pages.js" defer></script>
     <style>
       :root {
         --bg: #050508;
@@ -2481,9 +2483,26 @@
 
               var userPages = [],
                 completedSet = {},
-                completedDates = [];
+                completedDates = [],
+                moves = window.SHOUG_URL_MOVES || {},
+                migrations = [];
               snap.forEach(function (doc) {
                 var d = doc.data();
+                // A completion saved under a page's old URL counts for the page
+                // it was renamed to, and is copied there once (below) so the
+                // page's own Done button shows it too.
+                var movedTo = d.completed && moves[d.url];
+                if (movedTo && validPageUrls[movedTo]) {
+                  migrations.push({
+                    url: movedTo,
+                    title: d.title || "",
+                    section: movedTo.split("/")[1] || "home",
+                    completed: true,
+                    completedAt: d.completedAt || d.updatedAt || null,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  });
+                  d.url = movedTo;
+                }
                 // STAT101 lived under other-courses/ until 2026-07-30; count those completions too.
                 d.url = String(d.url || "").replace(
                   /other-courses(\/|%2F)stat101/gi,
@@ -2511,6 +2530,20 @@
                   completedSet[d.url] = true;
                   if (dt) completedDates.push(dt);
                 }
+              });
+              var pagesRef = firebase
+                .firestore()
+                .collection("userProgress")
+                .doc(user.uid)
+                .collection("pages");
+              migrations.forEach(function (m) {
+                if (!snap.docs.some(function (doc) {
+                  return doc.data().url === m.url && doc.data().completed;
+                }))
+                  pagesRef
+                    .doc(m.url.replace(/\//g, "|").replace(/^\|/, ""))
+                    .set(m, { merge: true })
+                    .catch(function () {});
               });
               if (!userPages.length) {
                 show("empty-state");

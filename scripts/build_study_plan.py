@@ -3,8 +3,9 @@
 
     python3 scripts/build_study_plan.py scripts/study_plans/se423-midterm.json
 
-Writes <out_dir>/<slug>.html only: the content page that the wrapper
-index.html iframes. The wrapper, its Study Material row and its sidebar entry
+Writes <out_dir>/<slug>.html, the content page that the wrapper index.html
+iframes, and <out_dir>/plan.json, which the calendar reads when someone
+presses "Add to my calendar". The wrapper, its Study Material row and its sidebar entry
 are created once by hand (clone a sibling wrapper, then add the entry to
 scripts/academic-sidebar.json and run build_academic_sidebar.py).
 
@@ -231,6 +232,33 @@ SCRIPT = """
     </script>"""
 
 
+def plan_json_url(plan):
+    return f"{plan['base']}extra-resources/{plan['slug']}/plan.json"
+
+
+def calendar_json(plan):
+    """What the calendar needs to schedule the plan: titles, links, minutes."""
+    return {
+        "course": plan["course"],
+        "exam": plan["exam"],
+        "exam_date": plan["exam_date"],
+        "title": plan["title"],
+        "page": f"{plan['base']}extra-resources/{plan['slug']}/",
+        "tiers": TIER_ORDER,
+        "budgets": plan["budgets"],
+        "default_budget": plan["default_budget"],
+        "items": [
+            {
+                "title": item["title"],
+                "url": plan["base"] + item["url"],
+                "minutes": int(item["minutes"]),
+                "tier": item["tier"],
+            }
+            for item in plan["items"]
+        ],
+    }
+
+
 def page(plan):
     exam_day = date.fromisoformat(plan["exam_date"])
     exam_label = exam_day.strftime("%a %d %b %Y").replace(" 0", " ")
@@ -294,6 +322,7 @@ def page(plan):
           <li data-countdown></li>
           <li>Covers <b>{esc(plan['scope'])}</b></li>
         </ul>
+        <a class="btn plan-cal" href="/account/calendar/?plan={esc(plan_json_url(plan))}" target="_top">Add study sessions to my calendar</a>
 
         <div class="budget-panel">
           <fieldset class="budget">
@@ -347,6 +376,9 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page(plan), encoding="utf-8")
     print(f"[ok] {out.relative_to(ROOT)}")
+    data = out.parent / "plan.json"
+    data.write_text(json.dumps(calendar_json(plan), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"[ok] {data.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

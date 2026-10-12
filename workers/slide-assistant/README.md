@@ -65,6 +65,13 @@ data export (Settings > Data privacy > Get a copy of your data) and run
 the Worker reads it with a one-hour cache once the site is published, so no
 redeploy is needed.
 
+Usage is counted anonymously: each question is reduced to one topic label
+(`topicOf()` in `src/about.js`: projects, experience, contact, private and so
+on) and written to the `about_assistant_topics` Analytics Engine dataset
+through the `ABOUT_STATS` binding. Question text, IPs and answers are never
+recorded. Read the counts with `scripts/about_assistant_topics.sh [days]`
+(needs `CF_ACCOUNT_ID` and an API token with Account Analytics: Read).
+
 Deploy this Worker update before publishing the About page; the old Worker
 returns "Not found." for this route.
 
