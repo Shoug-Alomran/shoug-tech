@@ -9925,6 +9925,42 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/exams/14-final-242/",
+    title: "SE423 | Final Exam (242)",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
+    url: "/academics/software-engineering/se423/exams/15-midterm-251-version-1/",
+    title: "SE423 | Midterm Exam (251) - Version 1",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
+    url: "/academics/software-engineering/se423/exams/16-midterm-251-version-2/",
+    title: "SE423 | Midterm Exam (251) - Version 2",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
+    url: "/academics/software-engineering/se423/exams/17-final-251/",
+    title: "SE423 | Final Exam (251)",
+    track: "software-engineering",
+    course: "se423",
+    section: "exams",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/exams/04-introduction-quiz/",
     title: "SE423 | Introduction, Performance Domains & Tailoring Quiz - Chapter 1",
     track: "software-engineering",
@@ -10422,7 +10458,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 56,
+  se423: 60,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10452,5 +10488,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 56,
+  "software-engineering/se423": 60,
 };
