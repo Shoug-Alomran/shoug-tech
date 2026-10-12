@@ -1104,6 +1104,11 @@
         color: #c084fc;
       }
 
+      .meta-pill.project-pill {
+        border-color: rgba(244, 114, 182, 0.45);
+        color: #f472b6;
+      }
+
       .legend-chip.project {
         color: #f472b6;
       }
@@ -2520,6 +2525,52 @@
         font-size: 0.68rem;
       }
 
+      .grade-needs {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .grade-needs-label,
+      .grade-needs-note {
+        display: block;
+        color: var(--muted);
+        font-size: 0.66rem;
+      }
+
+      .grade-needs-note {
+        margin-top: 6px;
+      }
+
+      .grade-need-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 7px;
+      }
+
+      .grade-need {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 9px;
+        color: #41d6c3;
+        font:
+          700 0.66rem/1 "JetBrains Mono",
+          monospace;
+      }
+
+      .grade-need strong {
+        color: var(--text);
+      }
+
+      .grade-need.stretch {
+        color: var(--amber);
+      }
+
+      .grade-need.hard {
+        color: #ff536f;
+      }
+
       .grade-credits input {
         width: 4.5em;
         height: 30px;
@@ -2867,7 +2918,7 @@
             >
               <div class="panel-head">
                 <div>
-                  <div class="panel-title">Assignments</div>
+                  <div class="panel-title">Assignments &amp; Projects</div>
                   <div class="panel-sub">Due dates and submission status</div>
                 </div>
                 <button
@@ -3801,6 +3852,47 @@
     </div>
     <div
       class="class-remove-editor"
+      id="plan-import-editor"
+      aria-hidden="true"
+    >
+      <section
+        class="exam-form"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="plan-import-title"
+      >
+        <div class="exam-form-head">
+          <div>
+            <div class="exam-form-title" id="plan-import-title">
+              Add Study Plan
+            </div>
+            <div class="day-sheet-sub" id="plan-import-sub"></div>
+          </div>
+          <button
+            class="day-sheet-close"
+            id="plan-import-close"
+            type="button"
+            aria-label="Close study plan import"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="exam-form-body">
+          <div class="filter-grid plan-budgets" id="plan-import-budgets"></div>
+          <div class="list" id="plan-import-list"></div>
+          <div class="day-card-actions">
+            <button class="btn solid" id="plan-import-add" type="button">
+              Add Sessions
+            </button>
+            <button class="btn muted" id="plan-import-cancel" type="button">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="class-remove-editor"
       id="class-remove-editor"
       aria-hidden="true"
     >
@@ -4354,8 +4446,18 @@
           });
           setDatePickerValue(id, $(id).value);
         }
+        // Assignments and projects are both due work: same reminders,
+        // checklist, submitted state and study planning.
+        function isWork(x) {
+          var k = typeof x === "string" ? x : x && x.kind;
+          return k === "assignment" || k === "project";
+        }
+        function workNoun(x) {
+          var k = typeof x === "string" ? x : x && x.kind;
+          return k === "project" ? "Project" : "Assignment";
+        }
         function eventMeta(i) {
-          if (i.kind === "assignment") return assignmentWindowMeta(i);
+          if (isWork(i)) return assignmentWindowMeta(i);
           var parts = [timeRange(i.start, i.end)];
           if (i.course) parts.unshift(i.course);
           if (i.endDate && i.endDate !== i.date)
@@ -5143,12 +5245,12 @@
           items
             .filter(function (i) {
               return (
-                !(i.kind === "assignment" && i.submitted) &&
+                !(isWork(i) && i.submitted) &&
                 inDateRange(k, i.date, i.endDate || i.date)
               );
             })
             .forEach(function (i) {
-              var assignment = i.kind === "assignment",
+              var assignment = isWork(i),
                 due = i.endDate || i.date;
               out.push({
                 kind: i.kind || "personal",
@@ -5247,7 +5349,7 @@
         }
         function isRangeEvent(e) {
           return (
-            (e.kind === "assignment" || !e.start) &&
+            (isWork(e) || !e.start) &&
             e.endDate &&
             e.endDate !== e.date
           );
@@ -5472,7 +5574,7 @@
           });
           items.forEach(function (it, i) {
             if (
-              it.kind === "assignment" ||
+              isWork(it) ||
               !isInSemesterScope(it) ||
               isFinishedItem(it)
             )
@@ -5536,7 +5638,7 @@
               });
             });
           var assignments = items.filter(function (it) {
-            return it.kind === "assignment" && isInSemesterScope(it);
+            return isWork(it) && isInSemesterScope(it);
           });
           var dueAssignments = assignments
             .filter(function (it) {
@@ -5567,6 +5669,9 @@
                 var urgency = it.submitted ? "" : assignmentUrgencyClass(it);
                 var details =
                   '<div class="assignment-details">' +
+                  (it.kind === "project"
+                    ? '<span class="meta-pill project-pill">Project</span>'
+                    : "") +
                   (it.submitted
                     ? ""
                     : '<span class="meta-pill urgency-pill">' +
@@ -5993,7 +6098,7 @@
           var openAssignments = items
             .filter(function (it) {
               return (
-                it.kind === "assignment" &&
+                isWork(it) &&
                 !it.submitted &&
                 (it.endDate || it.date) >= todayKey()
               );
@@ -6023,7 +6128,7 @@
               ev = eventsFor(k)
                 .filter(isVisibleEvent)
                 .filter(function (e) {
-                  return e.kind !== "assignment" || (e.endDate || e.date) === k;
+                  return !isWork(e) || (e.endDate || e.date) === k;
                 })
                 .slice(0, 5);
             html +=
@@ -6130,7 +6235,7 @@
           var targets = items
             .filter(function (it) {
               return (
-                it.kind === "assignment" &&
+                isWork(it) &&
                 !it.submitted &&
                 (it.endDate || it.date) >= todayKey() &&
                 !items.some(function (x) {
@@ -6251,6 +6356,7 @@
                     used += w;
                   });
                   var current = used ? (weighted / used) * 100 : 0,
+                    needHtml = gradeNeedsHtml(weighted, used),
                     risk = current < 70 ? "grade-risk" : "grade-ok";
                   return (
                     '<div class="grade-course-card"><div class="grade-course-head"><span>' +
@@ -6272,6 +6378,7 @@
                     '" value="' +
                     creditHours(course) +
                     '" /></label>' +
+                    needHtml +
                     rows
                       .map(function (g) {
                         return (
@@ -6316,6 +6423,55 @@
                 persist().then(renderGradebook);
               });
             });
+        }
+        // What average the ungraded part of a course needs for each letter
+        // grade. weighted = points earned so far (out of 100), used = % graded.
+        var LETTERS = [
+          ["A+", 95],
+          ["A", 90],
+          ["B+", 85],
+          ["B", 80],
+          ["C+", 75],
+          ["C", 70],
+          ["D+", 65],
+          ["D", 60],
+        ];
+        function gradeNeedsHtml(weighted, used) {
+          var remaining = 100 - used;
+          if (remaining <= 0.05)
+            return '<div class="grade-needs"><span class="grade-needs-label">Course fully graded</span></div>';
+          var chips = [],
+            secured = "",
+            out = [];
+          LETTERS.forEach(function (l) {
+            var need = ((l[1] - weighted) / remaining) * 100;
+            if (need <= 0) {
+              if (!secured) secured = l[0];
+            } else if (need > 100) out.push(l[0]);
+            else
+              chips.push(
+                '<span class="grade-need' +
+                  (need >= 90 ? " hard" : need >= 75 ? " stretch" : "") +
+                  '"><strong>' +
+                  l[0] +
+                  "</strong> " +
+                  Math.ceil(need) +
+                  "%</span>",
+              );
+          });
+          return (
+            '<div class="grade-needs"><span class="grade-needs-label">Average needed on the remaining ' +
+            Math.round(remaining * 10) / 10 +
+            "%</span>" +
+            (chips.length ? '<div class="grade-need-row">' + chips.join("") + "</div>" : "") +
+            (secured
+              ? '<div class="grade-needs-note">' + secured + " or better is secured</div>"
+              : "") +
+            (out.length && out.length < LETTERS.length
+              ? '<div class="grade-needs-note">Out of reach: ' + out.join(", ") + "</div>"
+              : "") +
+            "</div>"
+          );
         }
         function creditHours(course) {
           var h = Number(courseCredits[course]);
@@ -6558,7 +6714,7 @@
           if (e.itemId)
             return (
               '<div class="day-card-actions">' +
-              (e.kind === "assignment"
+              (isWork(e)
                 ? '<button class="mini-btn" data-assignment-edit="' +
                   esc(e.itemId) +
                   '" type="button">Edit</button><button class="mini-btn" data-assignment-toggle="' +
@@ -6570,7 +6726,7 @@
               '<button class="mini-btn danger" data-item-delete="' +
               esc(e.itemId) +
               '" type="button">Delete ' +
-              (e.kind === "assignment" ? "Assignment" : "Event") +
+              (isWork(e) ? workNoun(e) : "Event") +
               "</button></div>"
             );
           return "";
@@ -6640,12 +6796,14 @@
             toast("Could not find that event");
             return;
           }
-          var wasAssignment = items[index].kind === "assignment";
+          var deletedNoun = isWork(items[index])
+            ? workNoun(items[index])
+            : "Event";
           items.splice(index, 1);
           persist().then(function () {
             renderAll();
             if (activeDayKey) openDay(activeDayKey);
-            toast(wasAssignment ? "Assignment deleted" : "Event deleted");
+            toast(deletedNoun + " deleted");
           });
         }
         function assignmentDueLabel(item) {
@@ -6663,7 +6821,7 @@
         }
         function toggleAssignmentSubmitted(id) {
           var item = items.find(function (entry) {
-            return entry.id === id && entry.kind === "assignment";
+            return entry.id === id && isWork(entry);
           });
           if (!item) {
             toast("Could not find that assignment");
@@ -7087,7 +7245,7 @@
             linkedExamId: data.linkedExamId || "",
             linkedAssignmentId: data.linkedAssignmentId || "",
             submitted: Boolean(data.submitted),
-            remindersEnabled: data.kind === "assignment" ? true : undefined,
+            remindersEnabled: isWork(data) ? true : undefined,
             course: data.course || "",
             priority: data.priority || "medium",
             difficulty: data.difficulty || "medium",
@@ -7104,15 +7262,15 @@
           return persist().then(function () {
             renderAll();
             if (activeDayKey) openDay(activeDayKey);
-            if (data.kind === "assignment")
+            if (isWork(data))
               document.dispatchEvent(
                 new CustomEvent("shoug:calendar-reminders-changed"),
               );
             toast(
               data.kind === "study"
                 ? "Study session added"
-                : data.kind === "assignment"
-                  ? "Assignment added"
+                : isWork(data)
+                  ? workNoun(data) + " added"
                   : "Event added",
             );
             return true;
@@ -7264,14 +7422,15 @@
         function openEventEditor(date, kind) {
           editingEventId = "";
           var k = date || activeDayKey || todayKey();
-          var isAssignment = kind === "assignment";
+          var isAssignment = isWork(kind),
+            noun = workNoun(kind);
           $("event-edit-title").value = "";
           $("event-edit-title").placeholder = isAssignment
-            ? "Assignment title"
+            ? noun + " title"
             : "Travel";
           setDatePickerValue("event-edit-date", k);
           setDatePickerValue("event-edit-end-date", k);
-          $("event-edit-kind").value = isAssignment ? "assignment" : "travel";
+          $("event-edit-kind").value = isAssignment ? kind : "travel";
           $("event-edit-start-date-label").textContent = isAssignment
             ? "Available from"
             : "Starts";
@@ -7292,13 +7451,13 @@
           $("assignment-edit-course").value = "";
           setAssignmentFields({}, isAssignment);
           $("event-editor-title").textContent = isAssignment
-            ? "Add Assignment"
+            ? "Add " + noun
             : "Add Event";
           $("event-editor-sub").textContent = isAssignment
             ? "Choose when work opens and the final due date. It will display as a compact work window."
             : "Starts on " + k + ". Set an end date to make a connected range.";
           $("save-event-btn").textContent = isAssignment
-            ? "Save Assignment"
+            ? "Save " + noun
             : "Save Event";
           $("event-editor").classList.add("open");
           $("event-editor").setAttribute("aria-hidden", "false");
@@ -7309,13 +7468,13 @@
         }
         function openAssignmentEditor(id) {
           var item = items.find(function (entry) {
-            return entry.id === id && entry.kind === "assignment";
+            return entry.id === id && isWork(entry);
           });
           if (!item) {
             toast("Could not find that assignment");
             return;
           }
-          openEventEditor(item.date, "assignment");
+          openEventEditor(item.date, item.kind);
           editingEventId = id;
           $("event-edit-title").value = item.title || "";
           setDatePickerValue("event-edit-date", item.date || todayKey());
@@ -7326,8 +7485,8 @@
           $("event-edit-end").value = item.end || "";
           $("event-edit-location").value = item.location || "";
           setAssignmentFields(item, true);
-          $("event-editor-title").textContent = "Edit Assignment";
-          $("save-event-btn").textContent = "Update Assignment";
+          $("event-editor-title").textContent = "Edit " + workNoun(item);
+          $("save-event-btn").textContent = "Update " + workNoun(item);
         }
         function closeEventEditor() {
           $("event-editor").classList.remove("open");
@@ -7358,7 +7517,7 @@
                 return entry.id === editingEventId;
               })
             : null;
-          if (data.kind === "assignment")
+          if (isWork(data))
             Object.assign(data, assignmentFormData(existingAssignment));
           if (!editingEventId) {
             saveNewEvent(data).then(function (saved) {
@@ -7665,10 +7824,10 @@
         });
         $("save-event-btn").addEventListener("click", saveEventEditor);
         $("event-edit-kind").addEventListener("change", function () {
-          var assignment = this.value === "assignment",
+          var assignment = isWork(this.value),
             course = $("assignment-edit-course").value;
           setAssignmentFields({ course: course }, assignment);
-          var noun = assignment ? "Assignment" : "Event";
+          var noun = assignment ? workNoun(this.value) : "Event";
           $("event-editor-title").textContent =
             (editingEventId ? "Edit " : "Add ") + noun;
           $("save-event-btn").textContent =
@@ -7696,7 +7855,7 @@
           var check = $(prefix + "-all-day"),
             assignment =
               prefix === "event-edit" &&
-              $("event-edit-kind").value === "assignment",
+              isWork($("event-edit-kind").value),
             allDay = check.checked && !assignment;
           if (prefix === "event-edit")
             $("event-edit-all-day-toggle").style.display = assignment
@@ -7838,6 +7997,198 @@
           });
         })();
 
+        // ── Study plan import (/account/calendar/?plan=<plan.json>) ──
+        // Study-plan pages link here. The plan's pages are packed into
+        // sessions of up to two hours a day before the exam, placed in free
+        // slots, and only saved once the student confirms.
+        var planImport = null;
+        function maybeImportPlan() {
+          if (planImport) return;
+          var src = new URLSearchParams(location.search).get("plan") || "";
+          if (!/^\/academics\/[a-z0-9/_.-]+\/plan\.json$/i.test(src)) return;
+          planImport = { src: src };
+          history.replaceState(null, "", location.pathname);
+          fetch(src)
+            .then(function (r) {
+              if (!r.ok) throw new Error();
+              return r.json();
+            })
+            .then(function (plan) {
+              planImport.plan = plan;
+              planImport.budget = plan.default_budget;
+              openPlanImport();
+            })
+            .catch(function () {
+              toast("Could not load that study plan");
+            });
+        }
+        function planSessions(plan, budgetId) {
+          var budget =
+              (plan.budgets || []).find(function (b) {
+                return b.id === budgetId;
+              }) || { tiers: plan.tiers },
+            chosen = plan.items.filter(function (it) {
+              return budget.tiers.indexOf(it.tier) > -1;
+            }),
+            days = [];
+          for (var d = todayKey(); d < plan.exam_date && days.length < 30; d = addDays(d, 1))
+            days.push(d);
+          if (!days.length || !chosen.length) return [];
+          var total = chosen.reduce(function (n, it) {
+              return n + (Number(it.minutes) || 30);
+            }, 0),
+            cap = Math.max(120, Math.ceil(total / days.length)),
+            groups = [],
+            cur = null;
+          chosen.forEach(function (it) {
+            var m = Number(it.minutes) || 30;
+            if (!cur || (cur.minutes + m > cap && cur.items.length)) {
+              cur = { items: [], minutes: 0 };
+              groups.push(cur);
+            }
+            cur.items.push(it);
+            cur.minutes += m;
+          });
+          // Spread sessions across the days left rather than front-loading.
+          return groups.map(function (g, i) {
+            var day = days[Math.floor((i * days.length) / groups.length)],
+              slot = studySlot(day, Math.min(4, g.minutes / 60));
+            return {
+              date: day,
+              start: slot.start,
+              end: slot.end,
+              minutes: g.minutes,
+              items: g.items,
+            };
+          });
+        }
+        function openPlanImport() {
+          var plan = planImport.plan,
+            already = items.some(function (it) {
+              return it.planSource === planImport.src;
+            });
+          $("plan-import-title").textContent =
+            plan.course + " " + plan.exam + " study plan";
+          $("plan-import-budgets").innerHTML = (plan.budgets || [])
+            .map(function (b) {
+              return (
+                '<label class="filter-toggle"><input type="radio" name="plan-budget" value="' +
+                esc(b.id) +
+                '"' +
+                (b.id === planImport.budget ? " checked" : "") +
+                ">" +
+                esc(b.label) +
+                "</label>"
+              );
+            })
+            .join("");
+          $("plan-import-budgets")
+            .querySelectorAll("input")
+            .forEach(function (r) {
+              r.addEventListener("change", function () {
+                planImport.budget = r.value;
+                renderPlanImport(already);
+              });
+            });
+          renderPlanImport(already);
+          $("plan-import-editor").classList.add("open");
+          $("plan-import-editor").setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function renderPlanImport(already) {
+          var plan = planImport.plan,
+            sessions = (planImport.sessions = planSessions(plan, planImport.budget));
+          $("plan-import-sub").textContent = sessions.length
+            ? "Exam on " +
+              plan.exam_date +
+              ". " +
+              sessions.length +
+              " session" +
+              (sessions.length === 1 ? "" : "s") +
+              " in free slots before it. Nothing is saved until you add them." +
+              (already ? " Sessions from this plan are already in your calendar; adding replaces them." : "")
+            : plan.exam_date <= todayKey()
+              ? "This exam date has already passed."
+              : "Nothing to schedule for this choice.";
+          $("plan-import-list").innerHTML = sessions
+            .map(function (x) {
+              return (
+                '<div class="item"><div><div class="item-title">' +
+                esc(prettyDate(x.date)) +
+                " · " +
+                esc(timeRange(x.start, x.end)) +
+                '</div><div class="item-meta">' +
+                x.items
+                  .map(function (it) {
+                    return esc(it.title) + " (" + esc(it.minutes) + "m)";
+                  })
+                  .join("<br>") +
+                "</div></div></div>"
+              );
+            })
+            .join("");
+          $("plan-import-add").disabled = !sessions.length;
+          $("plan-import-add").textContent = sessions.length
+            ? "Add " + sessions.length + " Session" + (sessions.length === 1 ? "" : "s")
+            : "Add Sessions";
+        }
+        function closePlanImport() {
+          $("plan-import-editor").classList.remove("open");
+          $("plan-import-editor").setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        function addPlanSessions() {
+          var plan = planImport.plan,
+            courseKey = String(plan.course).replace(/\s+/g, "").toUpperCase(),
+            exam = exams.find(function (e) {
+              return (
+                e.date === plan.exam_date &&
+                String(e.course || "").replace(/\s+/g, "").toUpperCase() === courseKey
+              );
+            });
+          items = items.filter(function (it) {
+            return it.planSource !== planImport.src;
+          });
+          planImport.sessions.forEach(function (x, i) {
+            items.push({
+              id: uid(),
+              title:
+                plan.course +
+                " " +
+                plan.exam +
+                ": " +
+                x.items[0].title +
+                (x.items.length > 1 ? " +" + (x.items.length - 1) + " more" : ""),
+              date: x.date,
+              endDate: x.date,
+              kind: "study",
+              start: x.start,
+              end: x.end,
+              location: "",
+              course: plan.course,
+              linkedExamId: exam ? exam.id : "",
+              notes: x.items
+                .map(function (it) {
+                  return it.title + " - " + location.origin + it.url;
+                })
+                .join("\n"),
+              planSource: planImport.src,
+            });
+          });
+          var n = planImport.sessions.length;
+          closePlanImport();
+          persist().then(function () {
+            renderAll();
+            toast(n + " study session" + (n === 1 ? "" : "s") + " added");
+          });
+        }
+        $("plan-import-close").addEventListener("click", closePlanImport);
+        $("plan-import-cancel").addEventListener("click", closePlanImport);
+        $("plan-import-add").addEventListener("click", addPlanSessions);
+        $("plan-import-editor").addEventListener("click", function (e) {
+          if (e.target === $("plan-import-editor")) closePlanImport();
+        });
+
         window.__shougCalendarAI = {
           today: todayKey,
           signedIn: function () {
@@ -7965,6 +8316,7 @@
               if (calendarNeedsCleanup)
                 persist({ calendarPsuAcademicVersion: "" });
               purgeDuplicateExams(duplicateExamIds);
+              maybeImportPlan();
             },
             function () {
               show("calendar-app");

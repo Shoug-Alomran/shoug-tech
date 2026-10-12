@@ -1100,7 +1100,7 @@
           function (item) {
             if (
               !item ||
-              item.kind !== "assignment" ||
+              (item.kind !== "assignment" && item.kind !== "project") ||
               item.submitted ||
               item.remindersEnabled === false
             )

@@ -207,6 +207,35 @@ async function loadLinkedIn(env) {
 
 const MAX_QUESTION = 500;
 
+// Anonymous usage: each question is reduced to one broad topic label, and
+// only that label is counted (Workers Analytics Engine, ABOUT_STATS). The
+// question text, IP and answer are never recorded.
+const TOPICS = [
+  ["private", null],
+  ["contact", /\b(contact|reach|email|hire|hiring|available|availability|linkedin|github|cv|resume|recommend)/i],
+  ["blueprint", /\b(blueprint|website for|freelance|client|services?|pricing|price)/i],
+  ["projects", /\b(projects?|built|build|portfolio|sillah|fursah|ctf lab|se\d{3}|cs\d{3}|cys\d{3})/i],
+  ["workshops", /\b(workshops?|taught|teach|webforge|crash course|speaker|ctf|events?)/i],
+  ["experience", /\b(experience|roles?|jobs?|work(s|ing)?|mdd|qimah|tutor|instructor|trainee|acm|vice president)/i],
+  ["skills", /\b(skills?|languages?|tools?|stack|good at|strengths?|security|pentest|cyber)/i],
+  ["university", /\b(psu|prince sultan|ccis|universit|college|major|degree|stud(y|ies|ent)|program)/i],
+];
+
+export function topicOf(question, refused) {
+  if (refused) return "private";
+  for (const [name, pattern] of TOPICS) if (pattern && pattern.test(question)) return name;
+  return /[\u0600-\u06FF]/.test(question) ? "arabic-other" : "other";
+}
+
+function count(env, topic) {
+  try {
+    if (env.ABOUT_STATS)
+      env.ABOUT_STATS.writeDataPoint({ blobs: [topic], indexes: [topic] });
+  } catch {
+    // Counting must never break an answer.
+  }
+}
+
 function cleanHistory(history) {
   if (!Array.isArray(history)) return [];
   return history
@@ -243,8 +272,11 @@ export async function handleAbout(request, env, origin, json, generate) {
       : "";
   if (!question)
     return json({ error: "A question is required." }, 400, origin);
-  if (isPrivateQuestion(question))
+  if (isPrivateQuestion(question)) {
+    count(env, topicOf(question, true));
     return json({ answer: PRIVATE_REFUSAL, refused: true }, 200, origin);
+  }
+  count(env, topicOf(question, false));
 
   const linkedin = await loadLinkedIn(env);
   const answer = await generate(env, {
