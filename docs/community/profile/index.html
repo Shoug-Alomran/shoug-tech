@@ -1764,11 +1764,24 @@
             hasTimestamps = false,
             totalCompleted = 0;
           var manifest = window.COURSE_MANIFEST || {};
+          // Only count pages that still exist, once each. Old records for
+          // renamed, merged or removed pages otherwise push a course past
+          // its real total (e.g. 44 / 35).
+          var validUrls = null,
+            seenUrls = {};
+          if (Array.isArray(window.COURSE_PAGES)) {
+            validUrls = {};
+            window.COURSE_PAGES.forEach(function (p) {
+              if (p && p.url) validUrls[p.url.replace(/^\/+/, "")] = true;
+            });
+          }
           snap.forEach(function (doc) {
             var data = doc.data();
             var url = (data.url || "")
               .replace(/^\/+/, "")
               .replace(/other-courses(\/|%2F)stat101/gi, "math$1stat101"); // STAT101 moved 2026-07-30
+            if (validUrls && (!validUrls[url] || seenUrls[url])) return;
+            seenUrls[url] = true;
             var parts = url.split("/").filter(Boolean);
             if (parts.length >= 3) {
               var subjRaw = parts[1],
