@@ -40,16 +40,10 @@ DESC_AR = (
 # (section, [(slug, title, arabic title or '')]) — order defines SEQ numbering.
 SECTIONS = {
     'slide-breakdowns': [
-        ('01-lecture-1', 'Lecture 1', ''),
-        ('02-lecture-2', 'Lecture 2', ''),
-        ('03-lecture-3', 'Lecture 3', ''),
-        ('04-lecture-4', 'Lecture 4', ''),
+        *[(f'0{n}-lecture-{n}', f'Lecture {n}', '') for n in range(1, 10)],
     ],
     'slides': [
-        ('lecture-1', 'Lecture 1', ''),
-        ('lecture-2', 'Lecture 2', ''),
-        ('lecture-3', 'Lecture 3', ''),
-        ('lecture-4', 'Lecture 4', ''),
+        *[(f'lecture-{n}', f'Lecture {n}', '') for n in range(1, 10)],
     ],
     'extra-resources': [
         ('01-cheat-sheet', 'Midterm Cheat Sheet', 'ورقة مراجعة الاختبار الفصلي'),
@@ -65,7 +59,7 @@ SECTIONS = {
 # Which standalone file each wrapper iframes. Every document sits inside its own
 # wrapper folder, so the reference is always a sibling.
 EMBED = {
-    'slide-breakdowns': {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 5)},
+    'slide-breakdowns': {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 10)},
     'extra-resources': {
         '01-cheat-sheet': './cheat-sheet.html',
         '03-mindmap': './mindmap.html',
@@ -100,10 +94,10 @@ SYLLABUS = [
     ('Incorporeal Rights: Copyright, Trade Name, Invention Certificate',
      'الحقوق المعنوية: حق التأليف والاسم التجاري وبراءة الاختراع', '8 SLIDES'),
     ('Insurance', 'التأمين', '9 SLIDES'),
-    ('Financial Securities (Shares)', 'الأوراق المالية (الأسهم)', 'PENDING'),
-    ('Bonds', 'السندات', 'PENDING'),
-    ('Murabaha', 'المرابحة', 'PENDING'),
-    ('Sale Deed Based on Leasing', 'البيع القائم على الإجارة', 'PENDING'),
+    ('Financial Securities (Shares)', 'الأوراق المالية (الأسهم)', '7 SLIDES'),
+    ('Bonds', 'السندات', '4 SLIDES'),
+    ('Murabaha', 'المرابحة', '3 SLIDES'),
+    ('Sale Deed Based on Leasing', 'البيع القائم على الإجارة', '3 SLIDES'),
     ('Credit Cards', 'بطاقات الائتمان', 'PENDING'),
     ('Gambling', 'الميسر', 'PENDING'),
     ('Multi-Level Marketing and Pyramid Schemes', 'التسويق الشبكي والهرمي', 'PENDING'),
@@ -142,8 +136,8 @@ IN_PROGRESS_CSS = '''        .tag-in-progress {
         }
 '''
 
-TOTAL_SLIDES = 27
-TOTAL_DECKS = 4
+TOTAL_SLIDES = 44
+TOTAL_DECKS = 9
 
 
 def read(*parts):

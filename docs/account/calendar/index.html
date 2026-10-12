@@ -1104,6 +1104,29 @@
         color: #c084fc;
       }
 
+      /* The site-wide exam reminder drops in at the top of the page, which
+         here covers the Add Exam / semester / export buttons. Show it in the
+         bottom-right corner instead, above the AI button. */
+      @media (min-width: 641px) {
+        body #shoug-exam-toast {
+          top: auto;
+          bottom: 76px;
+          left: auto;
+          right: 24px;
+          width: min(460px, calc(100vw - 48px));
+          transform: translateY(16px);
+        }
+
+        body #shoug-exam-toast.open {
+          transform: none;
+        }
+      }
+
+      /* The site-wide exam reminder would sit on top of an open dialog. */
+      body:has([aria-hidden="false"].open) #shoug-exam-toast {
+        display: none !important;
+      }
+
       .meta-pill.project-pill {
         border-color: rgba(244, 114, 182, 0.45);
         color: #f472b6;
@@ -2817,7 +2840,7 @@
             <section class="panel" id="calendar-month-panel">
               <div class="panel-head">
                 <div>
-                  <div class="panel-title">Month</div>
+                  <div class="panel-title" id="calendar-view-title">Month</div>
                   <div class="panel-sub" id="calendar-summary">
                     0 exams · 0 items
                   </div>
@@ -2862,7 +2885,8 @@
                   </button>
                 </div>
               </div>
-              <div class="weekdays">
+              <div class="cal-toolbar" id="cal-toolbar"></div>
+              <div class="weekdays" id="month-weekdays">
                 <div class="weekday">Sun</div>
                 <div class="weekday">Mon</div>
                 <div class="weekday">Tue</div>
@@ -2872,6 +2896,8 @@
                 <div class="weekday">Sat</div>
               </div>
               <div class="month-grid" id="month-grid"></div>
+              <div class="time-view" id="time-view" hidden></div>
+              <div class="phone-day" id="phone-day" hidden></div>
             </section>
             <div class="calendar-lower">
               <section class="panel">
@@ -4176,12 +4202,16 @@
             );
           } catch (e) {}
         }
+        // Nothing saved yet means a first visit: open on the current term.
+        // A saved "" means the student chose "All semesters".
         function loadSemesterScope() {
+          var saved = null;
           try {
-            return localStorage.getItem("calendar-semester-scope") || "";
-          } catch (e) {
-            return "";
-          }
+            saved = localStorage.getItem("calendar-semester-scope");
+          } catch (e) {}
+          if (saved !== null) return saved;
+          var now = termForDate(todayKey());
+          return (now && now.term) || "";
         }
         function saveSemesterScope() {
           try {
@@ -4665,6 +4695,16 @@
               : urgency === "due-week"
                 ? "Due this week"
                 : "Can wait";
+        }
+        // data-* hooks for calendar-views.js: dragging custom items and
+        // colouring by course.
+        function eventAttrs(e) {
+          var label = e.course ? courseLabel(e.course) : "";
+          return (
+            (e.itemId ? ' data-item-id="' + esc(e.itemId) + '"' : "") +
+            (e.date ? ' data-ev-date="' + esc(e.date) + '"' : "") +
+            (label ? ' data-course="' + esc(label) + '"' : "")
+          );
         }
         function eventClasses(e) {
           return [
@@ -5217,6 +5257,7 @@
                 kind: "exam",
                 examType: examTypeClass(e.type),
                 examId: e.id,
+                course: e.course || "",
                 title: e.course + " " + examTypeLabel(e.type),
                 meta: examMeta(e),
                 date: e.date,
@@ -5259,6 +5300,7 @@
                   kind: "class",
                   termId: c.termId || "",
                   classId: c.id,
+                  course: c.title || "",
                   title: c.title || "Class",
                   meta: classMetaFor(
                     c,
@@ -5293,6 +5335,7 @@
               out.push({
                 kind: i.kind || "personal",
                 itemId: i.id,
+                course: i.course || "",
                 title:
                   assignment && k === due
                     ? "DUE · " + (i.title || "Assignment")
@@ -5349,7 +5392,9 @@
             eventClasses(e) +
             " " +
             segmentClass(e, k) +
-            '"><div class="event-title">' +
+            '"' +
+            eventAttrs(e) +
+            '><div class="event-title">' +
             esc(text.title) +
             (e.online ? ' <span class="online-badge">Online</span>' : "") +
             '</div><div class="event-meta">' +
@@ -5371,7 +5416,9 @@
             '<div class="timeline-event ' +
             eventClasses(e) +
             (compact ? " compact" : "") +
-            '" style="top:' +
+            '"' +
+            eventAttrs(e) +
+            ' style="top:' +
             top +
             "px;height:" +
             height +
@@ -5409,7 +5456,9 @@
           return (
             '<div class="range-bar ' +
             eventClasses(e) +
-            '" style="grid-column:' +
+            '"' +
+            eventAttrs(e) +
+            ' style="grid-column:' +
             startCol +
             " / " +
             endCol +
@@ -5516,7 +5565,12 @@
           $("month-grid")
             .querySelectorAll(".day[data-date]")
             .forEach(function (day) {
-              day.addEventListener("click", function () {
+              day.addEventListener("click", function (ev) {
+                if (
+                  window.__shougCalViews &&
+                  window.__shougCalViews.dayClick(day.dataset.date, ev)
+                )
+                  return;
                 openDay(day.dataset.date);
               });
             });
@@ -6190,7 +6244,9 @@
                       return (
                         '<button class="agenda-entry ' +
                         eventClasses(e) +
-                        '" data-agenda-date="' +
+                        '"' +
+                        eventAttrs(e) +
+                        ' data-agenda-date="' +
                         k +
                         '">' +
                         esc(e.title) +
@@ -6518,25 +6574,23 @@
             m = raw.match(/([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)/);
           return m ? m[1].toUpperCase() + " " + m[2].toUpperCase() : raw.toUpperCase();
         }
-        // Courses the calendar already knows about: classes, exams, due work
-        // and earlier grades.
+        // Courses for the semester selected at the top of the page: its
+        // classes, exams and due work. Past courses are left out (use
+        // "Other course..." for anything missing).
         function knownCourses() {
           var seen = {};
           function add(v) {
             var label = courseLabel(v);
             if (label && /\d{3}/.test(label)) seen[label] = true;
           }
-          classes.forEach(function (c) {
+          scopedClasses().forEach(function (c) {
             add(c && c.title);
           });
-          exams.forEach(function (e) {
+          scopedExams().forEach(function (e) {
             add(e && e.course);
           });
           items.forEach(function (it) {
-            if (it && it.course) add(it.course);
-          });
-          grades.forEach(function (g) {
-            add(g && g.course);
+            if (it && it.course && isInSemesterScope(it)) add(it.course);
           });
           return Object.keys(seen).sort();
         }
@@ -6673,6 +6727,7 @@
           renderLists();
           renderWeeklyAgenda();
           renderGradebook();
+          if (window.__shougCalViews) window.__shougCalViews.render();
         }
         function openDay(k) {
           var d = fromKey(k),
@@ -6724,51 +6779,56 @@
               })
               .join("") +
             "</div></div></div>";
-          $("day-list")
+          bindEventActions($("day-list"));
+          $("day-detail").classList.add("open");
+          $("day-detail").setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        // Wires the Edit / Submit / Delete / class buttons inside any
+        // container of rendered events (day sheet, week and day views).
+        function bindEventActions(root) {
+          root
             .querySelectorAll("[data-exam-edit]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 openExamEditor(b.dataset.examEdit);
               });
             });
-          $("day-list")
+          root
             .querySelectorAll("[data-item-delete]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 deleteEventById(b.dataset.itemDelete);
               });
             });
-          $("day-list")
+          root
             .querySelectorAll("[data-assignment-edit]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 openAssignmentEditor(b.dataset.assignmentEdit);
               });
             });
-          $("day-list")
+          root
             .querySelectorAll("[data-assignment-toggle]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 toggleAssignmentSubmitted(b.dataset.assignmentToggle);
               });
             });
-          $("day-list")
+          root
             .querySelectorAll("[data-class-remove]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 openClassRemoval(b.dataset.classRemove, b.dataset.date);
               });
             });
-          $("day-list")
+          root
             .querySelectorAll("[data-class-edit]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
                 openClassEdit(b.dataset.classEdit, b.dataset.date);
               });
             });
-          $("day-detail").classList.add("open");
-          $("day-detail").setAttribute("aria-hidden", "false");
-          document.body.style.overflow = "hidden";
         }
         function eventActionsHtml(e) {
           if (e.examId)
@@ -6835,7 +6895,9 @@
           return (
             '<div class="day-card ' +
             eventClasses(e) +
-            '"><div class="day-card-title">' +
+            '"' +
+            eventAttrs(e) +
+            '><div class="day-card-title">' +
             eventTitleHtml(e) +
             (e.online ? ' <span class="online-badge">Online</span>' : "") +
             '</div><div class="day-card-meta">' +
@@ -6928,8 +6990,8 @@
             );
             toast(
               item.submitted
-                ? "Assignment marked submitted. Reminders stopped."
-                : "Assignment reopened. Reminders enabled.",
+                ? workNoun(item) + " marked submitted. Reminders stopped."
+                : workNoun(item) + " reopened. Reminders enabled.",
             );
           });
         }
@@ -7639,7 +7701,7 @@
               new CustomEvent("shoug:calendar-reminders-changed"),
             );
             closeEventEditor();
-            toast("Assignment updated");
+            toast(workNoun(item) + " updated");
           });
         }
         function exportDateBounds() {
@@ -7774,15 +7836,18 @@
           toast("Calendar exported");
         }
         $("prev-month").addEventListener("click", function () {
+          if (window.__shougCalViews && window.__shougCalViews.step(-1)) return;
           currentMonth.setMonth(currentMonth.getMonth() - 1);
           renderAll(true);
         });
         $("next-month").addEventListener("click", function () {
+          if (window.__shougCalViews && window.__shougCalViews.step(1)) return;
           currentMonth.setMonth(currentMonth.getMonth() + 1);
           renderAll(true);
         });
         $("today-btn").addEventListener("click", function () {
           currentMonth = new Date();
+          if (window.__shougCalViews) window.__shougCalViews.goTo(todayKey());
           renderAll(true);
         });
         $("export-calendar-btn").addEventListener("click", exportCalendar);
@@ -8285,6 +8350,60 @@
           if (e.target === $("plan-import-editor")) closePlanImport();
         });
 
+        // Bridge for calendar-views.js (Week/Day views, phone month, quick
+        // add, drag, search, shortcuts, course colours).
+        window.__shougCal = {
+          get items() {
+            return items;
+          },
+          get exams() {
+            return exams;
+          },
+          get classes() {
+            return scopedClasses();
+          },
+          get currentMonth() {
+            return currentMonth;
+          },
+          set currentMonth(d) {
+            currentMonth = d;
+          },
+          get signedIn() {
+            return Boolean(profileRef);
+          },
+          eventsFor: eventsFor,
+          eventClasses: eventClasses,
+          eventAttrs: eventAttrs,
+          eventTitleHtml: eventTitleHtml,
+          eventActionsHtml: eventActionsHtml,
+          dayCardHtml: dayCardHtml,
+          bindEventActions: bindEventActions,
+          isRangeEvent: isRangeEvent,
+          eventIdentity: eventIdentity,
+          isWork: isWork,
+          courseLabel: courseLabel,
+          esc: esc,
+          key: key,
+          fromKey: fromKey,
+          todayKey: todayKey,
+          addDays: addDays,
+          minutes: minutes,
+          toTime: toTime,
+          timeLabel: timeLabel,
+          timeRange: timeRange,
+          prettyDate: prettyDate,
+          openDay: openDay,
+          openEventEditor: openEventEditor,
+          saveNewEvent: saveNewEvent,
+          persist: persist,
+          renderAll: renderAll,
+          renderCalendar: renderCalendar,
+          toast: toast,
+          addExam: function (p) {
+            return window.__shougCalendarAI.addExam(p);
+          },
+        };
+
         window.__shougCalendarAI = {
           today: todayKey,
           signedIn: function () {
@@ -8441,6 +8560,7 @@
       src="/javascripts/calendar-assistant.js?v=20260902-2"
       defer
     ></script>
+    <script src="/javascripts/calendar-views.js" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
   </body>
 </html>
