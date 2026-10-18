@@ -78,12 +78,35 @@ JS_ID = re.compile(
 )
 
 
+# Numbered ids built in JS, e.g. `sec.id = "part-" + (pi + 1)` in the SE423
+# past-paper renderer: recorded as "part-#" and matched against part-<digits>.
+JS_NUMBERED_ID = re.compile(r"""\.id\s*=\s*["']([A-Za-z0-9_:.-]+)["']\s*\+""")
+SCRIPT_SRC = re.compile(r"""<script\b[^>]*\bsrc=["']([^"':?#]+\.js)["']""", re.I)
+
+
 def parse_html(path: Path) -> LinkParser:
     text = path.read_text(encoding="utf-8", errors="ignore")
     parser = LinkParser()
     parser.feed(text)
-    parser.anchors.update(JS_ID.findall(text))
+    # ids can also come from the page's own local scripts (not shared site JS)
+    sources = [text]
+    for src in SCRIPT_SRC.findall(text):
+        if src.startswith("/"):
+            continue
+        script = (path.parent / src).resolve()
+        if script.is_file():
+            sources.append(script.read_text(encoding="utf-8", errors="ignore"))
+    for source in sources:
+        parser.anchors.update(JS_ID.findall(source))
+        parser.anchors.update(prefix + "#" for prefix in JS_NUMBERED_ID.findall(source))
     return parser
+
+
+def has_anchor(anchors: set[str], fragment: str) -> bool:
+    if fragment in anchors:
+        return True
+    prefix, digits = re.match(r"(.*?)(\d*)$", fragment).groups()
+    return bool(digits) and prefix + "#" in anchors
 
 
 def route_to_file(url_path: str) -> Path:
@@ -247,7 +270,7 @@ def main() -> int:
                     anchors = parse_html(target).anchors
                     anchors_by_file[target] = anchors
 
-                if anchors is not None and fragment not in anchors:
+                if anchors is not None and not has_anchor(anchors, fragment):
                     failures.append(
                         f"{rel_source}: {attr}={ref!r} -> missing anchor #{fragment}"
                     )

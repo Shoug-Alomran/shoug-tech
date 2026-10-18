@@ -246,6 +246,8 @@ SE423_ARTIFACTS = [
 SE322_PROJECT = [
     ('Project Description', 'description', 'project-description'),
     ('Project Deliverable 1: Intaliq Requirements (SRS)', 'deliverable-1', 'project-deliverable-1'),
+    ('Project Deliverable 2: Intaliq Quality Attributes and Architecture', 'deliverable-2',
+     'project-deliverable-2'),
 ]
 
 
