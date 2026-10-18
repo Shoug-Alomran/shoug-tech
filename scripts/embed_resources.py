@@ -70,6 +70,9 @@ DOC_SRC_RE = re.compile(r'data-doc-src="([^"]+)"')
 # Word/Excel files a browser would download instead of showing: these get a
 # generated viewer that renders their content inline (scripts/office_to_html.py).
 OFFICE_EXT = {'docx': 'DOCX', 'xlsx': 'XLSX'}
+# Office files linked as the original file instead of rendered: Word documents
+# are shared as-is (the rendering drops layout), so their rows open the .docx.
+RAW_EXT = {'docx'}
 
 
 # --------------------------------------------------------------------------- #
@@ -457,6 +460,13 @@ class Build:
             fh.write(text)
         self.changed.append(path)
 
+    def remove_file(self, path):
+        if self.check:
+            self.stale.append(path)
+            return
+        os.remove(path)
+        self.changed.append(path)
+
     def remove_dir(self, path):
         if self.check:
             self.stale.append(path)
@@ -520,6 +530,19 @@ class Build:
                 doc = owned_doc(f)
                 t = title_for(doc, folder, self.titles, self.notes)
                 doc_ext = os.path.splitext(doc or '')[1].lstrip('.').lower()
+                if doc_ext in RAW_EXT:
+                    # still a file row, but it links the document itself: no viewer page
+                    page = os.path.join(f, 'index.html')
+                    if os.path.isfile(page) and viewer_src(read(page)):
+                        self.remove_file(page)
+                    for name in os.listdir(f):
+                        if is_viewer_dir(os.path.join(f, name)):
+                            self.remove_dir(os.path.join(f, name))
+                    self.drop_children(url_of(f))
+                    href = '%s/%s' % (quote(os.path.basename(f)), quote(os.path.basename(doc)))
+                    rows.append((t, './' + href, doc_ext.upper(), doc_ext, False, True))
+                    sidebar_rows.append((url + href, t))
+                    continue
                 if lone_doc(f) and not is_own_viewer(f):
                     # the file just moved into its own folder: that folder is now its viewer
                     for name in os.listdir(f):
@@ -555,8 +578,8 @@ class Build:
                     v_url, ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
                     trail[:-1] + [(trail[-1][0], url), (t, None)],
                     '../%s' % quote(os.path.basename(f)), url))
-            elif ext in OFFICE_EXT:
-                # Render Word/Excel inline; a bare link would just download them.
+            elif ext in OFFICE_EXT and ext not in RAW_EXT:
+                # Render Excel inline; a bare link would just download them.
                 try:
                     body = office_to_html.convert(f)
                 except office_to_html.ConversionError as exc:
