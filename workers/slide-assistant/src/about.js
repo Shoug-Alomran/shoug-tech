@@ -147,18 +147,27 @@ function systemPrompt(linkedin) {
     "",
     "PUBLIC PROFILE:",
     PUBLIC_PROFILE,
-    ...(linkedin ? ["", "LINKEDIN (synced from Shoug's public LinkedIn profile):", linkedin] : []),
+    ...(linkedin
+      ? [
+          "",
+          "LINKEDIN (synced from Shoug's public LinkedIn profile):",
+          linkedin,
+        ]
+      : []),
   ].join("\n");
 }
 
 const clip = (value, max) =>
-  typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, max) : "";
+  typeof value === "string"
+    ? value.replace(/\s+/g, " ").trim().slice(0, max)
+    : "";
 
 // Renders the synced LinkedIn file to text. Only these fields are read, so a
 // file with anything else in it cannot widen what the model sees.
 export function renderLinkedIn(data) {
   if (!data || typeof data !== "object") return "";
-  const list = (value, max) => (Array.isArray(value) ? value.slice(0, max) : []);
+  const list = (value, max) =>
+    Array.isArray(value) ? value.slice(0, max) : [];
   const lines = [];
   const headline = clip(data.headline, 220);
   const summary = clip(data.summary, 1500);
@@ -205,9 +214,12 @@ export function renderLinkedIn(data) {
 async function loadLinkedIn(env) {
   try {
     const origin = env.CONTENT_ORIGIN || "https://shoug-tech.com";
-    const response = await fetch(new URL("/ai-context/about/linkedin.json", origin), {
-      cf: { cacheTtl: 3600, cacheEverything: true },
-    });
+    const response = await fetch(
+      new URL("/ai-context/about/linkedin.json", origin),
+      {
+        cf: { cacheTtl: 3600, cacheEverything: true },
+      },
+    );
     if (!response.ok) return "";
     return renderLinkedIn(await response.json());
   } catch {
@@ -222,18 +234,40 @@ const MAX_QUESTION = 500;
 // question text, IP and answer are never recorded.
 const TOPICS = [
   ["private", null],
-  ["contact", /\b(contact|reach|email|hire|hiring|available|availability|linkedin|github|cv|resume|recommend)/i],
-  ["blueprint", /\b(blueprint|website for|freelance|client|services?|pricing|price)/i],
-  ["projects", /\b(projects?|built|build|portfolio|sillah|fursah|ctf lab|se\d{3}|cs\d{3}|cys\d{3})/i],
-  ["workshops", /\b(workshops?|taught|teach|webforge|crash course|speaker|ctf|events?)/i],
-  ["experience", /\b(experience|roles?|jobs?|work(s|ing)?|mdd|qimah|tutor|instructor|trainee|acm|vice president)/i],
-  ["skills", /\b(skills?|languages?|tools?|stack|good at|strengths?|security|pentest|cyber)/i],
-  ["university", /\b(psu|prince sultan|ccis|universit|college|major|degree|stud(y|ies|ent)|program)/i],
+  [
+    "contact",
+    /\b(contact|reach|email|hire|hiring|available|availability|linkedin|github|cv|resume|recommend)/i,
+  ],
+  [
+    "blueprint",
+    /\b(blueprint|website for|freelance|client|services?|pricing|price)/i,
+  ],
+  [
+    "projects",
+    /\b(projects?|built|build|portfolio|sillah|fursah|ctf lab|se\d{3}|cs\d{3}|cys\d{3})/i,
+  ],
+  [
+    "workshops",
+    /\b(workshops?|taught|teach|webforge|crash course|speaker|ctf|events?)/i,
+  ],
+  [
+    "experience",
+    /\b(experience|roles?|jobs?|work(s|ing)?|mdd|qimah|tutor|instructor|trainee|acm|vice president)/i,
+  ],
+  [
+    "skills",
+    /\b(skills?|languages?|tools?|stack|good at|strengths?|security|pentest|cyber)/i,
+  ],
+  [
+    "university",
+    /\b(psu|prince sultan|ccis|universit|college|major|degree|stud(y|ies|ent)|program)/i,
+  ],
 ];
 
 export function topicOf(question, refused) {
   if (refused) return "private";
-  for (const [name, pattern] of TOPICS) if (pattern && pattern.test(question)) return name;
+  for (const [name, pattern] of TOPICS)
+    if (pattern && pattern.test(question)) return name;
   return /[\u0600-\u06FF]/.test(question) ? "arabic-other" : "other";
 }
 
@@ -280,8 +314,7 @@ export async function handleAbout(request, env, origin, json, generate) {
     typeof body.question === "string"
       ? body.question.replace(/\s+/g, " ").trim().slice(0, MAX_QUESTION)
       : "";
-  if (!question)
-    return json({ error: "A question is required." }, 400, origin);
+  if (!question) return json({ error: "A question is required." }, 400, origin);
   if (isPrivateQuestion(question)) {
     count(env, topicOf(question, true));
     return json({ answer: PRIVATE_REFUSAL, refused: true }, 200, origin);

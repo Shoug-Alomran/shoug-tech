@@ -182,7 +182,12 @@
       tv = $("time-view"),
       pd = $("phone-day"),
       title = $("calendar-view-title");
-    if (title) title.textContent = month ? "Month" : state.view === "week" ? "Week" : "Day";
+    if (title)
+      title.textContent = month
+        ? "Month"
+        : state.view === "week"
+          ? "Week"
+          : "Day";
     if (grid) grid.hidden = !month;
     if (weekdays) weekdays.hidden = !month;
     if (tv) tv.hidden = month;
@@ -397,7 +402,9 @@
                   '</div><div class="tv-ev-time">' +
                   C.esc(C.timeRange(t.ev.start, t.ev.end)) +
                   "</div>" +
-                  (mine ? '<div class="tv-resize" aria-hidden="true"></div>' : "") +
+                  (mine
+                    ? '<div class="tv-resize" aria-hidden="true"></div>'
+                    : "") +
                   "</div>"
                 );
               })
@@ -465,7 +472,10 @@
   function setupTimeDrag(tv, startHour, px) {
     function minsAt(col, y) {
       var r = col.getBoundingClientRect();
-      return Math.max(0, Math.min(24 * 60, startHour * 60 + ((y - r.top) / px) * 60));
+      return Math.max(
+        0,
+        Math.min(24 * 60, startHour * 60 + ((y - r.top) / px) * 60),
+      );
     }
 
     tv.querySelectorAll(".tv-col").forEach(function (col) {
@@ -500,7 +510,11 @@
             e = Math.max(a, b);
           if (e - s < SNAP) e = s + 60;
           ghost.remove();
-          createAt(col.dataset.colDay, C.toTime(s), C.toTime(Math.min(e, 24 * 60 - 1)));
+          createAt(
+            col.dataset.colDay,
+            C.toTime(s),
+            C.toTime(Math.min(e, 24 * 60 - 1)),
+          );
         }
         document.addEventListener("pointermove", move);
         document.addEventListener("pointerup", up);
@@ -585,7 +599,8 @@
       it.endDate && it.endDate !== it.date
         ? Math.round((C.fromKey(it.endDate) - C.fromKey(it.date)) / 86400000)
         : 0;
-    var onlyEnd = day === it.date && start && start === it.start && end !== it.end;
+    var onlyEnd =
+      day === it.date && start && start === it.start && end !== it.end;
     it.date = day;
     it.endDate = C.addDays(day, span);
     if (start) it.start = start;
@@ -631,11 +646,13 @@
     // Your own multi-day bars can be grabbed; a plain click still opens the
     // day underneath, as it did when the bar layer ignored the pointer.
     grid.addEventListener("click", function (ev) {
-      var bar = ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
+      var bar =
+        ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
       if (!bar) return;
       var cell = cellAt(ev.clientX, ev.clientY);
       if (!cell) return;
-      if (!(window.__shougCalViews.dayClick(cell.dataset.date, ev))) C.openDay(cell.dataset.date);
+      if (!window.__shougCalViews.dayClick(cell.dataset.date, ev))
+        C.openDay(cell.dataset.date);
     });
     var drag = null;
     function cellAt(x, y) {
@@ -648,7 +665,10 @@
       var el = ev.target.closest && ev.target.closest("[data-item-id]");
       if (!el) return;
       var from = cellAt(ev.clientX, ev.clientY);
-      drag = { id: el.dataset.itemId, from: from ? from.dataset.date : el.dataset.evDate };
+      drag = {
+        id: el.dataset.itemId,
+        from: from ? from.dataset.date : el.dataset.evDate,
+      };
       ev.dataTransfer.effectAllowed = "move";
       try {
         ev.dataTransfer.setData("text/plain", drag.id);
@@ -678,10 +698,13 @@
       var cell = cellAt(ev.clientX, ev.clientY),
         d = drag;
       drag = null;
-      if (!cell || !d.from || cell.dataset.date === d.from) return C.renderAll();
+      if (!cell || !d.from || cell.dataset.date === d.from)
+        return C.renderAll();
       var it = findItem(d.id);
       if (!it) return;
-      var delta = Math.round((C.fromKey(cell.dataset.date) - C.fromKey(d.from)) / 86400000);
+      var delta = Math.round(
+        (C.fromKey(cell.dataset.date) - C.fromKey(d.from)) / 86400000,
+      );
       moveItem(d.id, C.addDays(it.date, delta), "", "");
     });
   }
@@ -693,7 +716,9 @@
     var cm = C.currentMonth,
       inMonth = function (k) {
         var d = C.fromKey(k);
-        return d.getMonth() === cm.getMonth() && d.getFullYear() === cm.getFullYear();
+        return (
+          d.getMonth() === cm.getMonth() && d.getFullYear() === cm.getFullYear()
+        );
       };
     if (!state.phoneDay || !inMonth(state.phoneDay))
       state.phoneDay = inMonth(C.todayKey())
@@ -709,7 +734,13 @@
       dots.innerHTML = ev
         .slice(0, 4)
         .map(function (e) {
-          return '<i class="pd-dot ' + C.eventClasses(e) + '"' + C.eventAttrs(e) + "></i>";
+          return (
+            '<i class="pd-dot ' +
+            C.eventClasses(e) +
+            '"' +
+            C.eventAttrs(e) +
+            "></i>"
+          );
         })
         .join("");
       cell.appendChild(dots);
@@ -726,7 +757,9 @@
       '<div class="pd-head"><div><div class="pd-date">' +
       C.esc(fmt(k, { weekday: "long", month: "long", day: "numeric" })) +
       '</div><div class="pd-count">' +
-      (ev.length ? ev.length + " item" + (ev.length === 1 ? "" : "s") : "Nothing scheduled") +
+      (ev.length
+        ? ev.length + " item" + (ev.length === 1 ? "" : "s")
+        : "Nothing scheduled") +
       '</div></div><button type="button" class="pd-add" data-pd-add>+ Add</button></div>' +
       '<div class="pd-list">' +
       ev.map(C.dayCardHtml).join("") +
@@ -739,7 +772,20 @@
   }
 
   // ── Quick add ───────────────────────────────────────────────────────────
-  var MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  var MONTHS = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+  ];
   var DOW = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   function pad(n) {
     return (n < 10 ? "0" : "") + n;
@@ -761,7 +807,16 @@
     var raw = String(text || "").trim(),
       t = " " + raw.toLowerCase() + " ",
       today = C.todayKey(),
-      out = { kind: "personal", date: "", endDate: "", start: "", end: "", course: "", examType: "", location: "" },
+      out = {
+        kind: "personal",
+        date: "",
+        endDate: "",
+        start: "",
+        end: "",
+        course: "",
+        examType: "",
+        location: "",
+      },
       used = [];
     function take(re, fn) {
       var m = t.match(re);
@@ -773,13 +828,19 @@
     }
     // location: "@ hall a" or "in b204"
     take(/\s@\s*([^@]+?)\s*$/, function (m) {
-      out.location = raw.slice(raw.toLowerCase().lastIndexOf(m[1].trim()), raw.toLowerCase().lastIndexOf(m[1].trim()) + m[1].trim().length);
+      out.location = raw.slice(
+        raw.toLowerCase().lastIndexOf(m[1].trim()),
+        raw.toLowerCase().lastIndexOf(m[1].trim()) + m[1].trim().length,
+      );
     });
-    take(/\sin\s+(room\s+\w+|[a-z]?\d{2,4}[a-z]?|hall\s+\w+|building\s+\w+)\s/, function (m) {
-      out.location = m[1].replace(/\b\w/g, function (c) {
-        return c.toUpperCase();
-      });
-    });
+    take(
+      /\sin\s+(room\s+\w+|[a-z]?\d{2,4}[a-z]?|hall\s+\w+|building\s+\w+)\s/,
+      function (m) {
+        out.location = m[1].replace(/\b\w/g, function (c) {
+          return c.toUpperCase();
+        });
+      },
+    );
     // course
     take(/\s([a-z]{2,6})\s?-?(\d{3}[a-z]?)\s/, function (m) {
       out.course = C.courseLabel(m[1] + m[2]);
@@ -789,8 +850,12 @@
     if (ex) {
       out.kind = "exam";
       out.examType = ex[1] === "test" ? "exam" : ex[1];
-    } else if (/\s(assignment|homework|hw|lab|report|essay|due|submission)\s/.test(t)) out.kind = "assignment";
-    else if (/\s(project|phase|milestone|deliverable)\s/.test(t)) out.kind = "project";
+    } else if (
+      /\s(assignment|homework|hw|lab|report|essay|due|submission)\s/.test(t)
+    )
+      out.kind = "assignment";
+    else if (/\s(project|phase|milestone|deliverable)\s/.test(t))
+      out.kind = "project";
     else if (/\s(study|review|revise|revision)\s/.test(t)) out.kind = "study";
     else if (/\s(flight|travel|trip|vacation)\s/.test(t)) out.kind = "travel";
     else if (/\s(busy|unavailable|blocked)\s/.test(t)) out.kind = "busy";
@@ -799,15 +864,18 @@
     quickEvening = /\s(tonight|evening)\s/.test(t) ? "pm" : "";
     // times: ranges first
     var gotTime =
-      take(/\s(?:from\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:-|–|to|until)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?(?!\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))\s/, function (m) {
-        var b = parseClock(m[4], m[5], m[6]),
-          a = parseClock(m[1], m[2], m[3], m[6]);
-        if (a === null || b === null) return false;
-        if (b <= a && !m[3]) a -= 12 * 60;
-        if (a < 0 || b <= a) return false;
-        out.start = pad(Math.floor(a / 60)) + ":" + pad(a % 60);
-        out.end = pad(Math.floor(b / 60)) + ":" + pad(b % 60);
-      }) ||
+      take(
+        /\s(?:from\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:-|–|to|until)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?(?!\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))\s/,
+        function (m) {
+          var b = parseClock(m[4], m[5], m[6]),
+            a = parseClock(m[1], m[2], m[3], m[6]);
+          if (a === null || b === null) return false;
+          if (b <= a && !m[3]) a -= 12 * 60;
+          if (a < 0 || b <= a) return false;
+          out.start = pad(Math.floor(a / 60)) + ":" + pad(a % 60);
+          out.end = pad(Math.floor(b / 60)) + ":" + pad(b % 60);
+        },
+      ) ||
       take(/\s(?:at\s+)?(noon|midnight)\s/, function (m) {
         out.start = m[1] === "noon" ? "12:00" : "00:00";
       }) ||
@@ -835,7 +903,8 @@
     }
 
     // dates
-    var monthRe = "(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*";
+    var monthRe =
+      "(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*";
     function mk(y, mo, d) {
       var dt = new Date(y, mo, d);
       return dt.getMonth() === mo ? C.key(dt) : "";
@@ -848,16 +917,30 @@
     take(/\s(\d{4})-(\d{2})-(\d{2})\s/, function (m) {
       out.date = mk(+m[1], +m[2] - 1, +m[3]);
     }) ||
-      take(new RegExp("\\s" + monthRe + "\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:\\s*(?:-|–|to)\\s*(\\d{1,2}))?\\s"), function (m) {
-        var mo = MONTHS.indexOf(m[1].slice(0, 3));
-        out.date = yearFor(mo, +m[2]);
-        if (m[3]) out.endDate = yearFor(mo, +m[3]);
-      }) ||
-      take(new RegExp("\\s(\\d{1,2})(?:st|nd|rd|th)?(?:\\s*(?:-|–|to)\\s*(\\d{1,2}))?\\s+" + monthRe + "\\s"), function (m) {
-        var mo = MONTHS.indexOf(m[3].slice(0, 3));
-        out.date = yearFor(mo, +m[1]);
-        if (m[2]) out.endDate = yearFor(mo, +m[2]);
-      }) ||
+      take(
+        new RegExp(
+          "\\s" +
+            monthRe +
+            "\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:\\s*(?:-|–|to)\\s*(\\d{1,2}))?\\s",
+        ),
+        function (m) {
+          var mo = MONTHS.indexOf(m[1].slice(0, 3));
+          out.date = yearFor(mo, +m[2]);
+          if (m[3]) out.endDate = yearFor(mo, +m[3]);
+        },
+      ) ||
+      take(
+        new RegExp(
+          "\\s(\\d{1,2})(?:st|nd|rd|th)?(?:\\s*(?:-|–|to)\\s*(\\d{1,2}))?\\s+" +
+            monthRe +
+            "\\s",
+        ),
+        function (m) {
+          var mo = MONTHS.indexOf(m[3].slice(0, 3));
+          out.date = yearFor(mo, +m[1]);
+          if (m[2]) out.endDate = yearFor(mo, +m[2]);
+        },
+      ) ||
       take(/\s(\d{1,2})\/(\d{1,2})\s/, function (m) {
         var a = +m[1],
           b = +m[2];
@@ -873,13 +956,16 @@
       take(/\sin\s+(\d{1,2})\s+days?\s/, function (m) {
         out.date = C.addDays(today, +m[1]);
       }) ||
-      take(/\s(next\s+|this\s+|on\s+)?(sun|mon|tue|tues|wed|thu|thur|thurs|fri|sat)[a-z]*\s/, function (m) {
-        var want = DOW.indexOf(m[2].slice(0, 3)),
-          cur = C.fromKey(today).getDay(),
-          add = (want - cur + 7) % 7;
-        if (m[1] && /next/.test(m[1]) && add < 7) add += add === 0 ? 7 : 7;
-        out.date = C.addDays(today, add);
-      }) ||
+      take(
+        /\s(next\s+|this\s+|on\s+)?(sun|mon|tue|tues|wed|thu|thur|thurs|fri|sat)[a-z]*\s/,
+        function (m) {
+          var want = DOW.indexOf(m[2].slice(0, 3)),
+            cur = C.fromKey(today).getDay(),
+            add = (want - cur + 7) % 7;
+          if (m[1] && /next/.test(m[1]) && add < 7) add += add === 0 ? 7 : 7;
+          out.date = C.addDays(today, add);
+        },
+      ) ||
       take(/\snext\s+week\s/, function () {
         out.date = C.addDays(today, 7);
       });
@@ -899,8 +985,12 @@
     });
     out.title = kept.join(" ");
     if (out.kind === "exam") out.title = "";
-    else if (!out.title) out.title = out.course ? out.course + " " + out.kind : "";
-    else if (out.course && out.title.toUpperCase().indexOf(out.course.replace(" ", "")) < 0)
+    else if (!out.title)
+      out.title = out.course ? out.course + " " + out.kind : "";
+    else if (
+      out.course &&
+      out.title.toUpperCase().indexOf(out.course.replace(" ", "")) < 0
+    )
       out.title = out.title.charAt(0).toUpperCase() + out.title.slice(1);
     if (out.endDate && out.endDate < out.date) out.endDate = "";
     return out;
@@ -918,11 +1008,16 @@
   function describe(q) {
     var when = q.date
       ? fmt(q.date, { weekday: "short", month: "short", day: "numeric" }) +
-        (q.endDate && q.endDate !== q.date ? " – " + fmt(q.endDate, { month: "short", day: "numeric" }) : "")
+        (q.endDate && q.endDate !== q.date
+          ? " – " + fmt(q.endDate, { month: "short", day: "numeric" })
+          : "")
       : "pick a day";
     var what =
       q.kind === "exam"
-        ? (q.course || "Course?") + " " + q.examType.charAt(0).toUpperCase() + q.examType.slice(1)
+        ? (q.course || "Course?") +
+          " " +
+          q.examType.charAt(0).toUpperCase() +
+          q.examType.slice(1)
         : q.title || "Untitled";
     return (
       KIND_LABEL[q.kind] +
@@ -970,7 +1065,8 @@
       var q = update();
       if (!q) return;
       if (!q.date) return C.toast("Add a day, like Tue, tomorrow or Oct 25");
-      if (q.kind === "exam" && !q.course) return C.toast("Add the course code, like SE322 quiz Tue");
+      if (q.kind === "exam" && !q.course)
+        return C.toast("Add the course code, like SE322 quiz Tue");
       var done =
         q.kind === "exam"
           ? C.addExam({
@@ -1010,7 +1106,9 @@
         date: it.date,
         end: it.endDate || it.date,
         title: it.title || "Event",
-        sub: [KIND_LABEL[it.kind] || "Event", it.course, it.location].filter(Boolean).join(" · "),
+        sub: [KIND_LABEL[it.kind] || "Event", it.course, it.location]
+          .filter(Boolean)
+          .join(" · "),
         hay: [it.title, it.course, it.location, it.notes, it.kind].join(" "),
       });
     });
@@ -1027,9 +1125,14 @@
       out.push({
         date: "",
         title: c.title || "Class",
-        sub: "Weekly class · " + (c.days || []).map(function (d) {
-          return d.slice(0, 3);
-        }).join(", ") + (c.start ? " · " + C.timeLabel(c.start) : ""),
+        sub:
+          "Weekly class · " +
+          (c.days || [])
+            .map(function (d) {
+              return d.slice(0, 3);
+            })
+            .join(", ") +
+          (c.start ? " · " + C.timeLabel(c.start) : ""),
         hay: [c.title, c.location, "class"].join(" "),
         classId: c.id,
       });
@@ -1040,9 +1143,11 @@
     var k = C.todayKey();
     for (var i = 0; i < 120; i++) {
       var d = C.addDays(k, i);
-      if (C.eventsFor(d).some(function (e) {
-        return e.classId === classId;
-      }))
+      if (
+        C.eventsFor(d).some(function (e) {
+          return e.classId === classId;
+        })
+      )
         return d;
     }
     return k;
@@ -1053,7 +1158,9 @@
       results = [],
       active = -1;
     function norm(s) {
-      return String(s || "").toLowerCase().replace(/\s+/g, "");
+      return String(s || "")
+        .toLowerCase()
+        .replace(/\s+/g, "");
     }
     function run() {
       var q = input.value.trim().toLowerCase();
@@ -1076,7 +1183,9 @@
             bu = !b.date || b.end >= today;
           if (au !== bu) return au ? -1 : 1;
           if (!a.date || !b.date) return a.date ? -1 : b.date ? 1 : 0;
-          return au ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date);
+          return au
+            ? a.date.localeCompare(b.date)
+            : b.date.localeCompare(a.date);
         })
         .slice(0, 10);
       active = results.length ? 0 : -1;
@@ -1096,7 +1205,16 @@
                 '"><span class="cv-r-title">' +
                 C.esc(r.title) +
                 '</span><span class="cv-r-sub">' +
-                C.esc((r.date ? fmt(r.date, { weekday: "short", month: "short", day: "numeric", year: "numeric" }) + " · " : "") + r.sub) +
+                C.esc(
+                  (r.date
+                    ? fmt(r.date, {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }) + " · "
+                    : "") + r.sub,
+                ) +
                 "</span></button>"
               );
             })
@@ -1131,7 +1249,9 @@
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         if (!results.length) return;
-        active = (active + (e.key === "ArrowDown" ? 1 : -1) + results.length) % results.length;
+        active =
+          (active + (e.key === "ArrowDown" ? 1 : -1) + results.length) %
+          results.length;
         draw();
       } else if (e.key === "Enter") {
         e.preventDefault();
@@ -1179,11 +1299,16 @@
   document.addEventListener("keydown", function (e) {
     if (!C || e.metaKey || e.ctrlKey || e.altKey) return;
     var tgt = e.target;
-    if (tgt && (tgt.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tgt.tagName))) return;
+    if (
+      tgt &&
+      (tgt.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tgt.tagName))
+    )
+      return;
     if (!$("calendar-app") || $("calendar-app").offsetParent === null) return;
     if (modalOpen()) return;
     var k = e.key;
-    if (k === "Escape" && $("cv-help-sheet")) return $("cv-help-sheet").remove();
+    if (k === "Escape" && $("cv-help-sheet"))
+      return $("cv-help-sheet").remove();
     var map = {
       t: function () {
         $("today-btn").click();
@@ -1204,7 +1329,10 @@
         setView("day");
       },
       n: function () {
-        C.openEventEditor(state.view === "month" ? C.todayKey() : state.focus, "personal");
+        C.openEventEditor(
+          state.view === "month" ? C.todayKey() : state.focus,
+          "personal",
+        );
       },
       q: function () {
         $("cv-quick").focus();
@@ -1214,7 +1342,8 @@
       },
       "?": showHelp,
     };
-    var fn = map[k] || map[k.toLowerCase && k.length === 1 ? k.toLowerCase() : k];
+    var fn =
+      map[k] || map[k.toLowerCase && k.length === 1 ? k.toLowerCase() : k];
     if (!fn) return;
     e.preventDefault();
     fn();
@@ -1225,7 +1354,10 @@
     render: render,
     step: function (dir) {
       if (!C || state.view === "month") return false;
-      state.focus = C.addDays(state.focus, dir * (state.view === "week" ? 7 : 1));
+      state.focus = C.addDays(
+        state.focus,
+        dir * (state.view === "week" ? 7 : 1),
+      );
       C.currentMonth = C.fromKey(state.focus);
       C.renderAll(true);
       return true;
@@ -1240,10 +1372,14 @@
       state.focus = k;
       if (state.view === "month" && isPhone()) {
         state.phoneDay = k;
-        document.querySelectorAll("#month-grid .pd-selected").forEach(function (c) {
-          c.classList.remove("pd-selected");
-        });
-        var cell = document.querySelector('#month-grid .day[data-date="' + k + '"]');
+        document
+          .querySelectorAll("#month-grid .pd-selected")
+          .forEach(function (c) {
+            c.classList.remove("pd-selected");
+          });
+        var cell = document.querySelector(
+          '#month-grid .day[data-date="' + k + '"]',
+        );
         if (cell) cell.classList.add("pd-selected");
         renderPhoneDay();
         return true;
@@ -1355,6 +1491,7 @@
     document.head.appendChild(el);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();

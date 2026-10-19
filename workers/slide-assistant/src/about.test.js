@@ -63,7 +63,10 @@ test("questions about public work are allowed", () => {
 });
 
 test("the public profile carries no private data", () => {
-  assert.doesNotMatch(PUBLIC_PROFILE, /\bgpa\b|\bgrade|famil(y|ies) (life|members)/i);
+  assert.doesNotMatch(
+    PUBLIC_PROFILE,
+    /\bgpa\b|\bgrade|famil(y|ies) (life|members)/i,
+  );
 });
 
 test("private questions are refused without calling the model", async () => {
@@ -107,15 +110,18 @@ test("public questions reach the model with the profile as context", async () =>
   assert.equal(seen.messages[0].role, "system");
   assert.match(seen.messages[0].content, /PUBLIC PROFILE/);
   // Visitor-supplied system messages are dropped from history.
-  assert.equal(
-    seen.messages.filter((m) => m.role === "system").length,
-    1,
-  );
+  assert.equal(seen.messages.filter((m) => m.role === "system").length, 1);
   assert.equal(seen.messages.at(-1).content, "What does Shoug do?");
 });
 
 test("empty questions are rejected", async () => {
-  const res = await handleAbout(request({ question: "  " }), {}, "", json, async () => "x");
+  const res = await handleAbout(
+    request({ question: "  " }),
+    {},
+    "",
+    json,
+    async () => "x",
+  );
   assert.equal(res.status, 400);
 });
 
@@ -123,8 +129,16 @@ test("LinkedIn data renders only allowlisted fields", () => {
   const text = renderLinkedIn({
     syncedAt: "2026-10-12",
     headline: "SE student",
-    positions: [{ title: "Cybersecurity Trainee", company: "MDD", start: "Jun 2026" }],
-    education: [{ school: "Prince Sultan University", degree: "BSc SE", notes: "GPA 3.9" }],
+    positions: [
+      { title: "Cybersecurity Trainee", company: "MDD", start: "Jun 2026" },
+    ],
+    education: [
+      {
+        school: "Prince Sultan University",
+        degree: "BSc SE",
+        notes: "GPA 3.9",
+      },
+    ],
     skills: ["Python"],
     address: "secret street",
     birthDate: "2000-01-01",
@@ -152,7 +166,10 @@ test("synced LinkedIn data reaches the model; a missing file does not break answ
   };
   linkedinFile = null;
   assert.doesNotMatch(await ask(), /LINKEDIN \(synced/);
-  linkedinFile = { headline: "SE student", positions: [{ title: "Trainee", company: "MDD" }] };
+  linkedinFile = {
+    headline: "SE student",
+    positions: [{ title: "Trainee", company: "MDD" }],
+  };
   assert.match(await ask(), /LINKEDIN[\s\S]*Trainee at MDD/);
   linkedinFile = null;
 });
@@ -167,14 +184,41 @@ test("questions are counted by topic only", async () => {
 
   const points = [];
   const env = { ABOUT_STATS: { writeDataPoint: (p) => points.push(p) } };
-  await handleAbout(request({ question: "What is her GPA?" }), env, "", json, async () => "x");
-  await handleAbout(request({ question: "Which projects should I see?" }), env, "", json, async () => "x");
-  assert.deepEqual(points.map((p) => p.blobs), [["private"], ["projects"]]);
+  await handleAbout(
+    request({ question: "What is her GPA?" }),
+    env,
+    "",
+    json,
+    async () => "x",
+  );
+  await handleAbout(
+    request({ question: "Which projects should I see?" }),
+    env,
+    "",
+    json,
+    async () => "x",
+  );
+  assert.deepEqual(
+    points.map((p) => p.blobs),
+    [["private"], ["projects"]],
+  );
   // Only the topic label is written: no question text, no IP.
   assert.ok(points.every((p) => p.blobs.length === 1 && !p.doubles));
 
   // A failing analytics binding never breaks the answer.
-  const broken = { ABOUT_STATS: { writeDataPoint: () => { throw new Error("down"); } } };
-  const res = await handleAbout(request({ question: "What does Shoug do?" }), broken, "", json, async () => "ok");
+  const broken = {
+    ABOUT_STATS: {
+      writeDataPoint: () => {
+        throw new Error("down");
+      },
+    },
+  };
+  const res = await handleAbout(
+    request({ question: "What does Shoug do?" }),
+    broken,
+    "",
+    json,
+    async () => "ok",
+  );
   assert.equal((await res.json()).answer, "ok");
 });

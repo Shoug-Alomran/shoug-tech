@@ -9962,7 +9962,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/exams/04-introduction-quiz/",
-    title: "SE423 | Introduction, Performance Domains & Tailoring Quiz - Chapter 1",
+    title:
+      "SE423 | Introduction, Performance Domains & Tailoring Quiz - Chapter 1",
     track: "software-engineering",
     course: "se423",
     section: "exams",
@@ -10350,7 +10351,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/slides/chapter-2/",
-    title: "SE423 | The Project Management and Software Engineering Process Context - Chapter 2",
+    title:
+      "SE423 | The Project Management and Software Engineering Process Context - Chapter 2",
     track: "software-engineering",
     course: "se423",
     section: "slides",
