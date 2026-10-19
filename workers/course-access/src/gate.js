@@ -102,13 +102,18 @@
 })();
 
 // Only explicitly selected public samples can be displayed here.
-document.querySelectorAll('[data-sample-select]').forEach(button => {
-  button.addEventListener('click', () => {
+document.querySelectorAll("[data-sample-select]").forEach((button) => {
+  button.addEventListener("click", () => {
     const selected = button.dataset.sampleSelect;
-    document.querySelectorAll('[data-sample-select]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-    document.querySelectorAll('[data-sample-panel]').forEach(panel => {
+    document
+      .querySelectorAll("[data-sample-select]")
+      .forEach((item) =>
+        item.setAttribute("aria-pressed", String(item === button)),
+      );
+    document.querySelectorAll("[data-sample-panel]").forEach((panel) => {
       panel.hidden = panel.dataset.samplePanel !== selected;
-      if (panel.hidden) panel.querySelectorAll('video').forEach(video => video.pause());
+      if (panel.hidden)
+        panel.querySelectorAll("video").forEach((video) => video.pause());
     });
   });
 });

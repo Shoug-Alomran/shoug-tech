@@ -182,7 +182,8 @@
   function render() {
     var path = window.location.pathname,
       entries = read(),
-      review = path === "/academics/" || path === "/account/" ? reviewLink() : null;
+      review =
+        path === "/academics/" || path === "/account/" ? reviewLink() : null;
     if (!entries.length && !review) return;
 
     if (path === "/academics/") {
@@ -191,7 +192,8 @@
         document.querySelector("main");
       if (!host) return;
       var section = buildSection(entries, "[ Continue where you left off ]");
-      if (review) section.querySelector(".shoug-resume__grid").appendChild(review);
+      if (review)
+        section.querySelector(".shoug-resume__grid").appendChild(review);
       // Sits after the hero so the page still leads with its own heading.
       var hero = host.querySelector(".hero");
       if (hero && hero.nextSibling) insertAfter(section, hero);
@@ -209,7 +211,12 @@
     }
 
     var m = path.match(COURSE);
-    if (!entries.length || !m || path !== "/academics/" + m[1] + "/" + m[2] + "/") return;
+    if (
+      !entries.length ||
+      !m ||
+      path !== "/academics/" + m[1] + "/" + m[2] + "/"
+    )
+      return;
     var mine = entries.filter(function (e) {
       return e.course === m[2].toUpperCase();
     });
@@ -218,7 +225,10 @@
       document.querySelector("main .course-header") ||
       (document.querySelector("main h1") || {}).parentNode;
     if (anchor && anchor.parentNode)
-      insertAfter(buildSection(mine, "[ Continue in " + mine[0].course + " ]"), anchor);
+      insertAfter(
+        buildSection(mine, "[ Continue in " + mine[0].course + " ]"),
+        anchor,
+      );
   }
 
   function init() {

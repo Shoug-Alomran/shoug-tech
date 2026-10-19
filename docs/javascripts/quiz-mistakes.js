@@ -20,7 +20,8 @@
     /(^|\s)(wrong|incorrect|c-wrong|selected-wrong|answered-wrong|wrong-ans|wrong-input|wrong-mark)(\s|$)/;
   // Some quizzes only highlight the right answer; a different checked choice
   // in the same question is then the mistake.
-  var REVEAL = /(^|\s)(correct|c-correct|correct-mark|show-correct|correct-ans)(\s|$)/;
+  var REVEAL =
+    /(^|\s)(correct|c-correct|correct-mark|show-correct|correct-ans)(\s|$)/;
   var CONTAINER =
     ".q-card, .question-card, .question-block, .question-container, .quiz-question, .question, .mcq, .written, .q-item, .q, fieldset, [data-q], [data-question]";
   var QTEXT =
@@ -70,7 +71,9 @@
     var h1 = document.querySelector("h1");
     return clean(
       (h1 && h1.textContent) ||
-        String(document.title || "").split(/\s[|/]{1,2}\s/).pop(),
+        String(document.title || "")
+          .split(/\s[|/]{1,2}\s/)
+          .pop(),
     ).slice(0, 120);
   }
 
@@ -89,7 +92,10 @@
           x.remove();
         });
       var t = clean(copy.textContent)
-        .replace(/^(?:q(?:uestion)?\s*\d{1,3}\s*[.):]?|\d{1,3}\s*[.):])\s*/i, "")
+        .replace(
+          /^(?:q(?:uestion)?\s*\d{1,3}\s*[.):]?|\d{1,3}\s*[.):])\s*/i,
+          "",
+        )
         .replace(/^\(\s*\d+\s*(?:points?|marks?|pts)\s*\)\s*/i, "");
       if (t.length >= 8) return t;
     }

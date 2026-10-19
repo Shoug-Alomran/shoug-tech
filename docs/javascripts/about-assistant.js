@@ -37,7 +37,10 @@
         : /^https?:/.test(clean)
           ? clean
           : "https://" + clean;
-      if (!/^(https:\/\/)?(www\.)?shoug-tech\.com/.test(a.href) && !/^mailto:/.test(a.href)) {
+      if (
+        !/^(https:\/\/)?(www\.)?shoug-tech\.com/.test(a.href) &&
+        !/^mailto:/.test(a.href)
+      ) {
         a.target = "_blank";
         a.rel = "noopener noreferrer";
       }
@@ -131,7 +134,11 @@
     send.disabled = true;
     input.value = "";
     say("user", question);
-    var pending = say("bot", isArabic() ? "جارٍ التفكير..." : "Thinking...", "aa-pending");
+    var pending = say(
+      "bot",
+      isArabic() ? "جارٍ التفكير..." : "Thinking...",
+      "aa-pending",
+    );
     fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -180,7 +187,11 @@
   });
   root.querySelectorAll("[data-aa-q]").forEach(function (chip) {
     chip.addEventListener("click", function () {
-      ask(isArabic() && chip.dataset.aaQAr ? chip.dataset.aaQAr : chip.dataset.aaQ);
+      ask(
+        isArabic() && chip.dataset.aaQAr
+          ? chip.dataset.aaQAr
+          : chip.dataset.aaQ,
+      );
     });
   });
 })();
