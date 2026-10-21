@@ -61,10 +61,21 @@
     while (out.length < (count || 24)) out.push(prevTerm(out[out.length - 1]));
     return out;
   }
-  // "cs331", "CS-331" and "ethcs303" become "CS 331" and "ETHCS 303".
+  // Where this site's course slug differs from the registrar's code.
+  var CODE_ALIASES = { ETHCS: "ETHC" };
+  // "cs331", "CS-331" and "101ARAB" (how right-to-left PDF text prints
+  // ARAB101) become "CS 331" and "ARAB 101"; "ethcs303" becomes "ETHC 303".
   function courseCode(value) {
-    var m = String(value || "").match(/([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)/);
-    return m ? m[1].toUpperCase() + " " + m[2].toUpperCase() : String(value || "").trim().toUpperCase();
+    var raw = String(value || "").toUpperCase(),
+      m = raw.match(/([A-Z]{2,6})\s*-?\s*(\d{3}[A-Z]?)/),
+      rtl = !m && raw.match(/(\d{3})\s*-?\s*([A-Z]{2,6})/);
+    if (rtl) m = [rtl[0], rtl[2], rtl[1]];
+    return m ? (CODE_ALIASES[m[1]] || m[1]) + " " + m[2] : raw.trim();
+  }
+  // Preparatory-year courses (MATH 001, PDS 002, PE 001...) appear on the
+  // transcript but PSU leaves them out of the GPA.
+  function isPrep(code) {
+    return /\s00\d[A-Z]?$/.test(String(code || ""));
   }
   function validTranscript(t) {
     return (
@@ -84,8 +95,14 @@
       return course.finished && LETTERS.indexOf(course.letter) > -1 && course.hours > 0 && /^\d{3}$/.test(course.term);
     });
   }
-  function counts(c) {
-    return c && POINTS[c.letter] !== undefined && NO_GPA.indexOf(c.letter) < 0 && Number(c.hours) > 0;
+  function counts(c, code) {
+    return (
+      c &&
+      POINTS[c.letter] !== undefined &&
+      NO_GPA.indexOf(c.letter) < 0 &&
+      Number(c.hours) > 0 &&
+      !isPrep(code || c.code)
+    );
   }
 
   /**
@@ -102,7 +119,7 @@
       covered = [];
     Object.keys(record.courses || {}).forEach(function (code) {
       var c = record.courses[code];
-      if (!counts(c) || !c.term || c.term >= current || (skip || []).indexOf(code) > -1) return;
+      if (!counts(c, code) || !c.term || c.term >= current || (skip || []).indexOf(code) > -1) return;
       if (t && c.term <= t.term) {
         covered.push(code);
         return;
@@ -136,6 +153,7 @@
     prevTerm: prevTerm,
     recentTerms: recentTerms,
     courseCode: courseCode,
+    isPrep: isPrep,
     validTranscript: validTranscript,
     transcriptCourses: transcriptCourses,
     counts: counts,
