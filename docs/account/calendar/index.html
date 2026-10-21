@@ -3638,6 +3638,17 @@
                   <div class="list" id="attendance-list"></div>
                 </div>
               </section>
+              <section class="panel" id="calendar-personal-panel">
+                <div class="panel-head">
+                  <div>
+                    <div class="panel-title">Personal</div>
+                    <div class="panel-sub">Your calendar preferences</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <label class="filter-toggle"><input id="show-completed-calendar" type="checkbox"> Show completed</label>
+                </div>
+              </section>
             </div>
           </div>
           <aside class="side">
@@ -3651,7 +3662,6 @@
                 </div>
               </div>
               <div class="panel-body">
-                <label class="filter-toggle"><input id="show-completed-calendar" type="checkbox"> Show completed assignments on calendar</label>
                 <div class="filter-grid" id="view-filters"></div>
               </div>
             </section>
@@ -7200,14 +7210,16 @@
         // The term a new grade belongs to: the semester being viewed, or the
         // one running today.
         function gradeTerm() {
-          return selectedSemester || (termForDate(todayKey()) || {}).term || "";
+          return selectedSemester || "";
         }
-        // A grade counts toward this semester when it was entered for it, or
-        // (older grades with no term) when its course is taken this semester.
+        // Keep work in its recorded semester. Legacy grades without a term
+        // inherit the completed-course term before using the class schedule.
         function gradeInSemester(g, current) {
           var term = gradeTerm();
           if (g.termId && term) return g.termId === term;
-          return current.indexOf(courseLabel(g.course)) > -1;
+          var record = (academicRecord.courses || {})[courseLabel(g.course)];
+          if (record && record.term && term) return record.term === term;
+          return !term && current.indexOf(courseLabel(g.course)) > -1;
         }
         function fmtMark(n) {
           return String(Math.round(n * 10) / 10);
@@ -7253,6 +7265,13 @@
           if (!wrap) return;
           var activeCourses = knownCourses(),
             groups = {};
+          // Transcript-recorded final grades are authoritative for their
+          // selected term; show each such course even without calendar work.
+          Object.keys(academicRecord.courses || {}).forEach(function (course) {
+            var rec = academicRecord.courses[course];
+            if (rec && rec.finished !== false && rec.term === gradeTerm()) activeCourses.push(course);
+          });
+          activeCourses = Array.from(new Set(activeCourses));
           grades.forEach(function (g) {
             if (!gradeInSemester(g, activeCourses)) return;
             var c = courseLabel(g.course) || "OTHER";
@@ -7291,12 +7310,12 @@
             .sort()
             .forEach(function (course) {
               var record = (academicRecord.courses || {})[course],
-                st = record && record.term === recordTerm()
+                st = record && record.finished !== false && record.term === gradeTerm()
                   ? Object.assign({}, courseStats(course, semGroups[course]), { letter: record.letter, gpa: LETTER_POINTS[record.letter] })
                   : semGroups[course] === groups[course] ? stats[course] : courseStats(course, semGroups[course]),
                 h = creditHours(course),
                 row = { course: course, hours: h, st: st, letter: "", points: null, source: "" };
-              if (st.letter) {
+              if (st.letter && (record && record.finished !== false && record.term === gradeTerm() || courseFinals[course] && courseFinals[course].letter)) {
                 row.letter = st.letter;
                 row.source = "final";
                 row.points = LETTER_POINTS[st.letter] !== undefined ? LETTER_POINTS[st.letter] : null;
@@ -7312,7 +7331,7 @@
               semRows.push(row);
             });
           var semGpa = semHours ? semQP / semHours : null,
-            cum = AR.cumulative(academicRecord, recordTerm(), semQP, semHours, []),
+            cum = AR.cumulative(academicRecord, gradeTerm() || (termForDate(todayKey()) || {}).term || AR.termForDate(), semQP, semHours, []),
             hasHistory = Boolean(cum.transcript || cum.added.length || semHours),
             projected = semRows.some(function (r) {
               return r.source === "projected" && r.points !== null;
@@ -7342,11 +7361,7 @@
                 '</tbody><tfoot><tr><td>Total</td><td>' + semHours + "</td><td></td><td></td><td>" + semQP.toFixed(2) + "</td></tr></tfoot></table></div>"
               : "") +
             '<div class="item-meta gpa-note">GPA = points × hours ÷ hours, on PSU\'s 4.00 scale. Courses without a final letter use their current average, rounded to a whole mark.</div>' +
-            '<div class="grade-settings gpa-record"><label class="grade-credits">Transcript GPA through prior terms<input type="number" min="0" max="4" step="0.01" data-gpa-prev="gpa" value="' +
-            (cum.transcript ? Number(cum.transcript.gpa) : "") +
-            '" placeholder="3.50" /></label><label class="grade-credits">Transcript hours through prior terms<input type="number" min="0" max="250" step="1" data-gpa-prev="hours" value="' +
-            (cum.transcript ? Number(cum.transcript.hours) : "") +
-            '" placeholder="90" /></label></div></div>';
+            '<div class="grade-settings gpa-record"><a class="btn muted" href="/account/transcript/">Open transcript to manage completed courses</a></div></div>';
           wrap.innerHTML = names.length || semRows.length
             ? gpaCard +
               names
@@ -7469,27 +7484,6 @@
                 persist().then(renderGradebook);
               });
             });
-          wrap.querySelectorAll("[data-gpa-prev]").forEach(function (input) {
-            input.addEventListener("change", function () {
-              var field = input.dataset.gpaPrev,
-                gpaInput = wrap.querySelector('[data-gpa-prev="gpa"]'),
-                hoursInput = wrap.querySelector('[data-gpa-prev="hours"]'),
-                gpa = Number(gpaInput.value), hours = Math.round(Number(hoursInput.value));
-              if (!gpaInput.value || !hoursInput.value) {
-                delete academicRecord.transcript;
-                writeRecord({ transcript: firebase.firestore.FieldValue.delete() }).then(renderGradebook);
-                return;
-              }
-              if (!isFinite(gpa) || gpa < 0 || gpa > 4 || !isFinite(hours) || hours < 1 || hours > 250) {
-                toast("Enter a GPA from 0 to 4 and transcript hours from 1 to 250");
-                input.value = field === "gpa" ? (academicRecord.transcript || {}).gpa || "" : (academicRecord.transcript || {}).hours || "";
-                return;
-              }
-              var transcript = { gpa: gpa, hours: hours, term: AR.prevTerm(recordTerm()) };
-              academicRecord.transcript = transcript;
-              writeRecord({ transcript: transcript }).then(renderGradebook);
-            });
-          });
           wrap.querySelectorAll("[data-grade-final-weight]").forEach(function (input) {
             input.addEventListener("change", function () {
               var c = input.dataset.gradeFinalWeight,
@@ -7513,7 +7507,7 @@
               }
               setRecordCourse(
                 c,
-                sel.value ? { letter: sel.value, hours: creditHours(c), term: recordTerm() } : null,
+                sel.value ? { letter: sel.value, hours: creditHours(c), term: recordTerm(), finished: true } : null,
               );
             });
           });
@@ -7698,12 +7692,12 @@
         // ── Academic record (shared with course pages, academic-record.js) ──
         var AR = window.ShougAcademicRecord;
         function recordTerm() {
-          return gradeTerm() || AR.termForDate();
+          return gradeTerm() || (termForDate(todayKey()) || {}).term || AR.termForDate();
         }
         // This term's final letter, from the record (course page or calendar).
         function recordLetter(course) {
           var rec = (academicRecord.courses || {})[course];
-          return rec && rec.term === recordTerm() ? rec.letter : "";
+          return rec && rec.finished !== false && rec.term === recordTerm() ? rec.letter : "";
         }
         // Targeted writes: persist() merges, so it could never drop a course.
         function writeRecord(patch) {
@@ -9781,6 +9775,7 @@
           var period = selectedPeriod();
           if (period) currentMonth = fromKey(period.start);
           renderAll();
+          if (typeof renderGradebook === "function") renderGradebook();
         });
         $("clear-items-btn").addEventListener("click", function () {
           classes = [];

@@ -3,6 +3,7 @@
 // Firebase Console > Firestore > Rules. Do NOT replace the production rules.
 //
 // courseRatings/{course}/ratings/{uid}: one rating per student per course.
+// courseRatings/{course}/tips/{tipId}: shared, anonymous-to-readers study tips.
 // Anyone can read (averages show to signed-out visitors); only the signed-in
 // owner can write their own document, every score is a whole number 1-5,
 // and Overall is required.
@@ -19,7 +20,7 @@ service cloud.firestore {
       let d = request.resource.data;
       return d.keys().hasAll(['uid', 'overall', 'updatedAt'])
         && d.keys().hasOnly(['uid', 'overall', 'workload', 'assignmentDifficulty',
-          'assignmentLength', 'projectDifficulty', 'labDifficulty', 'exams', 'updatedAt'])
+          'assignmentLength', 'projectDifficulty', 'labDifficulty', 'exams', 'term', 'updatedAt'])
         && d.uid == uid
         && d.updatedAt == request.time
         && ratingScore(d.overall)
@@ -28,9 +29,44 @@ service cloud.firestore {
         && optionalScore(d, 'assignmentLength')
         && optionalScore(d, 'projectDifficulty')
         && optionalScore(d, 'labDifficulty')
+        && (!('term' in d) || (d.term is string && d.term.size() <= 30))
         // Exam keys come from each course's assessment list; the client
         // ignores any exam value that is not a whole number 1-5.
         && (!('exams' in d) || (d.exams is map && d.exams.size() <= 10));
+    }
+    function validHelpfulVote() {
+      let oldVotes = resource.data.get('helpfulBy', {});
+      let newVotes = request.resource.data.get('helpfulBy', {});
+      let oldCount = resource.data.get('helpfulCount', 0);
+      let newCount = request.resource.data.get('helpfulCount', 0);
+      let changed = newVotes.diff(oldVotes).affectedKeys();
+      return request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['helpfulBy', 'helpfulCount'])
+        && changed.size() == 1
+        && changed.hasOnly([request.auth.uid])
+        && (request.auth.uid in oldVotes
+          ? !(request.auth.uid in newVotes) && newCount == oldCount - 1
+          : (request.auth.uid in newVotes) && newVotes[request.auth.uid] == true && newCount == oldCount + 1)
+        && newCount >= 0
+        && newCount <= 10000;
+    }
+    function validCommunityPost(course, uid) {
+      let d = request.resource.data;
+      return request.auth != null
+        && request.auth.uid == uid
+        && course.matches('[a-z]+[0-9]{3}')
+        && d.keys().hasAll(['uid', 'type', 'title', 'body', 'url', 'hours', 'difficulty', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && d.keys().hasOnly(['uid', 'type', 'title', 'body', 'url', 'hours', 'difficulty', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && d.uid == uid
+        && d.type in ['resource', 'assignment-report', 'exam-report', 'tool']
+        && d.title is string && d.title.size() >= 3 && d.title.size() <= 120
+        && d.body is string && d.body.size() >= 20 && d.body.size() <= 1200
+        && d.url is string && d.url.size() <= 500
+        && (d.url == '' || d.url.matches('https?://.*'))
+        && (d.hours == null || (d.hours is number && d.hours > 0 && d.hours <= 200))
+        && (d.difficulty == null || (d.difficulty is int && d.difficulty >= 1 && d.difficulty <= 5))
+        && d.helpfulCount == 0 && d.helpfulBy is map && d.helpfulBy.size() == 0
+        && d.createdAt == request.time;
     }
     match /courseRatings/{course}/ratings/{uid} {
       allow read: if course.matches('[a-z]+[0-9]{3}');
@@ -38,6 +74,36 @@ service cloud.firestore {
         && course.matches('[a-z]+[0-9]{3}')
         && validCourseRating(uid);
       allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    match /courseRatings/{course}/tips/{tipId} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create: if request.auth != null
+        && course.matches('[a-z]+[0-9]{3}')
+        && request.resource.data.keys().hasOnly(['uid', 'focus', 'tip', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'focus', 'tip', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.focus is string
+        && request.resource.data.focus.size() >= 3
+        && request.resource.data.focus.size() <= 140
+        && request.resource.data.tip is string
+        && request.resource.data.tip.size() >= 20
+        && request.resource.data.tip.size() <= 1200
+        && request.resource.data.helpfulCount == 0
+        && request.resource.data.helpfulBy is map
+        && request.resource.data.helpfulBy.size() == 0
+        && request.resource.data.createdAt == request.time;
+      allow update: if request.auth != null
+        && resource.data.uid is string
+        && validHelpfulVote();
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+    }
+    match /courseCommunity/{course}/posts/{postId} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create: if request.auth != null
+        && validCommunityPost(course, request.auth.uid);
+      allow update: if validHelpfulVote();
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
     }
   }
 }

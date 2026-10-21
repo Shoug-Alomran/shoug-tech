@@ -823,6 +823,7 @@
       }
     </style>
     <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/academic-record.js?v=2"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
     <script src="/javascripts/translation-launch-guard.js"></script>
 
@@ -1909,8 +1910,29 @@
         );
         localStorage.setItem("psu_cs_cys_v2_choices", JSON.stringify(choices));
         localStorage.setItem("psu_cs_cys_v2_theme", dark ? "dark" : "light");
+        syncTranscriptPlan();
       }
 
+      function syncTranscriptPlan() {
+        try {
+          const user = window.__shoug_fb && window.__shoug_fb.auth().currentUser;
+          if (!user || !window.ShougAcademicRecord) return;
+          const ref = window.__shoug_fb.firestore().collection("users").doc(user.uid);
+          const current = window.__shougPlanSync || Promise.resolve();
+          window.__shougPlanSync = current.then(() => ref.get()).then((snap) => {
+            const record = (snap.exists && snap.data().academicRecord) || {};
+            const courses = Object.assign({}, record.courses || {});
+            let changed = false;
+            COURSES_RAW.forEach((course) => {
+              const code = window.ShougAcademicRecord.courseCode(course.id);
+              if (!completed.has(course.id) || courses[code]) return;
+              courses[code] = { letter: "", hours: course.hours, term: window.ShougAcademicRecord.termForDate(), finished: true, needsGrade: true };
+              changed = true;
+            });
+            if (changed) return ref.set({ academicRecord: { courses: courses } }, { merge: true });
+          }).catch((error) => console.warn("Transcript sync unavailable", error));
+        } catch (error) { console.warn("Transcript sync unavailable", error); }
+      }
       function load() {
         try {
           const c = localStorage.getItem("psu_cs_cys_v2_completed");
@@ -1922,8 +1944,10 @@
           normalizeChoices();
         }
       }
+      syncTranscriptPlan();
 
       /* ✅ REAL THEME SYNC (MkDocs Material + fallbacks) */
+
       function getMkDocsMode() {
         // 1) parent attribute (iframe + same-origin)
         try {

@@ -76,6 +76,14 @@
       /^\d{3}$/.test(String(t.term || ""))
     );
   }
+  function transcriptCourses(record) {
+    return Object.keys((record && record.courses) || {}).map(function (code) {
+      var course = record.courses[code];
+      return { code: code, letter: course.letter, hours: Number(course.hours), term: String(course.term || ""), finished: course.finished !== false };
+    }).filter(function (course) {
+      return course.finished && LETTERS.indexOf(course.letter) > -1 && course.hours > 0 && /^\d{3}$/.test(course.term);
+    });
+  }
   function counts(c) {
     return c && POINTS[c.letter] !== undefined && NO_GPA.indexOf(c.letter) < 0 && Number(c.hours) > 0;
   }
@@ -129,6 +137,7 @@
     recentTerms: recentTerms,
     courseCode: courseCode,
     validTranscript: validTranscript,
+    transcriptCourses: transcriptCourses,
     counts: counts,
     cumulative: cumulative,
     withCurrent: withCurrent,
@@ -169,6 +178,8 @@
     ".agr-btn.agr-ghost{background:transparent;color:var(--brand-purple,#b829ea)}",
     ".agr-btn[disabled]{opacity:.45;cursor:default}",
     ".agr-note{margin:0;color:var(--text-dim,var(--text-muted,#8b7ea8));font-size:11px;line-height:1.6}",
+    ".agr-finished{display:inline-flex;align-items:center;gap:6px;cursor:pointer}",
+    ".agr-finished input{accent-color:var(--brand-purple,#b829ea)}",
   ].join("\n");
 
   function pageCreditHours() {
@@ -199,8 +210,7 @@
     var row = document.createElement("div");
     row.className = "meta-row agr-row";
     row.hidden = true;
-    row.innerHTML =
-      '<span class="meta-key">' + L("MY GRADE", "تقديري") + '</span><button type="button" class="meta-val agr-val" aria-expanded="false"></button>';
+    row.innerHTML = '<span class="meta-key"><label class="agr-finished"><input type="checkbox" data-agr-finished> ' + L("FINISHED", "أنهيت المقرر") + '</label></span><button type="button" class="meta-val agr-val" aria-expanded="false"></button>';
     var form = document.createElement("div");
     form.className = "agr-form";
     form.hidden = true;
@@ -209,16 +219,18 @@
     meta.insertBefore(form, before || null);
     var val = row.querySelector(".agr-val");
 
-    var state = { ref: null, record: {}, saving: false };
+    var state = { ref: null, record: {}, saving: false, expanded: false };
 
     function mine() {
       return (state.record.courses || {})[code] || null;
     }
     function renderValue() {
       var c = mine();
+      var checkbox = row.querySelector('[data-agr-finished]');
+      if (checkbox) checkbox.checked = !!c;
       val.innerHTML = c
         ? "<b>" + esc(c.letter) + "</b><small>" + esc(c.hours) + " " + L("hrs", "ساعات") + " · " + esc(termName(c.term)) + "</small>"
-        : '<span class="agr-add">' + L("Add the grade you received", "أضف تقديرك") + "</span>";
+        : '<span class="agr-add">' + L("Add final grade", "أضف التقدير النهائي") + "</span>";
     }
     function renderForm() {
       var c = mine() || {},
@@ -227,7 +239,7 @@
         t = validTranscript(state.record.transcript) ? state.record.transcript : null;
       if (terms.indexOf(term) < 0) terms.push(term);
       form.innerHTML =
-        '<div class="agr-grid"><label>' + L("Grade", "التقدير") + '<select data-agr="letter">' +
+        '<p class="agr-note">' + L("Mark this course finished, choose the term, and enter the final PSU letter grade to include it in your transcript GPA.", "حدد اكتمال المقرر واختر الفصل والتقدير النهائي لإضافته إلى المعدل التراكمي.") + '</p><div class="agr-grid"><label>' + L("Grade", "التقدير") + '<select data-agr="letter">' +
         LETTERS.map(function (l) {
           return '<option value="' + l + '"' + (c.letter === l ? " selected" : "") + ">" + l + "</option>";
         }).join("") +
@@ -298,6 +310,7 @@
         letter: form.querySelector('[data-agr="letter"]').value,
         hours: hours,
         term: form.querySelector('[data-agr="term"]').value,
+        finished: true,
       });
     }
     function remove() {
@@ -305,6 +318,16 @@
     }
     val.addEventListener("click", function () {
       toggle(form.hidden);
+    });
+    row.querySelector('[data-agr-finished]').addEventListener("change", function (event) {
+      if (event.target.checked) {
+        if (mine()) {
+          write(Object.assign({}, mine(), { finished: true }));
+          return;
+        }
+        toggle(true);
+      }
+      else if (mine()) remove();
     });
 
     var unsub = null;
