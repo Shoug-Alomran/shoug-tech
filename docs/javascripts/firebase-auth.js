@@ -25,6 +25,85 @@
     appId: "1:621041999813:web:8982befd8b0ccc1d9475ac",
   };
 
+  // ── Private record ───────────────────────────────────────────────────────
+  // users/{uid} is readable by any signed-in student (public profiles), so
+  // grades, the transcript, calendar and exams live in users/{uid}/private/data,
+  // which only its owner can read or write. Older accounts kept them on
+  // users/{uid}; ready() moves them across once, before any page writes.
+  var PRIVATE_FIELDS = [
+    "academicRecord",
+    "exams",
+    "calendarEvents",
+    "calendarGrades",
+    "calendarCourseCredits",
+    "calendarCourseFinals",
+    "calendarGpaRecord",
+    "calendarClassSchedules",
+    "calendarClassAttendance",
+    "calendarClassOverrides",
+    "calendarPsuAcademicVersion",
+  ];
+  var privateReady = {};
+  function privateRef(uid) {
+    return firebase.firestore().collection("users").doc(uid).collection("private").doc("data");
+  }
+  function privateRecordReady(uid) {
+    if (privateReady[uid]) return privateReady[uid];
+    var main = firebase.firestore().collection("users").doc(uid),
+      priv = privateRef(uid);
+    privateReady[uid] = Promise.all([main.get(), priv.get()])
+      .then(function (snaps) {
+        var shared = snaps[0].exists ? snaps[0].data() : {},
+          mine = snaps[1].exists ? snaps[1].data() : {},
+          move = {},
+          drop = {},
+          found = false;
+        PRIVATE_FIELDS.forEach(function (k) {
+          if (shared[k] === undefined) return;
+          found = true;
+          drop[k] = firebase.firestore.FieldValue.delete();
+          if (mine[k] === undefined) move[k] = shared[k];
+        });
+        if (!found) return priv;
+        // Copy first, then clear the shared document, so nothing is lost if
+        // the second write fails (the next visit simply finishes the move).
+        return (Object.keys(move).length ? priv.set(move, { merge: true }) : Promise.resolve())
+          .then(function () {
+            return main.update(drop);
+          })
+          .then(function () {
+            return priv;
+          });
+      })
+      .catch(function (e) {
+        console.error("Private record move failed", e);
+        delete privateReady[uid];
+        return priv;
+      });
+    return privateReady[uid];
+  }
+  // The shared profile and the private record as one snapshot-like object,
+  // for pages that read both.
+  function loadPrivateRecord(uid) {
+    return privateRecordReady(uid).then(function (priv) {
+      return Promise.all([firebase.firestore().collection("users").doc(uid).get(), priv.get()]).then(function (snaps) {
+        var data = Object.assign({}, snaps[0].exists ? snaps[0].data() : {}, snaps[1].exists ? snaps[1].data() : {});
+        return {
+          exists: snaps[0].exists || snaps[1].exists,
+          data: function () {
+            return data;
+          },
+        };
+      });
+    });
+  }
+  window.ShougPrivate = {
+    FIELDS: PRIVATE_FIELDS,
+    ref: privateRef,
+    ready: privateRecordReady,
+    load: loadPrivateRecord,
+  };
+
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   function progressUrl() {
@@ -265,6 +344,11 @@
       "body.shoug-light-mode #shoug-exam-toast{background:#fff;border-color:rgba(59,130,246,.22);box-shadow:0 18px 50px rgba(22,17,31,.16);}",
       "body.shoug-light-mode .shoug-exam-toast-title{color:#16111f}",
       "body.shoug-light-mode .shoug-exam-toast-meta{color:#534a61}",
+      // The "IN 7 DAYS" label needs darker shades to stay readable on white.
+      "body.shoug-light-mode .shoug-exam-toast-when{color:#1d5fc4}",
+      "body.shoug-light-mode #shoug-exam-toast.urgent .shoug-exam-toast-when{color:#c4142f}",
+      "body.shoug-light-mode #shoug-exam-toast.warn .shoug-exam-toast-when{color:#9a5a00}",
+      "body.shoug-light-mode #shoug-exam-toast.assignment .shoug-exam-toast-when{color:#7c1fb0}",
       "body.shoug-light-mode .shoug-exam-toast-icon{background:rgba(59,130,246,.08);color:#16111f;border-color:rgba(59,130,246,.14);}",
       "body.shoug-light-mode .shoug-exam-toast-close{border-left-color:rgba(22,17,31,.08);color:#9a8fb0;}",
       "body.shoug-light-mode .auth-input{color:#16111f;background:rgba(0,0,0,.03)}",
@@ -1199,11 +1283,7 @@
     if (!user || _examReminderUid === user.uid) return;
     _examReminderUid = user.uid;
 
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(user.uid)
-      .get()
+    loadPrivateRecord(user.uid)
       .then(function (doc) {
         if (!doc.exists || _examReminderUid !== user.uid) return;
         var data = doc.data();
@@ -3964,6 +4044,8 @@
         if (user) localStorage.setItem("shoug-was-signed-in", "1");
         else localStorage.removeItem("shoug-was-signed-in");
       } catch (e) {}
+      // Move any private data off the shared profile as soon as possible.
+      if (user) privateRecordReady(user.uid);
       if (!user && _notifUnsub) {
         _notifUnsub();
         _notifUnsub = null;

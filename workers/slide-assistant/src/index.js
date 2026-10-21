@@ -1,6 +1,7 @@
 import { translateRequest } from "./translation.js";
 import { handleAbout } from "./about.js";
 import { extractTranscript } from "./transcript.js";
+import { extractSchedule } from "./schedule.js";
 import { verifyIdToken } from "./firebase-token.js";
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
@@ -14,18 +15,19 @@ async function verifyFirebaseBearer(request) {
   return token ? verifyIdToken(token[1]) : null;
 }
 
-async function handleTranscript(request, env, origin, json) {
+// Signed-in uploads read by AI: the transcript and the EduGate class schedule.
+async function handleUpload(request, env, origin, json, extract) {
   const user = await verifyFirebaseBearer(request);
-  if (!user) return json({ error: "Sign in again to import your transcript." }, 401, origin);
+  if (!user) return json({ error: "Sign in again to import your file." }, 401, origin);
   const limit = env.AI_RATE_LIMIT;
   if (limit) {
-    const result = await limit.limit({ key: `transcript:${user.uid}` });
-    if (!result.success) return json({ error: "Transcript import limit reached. Try again later." }, 429, origin);
+    const result = await limit.limit({ key: `upload:${user.uid}` });
+    if (!result.success) return json({ error: "Import limit reached. Try again in a minute." }, 429, origin);
   }
   const length = Number(request.headers.get("content-length") || 0);
   if (length > MAX_TRANSCRIPT_BYTES + 64 * 1024) return json({ error: "File must be 5 MB or smaller." }, 413, origin);
   // Enforce the cap even when the caller omits Content-Length.
-  if (!request.body) return json({ error: "Choose a transcript file." }, 400, origin);
+  if (!request.body) return json({ error: "Choose a file to import." }, 400, origin);
   const reader = request.body.getReader();
   const chunks = [];
   let total = 0;
@@ -48,7 +50,7 @@ async function handleTranscript(request, env, origin, json) {
   if (!(file instanceof File) || !file.size || file.size > MAX_TRANSCRIPT_BYTES) return json({ error: "Choose a PDF or image up to 5 MB." }, 400, origin);
   const allowedType = ["application/pdf", "image/jpeg", "image/png", "image/webp"].includes(file.type);
   if (!allowedType) return json({ error: "Supported types are PDF, JPG, PNG, and WebP." }, 415, origin);
-  const result = await extractTranscript(env, file);
+  const result = await extract(env, file);
   if (result.error) return json({ error: result.error }, result.status || 422, origin);
   return json({ ...result, reviewRequired: true }, 200, origin);
 }
@@ -854,7 +856,7 @@ export default {
     const isCalendar = url.pathname === "/v1/calendar-assistant";
     const isTranslation = url.pathname === "/v1/breakdown-translation";
     const isAbout = url.pathname === "/v1/about-assistant";
-    const isTranscript = url.pathname === "/v1/transcript-import";
+    const isTranscript = url.pathname === "/v1/transcript-import" || url.pathname === "/v1/schedule-import";
     if (
       url.pathname !== "/v1/slide-assistant" &&
       !isCalendar &&
@@ -880,7 +882,8 @@ export default {
         );
       if (isAbout)
         return await handleAbout(request, env, origin, json, runTextGeneration);
-      if (isTranscript) return await handleTranscript(request, env, origin, json);
+      if (isTranscript)
+        return await handleUpload(request, env, origin, json, url.pathname === "/v1/schedule-import" ? extractSchedule : extractTranscript);
       return isCalendar
         ? await handleCalendar(request, env, origin)
         : await handle(request, env, origin);
