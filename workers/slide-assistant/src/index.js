@@ -1,47 +1,21 @@
 import { translateRequest } from "./translation.js";
 import { handleAbout } from "./about.js";
 import { extractTranscript } from "./transcript.js";
+import { verifyIdToken } from "./firebase-token.js";
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
 const MAX_CONTEXT = 26000;
 const MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024;
-const FIREBASE_API_KEY = "AIzaSyDUklr3u8laDZH2jhHVAO3BPE12GaPpOmI";
 
 const FALLBACK_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
-function validFirebaseToken(payload) {
-  return payload && payload.iss === "https://securetoken.google.com/shoug-tech"
-    && payload.aud === "shoug-tech"
-    && typeof payload.sub === "string" && payload.sub.length >= 1
-    && payload.exp > Date.now() / 1000;
-}
-
-async function verifyFirebaseBearer(request, env) {
+async function verifyFirebaseBearer(request) {
   const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
-  if (!token) return null;
-  try {
-    const payload = token[1].split(".")[1];
-    if (!payload) return null;
-    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const claims = JSON.parse(atob(base64 + "=".repeat((4 - (base64.length % 4)) % 4)));
-    if (!validFirebaseToken(claims)) return null;
-    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(env.FIREBASE_WEB_API_KEY || FIREBASE_API_KEY)}`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ idToken: token[1] }),
-    });
-    if (!response.ok) return null;
-    const result = await response.json();
-    const user = result.users && result.users[0];
-    if (!user || !user.localId || claims.sub !== user.localId) return null;
-    return { uid: user.localId, email: user.email || "" };
-  } catch {
-    return null;
-  }
+  return token ? verifyIdToken(token[1]) : null;
 }
 
 async function handleTranscript(request, env, origin, json) {
-  const user = await verifyFirebaseBearer(request, env);
+  const user = await verifyFirebaseBearer(request);
   if (!user) return json({ error: "Sign in again to import your transcript." }, 401, origin);
   const limit = env.AI_RATE_LIMIT;
   if (limit) {
