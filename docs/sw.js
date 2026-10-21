@@ -7,13 +7,13 @@
  *
  * Strategy per resource type:
  *   HTML          network-first, falling back to cache, then /offline.html
- *   CSS/JS/icons  stale-while-revalidate -- instant, refreshed in background
- *   search index  stale-while-revalidate, so search works offline
+ *   CSS/JS/icons  network-first, cached only as an offline fallback
+ *   search index  network-first, cached as an offline fallback
  *   PDFs          never cached; they are large and the browser handles them
  *
- * Bump CACHE_VERSION to invalidate everything after a deploy.
+ * Bump CACHE_VERSION when changing cache behavior or removing stale entries.
  */
-const CACHE_VERSION = "v2-private-courses";
+const CACHE_VERSION = "v3-fresh-assets";
 const SHELL_CACHE = `shoug-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `shoug-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `shoug-assets-${CACHE_VERSION}`;
@@ -74,34 +74,27 @@ function isCacheableAsset(url) {
   );
 }
 
-async function networkFirst(request) {
+async function networkFirst(request, cacheName = PAGE_CACHE) {
   try {
-    const response = await fetch(request);
+    // Revalidate through the browser's HTTP cache too. Otherwise the service
+    // worker can fetch an old browser-cached response even with network-first.
+    const response = await fetch(request, { cache: "no-cache" });
     if (response && response.ok) {
-      const cache = await caches.open(PAGE_CACHE);
+      const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
-      trimCache(PAGE_CACHE, MAX_PAGES);
+      if (cacheName === PAGE_CACHE) trimCache(PAGE_CACHE, MAX_PAGES);
     }
     return response;
   } catch (error) {
-    const cached = await caches.match(request);
+    const cache = await caches.open(cacheName);
+    const cached = await cache.match(request);
     if (cached) return cached;
-    const offline = await caches.match(OFFLINE_URL);
-    if (offline) return offline;
+    if (cacheName === PAGE_CACHE) {
+      const offline = await caches.match(OFFLINE_URL);
+      if (offline) return offline;
+    }
     throw error;
   }
-}
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(ASSET_CACHE);
-  const cached = await cache.match(request);
-  const network = fetch(request)
-    .then((response) => {
-      if (response && response.ok) cache.put(request, response.clone());
-      return response;
-    })
-    .catch(() => cached);
-  return cached || network;
 }
 
 self.addEventListener("fetch", (event) => {
@@ -149,7 +142,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (isCacheableAsset(url)) {
-    event.respondWith(staleWhileRevalidate(request));
+    event.respondWith(networkFirst(request, ASSET_CACHE));
   }
 });
 
