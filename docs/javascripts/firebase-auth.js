@@ -51,7 +51,14 @@
     if (privateReady[uid]) return privateReady[uid];
     var main = firebase.firestore().collection("users").doc(uid),
       priv = privateRef(uid);
-    privateReady[uid] = Promise.all([main.get(), priv.get()])
+    // Give up on the move after 10 s (offline, or Firestore stalled) so pages
+    // still open; the next visit finishes it.
+    var timeout = new Promise(function (_, reject) {
+      setTimeout(function () {
+        reject(new Error("timed out"));
+      }, 10000);
+    });
+    privateReady[uid] = Promise.race([Promise.all([main.get(), priv.get()]), timeout])
       .then(function (snaps) {
         var shared = snaps[0].exists ? snaps[0].data() : {},
           mine = snaps[1].exists ? snaps[1].data() : {},
