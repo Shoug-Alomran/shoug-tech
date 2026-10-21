@@ -4,9 +4,24 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function owns(uid) { return signedIn() && request.auth.uid == uid; }
 
-    // Academic records live on the user's document today. They can be written
-    // only by that user. Keep the existing profile read behavior for now;
-    // see README security note about splitting private transcript data.
+    // users/{uid} is the public profile: any signed-in student can read it.
+    // Grades, the transcript, calendar and exams live in users/{uid}/private/data,
+    // which only its owner can read. Keep this list in step with PRIVATE_FIELDS
+    // in docs/javascripts/firebase-auth.js.
+    function privateFields() {
+      return ['academicRecord', 'exams', 'calendarEvents', 'calendarGrades',
+        'calendarCourseCredits', 'calendarCourseFinals', 'calendarGpaRecord',
+        'calendarClassSchedules', 'calendarClassAttendance', 'calendarClassOverrides',
+        'calendarPsuAcademicVersion'];
+    }
+    // A profile write may not add or change private fields. Older profiles still
+    // carry them until the owner's next sign-in moves them; that move deletes
+    // them all in one write, which is allowed.
+    function profileKeepsPrivateOut() {
+      return !request.resource.data.keys().hasAny(privateFields())
+        || (resource != null
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(privateFields()));
+    }
     function validAcademicRecordUpdate() {
       return !('academicRecord' in request.resource.data)
         || (request.resource.data.academicRecord is map
@@ -92,8 +107,12 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if signedIn();
-      allow create: if owns(uid);
-      allow update: if owns(uid) && validAcademicRecordUpdate();
+      allow create: if owns(uid) && profileKeepsPrivateOut();
+      allow update: if owns(uid) && profileKeepsPrivateOut();
+      match /private/{docId} {
+        allow read, delete: if owns(uid);
+        allow create, update: if owns(uid) && docId == 'data' && validAcademicRecordUpdate();
+      }
       match /following/{targetUid} {
         allow read: if signedIn();
         allow write: if owns(uid);

@@ -1451,6 +1451,8 @@
       map[k] || map[k.toLowerCase && k.length === 1 ? k.toLowerCase() : k];
     if (!fn) return;
     e.preventDefault();
+    // Calendar shortcuts bring the Calendar tab forward first.
+    if (window.__shougCalTab && /^(t|m|w|d|q|\/|ArrowLeft|ArrowRight)$/i.test(k)) window.__shougCalTab("calendar");
     fn();
   });
 

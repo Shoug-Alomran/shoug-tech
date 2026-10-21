@@ -167,7 +167,9 @@
   var COURSE_PATH = new RegExp("^/academics/(?:" + TRACKS + ")/(?:english/)?([a-z]+\\d{3})/$");
   var path = location.pathname.replace(/index\.html$/, "");
   var match = path.match(COURSE_PATH);
-  if (!match) return;
+  var TRACK_PATH = new RegExp("^/academics/(?:(?:" + TRACKS + ")|other-courses/english)/$");
+  var trackPage = !match && TRACK_PATH.test(path);
+  if (!match && !trackPage) return;
 
   function isArabic() {
     return (document.documentElement.lang || "").indexOf("ar") === 0;
@@ -369,17 +371,88 @@
           form.hidden = true;
           return;
         }
-        state.ref = fb.firestore().collection("users").doc(user.uid);
-        unsub = state.ref.onSnapshot(function (snap) {
+        // Grades are private: users/{uid}/private/data (see firebase-auth.js).
+        if (!window.ShougPrivate) return;
+        window.ShougPrivate.ready(user.uid).then(function (ref) {
+          if (fb.auth().currentUser !== user) return;
+          state.ref = ref;
+          unsub = state.ref.onSnapshot(function (snap) {
           var data = (snap && snap.exists && snap.data()) || {};
           state.record = data.academicRecord && typeof data.academicRecord === "object" ? data.academicRecord : {};
           row.hidden = false;
           renderValue();
         });
+        });
       });
     });
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  // ── Track pages: a private grade badge on each course row ───────────────
+
+  function initTrack() {
+    var rows = Array.prototype.filter.call(document.querySelectorAll("a.course-row[href], a.english-card[href]"), function (a) {
+      return /\/([a-z]+\d{3})\/?$/.test(a.getAttribute("href"));
+    });
+    if (!rows.length) return;
+    var s = document.createElement("style");
+    s.textContent =
+      ".agr-badge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 8px;border:1px solid var(--brand-purple,#b829ea);border-radius:999px;color:var(--brand-purple,#b829ea);font:700 11px/1.2 var(--font-mono,monospace);letter-spacing:.04em;white-space:nowrap}" +
+      ".agr-badge.agr-now{border-style:dashed;color:var(--text-dim,var(--text-muted,#8b7ea8));border-color:currentColor}" +
+      ".course-status-area .agr-badge{margin-inline-end:10px}.english-card .agr-badge{margin-top:12px}" +
+      "@media (max-width:560px){.course-status-area:has(.agr-badge){flex-wrap:wrap;row-gap:8px}}";
+    document.head.appendChild(s);
+    var current = termForDate();
+    function paint(record) {
+      var courses = (record && record.courses) || {};
+      rows.forEach(function (a) {
+        var old = a.querySelector(".agr-badge");
+        if (old) old.remove();
+        var code = courseCode(a.getAttribute("href").match(/\/([a-z]+\d{3})\/?$/)[1]),
+          c = courses[code];
+        if (!c) return;
+        var badge = document.createElement("span");
+        if (c.letter && c.finished !== false) {
+          badge.className = "agr-badge";
+          badge.textContent = c.letter;
+          badge.title = L("Your grade (only you can see this)", "تقديرك (لا يراه غيرك)");
+        } else if (!c.letter && String(c.term) === current) {
+          badge.className = "agr-badge agr-now";
+          badge.textContent = L("TAKING", "أدرسه");
+          badge.title = L("In progress this semester", "قيد الدراسة هذا الفصل");
+        } else return;
+        var area = a.querySelector(".course-status-area");
+        if (area) area.insertBefore(badge, area.firstChild);
+        else a.appendChild(badge);
+      });
+    }
+    var unsub = null;
+    function withFirebase(cb) {
+      if (window.__shoug_fb) return cb(window.__shoug_fb);
+      window.addEventListener(
+        "shoug:fb",
+        function () {
+          cb(window.__shoug_fb);
+        },
+        { once: true },
+      );
+    }
+    withFirebase(function (fb) {
+      fb.auth().onAuthStateChanged(function (user) {
+        if (unsub) unsub();
+        unsub = null;
+        if (!user || !window.ShougPrivate) return paint(null);
+        window.ShougPrivate.ready(user.uid).then(function (ref) {
+          if (fb.auth().currentUser !== user) return;
+          unsub = ref.onSnapshot(function (snap) {
+            var data = (snap && snap.exists && snap.data()) || {};
+            paint(data.academicRecord);
+          });
+        });
+      });
+    });
+  }
+
+  var start = match ? init : initTrack;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();

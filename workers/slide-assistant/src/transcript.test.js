@@ -109,3 +109,36 @@ test("EduGate rows: reversed codes, * pending, preparatory flag, swapped hours/p
   assert.deepEqual(result.inProgress.map((c) => c.code), ["CS 331"]);
   assert.deepEqual(result.summary, { cumulativeGpa: 3, earnedHours: 76, totalPoints: 227.75 });
 });
+
+import { clock, dayName, normalizeSchedule } from "./schedule.js";
+
+test("schedule import: Arabic and English days, 12/24-hour times, labs kept separate", () => {
+  assert.equal(dayName("الأحد"), "sunday");
+  assert.equal(dayName("Tue"), "tuesday");
+  assert.equal(dayName("R"), "thursday");
+  assert.equal(clock("8:00 AM"), "08:00");
+  assert.equal(clock("1:15"), "13:15");
+  assert.equal(clock("12:30 م"), "12:30");
+  assert.equal(clock("02:00 PM"), "14:00");
+  const result = normalizeSchedule({
+    classes: [
+      { code: "SE322", title: "Software Design", section: "171", type: "Lecture", days: ["الأحد", "الثلاثاء"], start: "10:00", end: "11:15", room: "B101-204" },
+      { code: "322SE", type: "lab", days: "Thu", start: "1:00", end: "2:50", room: "Lab 3" },
+      { code: "SE 322", type: "lecture", days: ["sunday", "tuesday"], start: "10:00", end: "11:15" },
+      { code: "CS 331", days: [], start: "8:00", end: "9:15" },
+    ],
+  });
+  assert.deepEqual(
+    result.classes.map((c) => [c.code, c.type, c.days.join(","), c.start, c.end]),
+    [
+      ["SE 322", "lecture", "sunday,tuesday", "10:00", "11:15"],
+      ["SE 322", "lab", "thursday", "13:00", "14:50"],
+    ],
+  );
+  assert.equal(result.skipped, 1);
+});
+
+test("the schedule endpoint is mounted and requires sign-in", async () => {
+  const response = await worker.fetch(request("/v1/schedule-import", {}), {});
+  assert.equal(response.status, 401);
+});

@@ -259,7 +259,7 @@
   document.head.appendChild(s);
   // Private "MY GRADE" row for the student's own GPA (academic-record.js).
   var g = document.createElement("script");
-  g.src = "/javascripts/academic-record.js?v=3";
+  g.src = "/javascripts/academic-record.js?v=5";
   g.async = true;
   document.head.appendChild(g);
 })();
