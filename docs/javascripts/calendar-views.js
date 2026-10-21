@@ -57,6 +57,8 @@
 
   // ── Course colours ──────────────────────────────────────────────────────
   function hueFor(course) {
+    // Prefer the page's collision-free map so colours match everywhere.
+    if (C && C.courseHue) return C.courseHue(course);
     var h = 0,
       s = String(course || "");
     for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
