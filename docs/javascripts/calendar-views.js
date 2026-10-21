@@ -373,7 +373,7 @@
                 var top = ((t.s - startHour * 60) / 60) * px,
                   h = Math.max(18, ((t.e - t.s) / 60) * px - 2),
                   w = 100 / t.cols,
-                  mine = t.ev.itemId && !C.isWork(t.ev);
+                  mine = (t.ev.itemId && !C.isWork(t.ev)) || Boolean(t.ev.examId);
                 return (
                   '<div class="timeline-event tv-ev ' +
                   C.eventClasses(t.ev) +
@@ -571,12 +571,15 @@
             C.openDay(el.dataset.openDay);
             return;
           }
-          moveItem(
-            el.dataset.itemId,
-            targetCol.dataset.colDay,
-            C.toTime(ns),
-            C.toTime(ne),
-          );
+          if (el.dataset.examId)
+            moveExam(el.dataset.examId, targetCol.dataset.colDay, C.toTime(ns), C.toTime(ne), resizing);
+          else
+            moveItem(
+              el.dataset.itemId,
+              targetCol.dataset.colDay,
+              C.toTime(ns),
+              C.toTime(ne),
+            );
         }
         document.addEventListener("pointermove", move);
         document.addEventListener("pointerup", up);
@@ -616,6 +619,23 @@
       );
     });
   }
+  function moveExam(id, day, start, end, resized) {
+    var e = C.exams.find(function (x) {
+      return x.id === id;
+    });
+    var label = e ? (e.course || "Exam") + " " + (e.type || "") : "Exam";
+    C.moveExam(id, day, start, end).then(function (ok) {
+      if (ok && resized) C.toast(label.trim() + " now ends at " + C.timeLabel(end));
+      else if (ok)
+        C.toast(
+          label.trim() +
+            " moved to " +
+            C.prettyDate(day) +
+            (start ? ", " + C.timeRange(start, end) : ""),
+        );
+      else C.renderAll();
+    });
+  }
   function createAt(day, start, end) {
     C.openEventEditor(day, "personal");
     var kind = $("event-edit-kind");
@@ -634,78 +654,157 @@
     }
   }
 
-  // ── Drag between days in Month (desktop) ────────────────────────────────
+  // ── Drag between days in Month ──────────────────────────────────────────
+  // Pointer-based so it works with a mouse and on touch screens: with a mouse
+  // an event lifts after a few pixels of movement; on touch, press and hold
+  // (so a normal swipe still scrolls). Your events and exams move; classes
+  // stay put.
+  var MONTH_DRAG = "[data-item-id], [data-exam-id]";
+  function cellAt(x, y) {
+    var els = document.elementsFromPoint(x, y);
+    for (var i = 0; i < els.length; i++)
+      if (els[i].matches && els[i].matches("#month-grid .day[data-date]")) return els[i];
+    return null;
+  }
   function setupMonthDrag() {
     var grid = $("month-grid");
-    if (!grid) return;
-    grid.querySelectorAll("[data-item-id]").forEach(function (el) {
-      el.setAttribute("draggable", "true");
-    });
-    if (grid.dataset.dragReady) return;
+    if (!grid || grid.dataset.dragReady) return;
     grid.dataset.dragReady = "1";
-    // Your own multi-day bars can be grabbed; a plain click still opens the
-    // day underneath, as it did when the bar layer ignored the pointer.
+    var drag = null,
+      suppressClick = false;
+
+    // Your own multi-day bars sit in a layer that otherwise ignores the
+    // pointer; a plain click on one still opens the day underneath.
     grid.addEventListener("click", function (ev) {
-      var bar =
-        ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
+      if (suppressClick) {
+        suppressClick = false;
+        ev.stopPropagation();
+        ev.preventDefault();
+        return;
+      }
+      var bar = ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
       if (!bar) return;
       var cell = cellAt(ev.clientX, ev.clientY);
       if (!cell) return;
-      if (!window.__shougCalViews.dayClick(cell.dataset.date, ev))
-        C.openDay(cell.dataset.date);
-    });
-    var drag = null;
-    function cellAt(x, y) {
-      var els = document.elementsFromPoint(x, y);
-      for (var i = 0; i < els.length; i++)
-        if (els[i].matches && els[i].matches(".day[data-date]")) return els[i];
-      return null;
-    }
-    grid.addEventListener("dragstart", function (ev) {
-      var el = ev.target.closest && ev.target.closest("[data-item-id]");
-      if (!el) return;
-      var from = cellAt(ev.clientX, ev.clientY);
-      drag = {
-        id: el.dataset.itemId,
-        from: from ? from.dataset.date : el.dataset.evDate,
-      };
-      ev.dataTransfer.effectAllowed = "move";
-      try {
-        ev.dataTransfer.setData("text/plain", drag.id);
-      } catch (e) {}
-      el.classList.add("cv-dragging");
-    });
-    grid.addEventListener("dragend", function (ev) {
-      var el = ev.target.closest && ev.target.closest("[data-item-id]");
-      if (el) el.classList.remove("cv-dragging");
+      if (!window.__shougCalViews.dayClick(cell.dataset.date, ev)) C.openDay(cell.dataset.date);
+    }, true);
+
+    function clearDrop() {
       grid.querySelectorAll(".cv-drop").forEach(function (c) {
         c.classList.remove("cv-drop");
       });
-    });
-    grid.addEventListener("dragover", function (ev) {
-      if (!drag) return;
-      var cell = cellAt(ev.clientX, ev.clientY);
-      if (!cell) return;
-      ev.preventDefault();
-      grid.querySelectorAll(".cv-drop").forEach(function (c) {
-        if (c !== cell) c.classList.remove("cv-drop");
-      });
-      cell.classList.add("cv-drop");
-    });
-    grid.addEventListener("drop", function (ev) {
-      if (!drag) return;
-      ev.preventDefault();
-      var cell = cellAt(ev.clientX, ev.clientY),
-        d = drag;
+    }
+    function lift() {
+      drag.active = true;
+      var r = drag.el.getBoundingClientRect(),
+        g = drag.el.cloneNode(true);
+      g.className += " cv-ghost";
+      g.removeAttribute("data-item-id");
+      g.removeAttribute("data-exam-id");
+      g.style.width = Math.min(r.width, 240) + "px";
+      g.style.height = r.height + "px";
+      document.body.appendChild(g);
+      drag.ghost = g;
+      drag.dx = Math.min(drag.x - r.left, Math.min(r.width, 240) - 12);
+      drag.dy = drag.y - r.top;
+      drag.el.classList.add("cv-dragging");
+      document.body.classList.add("cv-drag-on");
+      if (drag.touch && navigator.vibrate) navigator.vibrate(10);
+      place(drag.x, drag.y);
+    }
+    function place(x, y) {
+      drag.ghost.style.left = x - drag.dx + "px";
+      drag.ghost.style.top = y - drag.dy + "px";
+      var cell = cellAt(x, y);
+      clearDrop();
+      if (cell) cell.classList.add("cv-drop");
+      drag.cell = cell;
+    }
+    function end(commit) {
+      var d = drag;
       drag = null;
-      if (!cell || !d.from || cell.dataset.date === d.from)
-        return C.renderAll();
-      var it = findItem(d.id);
-      if (!it) return;
-      var delta = Math.round(
-        (C.fromKey(cell.dataset.date) - C.fromKey(d.from)) / 86400000,
-      );
-      moveItem(d.id, C.addDays(it.date, delta), "", "");
+      clearTimeout(d.timer);
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      document.removeEventListener("pointercancel", onCancel);
+      document.removeEventListener("touchmove", blockScroll, { passive: false });
+      document.removeEventListener("keydown", onKey);
+      if (!d.active) return;
+      suppressClick = true;
+      setTimeout(function () {
+        suppressClick = false;
+      }, 400);
+      d.ghost.remove();
+      d.el.classList.remove("cv-dragging");
+      document.body.classList.remove("cv-drag-on");
+      clearDrop();
+      if (!commit || !d.cell || !d.from || d.cell.dataset.date === d.from) return;
+      var delta = Math.round((C.fromKey(d.cell.dataset.date) - C.fromKey(d.from)) / 86400000);
+      if (d.examId) {
+        var e = C.exams.find(function (x) {
+          return x.id === d.examId;
+        });
+        if (e) moveExam(d.examId, C.addDays(e.date, delta), "", "");
+      } else {
+        var it = findItem(d.itemId);
+        if (it) moveItem(d.itemId, C.addDays(it.date, delta), "", "");
+      }
+    }
+    function onMove(ev) {
+      if (!drag) return;
+      var far = Math.abs(ev.clientX - drag.x) + Math.abs(ev.clientY - drag.y);
+      if (!drag.active) {
+        if (drag.touch) {
+          if (far > 10) end(false); // a swipe: let the page scroll
+          return;
+        }
+        if (far < 6) return;
+        lift();
+      }
+      ev.preventDefault();
+      place(ev.clientX, ev.clientY);
+    }
+    function onUp() {
+      if (drag) end(true);
+    }
+    function onCancel() {
+      if (drag) end(false);
+    }
+    function onKey(ev) {
+      if (ev.key === "Escape" && drag) end(false);
+    }
+    function blockScroll(ev) {
+      if (drag && drag.active) ev.preventDefault();
+    }
+    grid.addEventListener("pointerdown", function (ev) {
+      if (ev.button !== 0 || drag || isPhone()) return;
+      var el = ev.target.closest && ev.target.closest(MONTH_DRAG);
+      if (!el || !grid.contains(el)) return;
+      var from = cellAt(ev.clientX, ev.clientY);
+      drag = {
+        el: el,
+        itemId: el.dataset.itemId || "",
+        examId: el.dataset.examId || "",
+        from: from ? from.dataset.date : el.dataset.evDate,
+        x: ev.clientX,
+        y: ev.clientY,
+        touch: ev.pointerType === "touch",
+        active: false,
+      };
+      if (drag.touch) {
+        drag.timer = setTimeout(function () {
+          if (drag && !drag.active) lift();
+        }, 350);
+        document.addEventListener("touchmove", blockScroll, { passive: false });
+      } else ev.preventDefault(); // no text selection while dragging
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onCancel);
+      document.addEventListener("keydown", onKey);
+    });
+    // Long-press on touch would otherwise open the context menu / callout.
+    grid.addEventListener("contextmenu", function (ev) {
+      if (ev.target.closest && ev.target.closest(MONTH_DRAG)) ev.preventDefault();
     });
   }
 
@@ -1270,6 +1369,7 @@
     ["← / →", "Previous / next"],
     ["M  W  D", "Month, week, day"],
     ["N", "New event"],
+    ["H", "Hide / show side panels"],
     ["Q", "Quick add"],
     ["/", "Search"],
     ["?", "Show shortcuts"],
@@ -1339,6 +1439,9 @@
       },
       "/": function () {
         $("cv-search").focus();
+      },
+      h: function () {
+        if (window.__shougToggleSide) window.__shougToggleSide();
       },
       "?": showHelp,
     };
@@ -1458,7 +1561,11 @@
       ".tv-day .tv-ev-title{font-size:.86rem}.tv-day .tv-ev{padding:6px 10px}",
       /* month drag */
       "#month-grid .range-bar[data-item-id]{pointer-events:auto}",
-      "#month-grid [draggable=true]{cursor:grab}.cv-dragging{opacity:.5}.day.cv-drop{outline:2px dashed var(--brand);outline-offset:-3px}",
+      "#month-grid [data-item-id],#month-grid [data-exam-id]{cursor:grab;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}",
+      "#month-grid .range-bar[data-exam-id]{pointer-events:auto}",
+      ".cv-dragging{opacity:.35}.day.cv-drop{outline:2px dashed var(--brand);outline-offset:-3px;background:rgba(184,41,234,.08)}",
+      ".cv-ghost{position:fixed!important;z-index:99999;pointer-events:none;margin:0!important;opacity:.95;box-shadow:0 12px 28px rgba(0,0,0,.45);transform:rotate(-1.5deg);overflow:hidden}",
+      "body.cv-drag-on,body.cv-drag-on *{cursor:grabbing!important;user-select:none!important}",
       /* course colours */
       "body.cal-cc [data-course]:not(.pd-dot){background:hsl(var(--cc) 75% 60% / .16)!important;color:hsl(var(--cc) 85% 72%)!important;border-color:hsl(var(--cc) 80% 62%)!important}",
       "body.cal-cc .pd-dot[data-course]{background:hsl(var(--cc) 80% 62%)!important}",
