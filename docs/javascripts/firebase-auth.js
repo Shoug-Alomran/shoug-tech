@@ -47,45 +47,60 @@
   function privateRef(uid) {
     return firebase.firestore().collection("users").doc(uid).collection("private").doc("data");
   }
+  function hasData(v) {
+    if (v === undefined || v === null || v === "") return false;
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object") return Object.keys(v).length > 0;
+    return true;
+  }
+  // Resolves to the document a page should read and write. Normally that is
+  // the private record, after moving any data still on the profile. Until the
+  // Firestore rules allow the private record (permission-denied), it is the
+  // profile itself, so nothing ever looks empty during a rollout.
   function privateRecordReady(uid) {
     if (privateReady[uid]) return privateReady[uid];
     var main = firebase.firestore().collection("users").doc(uid),
-      priv = privateRef(uid);
-    // Give up on the move after 10 s (offline, or Firestore stalled) so pages
-    // still open; the next visit finishes it.
-    var timeout = new Promise(function (_, reject) {
-      setTimeout(function () {
-        reject(new Error("timed out"));
-      }, 10000);
-    });
-    privateReady[uid] = Promise.race([Promise.all([main.get(), priv.get()]), timeout])
+      priv = privateRef(uid),
+      BLOCKED = {};
+    privateReady[uid] = Promise.all([
+      main.get(),
+      priv.get().catch(function (e) {
+        if (e && e.code === "permission-denied") return BLOCKED;
+        throw e;
+      }),
+    ])
       .then(function (snaps) {
+        if (snaps[1] === BLOCKED) return main;
         var shared = snaps[0].exists ? snaps[0].data() : {},
           mine = snaps[1].exists ? snaps[1].data() : {},
           move = {},
-          drop = {},
-          found = false;
+          drop = {};
         PRIVATE_FIELDS.forEach(function (k) {
           if (shared[k] === undefined) return;
-          found = true;
-          drop[k] = firebase.firestore.FieldValue.delete();
-          if (mine[k] === undefined) move[k] = shared[k];
+          // An empty private copy never wins over real data on the profile.
+          if (!hasData(mine[k]) && hasData(shared[k])) move[k] = shared[k];
+          // Only clear the profile copy once the private record holds it (or
+          // the profile copy is empty). Anything else stays as a backup.
+          if (move[k] !== undefined || !hasData(shared[k]) || JSON.stringify(mine[k]) === JSON.stringify(shared[k]))
+            drop[k] = firebase.firestore.FieldValue.delete();
         });
-        if (!found) return priv;
-        // Copy first, then clear the shared document, so nothing is lost if
-        // the second write fails (the next visit simply finishes the move).
+        if (!Object.keys(move).length && !Object.keys(drop).length) return priv;
+        // Copy first, then clear the profile, so nothing is lost if the second
+        // write fails (the next visit simply finishes the move).
         return (Object.keys(move).length ? priv.set(move, { merge: true }) : Promise.resolve())
           .then(function () {
-            return main.update(drop);
+            return Object.keys(drop).length ? main.update(drop) : null;
           })
           .then(function () {
             return priv;
           });
       })
       .catch(function (e) {
+        // Unknown failure: read the profile, which still has any data not yet
+        // moved. Saves there are refused by the new rules, so nothing is lost.
         console.error("Private record move failed", e);
         delete privateReady[uid];
-        return priv;
+        return main;
       });
     return privateReady[uid];
   }
