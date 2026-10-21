@@ -3543,6 +3543,7 @@
     en: {
       home: "Home",
       profile: "My Profile",
+      transcript: "My Transcript",
       calendar: "Calendar",
       bookmarks: "Bookmarks",
       progress: "My Progress",
@@ -3552,6 +3553,7 @@
     ar: {
       home: "الرئيسية",
       profile: "ملفي الشخصي",
+      transcript: "سجلي الأكاديمي",
       calendar: "التقويم",
       bookmarks: "المحفوظات",
       progress: "تقدمي",
@@ -3563,6 +3565,7 @@
     "home",
     "profile",
     "calendar",
+    "transcript",
     "bookmarks",
     "progress",
     "community",
@@ -3613,6 +3616,11 @@
         key: "calendar",
         href: "/account/calendar/",
         active: path.indexOf("/account/calendar") === 0,
+      },
+      {
+        key: "transcript",
+        href: "/account/transcript/",
+        active: path.indexOf("/account/transcript") === 0,
       },
       {
         key: "bookmarks",
