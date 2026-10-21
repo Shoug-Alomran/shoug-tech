@@ -412,45 +412,6 @@
         padding: 16px 18px;
       }
 
-      .panel-collapse {
-        height: 28px;
-        padding: 0 12px;
-        border: 1px solid var(--soft-line);
-        border-radius: 999px;
-        background: transparent;
-        color: var(--muted);
-        font:
-          800 0.58rem/1 "JetBrains Mono",
-          monospace;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition:
-          color 150ms,
-          border-color 150ms;
-      }
-
-      .panel-collapse:hover {
-        color: var(--brand);
-        border-color: rgba(184, 41, 234, 0.42);
-      }
-
-      .panel-head-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-      }
-
-      .panel.is-collapsed .panel-body {
-        display: none;
-      }
-
-      .panel.is-collapsed .panel-head {
-        border-bottom: 0;
-      }
-
       .month-tools {
         display: flex;
         align-items: center;
@@ -1240,8 +1201,7 @@
       #calendar-app[data-tab="add-class"] [data-tab]:not([data-tab="add-class"]),
       #calendar-app[data-tab="upcoming-exams"] [data-tab]:not([data-tab="upcoming-exams"]),
       #calendar-app[data-tab="study-session"] [data-tab]:not([data-tab="study-session"]),
-      #calendar-app[data-tab="add-event"] [data-tab]:not([data-tab="add-event"]),
-      #calendar-app[data-tab="view-focus"] [data-tab]:not([data-tab="view-focus"]) {
+      #calendar-app[data-tab="add-event"] [data-tab]:not([data-tab="add-event"]) {
         display: none !important;
       }
 
@@ -1265,8 +1225,7 @@
       #calendar-app[data-tab="add-class"] .side,
       #calendar-app[data-tab="upcoming-exams"] .side,
       #calendar-app[data-tab="study-session"] .side,
-      #calendar-app[data-tab="add-event"] .side,
-      #calendar-app[data-tab="view-focus"] .side {
+      #calendar-app[data-tab="add-event"] .side {
         order: -1;
         display: block;
         width: 100%;
@@ -1276,8 +1235,7 @@
       #calendar-app[data-tab="add-class"] .side > .panel,
       #calendar-app[data-tab="upcoming-exams"] .side > .panel,
       #calendar-app[data-tab="study-session"] .side > .panel,
-      #calendar-app[data-tab="add-event"] .side > .panel,
-      #calendar-app[data-tab="view-focus"] .side > .panel {
+      #calendar-app[data-tab="add-event"] .side > .panel {
         break-inside: avoid;
         margin-bottom: 20px;
       }
@@ -3707,7 +3665,6 @@
           <button class="cal-tab" role="tab" type="button" data-cal-tab="upcoming-exams">Upcoming Exams</button>
           <button class="cal-tab" role="tab" type="button" data-cal-tab="study-session">Study Session</button>
           <button class="cal-tab" role="tab" type="button" data-cal-tab="add-event">Add Event</button>
-          <button class="cal-tab" role="tab" type="button" data-cal-tab="view-focus">View Focus</button>
         </nav>
         <section class="today-dashboard" id="today-dashboard"></section>
         <div class="calendar-shell">
@@ -3726,6 +3683,19 @@
               </div>
               <div class="panel-body">
                 <div class="weekly-agenda" id="weekly-agenda"></div>
+              </div>
+            </section>
+            <section class="panel" id="calendar-focus-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">View Focus</div>
+                  <div class="panel-sub">
+                    Hide calendar layers without deleting anything
+                  </div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="filter-grid" id="view-filters"></div>
               </div>
             </section>
             <section class="panel" id="calendar-month-panel">
@@ -3913,19 +3883,6 @@
             </div>
           </div>
           <aside class="side">
-            <section class="panel" id="calendar-focus-panel">
-              <div class="panel-head">
-                <div>
-                  <div class="panel-title">View Focus</div>
-                  <div class="panel-sub">
-                    Hide calendar layers without deleting anything
-                  </div>
-                </div>
-              </div>
-              <div class="panel-body">
-                <div class="filter-grid" id="view-filters"></div>
-              </div>
-            </section>
 <section class="panel grade-panel" id="calendar-grade-panel">
               <div class="panel-head">
                 <div>
@@ -5074,7 +5031,7 @@
       </section>
     </div>
     <script src="/javascripts/mobile-navigation.js?v=62" defer></script>
-    <script src="/javascripts/firebase-auth.js?v=64"></script>
+    <script src="/javascripts/firebase-auth.js?v=66"></script>
     <script src="/javascripts/psu-academic-calendar.js?v=2"></script>
     <script src="/javascripts/academic-record.js?v=5"></script>
     <script>
@@ -6886,18 +6843,17 @@
               });
             });
           renderAssignmentsPanel();
-          // Exams filed under a course you aren't registered in are listed
-          // first, past ones included, so a typo can be fixed.
-          var upcomingExams = futureExams().slice(0, 8),
-            listedExams = scopedExams()
-              .filter(function (e) {
-                return (
-                  upcomingExams.indexOf(e) < 0 &&
-                  (termForDate(e.date) || {}).term === gradeTerm() &&
-                  courseMismatch(e.course)
-                );
-              })
-              .concat(upcomingExams);
+          // Keep every exam in the selected semester visible. Future exams
+          // come first; past-dated exams remain available for review/editing.
+          var today = todayKey(),
+            listedExams = scopedExams().slice().sort(function (a, b) {
+              var aPast = a.date && a.date < today,
+                bPast = b.date && b.date < today;
+              if (aPast !== bPast) return aPast ? 1 : -1;
+              return aPast
+                ? String(b.date || "").localeCompare(String(a.date || ""))
+                : String(a.date || "").localeCompare(String(b.date || ""));
+            });
           $("exam-list").innerHTML = listedExams.length
             ? listedExams
                 .map(function (e) {
@@ -6916,6 +6872,7 @@
                     esc(examTypeLabel(e.type)) +
                     " · " +
                     esc(e.date) +
+                    (e.date && e.date < today ? " · Completed" : " · Upcoming") +
                     (e.start ? " · " + esc(timeRange(e.start, e.end)) : "") +
                     (e.location ? " · " + esc(e.location) : "") +
                     '</div></div><div class="item-actions"><button class="remove-btn edit" data-exam-edit="' +
@@ -6926,7 +6883,7 @@
                   );
                 })
                 .join("")
-            : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
+            : '<div class="empty">No exams for this semester yet. Add one here.</div>';
           $("exam-list")
             .querySelectorAll("[data-exam-edit]")
             .forEach(function (b) {
@@ -8002,7 +7959,7 @@
         // Panels stay where they are in the page; each is tagged with its tab
         // and the others are hidden, so nothing else needs to know about tabs.
         var CAL_TABS = {
-          calendar: ["today-dashboard", "weekly-agenda-panel", "calendar-month-panel", "calendar-personal-panel"],
+          calendar: ["today-dashboard", "weekly-agenda-panel", "calendar-focus-panel", "calendar-month-panel", "calendar-personal-panel"],
           assignments: ["calendar-assignment-panel"],
           grades: ["calendar-grade-panel"],
           classes: ["saved-list", "attendance-list"],
@@ -8010,13 +7967,12 @@
           "upcoming-exams": ["calendar-exams-panel"],
           "study-session": ["calendar-study-panel"],
           "add-event": ["calendar-event-panel"],
-          "view-focus": ["calendar-focus-panel"],
         };
         function setupCalendarTabs() {
           var app = $("calendar-app"),
             side = app.querySelector(".side");
           // Keep each calendar tool directly addressable from the tab bar.
-          ["calendar-class-panel", "calendar-exams-panel", "calendar-study-panel", "calendar-event-panel", "calendar-focus-panel"].forEach(function (id) {
+          ["calendar-class-panel", "calendar-exams-panel", "calendar-study-panel", "calendar-event-panel"].forEach(function (id) {
             if ($(id) && side && $(id).parentNode === side) side.appendChild($(id));
           });
           Object.keys(CAL_TABS).forEach(function (tab) {
@@ -10394,30 +10350,68 @@
         $("day-add-event-btn").addEventListener("click", function () {
           openEventEditor(activeDayKey);
         });
-        $("enable-assignment-reminders-btn").addEventListener(
-          "click",
-          function () {
-            if (!("Notification" in window)) {
-              toast("This browser does not support notifications");
-              return;
+        var reminderPreferenceKey = function () {
+          var user = firebase.auth().currentUser;
+          return "shoug-calendar-reminders-enabled:" + (user ? user.uid : "guest");
+        };
+        function dueRemindersEnabled() {
+          try {
+            return localStorage.getItem(reminderPreferenceKey()) !== "0";
+          } catch (e) {
+            return true;
+          }
+        }
+        function syncDueReminderButton() {
+          var button = $("enable-assignment-reminders-btn"),
+            supported = "Notification" in window,
+            enabled = supported && Notification.permission === "granted" && dueRemindersEnabled();
+          button.textContent = enabled ? "Disable Due Notifications" : "Enable Due Notifications";
+          button.setAttribute("aria-pressed", enabled ? "true" : "false");
+          button.disabled = !supported;
+          button.title = supported
+            ? "Turn assignment and exam due notifications " + (enabled ? "off" : "on")
+            : "This browser does not support notifications";
+        }
+        $("enable-assignment-reminders-btn").addEventListener("click", function () {
+          if (!("Notification" in window)) {
+            toast("This browser does not support notifications");
+            return;
+          }
+          var key = reminderPreferenceKey();
+          if (Notification.permission === "granted" && dueRemindersEnabled()) {
+            try {
+              localStorage.setItem(key, "0");
+            } catch (e) {}
+            syncDueReminderButton();
+            document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed"));
+            toast("Due notifications disabled");
+            return;
+          }
+          function enableReminders() {
+            try {
+              localStorage.setItem(key, "1");
+            } catch (e) {}
+            syncDueReminderButton();
+            document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed"));
+            toast("Due notifications enabled");
+          }
+          if (Notification.permission === "granted") {
+            enableReminders();
+            return;
+          }
+          Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") enableReminders();
+            else {
+              syncDueReminderButton();
+              toast("Notifications were not enabled");
             }
-            if (Notification.permission === "granted") {
-              toast("Due notifications are already enabled");
-              return;
-            }
-            Notification.requestPermission().then(function (permission) {
-              if (permission === "granted")
-                document.dispatchEvent(
-                  new CustomEvent("shoug:calendar-reminders-changed"),
-                );
-              toast(
-                permission === "granted"
-                  ? "Due notifications enabled"
-                  : "Notifications were not enabled",
-              );
-            });
-          },
-        );
+          });
+        });
+        syncDueReminderButton();
+        document.addEventListener("shoug:calendar-reminders-changed", syncDueReminderButton);
+        window.addEventListener("storage", function (event) {
+          if (event.key === reminderPreferenceKey()) syncDueReminderButton();
+        });
         $("day-detail").addEventListener("click", function (e) {
           if (e.target === $("day-detail")) closeDay();
         });
@@ -10583,73 +10577,6 @@
           )
             closeDay();
         });
-        // Bridge for the AI panel in calendar-assistant.js. It hands over a
-        // sanitized snapshot (no ids, no links, no attendance) and applies any
-        // accepted proposal through the same save paths the forms use, so
-        // validation and persistence stay in one place.
-        // Every side panel can be folded away. A Hide/Show button is added to
-        // each panel head; the choice is per-browser, like the view filters.
-        (function initSidePanels() {
-          var KEY = "calendar-panels-collapsed",
-            collapsed = {};
-          try {
-            collapsed = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
-            // Carry over the old class-panel-only setting.
-            if (
-              localStorage.getItem("calendar-class-panel-open") === "0" &&
-              collapsed["calendar-class-panel"] === undefined
-            )
-              collapsed["calendar-class-panel"] = true;
-          } catch (e) {}
-          document
-            .querySelectorAll(".side > .panel[id]")
-            .forEach(function (panel) {
-              var head = panel.querySelector(":scope > .panel-head"),
-                title = panel.querySelector(".panel-title");
-              if (!head) return;
-              var name = title ? title.textContent.trim() : "panel",
-                toggle = document.createElement("button");
-              toggle.className = "panel-collapse";
-              toggle.type = "button";
-              toggle.setAttribute("aria-controls", panel.id);
-              // Keep any existing head action (e.g. Add Assignment) beside the toggle.
-              var extras = Array.prototype.filter.call(
-                head.children,
-                function (c) {
-                  return c !== head.firstElementChild;
-                },
-              );
-              if (extras.length) {
-                var actions = document.createElement("div");
-                actions.className = "panel-head-actions";
-                extras.forEach(function (c) {
-                  actions.appendChild(c);
-                });
-                actions.appendChild(toggle);
-                head.appendChild(actions);
-              } else head.appendChild(toggle);
-              function set(open, save) {
-                panel.classList.toggle("is-collapsed", !open);
-                toggle.textContent = open ? "Hide" : "Show";
-                toggle.setAttribute("aria-expanded", open ? "true" : "false");
-                toggle.setAttribute(
-                  "aria-label",
-                  (open ? "Hide " : "Show ") + name,
-                );
-                if (!save) return;
-                if (open) delete collapsed[panel.id];
-                else collapsed[panel.id] = true;
-                try {
-                  localStorage.setItem(KEY, JSON.stringify(collapsed));
-                } catch (e) {}
-              }
-              set(!collapsed[panel.id], false);
-              toggle.addEventListener("click", function () {
-                set(panel.classList.contains("is-collapsed"), true);
-              });
-            });
-        })();
-
         // ── Study plan import (/account/calendar/?plan=<plan.json>) ──
         // Study-plan pages link here. The plan's pages are packed into
         // sessions of up to two hours a day before the exam, placed in free
@@ -11047,6 +10974,7 @@
         document.dispatchEvent(new CustomEvent("shoug:calendar-ai-ready"));
 
         window.__shoug_onAuth = function (user) {
+          syncDueReminderButton();
           if (!user) {
             currentUser = null;
             show("signed-out-state");
