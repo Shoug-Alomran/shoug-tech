@@ -1441,9 +1441,8 @@
         '  <a class="shoug-drop-link" href="/community/profile/?u=' +
           encodeURIComponent(user.uid) +
           '">My Profile</a>',
-        '  <a class="shoug-drop-link" href="/community/">Create or edit profile</a>',
         '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
-        '  <a class="shoug-drop-link" href="/account/transcript/">Optional Transcript</a>',
+        '  <a class="shoug-drop-link" href="/account/transcript/">Transcript</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
         '  <a class="shoug-drop-link" href="/community/">Community</a>',
