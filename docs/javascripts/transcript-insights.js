@@ -23,6 +23,11 @@
   var NOT_PASSED = ["F", "DN", "W", "NF"];
   var PLAN_KEY = "shoug-transcript-plan";
   var lastRecord = null;
+  // { plan: { summer: ["PHY 205"] }, save(plan) } from the page; the plan
+  // lives in the private record as degreePlan.
+  var lastOpts = {};
+  // A typical PSU summer load; more summer courses spill into the next summer.
+  var SUMMER_HOURS = 9;
 
   function $(id) {
     return document.getElementById(id);
@@ -227,13 +232,17 @@
     });
     return plans[value];
   }
+  function nextSummer(term) {
+    var y = Number(term.slice(0, 2));
+    return term.charAt(2) === "3" ? pad(y + 1) + "3" : pad(y) + "3";
+  }
   function nextRegular(term) {
     var y = Number(term.slice(0, 2)),
       n = term.charAt(2);
     return n === "1" ? pad(y) + "2" : pad(y + 1) + "1";
   }
 
-  function progress(record, plan) {
+  function progress(record, plan, summer) {
     var current = AR.termForDate(),
       courses = record.courses || {},
       status = {},
@@ -338,9 +347,28 @@
           )
         : 15,
       remaining = sum(left) + openHours,
-      terms = remaining ? Math.ceil(remaining / Math.max(pace, 1)) : 0,
-      finish = current;
+      summerSet = {};
+    (summer || []).forEach(function (code) {
+      summerSet[AR.courseCode(code)] = true;
+    });
+    // Courses marked for summer come off the regular semesters and go into
+    // the summers after this term, up to SUMMER_HOURS each.
+    var summerCourses = left.filter(function (c) {
+        return summerSet[AR.courseCode(c.id)];
+      }),
+      summerHours = sum(summerCourses),
+      regularLeft = remaining - summerHours,
+      terms = regularLeft ? Math.ceil(regularLeft / Math.max(pace, 1)) : 0,
+      summers = summerHours ? Math.ceil(summerHours / SUMMER_HOURS) : 0,
+      finish = current,
+      lastSummer = "",
+      nextS = nextSummer(current);
     for (var i = 0; i < terms; i++) finish = nextRegular(finish);
+    for (var j = 0; j < summers; j++) {
+      lastSummer = nextS;
+      nextS = nextSummer(nextS);
+    }
+    if (lastSummer > finish) finish = lastSummer;
     var outside = Object.keys(counted)
       .filter(function (key) {
         return !planIds[key];
@@ -362,11 +390,32 @@
       pace: pace,
       terms: terms,
       finish: finish,
+      summerSet: summerSet,
+      summerHours: summerHours,
+      regularLeft: regularLeft,
+      summers: summers,
+      groups: groups,
     };
   }
 
-  function chip(c, note) {
-    return '<li class="ti-chip"><b>' + esc(AR.courseCode(c.id)) + "</b> " + esc(c.name || "") + ' <span>' + esc(c.hours) + " hrs" + (note ? " · " + esc(note) : "") + "</span></li>";
+  function chip(c, note, summerOn) {
+    var code = AR.courseCode(c.id);
+    return (
+      '<li class="ti-chip' + (summerOn ? " ti-is-summer" : "") + '"><div><b>' + esc(code) + "</b> " + esc(c.name || "") +
+      " <span>" + esc(c.hours) + " hrs" + (note ? " · " + esc(note) : "") + (summerOn ? " · planned for summer" : "") + "</span></div>" +
+      '<button type="button" class="ti-summer" data-summer="' + esc(code) + '" aria-pressed="' + (summerOn ? "true" : "false") + '" title="Plan this course for a summer term">Summer</button></li>'
+    );
+  }
+  // "Math Elective - choose 1" -> "Math elective".
+  function groupLabel(label) {
+    var clean = String(label || "").replace(/\s*[-–]\s*choose\s*\d+\s*$/i, "");
+    return clean.replace(/\b(Elective|Education)\b/g, function (w) {
+      return w.toLowerCase();
+    });
+  }
+  function gridPlanUrl(value) {
+    var match = /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(String(value || ""));
+    return match ? "/academic-plan-themes/" + match[1] + "/grid.html" : "/academic-plan-themes/se-cys/grid.html";
   }
   function renderProgress(record) {
     var card = $("progress-card"),
@@ -382,12 +431,14 @@
       saved = localStorage.getItem(PLAN_KEY) || "";
     } catch (e) {}
     if (saved && select.querySelector('option[value="' + saved + '"]')) select.value = saved;
+    var gridLink = $("progress-grid-link");
+    if (gridLink) gridLink.href = gridPlanUrl(select.value);
     var body = $("progress-body"),
       value = select.value;
     loadPlan(value)
       .then(function (plan) {
         if (select.value !== value) return;
-        var p = progress(record, plan),
+        var p = progress(record, plan, (lastOpts.plan && lastOpts.plan.summer) || []),
           pct = function (h) {
             return p.total ? Math.min(100, (h / p.total) * 100) : 0;
           };
@@ -396,7 +447,11 @@
           "<div><b>" + p.nowHours + "</b><span>hours in progress this semester</span></div>" +
           "<div><b>" + (p.leftHours ? esc(AR.termName(p.finish)) : "This semester") + "</b><span>" +
           (p.leftHours
-            ? "estimated graduation · " + p.leftHours + " hours left, about " + p.terms + " more semester" + (p.terms === 1 ? "" : "s") + " at your usual " + p.pace + " hours"
+            ? "estimated graduation · " +
+              (p.regularLeft
+                ? p.regularLeft + " hours over about " + p.terms + " more semester" + (p.terms === 1 ? "" : "s") + " at your usual " + p.pace + " hours"
+                : "") +
+              (p.summerHours ? (p.regularLeft ? ", plus " : "") + p.summerHours + " hours in " + (p.summers === 1 ? "a summer term" : p.summers + " summer terms") : "")
             : "everything left is in progress now") +
           "</span></div></div>" +
           '<div class="ti-bar" role="img" aria-label="' + p.doneHours + " of " + p.total + " hours done, " + p.nowHours + ' in progress"><span class="ti-done" style="width:' + pct(p.doneHours) + '%"></span><span class="ti-now" style="width:' + pct(p.nowHours) + '%"></span></div>' +
@@ -408,7 +463,7 @@
                   return (a.level || 0) - (b.level || 0);
                 })
                 .map(function (c) {
-                  return chip(c);
+                  return chip(c, "", p.summerSet[AR.courseCode(c.id)]);
                 })
                 .join("") +
               "</ul>"
@@ -417,19 +472,28 @@
             ? '<details class="ti-more"><summary>Needs a prerequisite first <span>' + p.waiting.length + '</span></summary><ul class="ti-chips">' +
               p.waiting
                 .map(function (w) {
-                  return chip(w.course, "after " + w.after.map(AR.courseCode).join(", "));
+                  return chip(w.course, "after " + w.after.map(AR.courseCode).join(", "), p.summerSet[AR.courseCode(w.course.id)]);
                 })
                 .join("") +
               "</ul></details>"
             : "") +
           (p.open.length
-            ? '<p class="muted ti-open">Still to choose: ' +
+            ? '<h3 class="ti-h">Electives to choose <span>' + p.open.length + '</span></h3><div class="ti-electives">' +
               p.open
                 .map(function (o) {
-                  return esc(o.label) + (o.missing > 1 ? " (" + o.missing + ")" : "");
+                  return (
+                    '<label class="ti-elective"><span>' + esc(groupLabel(o.label)) + (o.missing > 1 ? " (choose " + o.missing + ")" : "") + "</span>" +
+                    '<select data-elective="' + esc(o.group) + '"><option value="">Choose a course</option>' +
+                    p.groups[o.group]
+                      .map(function (c) {
+                        return '<option value="' + esc(c.id) + '">' + esc(AR.courseCode(c.id) + " · " + (c.name || "") + " · " + c.hours + " hrs") + "</option>";
+                      })
+                      .join("") +
+                    "</select><small class=\"ti-elective-note\"><span>Counted as " + o.hours + " hours until you choose.</span><a href=\"" + gridPlanUrl(value) + "\">Choose on the grid plan</a></small></label>"
+                  );
                 })
-                .join("; ") +
-              '. Pick them on your <a href="/academic-plan-themes/' + esc(value) + '.html">plan page</a>; each is counted as ' + p.open[0].hours + " hours until then.</p>"
+                .join("") +
+              "</div>"
             : "") +
           (p.outside.length
             ? '<p class="muted ti-open">Counted in your GPA but not in this plan: ' + p.outside.map(esc).join(", ") + ".</p>"
@@ -440,8 +504,44 @@
       });
   }
 
-  function render(record) {
+  // Summer toggles and elective pickers inside the progress card.
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest && e.target.closest("#progress-body [data-summer]");
+    if (!btn || !lastRecord) return;
+    var code = btn.dataset.summer,
+      plan = Object.assign({}, lastOpts.plan),
+      list = (plan.summer || []).filter(function (c) {
+        return c !== code;
+      });
+    if (btn.getAttribute("aria-pressed") !== "true") list.push(code);
+    plan.summer = list.sort();
+    lastOpts.plan = plan;
+    renderProgress(lastRecord);
+    if (lastOpts.save) lastOpts.save(plan);
+  });
+  document.addEventListener("change", function (e) {
+    var sel = e.target.closest && e.target.closest("#progress-body [data-elective]");
+    if (!sel || !sel.value || !lastRecord) return;
+    loadPlan($("progress-plan").value).then(function (plan) {
+      if (!plan.choicesKey) return;
+      var choices = {};
+      try {
+        choices = JSON.parse(localStorage.getItem(plan.choicesKey) || "{}") || {};
+      } catch (err) {}
+      var g = sel.dataset.elective,
+        limit = Number(plan.limits[g]) || 1;
+      // Same shape as the plan page: one course id per group, or a list.
+      choices[g] = limit === 1 ? sel.value : [].concat(choices[g] || []).concat(sel.value).slice(-limit);
+      try {
+        localStorage.setItem(plan.choicesKey, JSON.stringify(choices));
+      } catch (err) {}
+      renderProgress(lastRecord);
+    });
+  });
+
+  function render(record, opts) {
     lastRecord = record || {};
+    if (opts) lastOpts = opts;
     renderHistory(lastRecord);
     renderProgress(lastRecord);
   }
@@ -452,6 +552,8 @@
         localStorage.setItem(PLAN_KEY, e.target.value);
       } catch (err) {}
       if (e.target.id === "progress-plan" && lastRecord) renderProgress(lastRecord);
+      var gridLink = $("progress-grid-link");
+      if (gridLink && e.target.id === "progress-plan") gridLink.href = gridPlanUrl(e.target.value);
     }
   });
   var resizeTimer = null;
