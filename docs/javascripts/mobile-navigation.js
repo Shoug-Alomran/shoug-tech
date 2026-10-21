@@ -324,21 +324,3 @@
   }
 })();
 
-// Star ratings on course overviews and track pages (see course-ratings.js).
-(function () {
-  if (
-    !/^\/academics\/[^/]+\/(?:[^/]+\/)?(?:[^/]+\/)?(?:index\.html)?$/.test(
-      window.location.pathname,
-    )
-  )
-    return;
-  var s = document.createElement("script");
-  s.src = "/javascripts/course-ratings.js?v=3";
-  s.async = true;
-  document.head.appendChild(s);
-  // Private "MY GRADE" row for the student's own GPA (academic-record.js).
-  var g = document.createElement("script");
-  g.src = "/javascripts/academic-record.js?v=2";
-  g.async = true;
-  document.head.appendChild(g);
-})();
