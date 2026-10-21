@@ -491,6 +491,14 @@
           var m = String(v || "").match(/([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)/);
           return m ? m[1].toUpperCase() + " " + m[2].toUpperCase() : String(v || "").trim().toUpperCase();
         }
+        // Course field, or a known course code written in the title.
+        var knownCourses = {};
+        function itemCourse(it) {
+          if (!it) return "";
+          if (it.course) return courseLabel(it.course);
+          var m = String(it.title || "").match(/\b([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)\b/);
+          return m && knownCourses[courseLabel(m[0])] ? courseLabel(m[0]) : "";
+        }
         function dueAt(it) {
           var t = /^\d{2}:\d{2}$/.test(it.end || "") ? it.end : "23:59",
             d = fromKey(it.endDate || it.date);
@@ -673,7 +681,7 @@
           el.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Lead time for each submission by due date">' + grid + months + '<path class="line" d="' + line + '"/>' + dots + "</svg>";
           wireTips(el, function (i) {
             var p = sorted[i];
-            return "<b>" + esc(p.it.title) + "</b>" + esc(courseLabel(p.it.course) || "") + "<br>Due " + fmtDate(p.due) + " · " + esc(dur(p.h * 3600000));
+            return "<b>" + esc(p.it.title) + "</b>" + esc(itemCourse(p.it) || "") + "<br>Due " + fmtDate(p.due) + " · " + esc(dur(p.h * 3600000));
           });
         }
 
@@ -682,7 +690,7 @@
           var t = state.range && terms().find(function (x) { return x.term === state.range; });
           return raw.filter(function (it) {
             if (!WORK[it.kind]) return false;
-            if (state.course && courseLabel(it.course) !== state.course) return false;
+            if (state.course && itemCourse(it) !== state.course) return false;
             if (t) {
               var d = fromKey(it.endDate || it.date);
               if (d < t.start || d > t.end) return false;
@@ -770,10 +778,10 @@
           // by course
           var byC = {};
           list.forEach(function (it) {
-            var c = courseLabel(it.course) || "No course";
+            var c = itemCourse(it) || "No course";
             (byC[c] = byC[c] || { all: [], timed: [] }).all.push(it);
           });
-          timed.forEach(function (p) { byC[courseLabel(p.it.course) || "No course"].timed.push(p); });
+          timed.forEach(function (p) { byC[itemCourse(p.it) || "No course"].timed.push(p); });
           var rows = Object.keys(byC).sort().map(function (c) {
             var x = byC[c],
               sub = x.all.filter(function (it) { return it.submitted; }).length,
@@ -797,7 +805,7 @@
               ? allRows.map(function (it) {
                   var at = it.submittedAt ? new Date(it.submittedAt) : null,
                     due = dueAt(it);
-                  return "<tr><td>" + esc(it.title) + "</td><td>" + esc(courseLabel(it.course) || "–") + '</td><td class="num">' + fmtDate(due) + ", " + fmtTime(due) + '</td><td class="num">' + (at ? fmtDate(at) + ", " + fmtTime(at) : "not recorded") + '</td><td class="num">' + (at ? esc(dur(due - at)) : "–") + "</td></tr>";
+                  return "<tr><td>" + esc(it.title) + "</td><td>" + esc(itemCourse(it) || "–") + '</td><td class="num">' + fmtDate(due) + ", " + fmtTime(due) + '</td><td class="num">' + (at ? fmtDate(at) + ", " + fmtTime(at) : "not recorded") + '</td><td class="num">' + (at ? esc(dur(due - at)) : "–") + "</td></tr>";
                 }).join("")
               : '<tr><td colspan="5">Nothing submitted in this range yet.</td></tr>') +
             "</tbody>";
@@ -836,7 +844,7 @@
           state.range = cur ? cur.term : "";
           $("f-range").value = state.range;
           var cs = {};
-          raw.forEach(function (it) { if (WORK[it.kind] && it.course) cs[courseLabel(it.course)] = 1; });
+          raw.forEach(function (it) { if (WORK[it.kind] && itemCourse(it)) cs[itemCourse(it)] = 1; });
           $("f-course").innerHTML = '<option value="">All courses</option>' + Object.keys(cs).sort().map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
           $("f-range").onchange = function () { state.range = this.value; render(); };
           $("f-course").onchange = function () { state.course = this.value; render(); };
@@ -849,6 +857,9 @@
           firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
             var data = doc.exists ? doc.data() : {};
             raw = Array.isArray(data.calendarEvents) ? data.calendarEvents.filter(Boolean) : [];
+            raw.forEach(function (it) { if (it.course) knownCourses[courseLabel(it.course)] = 1; });
+            (data.calendarClassSchedules || []).forEach(function (c) { if (c && c.title) knownCourses[courseLabel(c.title)] = 1; });
+            Object.keys(data.exams || {}).forEach(function (k) { var e = data.exams[k]; if (e && e.course) knownCourses[courseLabel(e.course)] = 1; });
             if (!raw.some(function (it) { return WORK[it.kind]; })) {
               $("state").innerHTML = 'No assignments or projects yet. Add them in your <a href="/account/calendar/">calendar</a> and mark them submitted to see analytics here.';
               return;

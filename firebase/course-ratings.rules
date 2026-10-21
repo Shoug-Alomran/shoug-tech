@@ -1,0 +1,43 @@
+// Course ratings (docs/javascripts/course-ratings.js).
+// Merge the function and match into the existing database documents match in
+// Firebase Console > Firestore > Rules. Do NOT replace the production rules.
+//
+// courseRatings/{course}/ratings/{uid}: one rating per student per course.
+// Anyone can read (averages show to signed-out visitors); only the signed-in
+// owner can write their own document, every score is a whole number 1-5,
+// and Overall is required.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ratingScore(v) {
+      return v is int && v >= 1 && v <= 5;
+    }
+    function optionalScore(d, key) {
+      return !(key in d) || ratingScore(d[key]);
+    }
+    function validCourseRating(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'overall', 'updatedAt'])
+        && d.keys().hasOnly(['uid', 'overall', 'workload', 'assignmentDifficulty',
+          'assignmentLength', 'projectDifficulty', 'labDifficulty', 'exams', 'updatedAt'])
+        && d.uid == uid
+        && d.updatedAt == request.time
+        && ratingScore(d.overall)
+        && optionalScore(d, 'workload')
+        && optionalScore(d, 'assignmentDifficulty')
+        && optionalScore(d, 'assignmentLength')
+        && optionalScore(d, 'projectDifficulty')
+        && optionalScore(d, 'labDifficulty')
+        // Exam keys come from each course's assessment list; the client
+        // ignores any exam value that is not a whole number 1-5.
+        && (!('exams' in d) || (d.exams is map && d.exams.size() <= 10));
+    }
+    match /courseRatings/{course}/ratings/{uid} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && course.matches('[a-z]+[0-9]{3}')
+        && validCourseRating(uid);
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

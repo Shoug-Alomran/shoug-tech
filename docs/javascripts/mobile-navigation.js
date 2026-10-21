@@ -323,3 +323,17 @@
     }, 15000);
   }
 })();
+
+// Star ratings on course overviews and track pages (see course-ratings.js).
+(function () {
+  if (
+    !/^\/academics\/[^/]+\/(?:[^/]+\/)?(?:[^/]+\/)?(?:index\.html)?$/.test(
+      window.location.pathname,
+    )
+  )
+    return;
+  var s = document.createElement("script");
+  s.src = "/javascripts/course-ratings.js?v=1";
+  s.async = true;
+  document.head.appendChild(s);
+})();

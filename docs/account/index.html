@@ -375,8 +375,79 @@
       }
 
       /* Heatmap */
+      :root {
+        --hm0: rgba(255, 255, 255, 0.05);
+        --hm1: rgba(184, 41, 234, 0.3);
+        --hm2: rgba(184, 41, 234, 0.52);
+        --hm3: rgba(184, 41, 234, 0.76);
+        --hm4: #c04df0;
+      }
+
+      body.shoug-light-mode {
+        --hm0: #ebe6f2;
+        --hm1: #e2c3f3;
+        --hm2: #c98ae6;
+        --hm3: #a74fd3;
+        --hm4: #7a1aa8;
+      }
+
       .heatmap-wrap {
         overflow-x: auto;
+      }
+
+      /* Fill the card when it is stretched to match the chart beside it. */
+      .heatmap-card {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .heatmap-card .heatmap-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .heatmap-svg {
+        display: block;
+        width: 100%;
+        min-width: 420px;
+        height: auto;
+      }
+
+      .heatmap-cell.lv0,
+      .heatmap-legend-cell.lv0 {
+        fill: var(--hm0);
+        background: var(--hm0);
+      }
+
+      .heatmap-cell.lv1,
+      .heatmap-legend-cell.lv1 {
+        fill: var(--hm1);
+        background: var(--hm1);
+      }
+
+      .heatmap-cell.lv2,
+      .heatmap-legend-cell.lv2 {
+        fill: var(--hm2);
+        background: var(--hm2);
+      }
+
+      .heatmap-cell.lv3,
+      .heatmap-legend-cell.lv3 {
+        fill: var(--hm3);
+        background: var(--hm3);
+      }
+
+      .heatmap-cell.lv4,
+      .heatmap-legend-cell.lv4 {
+        fill: var(--hm4);
+        background: var(--hm4);
+      }
+
+      body.shoug-light-mode .heatmap-day-labels,
+      body.shoug-light-mode .heatmap-legend {
+        fill: #534a61;
+        color: #534a61;
       }
 
       .heatmap-month-labels {
@@ -1815,13 +1886,14 @@
             ),
           );
 
-          function cellColor(count) {
-            if (!count) return "rgba(255,255,255,0.04)";
+          // Level 0–4; the colours live in CSS so light mode gets its own.
+          function cellLevel(count) {
+            if (!count) return 0;
             var intensity = count / maxCount;
-            if (intensity < 0.25) return "rgba(184,41,234,0.25)";
-            if (intensity < 0.5) return "rgba(184,41,234,0.5)";
-            if (intensity < 0.75) return "rgba(184,41,234,0.75)";
-            return "#b829ea";
+            if (intensity < 0.25) return 1;
+            if (intensity < 0.5) return 2;
+            if (intensity < 0.75) return 3;
+            return 4;
           }
 
           var LABEL_W = 24;
@@ -1846,7 +1918,9 @@
               var x = LABEL_W + col * STEP,
                 y = 24 + row * STEP;
               cells +=
-                '<rect class="heatmap-cell" x="' +
+                '<rect class="heatmap-cell lv' +
+                cellLevel(count) +
+                '" x="' +
                 x +
                 '" y="' +
                 y +
@@ -1854,8 +1928,6 @@
                 CELL +
                 '" height="' +
                 CELL +
-                '" fill="' +
-                cellColor(count) +
                 '"><title>' +
                 cur.toDateString() +
                 (count ? " — " + count + " " + L().pageWord(count) : "") +
@@ -1890,10 +1962,8 @@
             .join("");
 
           var svg =
-            '<svg width="' +
-            svgW +
-            '" height="' +
-            svgH +
+            '<svg class="heatmap-svg" role="img" aria-label="' +
+            escHtml(L().studyActivityTitle) +
             '" viewBox="0 0 ' +
             svgW +
             " " +
@@ -1906,11 +1976,11 @@
           var legend =
             '<div class="heatmap-legend">' +
             L().less +
-            ' <div class="heatmap-legend-cells"><div class="heatmap-legend-cell" style="background:rgba(255,255,255,.04)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.25)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.5)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.75)"></div><div class="heatmap-legend-cell" style="background:#b829ea"></div></div> ' +
+            ' <div class="heatmap-legend-cells"><div class="heatmap-legend-cell lv0"></div><div class="heatmap-legend-cell lv1"></div><div class="heatmap-legend-cell lv2"></div><div class="heatmap-legend-cell lv3"></div><div class="heatmap-legend-cell lv4"></div></div> ' +
             L().more +
             "</div>";
           return (
-            '<div class="chart-card"><div class="chart-title">' +
+            '<div class="chart-card heatmap-card"><div class="chart-title">' +
             L().studyActivityTitle +
             '</div><div class="chart-sub">' +
             L().studyActivitySub +
