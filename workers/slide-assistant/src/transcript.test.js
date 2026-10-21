@@ -64,7 +64,7 @@ test("each row is checked on its own; pending grades become in-progress courses"
       { code: "Total hours", hours: 41, grade: "", term: "" },
       { code: "ENG 101", hours: 3, grade: "Excellent", term: "20241" },
     ],
-    summary: { cumulativeGpa: 2.82, earnedHours: 41, gpaHours: 0 },
+    summary: { cumulativeGpa: 2.82, earnedHours: 41, totalPoints: 0 },
   });
   assert.deepEqual(result.courses, [
     { code: "CS 331", title: "Algorithms", hours: 3, grade: "A+", term: "251" },
@@ -73,7 +73,7 @@ test("each row is checked on its own; pending grades become in-progress courses"
   ]);
   assert.deepEqual(result.inProgress, [{ code: "SE 322", title: "", hours: 3, grade: "", term: "261" }]);
   assert.equal(result.skipped, 2);
-  assert.deepEqual(result.summary, { cumulativeGpa: 2.82, earnedHours: 41, gpaHours: null });
+  assert.deepEqual(result.summary, { cumulativeGpa: 2.82, earnedHours: 41, totalPoints: null });
 });
 
 test("model answers are read as text, fenced text, parsed objects or chat choices", () => {
@@ -82,4 +82,30 @@ test("model answers are read as text, fenced text, parsed objects or chat choice
   assert.deepEqual(modelJson({ response: "```json\n{\"courses\":[]}\n```" }), body);
   assert.deepEqual(modelJson({ choices: [{ message: { content: "Here: {\"courses\":[]}" } }] }), body);
   assert.equal(modelJson({ response: "no json here" }), null);
+});
+
+test("EduGate rows: reversed codes, * pending, preparatory flag, swapped hours/points", () => {
+  const result = normalizeTranscript({
+    courses: [
+      { code: "101ARAB", hours: 2, points: 4, grade: "C", term: "20231" },
+      { code: "MATH001", hours: 4, points: 6, grade: "+D", term: "20231" },
+      { code: "PHY105", hours: 6, points: 4, grade: "D+", term: "20241" },
+      { code: "ETHCS303", hours: 3, points: 12, grade: "A+", term: "20253" },
+      { code: "CS 175", hours: 3, points: 9, grade: "A", term: "20241" },
+      { code: "331CS", hours: 3, points: null, grade: "*", term: "20261" },
+    ],
+    summary: { cumulativeGpa: 3, earnedHours: 76, totalPoints: 227.75 },
+  });
+  assert.deepEqual(
+    result.courses.map((c) => [c.code, c.hours, c.grade, c.term, c.prep || false, c.flag || ""]),
+    [
+      ["ARAB 101", 2, "C", "231", false, ""],
+      ["MATH 001", 4, "D+", "231", true, ""],
+      ["PHY 105", 4, "D+", "241", false, ""],
+      ["ETHC 303", 3, "A+", "253", false, ""],
+      ["CS 175", 3, "A", "241", false, "check"],
+    ],
+  );
+  assert.deepEqual(result.inProgress.map((c) => c.code), ["CS 331"]);
+  assert.deepEqual(result.summary, { cumulativeGpa: 3, earnedHours: 76, totalPoints: 227.75 });
 });
