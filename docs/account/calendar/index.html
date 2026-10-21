@@ -1240,22 +1240,26 @@
         display: none !important;
       }
 
-      /* Outside the calendar tab the page is one wide column. */
-      #calendar-app:not([data-tab="calendar"]) .calendar-shell,
-      #calendar-app:not([data-tab="calendar"]) .calendar-shell.side-hidden {
+      /* Every tab is one wide column; the side panels live in Classes & exams. */
+      #calendar-app[data-tab] .calendar-shell {
         grid-template-columns: minmax(0, 1fr);
       }
 
-      #calendar-app:not([data-tab="calendar"]) .calendar-shell.side-hidden > .side {
-        display: flex;
+      #calendar-app[data-tab="calendar"] .side {
+        display: none;
       }
 
+      /* Panels of different heights pack into balanced columns. */
       #calendar-app[data-tab="classes"] .side {
         order: -1;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-        align-items: start;
-        gap: 20px;
+        display: block;
+        columns: 3 380px;
+        column-gap: 20px;
+      }
+
+      #calendar-app[data-tab="classes"] .side > .panel {
+        break-inside: avoid;
+        margin-bottom: 20px;
       }
 
       #calendar-app[data-tab="classes"] .calendar-lower {
@@ -1286,15 +1290,6 @@
           padding: 0 8px;
           font-size: 0.68rem;
         }
-      }
-
-      /* Hide the side column */
-      .calendar-shell.side-hidden {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .calendar-shell.side-hidden > .side {
-        display: none;
       }
 
       /* Assignments & Projects — wide list */
@@ -3664,14 +3659,6 @@
           ><button class="btn muted" id="today-btn">Today</button
           ><button class="btn muted" id="classes-online-btn" type="button">
             Classes Online…</button
-          ><button
-            class="btn muted"
-            id="toggle-side-btn"
-            type="button"
-            aria-pressed="false"
-            title="Hide the side panels so the calendar uses the full width (H)"
-          >
-            Hide Panels</button
           ><button class="btn danger" id="clear-items-btn">Clear Items</button>
         </div>
       </section>
@@ -7990,13 +7977,18 @@
         // Panels stay where they are in the page; each is tagged with its tab
         // and the others are hidden, so nothing else needs to know about tabs.
         var CAL_TABS = {
-          calendar: ["today-dashboard", "weekly-agenda-panel", "calendar-month-panel", "calendar-focus-panel", "calendar-study-panel", "calendar-event-panel", "calendar-personal-panel"],
+          calendar: ["today-dashboard", "weekly-agenda-panel", "calendar-month-panel", "calendar-personal-panel"],
           assignments: ["calendar-assignment-panel"],
           grades: ["calendar-grade-panel"],
-          classes: ["calendar-class-panel", "calendar-exams-panel", "saved-list", "attendance-list"],
+          classes: ["calendar-class-panel", "calendar-exams-panel", "calendar-focus-panel", "calendar-study-panel", "calendar-event-panel", "saved-list", "attendance-list"],
         };
         function setupCalendarTabs() {
-          var app = $("calendar-app");
+          var app = $("calendar-app"),
+            side = app.querySelector(".side");
+          // Classes & exams reads best class, exams, then the add forms.
+          ["calendar-class-panel", "calendar-exams-panel", "calendar-study-panel", "calendar-event-panel", "calendar-focus-panel"].forEach(function (id) {
+            if ($(id) && side && $(id).parentNode === side) side.appendChild($(id));
+          });
           Object.keys(CAL_TABS).forEach(function (tab) {
             CAL_TABS[tab].forEach(function (id) {
               var node = $(id);
@@ -8921,33 +8913,6 @@
           });
         }
 
-        // ── Hide the side column ──
-        function setupSidePanelToggle() {
-          var btn = $("toggle-side-btn"),
-            shell = document.querySelector(".calendar-shell");
-          if (!btn || !shell) return;
-          function apply(hidden, save) {
-            shell.classList.toggle("side-hidden", hidden);
-            btn.textContent = hidden ? "Show Panels" : "Hide Panels";
-            btn.setAttribute("aria-pressed", String(hidden));
-            if (save)
-              try {
-                localStorage.setItem("calendar-side-hidden", hidden ? "1" : "0");
-              } catch (e) {}
-            if (window.__shougCalViews) window.__shougCalViews.render();
-          }
-          var start = false;
-          try {
-            start = localStorage.getItem("calendar-side-hidden") === "1";
-          } catch (e) {}
-          apply(start, false);
-          btn.addEventListener("click", function () {
-            apply(!shell.classList.contains("side-hidden"), true);
-          });
-          window.__shougToggleSide = function () {
-            btn.click();
-          };
-        }
         function toggleAssignmentSubmitted(id) {
           var item = items.find(function (entry) {
             return entry.id === id && isWork(entry);
@@ -10393,7 +10358,6 @@
           openEventEditor(activeDayKey, "assignment");
         });
         setupAssignmentFilters();
-        setupSidePanelToggle();
         $("side-add-assignment-btn").addEventListener("click", function () {
           openEventEditor(activeDayKey || todayKey(), "assignment");
         });
@@ -11118,7 +11082,7 @@
       src="/javascripts/calendar-assistant.js?v=20260902-2"
       defer
     ></script>
-    <script src="/javascripts/calendar-views.js?v=20261021" defer></script>
+    <script src="/javascripts/calendar-views.js?v=20261021b" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=1" defer></script>
 </body>

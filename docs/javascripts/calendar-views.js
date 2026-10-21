@@ -1371,7 +1371,6 @@
     ["← / →", "Previous / next"],
     ["M  W  D", "Month, week, day"],
     ["N", "New event"],
-    ["H", "Hide / show side panels"],
     ["Q", "Quick add"],
     ["/", "Search"],
     ["?", "Show shortcuts"],
@@ -1441,9 +1440,6 @@
       },
       "/": function () {
         $("cv-search").focus();
-      },
-      h: function () {
-        if (window.__shougToggleSide) window.__shougToggleSide();
       },
       "?": showHelp,
     };
