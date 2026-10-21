@@ -194,6 +194,7 @@
     ".crt-note{font-size:12px;line-height:1.6;color:var(--crt-dim);margin:0 0 14px}",
     ".crt-meta-val{display:inline-flex;align-items:center;gap:6px;color:var(--text-main,#e2d9f3);text-decoration:none}",
     ".crt-meta-val:hover{color:var(--brand-purple,#b829ea)}",
+    ".crt-launch{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 12px;text-decoration:none;font-size:10px}",
     ".crt-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono,monospace);font-size:11px;font-weight:700;color:var(--text-main,#e0e0e0);white-space:nowrap}",
     ".crt-chip svg{width:13px;height:13px;fill:var(--brand-purple,#b829ea)}",
     ".crt-chip-count{font-weight:400;color:var(--text-muted,var(--text-dim,#888899))}",
@@ -415,6 +416,22 @@
         if (!target) return;
         e.preventDefault();
         target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      var rateRow = document.createElement("div");
+      rateRow.className = "meta-row crt-rate-row";
+      rateRow.innerHTML =
+        '<span class="meta-key">' + esc(L("YOUR RATING", "تقييمك")) + '</span><a class="crt-btn crt-launch" href="#section-course-ratings">' +
+        esc(L("Rate this course ★", "قيّم هذا المقرر ★")) + "</a>";
+      meta.insertBefore(rateRow, before || null);
+      rateRow.querySelector("a").addEventListener("click", function (e) {
+        var target = document.getElementById("section-course-ratings");
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.setTimeout(function () {
+          var first = panel.querySelector('[data-crt-key="overall"]') || panel.querySelector("[data-crt-signin]");
+          if (first) first.focus();
+        }, 350);
       });
     }
 
