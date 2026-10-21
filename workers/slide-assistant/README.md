@@ -45,6 +45,28 @@ they are public configuration, not secrets. `CONTENT_ORIGIN` and
   are capped.
 - The model is instructed to answer only from the selected source chunks.
 
+## Transcript import
+
+`POST /v1/transcript-import` accepts one authenticated Firebase ID token and a
+PDF or image up to 5 MB. The Worker validates the token with Firebase Auth,
+limits requests per UID, sends the document to Workers AI for course-row
+extraction, validates the returned course/letter/hour/term fields, and returns
+a review draft. It does not write the upload or extracted data to logs,
+analytics, cache, or Firestore. The browser only saves rows after the student
+reviews and confirms them.
+
+Transcript imports use the existing `AI_RATE_LIMIT` binding with a transcript-
+specific UID key (the configured limit is 12 per UID per minute). PDFs
+are converted to Markdown with the Workers AI `toMarkdown` binding and then
+the course rows are extracted with Llama 4 Scout; supported images are sent
+directly to its vision input. The original upload is processed in memory and
+is not stored by this Worker. Cloudflare Workers AI receives the document for
+inference; review Cloudflare's current [data usage policy](https://developers.cloudflare.com/workers-ai/platform/data-usage/)
+before enabling this for students.
+
+Deploy this Worker before publishing the page; the current live Worker does
+not yet expose the transcript endpoint.
+
 ## About assistant
 
 `POST /v1/about-assistant` accepts `{ "question": string, "history": [...] }`

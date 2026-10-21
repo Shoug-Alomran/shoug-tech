@@ -1,5 +1,5 @@
 /**
- * Course ratings.
+ * Course ratings and student tips.
  *
  * Signed-in students rate a course out of five stars: overall, workload,
  * assignment difficulty and length, project/lab difficulty when the course
@@ -8,7 +8,7 @@
  *
  * One document per student per course at courseRatings/{course}/ratings/{uid};
  * the rules live in firebase/course-ratings.rules. Course overviews get a
- * summary + rating form, track pages (CS, SE, CYS, Math, Other, English hub)
+ * summary + rating form + student tips, track pages (CS, SE, CYS, Math, Other, English hub)
  * get an average chip on every course row. Loaded by mobile-navigation.js.
  */
 (function () {
@@ -130,7 +130,7 @@
 
   /** Averages every category (and every exam key) across rating docs. */
   function summarize(docs) {
-    var sums = {};
+    var sums = {}, termCounts = {};
     var add = function (key, n) {
       if (!validScore(n)) return;
       var s = sums[key] || (sums[key] = { total: 0, count: 0 });
@@ -138,6 +138,7 @@
       s.count += 1;
     };
     docs.forEach(function (d) {
+      if (typeof d.term === "string" && d.term) termCounts[d.term] = (termCounts[d.term] || 0) + 1;
       Object.keys(d).forEach(function (k) {
         if (k === "exams" && d.exams && typeof d.exams === "object") {
           Object.keys(d.exams).forEach(function (e) {
@@ -153,6 +154,17 @@
       out[k] = { avg: sums[k].total / sums[k].count, count: sums[k].count };
     });
     if (out.overall) out.count = out.overall.count;
+    out.termCounts = termCounts;
+    return out;
+  }
+
+  function ratingTerms() {
+    var year = new Date().getFullYear(), out = [];
+    for (var y = year; y >= year - 3; y--) {
+      out.push({ value: y + "-first", label: L("First semester " + y, "الفصل الأول " + y) });
+      out.push({ value: y + "-second", label: L("Second semester " + y, "الفصل الثاني " + y) });
+      out.push({ value: y + "-summer", label: L("Summer " + y, "الفصل الصيفي " + y) });
+    }
     return out;
   }
 
@@ -204,6 +216,36 @@
     ".crt-standalone{margin-top:64px;padding-top:40px;border-top:1px solid #32283f}",
     ".crt-standalone .crt-panel{--bg-surface:#140f1c;--border-dim:#32283f;--border-med:#4a3b69;--text-main:#f2edf8;--text-dim:#a296b4;--brand-purple:#c27df0;margin-bottom:0}",
     ".crt-standalone h2{font-size:30px;font-weight:500;letter-spacing:-.03em;margin:8px 0 24px}",
+    ".crt-tips-section{margin-top:36px}",
+    ".crt-tips-list{display:grid;gap:10px;margin:14px 0}",
+    ".crt-tip{border:1px solid var(--crt-line);background:var(--crt-surface);padding:14px 16px}",
+    ".crt-tip-head{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--crt-dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase}",
+    ".crt-tip h3{font:700 12px/1.5 var(--font-mono,monospace);color:var(--text-main,#e2d9f3);margin:10px 0 4px}",
+    ".crt-tip p{font:400 13px/1.7 var(--font-sans, sans-serif);color:var(--text-main,#e2d9f3);white-space:pre-wrap;margin:0}",
+    ".crt-tip-form{display:grid;gap:12px;margin-top:18px}",
+    ".crt-tip-form label{display:grid;gap:6px;font:700 10px/1.4 var(--font-mono,monospace);letter-spacing:.08em;text-transform:uppercase;color:var(--crt-dim)}",
+    ".crt-tip-form input,.crt-tip-form textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--crt-line);background:var(--bg-void,#05020a);color:var(--text-main,#e2d9f3);font:400 13px/1.6 var(--font-sans,sans-serif);letter-spacing:normal;text-transform:none}",
+    ".crt-tip-form textarea{min-height:100px;resize:vertical}",
+    ".crt-tip-delete{border:0;background:none;color:var(--crt-dim);font:inherit;text-decoration:underline;cursor:pointer}",
+    ".crt-section-note{margin:0 0 14px;color:var(--crt-dim);font:400 12px/1.6 var(--font-sans,sans-serif)}",
+    ".crt-tool-list,.crt-checklist,.crt-community-list{display:grid;gap:10px;margin:12px 0}",
+    ".crt-tool,.crt-community-post{border:1px solid var(--crt-line);padding:12px 14px;background:var(--crt-surface)}",
+    ".crt-tool strong,.crt-community-post strong{display:block;color:var(--text-main,#e2d9f3);font:700 12px/1.5 var(--font-mono,monospace)}",
+    ".crt-tool p,.crt-community-post p{margin:5px 0;color:var(--crt-dim);font:400 12px/1.6 var(--font-sans,sans-serif);white-space:pre-wrap}",
+    ".crt-tool a{display:inline-block;margin-top:8px;color:var(--brand-purple,#b829ea);font-size:11px}",
+    ".crt-check{display:flex;align-items:flex-start;gap:9px;color:var(--text-main,#e2d9f3);font:400 12px/1.5 var(--font-sans,sans-serif)}",
+    ".crt-check input{margin-top:3px;accent-color:var(--brand-purple,#b829ea)}",
+    ".crt-post-actions{display:flex;align-items:center;gap:12px;margin-top:10px;color:var(--crt-dim);font-size:10px}",
+    ".crt-vote{border:1px solid var(--crt-line);background:transparent;color:var(--text-main,#e2d9f3);padding:5px 9px;cursor:pointer;font:inherit}",
+    ".crt-community-form{display:grid;gap:10px;margin-top:16px}",
+    ".crt-community-form label{display:grid;gap:5px;color:var(--crt-dim);font:700 10px/1.4 var(--font-mono,monospace);text-transform:uppercase}",
+    ".crt-community-form input,.crt-community-form select,.crt-community-form textarea{width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--crt-line);background:var(--bg-void,#05020a);color:var(--text-main,#e2d9f3);font:400 12px/1.5 var(--font-sans,sans-serif);text-transform:none;letter-spacing:normal}",
+    ".crt-community-form textarea{min-height:80px;resize:vertical}",
+    ".crt-compare-pick{border:1px solid var(--crt-line,#2a1f3d);background:transparent;color:var(--crt-dim,#8b7ea8);font:700 9px/1.2 var(--font-mono,monospace);padding:5px 7px;cursor:pointer}",
+    ".crt-compare-pick[aria-pressed=true]{border-color:var(--brand-purple,#b829ea);color:var(--brand-purple,#b829ea)}",
+    ".crt-compare-box{margin-top:18px;padding:14px;border:1px solid var(--crt-line,#2a1f3d);background:var(--crt-surface,#0a0514);font-family:var(--font-mono,monospace)}",
+    ".crt-compare-box table{width:100%;border-collapse:collapse;font-size:11px}",
+    ".crt-compare-box th,.crt-compare-box td{padding:8px;text-align:start;border-bottom:1px solid var(--crt-line,#2a1f3d)}",
     "@media (max-width:480px){.crt-col{padding:16px 14px}.crt-chip-count{display:none}.crt-pick button svg{width:24px;height:24px}}",
   ].join("\n");
 
@@ -368,6 +410,7 @@
   function initOverview(course) {
     var cats = categories();
     var host;
+    var tipsHost;
     var faq = document.querySelector(".course-faq");
     var article = document.querySelector(".content-section");
     var panel = document.createElement("div");
@@ -388,6 +431,14 @@
       label.textContent = (next < 10 ? "0" : "") + next + "_COURSE_RATINGS";
       article.appendChild(label);
       article.appendChild(panel);
+      var tipsLabel = document.createElement("div");
+      tipsLabel.className = "section-label";
+      tipsLabel.id = "section-course-tips";
+      tipsLabel.textContent = (next + 1 < 10 ? "0" : "") + (next + 1) + "_STUDENT_TIPS";
+      article.appendChild(tipsLabel);
+      tipsHost = document.createElement("div");
+      tipsHost.className = "crt-panel crt-tips-panel";
+      article.appendChild(tipsHost);
     } else if (faq) {
       host = document.createElement("section");
       host.className = "crt-standalone";
@@ -397,6 +448,9 @@
         '<p class="eyebrow">Student ratings</p><h2 id="crt-title">How students rate this course.</h2>';
       host.appendChild(panel);
       faq.parentNode.insertBefore(host, faq);
+      tipsHost = document.createElement("div");
+      tipsHost.className = "crt-panel crt-tips-panel";
+      faq.parentNode.insertBefore(tipsHost, faq);
     } else {
       return;
     }
@@ -433,6 +487,16 @@
           if (first) first.focus();
         }, 350);
       });
+      var tipsRow = document.createElement("div");
+      tipsRow.className = "meta-row crt-tips-link-row";
+      tipsRow.innerHTML = '<span class="meta-key">' + esc(L("STUDENT TIPS", "نصائح الطلاب")) +
+        '</span><a class="meta-val crt-meta-val" href="#section-course-tips">' + esc(L("View / share tips", "عرض / مشاركة النصائح")) + "</a>";
+      meta.insertBefore(tipsRow, before || null);
+      var tipsRow = document.createElement("div");
+      tipsRow.className = "meta-row crt-tips-link-row";
+      tipsRow.innerHTML = '<span class="meta-key">' + esc(L("STUDENT TIPS", "نصائح الطلاب")) +
+        '</span><a class="meta-val crt-meta-val" href="#section-course-tips">' + esc(L("View / share tips", "عرض / مشاركة النصائح")) + "</a>";
+      meta.insertBefore(tipsRow, before || null);
     }
 
     var state = {
@@ -448,8 +512,206 @@
       focus: null,
     };
 
+    var tipsState = { user: undefined, items: [], posts: [], loading: true, failed: false, saving: false, clearDraft: false, message: "" };
+
+    var toolCatalog = {
+      cs331: [
+        { name: "Wireshark", note: "Needed for the Wireshark packet-capture lab.", url: "https://www.wireshark.org/download.html" },
+        { name: "Cisco Packet Tracer", note: "Needed for the two Packet Tracer network projects.", url: "https://skillsforall.com/resources/lab-downloads" },
+      ],
+    };
+    var requiredTools = toolCatalog[course] || [];
+    var prepDefaults = [
+      "Read the syllabus and note grading weights and major deadlines.",
+      "Review the listed prerequisites and refresh unfamiliar topics.",
+      "Open the course resources and identify the first topics to study.",
+    ].concat(requiredTools.map(function (tool) { return "Install and open " + tool.name + " before its first lab or project."; }));
+
+    function helpful(ref) {
+      if (!tipsState.user || !tipsState.fb) {
+        if (typeof window.__shougOpenAuthModal === "function") window.__shougOpenAuthModal();
+        else if (typeof window.__shougLoadFirebaseAuth === "function") window.__shougLoadFirebaseAuth(true);
+        return;
+      }
+      tipsState.fb.firestore().runTransaction(function (tx) {
+        return tx.get(ref).then(function (snap) {
+          if (!snap.exists) return;
+          var data = snap.data(), votes = data.helpfulBy || {}, uid = tipsState.user.uid;
+          if (votes[uid]) {
+            delete votes[uid];
+            tx.update(ref, { helpfulBy: votes, helpfulCount: Math.max(0, (Number(data.helpfulCount) || 0) - 1) });
+          } else {
+            votes[uid] = true;
+            tx.update(ref, { helpfulBy: votes, helpfulCount: (Number(data.helpfulCount) || 0) + 1 });
+          }
+        });
+      }).catch(function () {
+        tipsState.message = L("Couldn't update your vote. Try again.", "تعذر تحديث تصويتك. حاول مجددًا.");
+        renderTips();
+      });
+    }
+
+    function tipsHtml() {
+      var html = '<div class="crt-col"><div class="crt-group" style="margin-top:0">' +
+        esc(L("Student tips & focus", "نصائح الطلاب والتركيز")) +
+        '</div><p class="crt-note">' + esc(L("Share what helped you and what future students should focus on.", "شارك ما ساعدك وما ينبغي للطلاب التركيز عليه.")) + "</p>";
+      if (tipsState.loading) html += '<p class="crt-note">' + esc(L("Loading tips…", "جارٍ تحميل النصائح…")) + "</p>";
+      else if (tipsState.failed) html += '<p class="crt-note">' + esc(L("Tips are unavailable right now.", "النصائح غير متاحة حاليًا.")) + "</p>";
+      else if (!tipsState.items.length) html += '<p class="crt-note">' + esc(L("No tips yet. Be the first to help the next student.", "لا توجد نصائح بعد. كن أول من يساعد الطلاب.")) + "</p>";
+      else {
+        html += '<div class="crt-tips-list">' + tipsState.items.map(function (tip) {
+          var date = tip.createdAt && typeof tip.createdAt.toDate === "function" ? tip.createdAt.toDate() : null;
+          return '<article class="crt-tip"><div class="crt-tip-head"><span>' + esc(L("Student tip", "نصيحة طالب")) +
+            (date ? " · " + esc(date.toLocaleDateString(isArabic() ? "ar" : "en", { year: "numeric", month: "short", day: "numeric" })) : "") +
+            "</span>" + (tipsState.user && tip.uid === tipsState.user.uid ? '<button class="crt-tip-delete" type="button" data-tip-delete="' + esc(tip.id) + '">' + esc(L("Delete", "حذف")) + "</button>" : "") +
+            "</div><h3>" + esc(tip.focus) + "</h3><p>" + esc(tip.tip) + '</p><div class="crt-post-actions"><button class="crt-vote" type="button" data-tip-vote="' + esc(tip.id) + '" aria-pressed="' + Boolean(tipsState.user && tip.helpfulBy && tip.helpfulBy[tipsState.user.uid]) + '">' + esc(L("Helpful", "مفيد")) + " · " + (Number(tip.helpfulCount) || 0) + "</button></div></article>";
+        }).join("") + "</div>";
+      }
+      if (tipsState.user === undefined) html += '<p class="crt-note">' + esc(L("Checking sign-in…", "جارٍ التحقق من تسجيل الدخول…")) + "</p>";
+      else if (!tipsState.user) html += '<button class="crt-btn" type="button" data-tip-signin>' + esc(L("Sign in to share a tip", "سجّل الدخول لمشاركة نصيحة")) + "</button>";
+      else html += '<form class="crt-tip-form"><label>' + esc(L("What should students focus on?", "ما الذي ينبغي للطلاب التركيز عليه؟")) +
+        '<input name="focus" maxlength="140" required placeholder="' + esc(L("e.g. Practice the design patterns", "مثال: تدرب على أنماط التصميم")) + '"></label><label>' +
+        esc(L("Tips and tricks", "نصائح وحيل")) + '<textarea name="tip" maxlength="1200" minlength="20" required placeholder="' +
+        esc(L("Share a practical study tip, useful resource, or common pitfall…", "شارك نصيحة دراسية أو مصدرًا مفيدًا أو خطأً شائعًا…")) +
+        '"></textarea></label><button class="crt-btn" type="submit"' + (tipsState.saving ? " disabled" : "") + ">" + esc(L("Share tip", "شارك النصيحة")) + '</button><span class="crt-status" role="status">' + esc(tipsState.message) + "</span></form>";
+
+      html += '<div class="crt-group">' + esc(L("Get ready for this course", "استعد لهذا المقرر")) + "</div>";
+      html += '<div class="crt-tool-list">' + (requiredTools.length ? requiredTools.map(function (tool) {
+        return '<div class="crt-tool"><strong>' + esc(tool.name) + "</strong><p>" + esc(tool.note) + '</p><a href="' + esc(tool.url) + '" target="_blank" rel="noopener noreferrer">' + esc(L("Official download / access", "التنزيل أو الوصول الرسمي")) + " ↗</a></div>";
+      }).join("") : '<p class="crt-section-note">' + esc(L("No required downloads have been confirmed in the course materials yet. Students can suggest a tool below.", "لم يتم تأكيد برامج مطلوبة في مواد المقرر بعد. يمكن للطلاب اقتراح أداة أدناه.")) + "</p>") + "</div>";
+      var prep = {};
+      try { prep = JSON.parse(localStorage.getItem("course-prep-" + course) || "{}"); } catch (e) {}
+      html += '<div class="crt-checklist">' + prepDefaults.map(function (item, index) {
+        return '<label class="crt-check"><input type="checkbox" data-prep-index="' + index + '" ' + (prep[index] ? "checked" : "") + ">" + esc(item) + "</label>";
+      }).join("") + "</div>";
+
+      html += '<div class="crt-group">' + esc(L("Student resources & course reports", "مصادر الطلاب وتقارير المقرر")) + "</div>";
+      if (!tipsState.posts.length) html += '<p class="crt-section-note">' + esc(L("Recommend a useful resource or share what an assignment or exam covered.", "رشح مصدرًا مفيدًا أو شارك ما تناوله واجب أو اختبار.")) + "</p>";
+      else html += '<div class="crt-community-list">' + tipsState.posts.map(function (post) {
+        var typeName = post.type === "resource" ? L("Resource", "مصدر") : post.type === "assignment-report" ? L("Assignment report", "تقرير واجب") : post.type === "exam-report" ? L("Exam report", "تقرير اختبار") : L("Tool suggestion", "اقتراح أداة");
+        return '<article class="crt-community-post"><div class="crt-tip-head"><span>' + esc(typeName) + "</span>" +
+          (tipsState.user && post.uid === tipsState.user.uid ? '<button class="crt-tip-delete" type="button" data-post-delete="' + esc(post.id) + '">' + esc(L("Delete", "حذف")) + "</button>" : "") +
+          "</div><strong>" + esc(post.title) + "</strong><p>" + esc(post.body) + "</p>" + (post.url ? '<p><a href="' + esc(post.url) + '" target="_blank" rel="noopener noreferrer">' + esc(post.url) + " ↗</a></p>" : "") +
+          (post.hours ? '<p>' + esc(L("Estimated time", "الوقت المتوقع")) + ": " + esc(post.hours) + "h</p>" : "") +
+          (post.difficulty ? '<p>' + esc(L("Difficulty", "الصعوبة")) + ": " + esc(post.difficulty) + "/5</p>" : "") +
+          '<div class="crt-post-actions"><button class="crt-vote" type="button" data-post-vote="' + esc(post.id) + '" aria-pressed="' + Boolean(tipsState.user && post.helpfulBy && post.helpfulBy[tipsState.user.uid]) + '">' + esc(L("Helpful", "مفيد")) + " · " + (Number(post.helpfulCount) || 0) + "</button></div></article>";
+      }).join("") + "</div>";
+      if (tipsState.user) html += '<form class="crt-community-form"><label>' + esc(L("Contribution type", "نوع المشاركة")) + '<select name="type"><option value="resource">' + esc(L("Recommend a resource", "رشح مصدرًا")) + '</option><option value="assignment-report">' + esc(L("Assignment report", "تقرير واجب")) + '</option><option value="exam-report">' + esc(L("Exam report", "تقرير اختبار")) + '</option><option value="tool">' + esc(L("Suggest a required tool", "اقترح أداة مطلوبة")) + '</option></select></label><label>' + esc(L("Title / assignment or exam", "العنوان / الواجب أو الاختبار")) + '<input name="title" maxlength="120" required></label><label>' + esc(L("What should students know?", "ماذا ينبغي أن يعرف الطلاب؟")) + '<textarea name="body" maxlength="1200" minlength="20" required></textarea></label><label>' + esc(L("Resource or official download URL (optional)", "رابط المصدر أو التنزيل الرسمي (اختياري)")) + '<input name="url" type="url" maxlength="500"></label><label>' + esc(L("Estimated hours (optional)", "الساعات المتوقعة (اختياري)")) + '<input name="hours" type="number" min="0.5" max="200" step="0.5"></label><label>' + esc(L("Difficulty (optional)", "الصعوبة (اختياري)")) + '<select name="difficulty"><option value="">—</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select></label><button class="crt-btn" type="submit">' + esc(L("Share contribution", "شارك المساهمة")) + "</button></form>";
+      else html += '<button class="crt-btn" type="button" data-tip-signin>' + esc(L("Sign in to recommend resources or report on work", "سجّل الدخول لترشيح مصادر أو مشاركة تقارير")) + "</button>";
+      return html + "</div>";
+    }
+
+    function renderTips() {
+      if (!tipsHost) return;
+      var oldFields = {},
+        active = document.activeElement,
+        focusName = active && active.name;
+      tipsHost.querySelectorAll(".crt-tip-form [name],.crt-community-form [name]").forEach(function (field) {
+        oldFields[field.name] = field.value;
+      });
+      tipsHost.innerHTML = tipsHtml();
+      if (!tipsState.clearDraft) {
+        tipsHost.querySelectorAll(".crt-tip-form [name],.crt-community-form [name]").forEach(function (field) {
+          if (Object.prototype.hasOwnProperty.call(oldFields, field.name)) field.value = oldFields[field.name];
+          if (focusName && field.name === focusName) field.focus();
+        });
+      }
+      tipsState.clearDraft = false;
+      tipsHost.querySelectorAll("[data-prep-index]").forEach(function (input) {
+        input.addEventListener("change", function () {
+          var prep = {};
+          try { prep = JSON.parse(localStorage.getItem("course-prep-" + course) || "{}"); } catch (e) {}
+          prep[input.dataset.prepIndex] = input.checked;
+          try { localStorage.setItem("course-prep-" + course, JSON.stringify(prep)); } catch (e) {}
+        });
+      });
+    }
+
+    tipsHost.addEventListener("click", function (e) {
+      var button = e.target.closest("button");
+      if (!button) return;
+      if (button.hasAttribute("data-tip-signin")) {
+        if (typeof window.__shougOpenAuthModal === "function") window.__shougOpenAuthModal();
+        else if (typeof window.__shougLoadFirebaseAuth === "function") window.__shougLoadFirebaseAuth(true);
+      } else if (button.hasAttribute("data-tip-delete") && tipsState.user && tipsState.fb) {
+        var id = button.getAttribute("data-tip-delete");
+        tipsState.fb.firestore().collection("courseRatings").doc(course).collection("tips").doc(id).delete().catch(function () {
+          tipsState.failed = true;
+          renderTips();
+        });
+      } else if (button.hasAttribute("data-tip-vote")) {
+        helpful(tipsState.fb.firestore().collection("courseRatings").doc(course).collection("tips").doc(button.dataset.tipVote));
+      } else if (button.hasAttribute("data-post-vote")) {
+        helpful(tipsState.fb.firestore().collection("courseCommunity").doc(course).collection("posts").doc(button.dataset.postVote));
+      } else if (button.hasAttribute("data-post-delete") && tipsState.user && tipsState.fb) {
+        tipsState.fb.firestore().collection("courseCommunity").doc(course).collection("posts").doc(button.dataset.postDelete).delete().catch(function () {
+          tipsState.message = L("Couldn't delete that contribution.", "تعذر حذف هذه المساهمة.");
+          renderTips();
+        });
+      }
+    });
+    tipsHost.addEventListener("submit", function (e) {
+      if (!e.target.matches(".crt-tip-form")) return;
+      e.preventDefault();
+      if (!tipsState.user || !tipsState.fb || tipsState.saving) return;
+      var data = new FormData(e.target), focus = String(data.get("focus") || "").trim(), tip = String(data.get("tip") || "").trim();
+      if (focus.length < 3 || tip.length < 20 || tip.length > 1200) return;
+      tipsState.saving = true;
+      tipsState.message = "";
+      renderTips();
+      tipsState.fb.firestore().collection("courseRatings").doc(course).collection("tips").add({
+        uid: tipsState.user.uid, focus: focus, tip: tip, helpfulCount: 0, helpfulBy: {},
+        createdAt: tipsState.fb.firestore.FieldValue.serverTimestamp(),
+      }).then(function () {
+        tipsState.saving = false;
+        tipsState.clearDraft = true;
+        tipsState.message = L("Tip shared. Thanks for helping other students!", "تمت مشاركة النصيحة. شكرًا لمساعدة الطلاب!");
+        renderTips();
+      }).catch(function () {
+        tipsState.saving = false;
+        tipsState.message = L("Couldn't share your tip. Check your connection and try again.", "تعذرت مشاركة النصيحة. تحقق من اتصالك وحاول مجددًا.");
+        renderTips();
+      });
+    });
+    tipsHost.addEventListener("submit", function (e) {
+      if (!e.target.matches(".crt-community-form")) return;
+      e.preventDefault();
+      if (!tipsState.user || !tipsState.fb || tipsState.saving) return;
+      var data = new FormData(e.target),
+        type = String(data.get("type") || ""),
+        title = String(data.get("title") || "").trim(),
+        body = String(data.get("body") || "").trim(),
+        url = String(data.get("url") || "").trim(),
+        hours = Number(data.get("hours")),
+        difficulty = Number(data.get("difficulty"));
+      if (["resource", "assignment-report", "exam-report", "tool"].indexOf(type) < 0 || title.length < 3 || title.length > 120 || body.length < 20 || body.length > 1200 || (url && !/^https?:\/\//i.test(url))) return;
+      tipsState.saving = true;
+      renderTips();
+      tipsState.fb.firestore().collection("courseCommunity").doc(course).collection("posts").add({
+        uid: tipsState.user.uid, type: type, title: title, body: body, url: url,
+        hours: isFinite(hours) && hours > 0 && hours <= 200 ? hours : null,
+        difficulty: isFinite(difficulty) && difficulty >= 1 && difficulty <= 5 ? difficulty : null,
+        helpfulCount: 0, helpfulBy: {},
+        createdAt: tipsState.fb.firestore.FieldValue.serverTimestamp(),
+      }).then(function () {
+        tipsState.saving = false;
+        tipsState.clearDraft = true;
+        tipsState.message = L("Contribution shared. Thank you!", "تمت مشاركة المساهمة. شكرًا لك!");
+        renderTips();
+      }).catch(function () {
+        tipsState.saving = false;
+        tipsState.message = L("Couldn't share that contribution. Check your connection and try again.", "تعذرت مشاركة المساهمة. تحقق من اتصالك وحاول مجددًا.");
+        renderTips();
+      });
+    });
+    renderTips();
+    new MutationObserver(renderTips).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang"],
+    });
+
     function draftFrom(doc) {
-      var d = {};
+      var d = { term: doc && typeof doc.term === "string" ? doc.term : "" };
       cats.forEach(function (c) {
         var v = readScore(doc, c);
         if (v) d[c.key] = v;
@@ -511,6 +773,13 @@
             "</div>";
         });
       });
+      var terms = Object.keys(sum.termCounts || {}).sort().reverse();
+      if (terms.length) {
+        html += '<div class="crt-group">' + esc(L("Ratings by semester", "التقييمات حسب الفصل")) + "</div>" +
+          terms.map(function (term) {
+            return '<div class="crt-row"><span class="crt-label">' + esc(term.replace("-", " ")) + '</span><span class="crt-val">' + sum.termCounts[term] + " " + esc(L("ratings", "تقييمات")) + "</span></div>";
+          }).join("");
+      }
       return html;
     }
 
@@ -550,7 +819,11 @@
             "التقييم العام فقط مطلوب — تجاوز ما لا ينطبق عليك. في الصعوبة والطول: نجوم أكثر تعني أصعب أو أطول.",
           ),
         ) +
-        "</p>";
+        "</p><label class=\"crt-term-label\">" + esc(L("Semester taken (optional)", "الفصل الدراسي (اختياري)")) +
+        '<select data-crt-term><option value="">' + esc(L("Prefer not to say", "أفضل عدم الإجابة")) + "</option>" +
+        ratingTerms().map(function (term) {
+          return '<option value="' + esc(term.value) + '"' + (state.draft.term === term.value ? " selected" : "") + ">" + esc(term.label) + "</option>";
+        }).join("") + "</select></label>";
       GROUPS.forEach(function (g) {
         var rows = cats.filter(function (c) {
           return c.group === g.id;
@@ -657,6 +930,7 @@
         else data[c.key] = v;
       });
       if (Object.keys(exams).length) data.exams = exams;
+      if (state.draft.term) data.term = state.draft.term;
       data.updatedAt = state.fb.firestore.FieldValue.serverTimestamp();
       state.saving = true;
       state.status = ["Saving…", "جارٍ الحفظ…"];
@@ -731,6 +1005,9 @@
         remove();
       }
     });
+    panel.addEventListener("change", function (e) {
+      if (e.target.matches("[data-crt-term]")) state.draft.term = e.target.value;
+    });
 
     new MutationObserver(render).observe(document.documentElement, {
       attributes: true,
@@ -759,10 +1036,46 @@
         );
       fb.auth().onAuthStateChanged(function (user) {
         state.user = user || null;
+        tipsState.user = user || null;
         state.status = null;
         syncMine(true);
         render();
+        renderTips();
       });
+      tipsState.fb = fb;
+      fb.firestore().collection("courseRatings").doc(course).collection("tips")
+        .limit(100)
+        .onSnapshot(function (snap) {
+          tipsState.items = snap.docs.map(function (d) {
+            return Object.assign({ id: d.id }, d.data());
+          }).sort(function (a, b) {
+            var ta = a.createdAt && typeof a.createdAt.toMillis === "function" ? a.createdAt.toMillis() : 0;
+            var tb = b.createdAt && typeof b.createdAt.toMillis === "function" ? b.createdAt.toMillis() : 0;
+            return tb - ta;
+          });
+          tipsState.loading = false;
+          tipsState.failed = false;
+          renderTips();
+        }, function () {
+          tipsState.loading = false;
+          tipsState.failed = true;
+          renderTips();
+        });
+      fb.firestore().collection("courseCommunity").doc(course).collection("posts")
+        .limit(100)
+        .onSnapshot(function (snap) {
+          tipsState.posts = snap.docs.map(function (d) {
+            return Object.assign({ id: d.id }, d.data());
+          }).sort(function (a, b) {
+            var ta = a.createdAt && typeof a.createdAt.toMillis === "function" ? a.createdAt.toMillis() : 0;
+            var tb = b.createdAt && typeof b.createdAt.toMillis === "function" ? b.createdAt.toMillis() : 0;
+            return tb - ta;
+          });
+          renderTips();
+        }, function () {
+          tipsState.message = L("Student contributions are unavailable right now.", "مساهمات الطلاب غير متاحة حاليًا.");
+          renderTips();
+        });
     });
 
     function syncMine(reset) {
@@ -789,9 +1102,67 @@
       },
     );
     if (!cards.length) return;
+    var selected = [],
+      summaries = {},
+      metricRows = [
+        ["overall", "Overall"],
+        ["workload", "Workload"],
+        ["assignmentDifficulty", "Assignment difficulty"],
+        ["assignmentLength", "Assignment length"],
+        ["projectDifficulty", "Project difficulty"],
+        ["labDifficulty", "Lab difficulty"],
+      ],
+      compare = document.createElement("section");
+    compare.className = "crt-compare-box";
+    compare.innerHTML = '<strong>' + esc(L("Compare courses", "قارن المقررات")) + '</strong><p class="crt-section-note">' +
+      esc(L("Choose up to four courses using the Compare buttons.", "اختر حتى أربعة مقررات باستخدام أزرار المقارنة.")) + "</p>";
+    var list = cards[0].closest(".course-list");
+    if (list) list.insertAdjacentElement("afterend", compare);
+    function renderCompare() {
+      if (selected.length < 2) {
+        compare.innerHTML = '<strong>' + esc(L("Compare courses", "قارن المقررات")) + '</strong><p class="crt-section-note">' +
+          esc(L(selected.length ? "Choose one more course to compare." : "Choose up to four courses using the Compare buttons.", selected.length ? "اختر مقررًا آخر للمقارنة." : "اختر حتى أربعة مقررات باستخدام أزرار المقارنة.")) + "</p>";
+        return;
+      }
+      var rows = metricRows.map(function (row) {
+        return "<tr><th>" + esc(L(row[1], row[1])) + "</th>" + selected.map(function (code) {
+          var score = summaries[code] && summaries[code][row[0]];
+          return "<td>" + (score ? fixed(score.avg) + "/5 · " + score.count : "—") + "</td>";
+        }).join("") + "</tr>";
+      });
+      rows.push("<tr><th>" + esc(L("Exam difficulty (average)", "متوسط صعوبة الاختبارات")) + "</th>" + selected.map(function (code) {
+        var s = summaries[code] || {}, values = Object.keys(s).filter(function (key) { return key.indexOf("exams.") === 0; }).map(function (key) { return s[key]; });
+        var total = values.reduce(function (sum, value) { return sum + value.avg * value.count; }, 0),
+          count = values.reduce(function (sum, value) { return sum + value.count; }, 0);
+        return "<td>" + (count ? fixed(total / count) + "/5 · " + count : "—") + "</td>";
+      }).join("") + "</tr>");
+      compare.innerHTML = '<strong>' + esc(L("Course comparison", "مقارنة المقررات")) + '</strong><table><thead><tr><th></th>' +
+        selected.map(function (code) { return "<th>" + esc(code.toUpperCase()) + "</th>"; }).join("") +
+        "</tr></thead><tbody>" + rows.join("") + "</tbody></table>";
+    }
     withFirebase(function (fb) {
       cards.forEach(function (a) {
         var course = a.getAttribute("href").match(/\/([a-z]+\d{3})\/$/)[1];
+        var area = a.querySelector(".course-status-area");
+        if (area) {
+          var pick = document.createElement("button");
+          pick.className = "crt-compare-pick";
+          pick.type = "button";
+          pick.textContent = L("Compare", "قارن");
+          pick.setAttribute("aria-pressed", "false");
+          pick.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var index = selected.indexOf(course);
+            if (index > -1) selected.splice(index, 1);
+            else if (selected.length < 4) selected.push(course);
+            else return;
+            pick.setAttribute("aria-pressed", String(selected.indexOf(course) > -1));
+            pick.textContent = selected.indexOf(course) > -1 ? L("Selected", "محدد") : L("Compare", "قارن");
+            renderCompare();
+          });
+          area.appendChild(pick);
+        }
         ratingsRef(fb, course)
           .limit(1000)
           .get()
@@ -801,6 +1172,8 @@
                 return d.data();
               }),
             );
+            summaries[course] = sum;
+            renderCompare();
             var chip = document.createElement("span");
             chip.className = "crt-chip" + (sum.overall ? "" : " crt-empty");
             var render = function () {

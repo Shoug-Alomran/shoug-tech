@@ -1,0 +1,179 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // Academic records live on the user's document today. They can be written
+    // only by that user. Keep the existing profile read behavior for now;
+    // see README security note about splitting private transcript data.
+    function validAcademicRecordUpdate() {
+      return !('academicRecord' in request.resource.data)
+        || (request.resource.data.academicRecord is map
+          && request.resource.data.academicRecord.keys().hasOnly(['courses', 'transcript'])
+          && (!('courses' in request.resource.data.academicRecord)
+            || request.resource.data.academicRecord.courses is map)
+          && (!('transcript' in request.resource.data.academicRecord)
+            || request.resource.data.academicRecord.transcript == null
+            || (request.resource.data.academicRecord.transcript is map
+              && request.resource.data.academicRecord.transcript.keys().hasOnly(['gpa', 'hours', 'term'])
+              && request.resource.data.academicRecord.transcript.gpa is number
+              && request.resource.data.academicRecord.transcript.gpa >= 0
+              && request.resource.data.academicRecord.transcript.gpa <= 4
+              && request.resource.data.academicRecord.transcript.hours is number
+              && request.resource.data.academicRecord.transcript.hours > 0
+              && request.resource.data.academicRecord.transcript.term is string
+              && request.resource.data.academicRecord.transcript.term.matches('[0-9]{3}'))));
+    }
+
+    function ratingScore(v) { return v is int && v >= 1 && v <= 5; }
+    function optionalScore(d, key) { return !(key in d) || ratingScore(d[key]); }
+    function validCourseRating(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'overall', 'updatedAt'])
+        && d.keys().hasOnly(['uid', 'overall', 'workload', 'assignmentDifficulty',
+          'assignmentLength', 'projectDifficulty', 'labDifficulty', 'exams', 'term', 'updatedAt'])
+        && d.uid == uid && d.updatedAt == request.time && ratingScore(d.overall)
+        && optionalScore(d, 'workload') && optionalScore(d, 'assignmentDifficulty')
+        && optionalScore(d, 'assignmentLength') && optionalScore(d, 'projectDifficulty')
+        && optionalScore(d, 'labDifficulty')
+        && (!('term' in d) || (d.term is string && d.term.size() <= 30))
+        && (!('exams' in d) || (d.exams is map && d.exams.size() <= 10));
+    }
+    function validHelpfulVote() {
+      let oldVotes = resource.data.get('helpfulBy', {});
+      let newVotes = request.resource.data.get('helpfulBy', {});
+      let oldCount = resource.data.get('helpfulCount', 0);
+      let newCount = request.resource.data.get('helpfulCount', 0);
+      let changed = newVotes.diff(oldVotes).affectedKeys();
+      return signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['helpfulBy', 'helpfulCount'])
+        && changed.size() == 1 && changed.hasOnly([request.auth.uid])
+        && (request.auth.uid in oldVotes
+          ? !(request.auth.uid in newVotes) && newCount == oldCount - 1
+          : request.auth.uid in newVotes && newVotes[request.auth.uid] == true && newCount == oldCount + 1)
+        && newCount >= 0 && newCount <= 10000;
+    }
+    function validCommunityPost(course, uid) {
+      let d = request.resource.data;
+      return owns(uid) && course.matches('[a-z]+[0-9]{3}')
+        && d.keys().hasAll(['uid', 'type', 'title', 'body', 'url', 'hours', 'difficulty', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && d.keys().hasOnly(['uid', 'type', 'title', 'body', 'url', 'hours', 'difficulty', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && d.uid == uid && d.type in ['resource', 'assignment-report', 'exam-report', 'tool']
+        && d.title is string && d.title.size() >= 3 && d.title.size() <= 120
+        && d.body is string && d.body.size() >= 20 && d.body.size() <= 1200
+        && d.url is string && d.url.size() <= 500 && (d.url == '' || d.url.matches('https?://.*'))
+        && (d.hours == null || (d.hours is number && d.hours > 0 && d.hours <= 200))
+        && (d.difficulty == null || (d.difficulty is int && d.difficulty >= 1 && d.difficulty <= 5))
+        && d.helpfulCount == 0 && d.helpfulBy is map && d.helpfulBy.size() == 0
+        && d.createdAt == request.time;
+    }
+    function transferAdmin() {
+      return signedIn() && request.auth.token.email_verified == true
+        && request.auth.uid == get(/databases/$(database)/documents/courseCommerce/ethics).data.adminUid;
+    }
+    function transferBuyer(uid) {
+      return owns(uid) && request.auth.token.email_verified == true;
+    }
+    function validTransfer(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'email', 'fullName', 'phone', 'course', 'amount', 'currency', 'status', 'receipt', 'submittedAt', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && d.keys().hasOnly(['uid', 'email', 'fullName', 'phone', 'course', 'amount', 'currency', 'status', 'receipt', 'submittedAt', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && d.fullName is string && d.fullName.size() >= 2 && d.fullName.size() <= 120
+        && d.fullName.matches('.*[^ ].*')
+        && d.phone is string && d.phone.matches('[+][1-9][0-9]{7,14}')
+        && d.uid == uid && d.email == request.auth.token.email
+        && d.course == 'ethics' && d.amount == 32500 && d.currency == 'SAR'
+        && d.status == 'pending' && d.submittedAt == request.time
+        && d.reviewedAt == null && d.reviewedBy == '' && d.reviewNote == ''
+        && d.receipt is string && d.receipt.size() <= 700000
+        && d.receipt.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if owns(uid);
+      allow update: if owns(uid) && validAcademicRecordUpdate();
+      match /following/{targetUid} {
+        allow read: if signedIn();
+        allow write: if owns(uid);
+      }
+      match /followers/{followerUid} {
+        allow read: if signedIn();
+        allow write: if owns(followerUid);
+      }
+      match /pages/{pageId} { allow read, write: if owns(uid); }
+    }
+    match /usernames/{username} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+    }
+    match /discussions/{courseId}/comments/{commentId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text.size() <= 1000;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /userProgress/{uid} {
+      allow read, write: if owns(uid);
+      match /pages/{pageId} { allow read, write: if owns(uid); }
+    }
+    match /pageComments/{pageSlug}/comments/{commentId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /pageReactions/{pageKey}/votes/{uid} {
+      allow read: if true;
+      allow create, update: if owns(uid) && request.resource.data.value is int
+        && request.resource.data.value in [1, -1];
+      allow delete: if owns(uid);
+    }
+    match /courseCommerce/ethics {
+      allow get: if signedIn();
+      allow list, write: if false;
+    }
+    match /courseTransfers/{uid} {
+      allow get: if transferBuyer(uid) || transferAdmin();
+      allow list: if transferAdmin() && request.query.limit <= 10;
+      allow create: if transferBuyer(uid) && validTransfer(uid)
+        && get(/databases/$(database)/documents/courseCommerce/ethics).data.enabled == true;
+      allow update: if (transferBuyer(uid) && resource.data.status == 'rejected'
+          && validTransfer(uid) && get(/databases/$(database)/documents/courseCommerce/ethics).data.enabled == true)
+        || (transferAdmin() && resource.data.status == 'pending'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+          && request.resource.data.status in ['approved', 'rejected']
+          && request.resource.data.reviewedAt == request.time
+          && request.resource.data.reviewedBy == request.auth.uid
+          && request.resource.data.reviewNote is string && request.resource.data.reviewNote.size() <= 500);
+      allow delete: if false;
+    }
+
+    match /courseRatings/{course}/ratings/{uid} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create, update: if owns(uid) && course.matches('[a-z]+[0-9]{3}') && validCourseRating(uid);
+      allow delete: if owns(uid);
+    }
+    match /courseRatings/{course}/tips/{tipId} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create: if signedIn() && course.matches('[a-z]+[0-9]{3}')
+        && request.resource.data.keys().hasOnly(['uid', 'focus', 'tip', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'focus', 'tip', 'helpfulCount', 'helpfulBy', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.focus is string && request.resource.data.focus.size() >= 3 && request.resource.data.focus.size() <= 140
+        && request.resource.data.tip is string && request.resource.data.tip.size() >= 20 && request.resource.data.tip.size() <= 1200
+        && request.resource.data.helpfulCount == 0 && request.resource.data.helpfulBy is map
+        && request.resource.data.helpfulBy.size() == 0 && request.resource.data.createdAt == request.time;
+      allow update: if signedIn() && resource.data.uid is string && validHelpfulVote();
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /courseCommunity/{course}/posts/{postId} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create: if validCommunityPost(course, request.auth.uid);
+      allow update: if validHelpfulVote();
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+  }
+}

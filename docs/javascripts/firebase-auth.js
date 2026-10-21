@@ -590,12 +590,56 @@
     }
     submitEl.disabled = true;
     submitEl.textContent = "Loading…";
+    var currentUser = firebase.auth().currentUser;
+    if (currentUser && currentTab === "signin") {
+      var emailSignInCredential = firebase.auth.EmailAuthProvider.credential(
+        email,
+        pass,
+      );
+      currentUser
+        .reauthenticateWithCredential(emailSignInCredential)
+        .then(function (result) {
+          return linkPendingCredential(result.user).then(closeModal);
+        })
+        .catch(function (err) {
+          errorEl.textContent = authError(err.code);
+          submitEl.disabled = false;
+          submitEl.textContent = "Sign In";
+        });
+      return;
+    }
+    if (currentUser && currentTab === "signup") {
+      var emailCredential = firebase.auth.EmailAuthProvider.credential(
+        email,
+        pass,
+      );
+      currentUser
+        .linkWithCredential(emailCredential)
+        .then(function () {
+          return linkPendingCredential(currentUser).then(closeModal);
+        })
+        .catch(function (err) {
+          errorEl.textContent = authError(err.code);
+          submitEl.disabled = false;
+          submitEl.textContent = "Create Account";
+        });
+      return;
+    }
     var fn =
       currentTab === "signin"
         ? firebase.auth().signInWithEmailAndPassword(email, pass)
         : firebase.auth().createUserWithEmailAndPassword(email, pass);
-    fn.then(closeModal).catch(function (err) {
-      errorEl.textContent = authError(err.code);
+    fn.then(function (result) {
+      return linkPendingCredential(result.user).then(closeModal);
+    }).catch(function (err) {
+      if (err.code === "auth/account-exists-with-different-credential") {
+        errorEl.textContent =
+          "This email already uses " +
+          providerLabel(err.credential && err.credential.providerId) +
+          ". Sign in with that method, then try the other provider to link it.";
+      } else {
+        errorEl.textContent = authError(err.code);
+      }
       submitEl.disabled = false;
       submitEl.textContent =
         currentTab === "signin" ? "Sign In" : "Create Account";
@@ -607,6 +651,78 @@
   var GOOGLE_BTN_HTML =
     '<svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google';
 
+  var pendingCredential = null;
+  var pendingProviderName = "";
+
+  function providerLabel(providerId) {
+    return providerId === "google.com"
+      ? "Google"
+      : providerId === "github.com"
+        ? "GitHub"
+        : providerId === "password"
+          ? "email and password"
+          : "the original sign-in method";
+  }
+
+  function handleProviderError(err, btn, buttonHtml) {
+    if (err.code === "auth/account-exists-with-different-credential") {
+      pendingCredential = firebase.auth.AuthCredential.fromError(err);
+      pendingProviderName = err.credential && err.credential.providerId
+        ? providerLabel(err.credential.providerId)
+        : "the selected provider";
+      var email = err.email || "";
+      if (email) emailInput.value = email;
+      errorEl.textContent =
+        "This email already uses another sign-in method. Sign in with " +
+        "your existing method" + (email ? " for " + email : "") +
+        ", then we’ll link " + pendingProviderName + " automatically.";
+      passInput.focus();
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = buttonHtml;
+      }
+      return;
+    }
+    if (errorEl)
+      errorEl.textContent =
+        err.code === "auth/popup-closed-by-user"
+          ? ""
+          : err.message || "Sign-in failed.";
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = buttonHtml;
+    }
+  }
+
+  function linkPendingCredential(user) {
+    if (!pendingCredential) return Promise.resolve();
+    var credential = pendingCredential;
+    pendingCredential = null;
+    return user
+      .linkWithCredential(credential)
+      .then(function () {
+        errorEl.textContent = "";
+      })
+      .catch(function (err) {
+        pendingCredential = credential;
+        errorEl.textContent =
+          err.code === "auth/credential-already-in-use"
+            ? "That " +
+              pendingProviderName +
+              " account is already linked to another user."
+            : err.message || "Could not link the sign-in method. Try again.";
+        throw err;
+      });
+  }
+
+  function handleRedirectResult(result) {
+    if (!result || !result.user) return Promise.resolve();
+    if (pendingCredential) {
+      return linkPendingCredential(result.user).then(closeModal);
+    }
+    return Promise.resolve();
+  }
+
   function doGoogle() {
     var btn = document.getElementById("auth-google");
     if (btn) {
@@ -614,10 +730,22 @@
       btn.textContent = "Redirecting…";
     }
     var provider = new firebase.auth.GoogleAuthProvider();
+    var user = firebase.auth().currentUser;
+    if (user) {
+      user
+        .linkWithPopup(provider)
+        .then(closeModal)
+        .catch(function (err) {
+          handleProviderError(err, btn, GOOGLE_BTN_HTML);
+        });
+      return;
+    }
     firebase
       .auth()
       .signInWithPopup(provider)
-      .then(closeModal)
+      .then(function (result) {
+        return linkPendingCredential(result.user).then(closeModal);
+      })
       .catch(function (err) {
         if (
           err.code === "auth/popup-blocked" ||
@@ -627,15 +755,7 @@
           firebase.auth().signInWithRedirect(provider);
           return;
         }
-        if (errorEl)
-          errorEl.textContent =
-            err.code === "auth/popup-closed-by-user"
-              ? ""
-              : err.message || "Google sign-in failed.";
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = GOOGLE_BTN_HTML;
-        }
+        handleProviderError(err, btn, GOOGLE_BTN_HTML);
       });
   }
 
@@ -646,10 +766,22 @@
       btn.textContent = "Redirecting…";
     }
     var provider = new firebase.auth.GithubAuthProvider();
+    var user = firebase.auth().currentUser;
+    if (user) {
+      user
+        .linkWithPopup(provider)
+        .then(closeModal)
+        .catch(function (err) {
+          handleProviderError(err, btn, GITHUB_BTN_HTML);
+        });
+      return;
+    }
     firebase
       .auth()
       .signInWithPopup(provider)
-      .then(closeModal)
+      .then(function (result) {
+        return linkPendingCredential(result.user).then(closeModal);
+      })
       .catch(function (err) {
         // Popups are unreliable on iOS/iPad Safari and in-app browsers — fall back to a full redirect.
         if (
@@ -660,15 +792,7 @@
           firebase.auth().signInWithRedirect(provider);
           return;
         }
-        if (errorEl)
-          errorEl.textContent =
-            err.code === "auth/popup-closed-by-user"
-              ? ""
-              : err.message || "GitHub sign-in failed.";
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = GITHUB_BTN_HTML;
-        }
+        handleProviderError(err, btn, GITHUB_BTN_HTML);
       });
   }
 
@@ -1215,7 +1339,9 @@
         '  <a class="shoug-drop-link" href="/community/profile/?u=' +
           encodeURIComponent(user.uid) +
           '">My Profile</a>',
+        '  <a class="shoug-drop-link" href="/community/">Create or edit profile</a>',
         '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
+        '  <a class="shoug-drop-link" href="/account/transcript/">Optional Transcript</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
         '  <a class="shoug-drop-link" href="/community/">Community</a>',
@@ -3794,13 +3920,28 @@
       document.addEventListener("click", onContextClick, true);
     })();
 
-    // Pick up the result of a signInWithRedirect (GitHub fallback on iOS/Safari)
+    // Pick up popup-fallback redirects, including account-link recovery.
     firebase
       .auth()
       .getRedirectResult()
+      .then(handleRedirectResult)
       .catch(function (err) {
-        if (err && err.code && err.code !== "auth/no-auth-event") {
-          console.error("GitHub sign-in failed:", err.message || err.code);
+        if (
+          err &&
+          err.code === "auth/account-exists-with-different-credential"
+        ) {
+          var providerId = err.credential && err.credential.providerId;
+          pendingCredential = firebase.auth.AuthCredential.fromError(err);
+          pendingProviderName = providerLabel(providerId);
+          buildModal();
+          var email = err.email || "";
+          if (email) emailInput.value = email;
+          errorEl.textContent =
+            "This email already uses " + pendingProviderName +
+            ". Sign in with that method to finish linking your account.";
+          openModal();
+        } else if (err && err.code && err.code !== "auth/no-auth-event") {
+          console.error("Provider sign-in failed:", err.message || err.code);
         }
       });
 

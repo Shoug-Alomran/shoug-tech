@@ -1315,15 +1315,18 @@
       </div>
       <div id="notfound-state" class="state-box" style="display: none">
         <div class="state-tag" data-ar-text="// غير موجود">// Not Found</div>
-        <div class="state-msg" data-ar-text="هذا الملف الشخصي غير موجود.">
+        <div class="state-msg" id="notfound-message" data-ar-text="هذا الملف الشخصي غير موجود.">
           This profile doesn't exist.
         </div>
         <a
           class="state-link"
+          id="notfound-link"
           href="/community/"
           data-ar-text="العودة إلى المجتمع"
           >Back to Community</a
         >
+        <a class="state-link" id="transcript-link" href="/account/transcript/" style="display:none;margin-top:12px" data-ar-text="افتح السجل الأكاديمي الاختياري">Open optional transcript</a>
+        <div class="state-msg" id="transcript-note" style="display:none;margin-top:12px;font-size:.82rem;max-width:560px" data-ar-text="اختياري: استخدم سجلك الأكاديمي لمتابعة درجاتك ومعدلك. اختر تخصصك أولا عند إنشاء ملفك الشخصي.">Optional: use your transcript to keep track of grades and GPA. Choose your major first when creating your profile.</div>
       </div>
       <div id="profile-app" style="display: none"></div>
       <div id="exam-notif-bar">
@@ -1727,6 +1730,28 @@
               el.style.display =
                 s === id ? (s === "profile-app" ? "block" : "flex") : "none";
           });
+        }
+
+        function showProfileSetupPrompt() {
+          show("notfound-state");
+          var message = document.getElementById("notfound-message");
+          var link = document.getElementById("notfound-link");
+          var transcriptLink = document.getElementById("transcript-link");
+          var transcriptNote = document.getElementById("transcript-note");
+          if (message) {
+            var ar = curLang() === "ar";
+            message.textContent = ar
+              ? "لم تنشئ ملفك الشخصي بعد. أنشئه لاختيار تخصصك والانضمام إلى المجتمع."
+              : "Your profile hasn’t been created yet. Set it up to choose your major and join the community.";
+          }
+          if (link) {
+            link.href = "/community/";
+            link.textContent = curLang() === "ar"
+              ? "أنشئ ملفك الشخصي"
+              : "Create your profile";
+          }
+          if (transcriptLink) transcriptLink.style.display = "inline-flex";
+          if (transcriptNote) transcriptNote.style.display = "block";
         }
 
         function formatDate(ts) {
@@ -3251,7 +3276,8 @@
         function loadProfile() {
           targetUid = getParam("u");
           if (!targetUid) {
-            show("notfound-state");
+            if (currentUser) showProfileSetupPrompt();
+            else show("signout-state");
             return;
           }
           var db = firebase.firestore();
@@ -3296,7 +3322,8 @@
                 myFollowDoc = res[3];
               var allPagesSnap = res[4] || null;
               if (!profileDoc.exists) {
-                show("notfound-state");
+                if (isSelf) showProfileSetupPrompt();
+                else show("notfound-state");
                 return;
               }
               targetProfile = profileDoc.data();
