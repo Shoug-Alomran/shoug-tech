@@ -3565,9 +3565,9 @@
     "home",
     "profile",
     "calendar",
-    "transcript",
     "bookmarks",
     "progress",
+    "transcript",
     "community",
   ];
 
@@ -3618,11 +3618,6 @@
         active: path.indexOf("/account/calendar") === 0,
       },
       {
-        key: "transcript",
-        href: "/account/transcript/",
-        active: path.indexOf("/account/transcript") === 0,
-      },
-      {
         key: "bookmarks",
         href: "/bookmarks/",
         active: path.indexOf("/bookmarks") === 0,
@@ -3631,6 +3626,11 @@
         key: "progress",
         href: "/account/",
         active: path === "/account/" || path === "/account",
+      },
+      {
+        key: "transcript",
+        href: "/account/transcript/",
+        active: path.indexOf("/account/transcript") === 0,
       },
       {
         key: "community",

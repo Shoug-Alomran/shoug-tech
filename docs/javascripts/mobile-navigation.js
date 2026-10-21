@@ -249,7 +249,7 @@
       );
     }
     var s = document.createElement("script");
-    s.src = "/javascripts/firebase-auth.js?v=61";
+    s.src = "/javascripts/firebase-auth.js?v=64";
     s.async = true;
     document.head.appendChild(s);
   }
