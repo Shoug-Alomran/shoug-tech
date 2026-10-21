@@ -1135,6 +1135,16 @@
   // ── Exam reminders ────────────────────────────────────────────────────────
 
   var _examReminderUid = null;
+  var CALENDAR_REMINDER_PREF = "shoug-calendar-reminders-enabled:";
+
+  function calendarRemindersEnabled(user) {
+    if (!user) return false;
+    try {
+      return localStorage.getItem(CALENDAR_REMINDER_PREF + user.uid) !== "0";
+    } catch (e) {
+      return true;
+    }
+  }
   var EXAM_TYPE_LABELS = {
     quiz: "QUIZ",
     midterm: "MIDTERM",
@@ -1258,6 +1268,7 @@
   function maybeFireBrowserExamNotification(user, exam) {
     if (
       !user ||
+      !calendarRemindersEnabled(user) ||
       !exam ||
       !("Notification" in window) ||
       Notification.permission !== "granted"
@@ -1302,7 +1313,7 @@
   }
 
   function startExamReminder(user) {
-    if (!user || _examReminderUid === user.uid) return;
+    if (!user || !calendarRemindersEnabled(user) || _examReminderUid === user.uid) return;
     _examReminderUid = user.uid;
 
     loadPrivateRecord(user.uid)
@@ -1372,6 +1383,16 @@
   }
 
   document.addEventListener("shoug:calendar-reminders-changed", function () {
+    removeExamToast();
+    _examReminderUid = null;
+    try {
+      var user = firebase.auth().currentUser;
+      if (user) startExamReminder(user);
+    } catch (e) {}
+  });
+
+  window.addEventListener("storage", function (event) {
+    if (!event.key || event.key.indexOf(CALENDAR_REMINDER_PREF) !== 0) return;
     removeExamToast();
     _examReminderUid = null;
     try {
