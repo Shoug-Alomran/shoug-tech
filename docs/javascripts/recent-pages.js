@@ -254,7 +254,7 @@
   )
     return;
   var s = document.createElement("script");
-  s.src = "/javascripts/course-ratings.js?v=4";
+  s.src = "/javascripts/course-ratings.js?v=5";
   s.async = true;
   document.head.appendChild(s);
   // Private "MY GRADE" row for the student's own GPA (academic-record.js).
