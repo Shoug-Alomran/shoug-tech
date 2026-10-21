@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png" />
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png" />
+    <script>
+      if (localStorage.getItem("shoug-theme") === "light") {
+        document.documentElement.style.background = "#f8f6ff";
+        document.documentElement.style.color = "#21152f";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SHOUG.TECH // Study Analytics</title>
+    <meta name="description" content="When you submit your assignments and projects, how early, and how each course is going." />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://shoug-tech.com/account/analytics/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/light-mode.css" />
+    <link rel="stylesheet" href="/styles/a11y.css" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#050508" />
+    <style>
+      :root {
+        --bg: #050508;
+        --surface: #0a0514;
+        --raised: #110822;
+        --brand: #b829ea;
+        --text: #f8f7fb;
+        --text-2: #c3bdd0;
+        --dim: #8f8b9a;
+        --border: rgba(255, 255, 255, 0.08);
+        --grid: rgba(255, 255, 255, 0.07);
+        /* chart roles (validated: dataviz validate_palette.js, dark surface) */
+        --series-1: #3987e5;
+        --series-2: #d95926;
+        --zero: rgba(255, 255, 255, 0.35);
+      }
+      body.shoug-light-mode {
+        --bg: #f8f6ff;
+        --surface: #ffffff;
+        --raised: #f3effa;
+        --text: #16111f;
+        --text-2: #3f3650;
+        --dim: #6d6478;
+        --border: rgba(22, 17, 31, 0.12);
+        --grid: rgba(22, 17, 31, 0.08);
+        --series-1: #2a78d6;
+        --series-2: #eb6834;
+        --zero: rgba(22, 17, 31, 0.4);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", system-ui, sans-serif;
+        min-height: 100vh;
+      }
+      .page {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+        padding: 40px clamp(16px, 3vw, 32px) 100px;
+      }
+      .breadcrumb {
+        font: 500 0.66rem "JetBrains Mono", monospace;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        margin-bottom: 22px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: var(--dim);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover,
+      .breadcrumb .cur {
+        color: var(--brand);
+      }
+      .eyebrow {
+        font: 700 0.62rem "JetBrains Mono", monospace;
+        color: var(--brand);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font: 800 clamp(1.7rem, 4vw, 2.3rem) "JetBrains Mono", monospace;
+        letter-spacing: -0.02em;
+        margin: 6px 0 6px;
+      }
+      .sub {
+        color: var(--dim);
+        margin: 0 0 22px;
+        max-width: 760px;
+      }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 22px;
+      }
+      .filters label {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        font: 700 0.6rem "JetBrains Mono", monospace;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .filters select {
+        height: 38px;
+        min-width: 170px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--text);
+        padding: 0 10px;
+        font: 500 0.88rem Inter, sans-serif;
+      }
+      .filters a.btn {
+        margin-left: auto;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 16px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--brand);
+        text-decoration: none;
+        font: 800 0.7rem "JetBrains Mono", monospace;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .tile {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 18px;
+      }
+      .tile .k {
+        font: 700 0.62rem "JetBrains Mono", monospace;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .tile .v {
+        font: 800 1.9rem "JetBrains Mono", monospace;
+        margin: 6px 0 2px;
+        color: var(--text);
+      }
+      .tile .n {
+        font-size: 0.8rem;
+        color: var(--dim);
+      }
+      .insights {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--brand);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+      }
+      .insights ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+        color: var(--text-2);
+      }
+      .insights li {
+        margin: 4px 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        min-width: 0;
+      }
+      .card.wide {
+        grid-column: 1 / -1;
+      }
+      .card h2 {
+        font: 800 0.95rem "JetBrains Mono", monospace;
+        margin: 0 0 4px;
+      }
+      .card .cap {
+        color: var(--dim);
+        font-size: 0.82rem;
+        margin: 0 0 12px;
+      }
+      .chart {
+        position: relative;
+        width: 100%;
+      }
+      .chart svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      .chart text {
+        fill: var(--dim);
+        font: 500 11px Inter, sans-serif;
+      }
+      .chart .gridline {
+        stroke: var(--grid);
+        stroke-width: 1;
+      }
+      .chart .zero {
+        stroke: var(--zero);
+        stroke-width: 1;
+        stroke-dasharray: 4 3;
+      }
+      .chart .bar {
+        fill: var(--series-1);
+      }
+      .chart .bar.s2 {
+        fill: var(--series-2);
+      }
+      .chart .hit {
+        fill: transparent;
+        cursor: default;
+      }
+      .chart .hit:hover + .bar,
+      .chart .bar.hl {
+        opacity: 0.8;
+      }
+      .chart .line {
+        fill: none;
+        stroke: var(--series-1);
+        stroke-width: 2;
+      }
+      .chart .dot {
+        fill: var(--series-1);
+        stroke: var(--surface);
+        stroke-width: 2;
+      }
+      .chart .dot.late {
+        fill: var(--series-2);
+      }
+      .chart .val {
+        fill: var(--text-2);
+        font-weight: 700;
+      }
+      .tip {
+        position: fixed;
+        z-index: 1000;
+        pointer-events: none;
+        background: var(--raised);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+        max-width: 280px;
+        display: none;
+      }
+      .tip b {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 0.78rem;
+        color: var(--text-2);
+        margin-bottom: 8px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        margin-right: 6px;
+        vertical-align: -1px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-2);
+        vertical-align: middle;
+      }
+      th {
+        font: 700 0.62rem "JetBrains Mono", monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      td.num {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .prog {
+        display: flex;
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+        gap: 2px;
+        min-width: 120px;
+        background: transparent;
+      }
+      .prog span:first-child {
+        background: var(--series-1);
+      }
+      .prog span:last-child {
+        background: var(--series-2);
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .state {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 32px;
+        text-align: center;
+        color: var(--dim);
+      }
+      .state a {
+        color: var(--brand);
+      }
+      .sign-in-btn {
+        margin-left: 8px;
+        border: 1px solid var(--brand);
+        background: none;
+        color: var(--brand);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font: 800 0.7rem "JetBrains Mono", monospace;
+        cursor: pointer;
+      }
+      /* The site-wide due/exam reminder would cover the page title. */
+      @media (min-width: 641px) {
+        body #shoug-exam-toast {
+          top: auto;
+          bottom: 24px;
+          left: auto;
+          right: 24px;
+          width: min(460px, calc(100vw - 48px));
+          transform: translateY(16px);
+        }
+        body #shoug-exam-toast.open {
+          transform: none;
+        }
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .filters a.btn {
+          margin-left: 0;
+        }
+      }
+      @media (max-width: 480px) {
+        .filters select {
+          min-width: 0;
+          width: 100%;
+        }
+        .filters label {
+          flex: 1 1 45%;
+        }
+      }
+    </style>
+    <script src="/javascripts/translation-launch-guard.js"></script>
+  </head>
+  <body>
+    <script>
+      if (localStorage.getItem("shoug-theme") === "light") document.body.classList.add("shoug-light-mode");
+    </script>
+    <script src="/javascripts/mobile-navigation.js?v=61" defer></script>
+    <main class="page" id="main-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/account/calendar/">Calendar</a><span>/</span
+        ><span class="cur">Analytics</span>
+      </nav>
+      <div class="eyebrow">// Study analytics</div>
+      <h1>How your work is going</h1>
+      <p class="sub">
+        When you submit, how early, and how each course is progressing. Built from the assignments and
+        projects in your calendar and the submission times you record there.
+      </p>
+
+      <div id="state" class="state">Loading your calendar…</div>
+
+      <div id="dash" hidden>
+        <div class="filters">
+          <label>Range<select id="f-range"></select></label>
+          <label>Course<select id="f-course"></select></label>
+          <a class="btn" href="/account/calendar/">Back to calendar</a>
+        </div>
+        <section class="tiles" id="tiles" aria-label="Summary"></section>
+        <section class="insights" id="insights" aria-label="Highlights"></section>
+        <div class="grid">
+          <section class="card">
+            <h2>How early you submit</h2>
+            <p class="cap">Time between submitting and the deadline.</p>
+            <div class="chart" id="c-lead"></div>
+          </section>
+          <section class="card">
+            <h2>Time of day you submit</h2>
+            <p class="cap">Submissions by hour.</p>
+            <div class="chart" id="c-hour"></div>
+          </section>
+          <section class="card wide">
+            <h2>Lead time across the term</h2>
+            <p class="cap">Hours before the deadline for each submission, by due date. Below the dashed line is late.</p>
+            <div class="chart" id="c-trend"></div>
+          </section>
+          <section class="card">
+            <h2>Day of the week you submit</h2>
+            <p class="cap">Submissions by weekday.</p>
+            <div class="chart" id="c-dow"></div>
+          </section>
+          <section class="card">
+            <h2>Upcoming workload</h2>
+            <p class="cap">Open assignments and projects due each week.</p>
+            <div class="chart" id="c-load"></div>
+          </section>
+          <section class="card wide">
+            <h2>By course</h2>
+            <div class="legend" aria-hidden="true">
+              <span><i style="background: var(--series-1)"></i>Submitted</span>
+              <span><i style="background: var(--series-2)"></i>Still open</span>
+            </div>
+            <div class="table-wrap"><table id="t-course"></table></div>
+          </section>
+          <section class="card wide">
+            <h2>Every submission</h2>
+            <p class="cap">The table behind the charts.</p>
+            <div class="table-wrap"><table id="t-all"></table></div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <div class="tip" id="tip" role="tooltip"></div>
+
+    <script src="/javascripts/psu-academic-calendar.js?v=2"></script>
+    <script src="/javascripts/firebase-auth.js?v=63"></script>
+    <script>
+      (function () {
+        "use strict";
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var DAY = 86400000,
+          WORK = { assignment: 1, project: 1 },
+          raw = [],
+          state = { range: "", course: "" };
+
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+        function fromKey(k) {
+          var p = String(k).split("-");
+          return new Date(+p[0], +p[1] - 1, +p[2]);
+        }
+        function courseLabel(v) {
+          var m = String(v || "").match(/([A-Za-z]{2,6})\s*-?\s*(\d{3}[A-Za-z]?)/);
+          return m ? m[1].toUpperCase() + " " + m[2].toUpperCase() : String(v || "").trim().toUpperCase();
+        }
+        function dueAt(it) {
+          var t = /^\d{2}:\d{2}$/.test(it.end || "") ? it.end : "23:59",
+            d = fromKey(it.endDate || it.date);
+          d.setHours(+t.slice(0, 2), +t.slice(3), 0, 0);
+          return d;
+        }
+        function dur(ms) {
+          var late = ms < 0,
+            m = Math.round(Math.abs(ms) / 60000);
+          if (m < 60) return m + "m" + (late ? " late" : " early");
+          var h = Math.floor(m / 60),
+            d = Math.floor(h / 24);
+          return (d ? d + "d" + (h % 24 ? " " + (h % 24) + "h" : "") : h + "h") + (late ? " late" : " early");
+        }
+        function median(a) {
+          if (!a.length) return null;
+          var s = a.slice().sort(function (x, y) {
+              return x - y;
+            }),
+            i = Math.floor(s.length / 2);
+          return s.length % 2 ? s[i] : (s[i - 1] + s[i]) / 2;
+        }
+        function fmtDate(d) {
+          return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        }
+        function fmtTime(d) {
+          return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+        }
+
+        // Terms from the PSU calendar, newest first.
+        function terms() {
+          var ev = ((window.SHOUG_PSU_ACADEMIC_CALENDAR || {}).events) || [],
+            b = {},
+            e = {};
+          ev.forEach(function (x) {
+            var m = String(x.id || "").match(/^psu-(\d+)-classes-(begin|end)$/);
+            if (m) (m[2] === "begin" ? b : e)[m[1]] = x.date;
+          });
+          return Object.keys(b)
+            .filter(function (t) {
+              return e[t];
+            })
+            .map(function (t) {
+              // finals run after classes end: extend the window three weeks
+              var end = fromKey(e[t]);
+              end.setDate(end.getDate() + 21);
+              return { term: t, start: fromKey(b[t]), end: end };
+            })
+            .sort(function (a, b2) {
+              return b2.start - a.start;
+            });
+        }
+        function termName(t) {
+          var n = { 1: "First Semester", 2: "Second Semester", 3: "Summer" }[t.slice(-1)] || "Term";
+          return n + " 20" + t.slice(0, 2);
+        }
+
+        // ── tooltip ──
+        var tip = $("tip");
+        function showTip(ev, html) {
+          tip.innerHTML = html;
+          tip.style.display = "block";
+          var x = ev.clientX + 14,
+            y = ev.clientY + 14,
+            r = tip.getBoundingClientRect();
+          if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+          if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+          tip.style.left = x + "px";
+          tip.style.top = y + "px";
+        }
+        function hideTip() {
+          tip.style.display = "none";
+        }
+        function wireTips(root, getHtml) {
+          root.querySelectorAll("[data-tip]").forEach(function (el) {
+            var i = +el.getAttribute("data-tip");
+            el.addEventListener("mousemove", function (ev) {
+              showTip(ev, getHtml(i));
+            });
+            el.addEventListener("mouseleave", hideTip);
+            el.addEventListener("focus", function () {
+              var r = el.getBoundingClientRect();
+              showTip({ clientX: r.right, clientY: r.top }, getHtml(i));
+            });
+            el.addEventListener("blur", hideTip);
+          });
+        }
+
+        // ── vertical bar chart (one series) ──
+        function barChart(el, data, opts) {
+          opts = opts || {};
+          var W = 560,
+            H = opts.h || 220,
+            P = { t: 18, r: 8, b: 30, l: 32 },
+            max = Math.max(1, Math.max.apply(null, data.map(function (d) { return d.v; }))),
+            n = data.length,
+            band = (W - P.l - P.r) / n,
+            bw = Math.max(4, Math.min(48, band - 2 * Math.max(2, band * 0.18))),
+            ticks = niceTicks(max);
+          var y = function (v) {
+            return H - P.b - (v / ticks[ticks.length - 1]) * (H - P.t - P.b);
+          };
+          var g = ticks
+            .map(function (t) {
+              return '<line class="gridline" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + y(t) + '" y2="' + y(t) + '"/><text x="' + (P.l - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + t + "</text>";
+            })
+            .join("");
+          var bars = data
+            .map(function (d, i) {
+              var x = P.l + band * i + (band - bw) / 2,
+                top = y(d.v),
+                h = H - P.b - top,
+                r = Math.min(4, bw / 2, h);
+              var path = h > 0 ? "M" + x + "," + (H - P.b) + "V" + (top + r) + "q0,-" + r + " " + r + ",-" + r + "H" + (x + bw - r) + "q" + r + ",0 " + r + "," + r + "V" + (H - P.b) + "Z" : "";
+              var label = !opts.every || i % opts.every === 0 ? '<text x="' + (x + bw / 2) + '" y="' + (H - P.b + 16) + '" text-anchor="middle">' + esc(d.l) + "</text>" : "";
+              var val = opts.values && d.v ? '<text class="val" x="' + (x + bw / 2) + '" y="' + (top - 5) + '" text-anchor="middle">' + d.v + "</text>" : "";
+              return (
+                '<rect class="hit" data-tip="' + i + '" tabindex="0" x="' + (P.l + band * i) + '" y="' + P.t + '" width="' + band + '" height="' + (H - P.t - P.b) + '" aria-label="' + esc(d.l + ": " + d.v) + '"/>' +
+                (path ? '<path class="bar' + (d.cls ? " " + d.cls : "") + '" d="' + path + '"/>' : "") +
+                val +
+                label
+              );
+            })
+            .join("");
+          el.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(opts.label || "") + '">' + g + bars + "</svg>";
+          wireTips(el, function (i) {
+            return opts.tip ? opts.tip(data[i]) : "<b>" + esc(data[i].l) + "</b>" + data[i].v;
+          });
+        }
+        function niceTicks(max) {
+          var step = max <= 5 ? 1 : max <= 10 ? 2 : max <= 25 ? 5 : max <= 50 ? 10 : Math.ceil(max / 5 / 10) * 10,
+            out = [];
+          for (var t = 0; t <= max + step - 1 && out.length < 8; t += step) out.push(t);
+          if (out[out.length - 1] < max) out.push(out[out.length - 1] + step);
+          return out;
+        }
+
+        // ── lead-time dots over due date ──
+        function trendChart(el, pts) {
+          var W = 1100,
+            H = 260,
+            P = { t: 16, r: 14, b: 30, l: 44 };
+          if (!pts.length) {
+            el.innerHTML = '<p class="cap">No timed submissions in this range yet.</p>';
+            return;
+          }
+          var xs = pts.map(function (p) { return p.due.getTime(); }),
+            hs = pts.map(function (p) { return p.h; }),
+            x0 = Math.min.apply(null, xs) - DAY,
+            x1 = Math.max.apply(null, xs) + DAY,
+            hi = Math.max(24, Math.max.apply(null, hs)),
+            lo = Math.min(0, Math.min.apply(null, hs));
+          var X = function (t) {
+              return P.l + ((t - x0) / (x1 - x0)) * (W - P.l - P.r);
+            },
+            Y = function (h) {
+              return P.t + ((hi - h) / (hi - lo)) * (H - P.t - P.b);
+            };
+          var step = hi - lo > 200 ? 48 : hi - lo > 96 ? 24 : 12,
+            grid = "";
+          for (var h = Math.ceil(lo / step) * step; h <= hi; h += step)
+            grid += '<line class="gridline" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + Y(h) + '" y2="' + Y(h) + '"/><text x="' + (P.l - 6) + '" y="' + (Y(h) + 4) + '" text-anchor="end">' + (Math.abs(h) >= 48 ? h / 24 + "d" : h + "h") + "</text>";
+          grid += '<line class="zero" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>';
+          var months = "",
+            d = new Date(x0);
+          d.setDate(1);
+          d.setMonth(d.getMonth() + 1);
+          while (d.getTime() < x1) {
+            months += '<text x="' + X(d.getTime()) + '" y="' + (H - 8) + '" text-anchor="middle">' + d.toLocaleDateString("en-US", { month: "short" }) + "</text>";
+            d.setMonth(d.getMonth() + 1);
+          }
+          var sorted = pts.slice().sort(function (a, b) { return a.due - b.due; });
+          var line = sorted.map(function (p, i) { return (i ? "L" : "M") + X(p.due.getTime()).toFixed(1) + "," + Y(p.h).toFixed(1); }).join("");
+          var dots = sorted
+            .map(function (p, i) {
+              return '<circle class="dot' + (p.h < 0 ? " late" : "") + '" cx="' + X(p.due.getTime()) + '" cy="' + Y(p.h) + '" r="5"/>' +
+                '<circle class="hit" data-tip="' + i + '" tabindex="0" cx="' + X(p.due.getTime()) + '" cy="' + Y(p.h) + '" r="12" aria-label="' + esc(p.it.title + ", " + dur(p.h * 3600000)) + '"/>';
+            })
+            .join("");
+          el.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Lead time for each submission by due date">' + grid + months + '<path class="line" d="' + line + '"/>' + dots + "</svg>";
+          wireTips(el, function (i) {
+            var p = sorted[i];
+            return "<b>" + esc(p.it.title) + "</b>" + esc(courseLabel(p.it.course) || "") + "<br>Due " + fmtDate(p.due) + " · " + esc(dur(p.h * 3600000));
+          });
+        }
+
+        // ── main render ──
+        function scopedItems() {
+          var t = state.range && terms().find(function (x) { return x.term === state.range; });
+          return raw.filter(function (it) {
+            if (!WORK[it.kind]) return false;
+            if (state.course && courseLabel(it.course) !== state.course) return false;
+            if (t) {
+              var d = fromKey(it.endDate || it.date);
+              if (d < t.start || d > t.end) return false;
+            }
+            return true;
+          });
+        }
+        function render() {
+          var list = scopedItems(),
+            now = new Date(),
+            submitted = list.filter(function (it) { return it.submitted; }),
+            timed = submitted
+              .filter(function (it) { return it.submittedAt && !isNaN(new Date(it.submittedAt)); })
+              .map(function (it) {
+                var at = new Date(it.submittedAt),
+                  due = dueAt(it);
+                return { it: it, at: at, due: due, h: (due - at) / 3600000 };
+              }),
+            open = list.filter(function (it) { return !it.submitted; }),
+            overdue = open.filter(function (it) { return dueAt(it) < now; }),
+            late = timed.filter(function (p) { return p.h < 0; }),
+            med = median(timed.map(function (p) { return p.h; }));
+
+          var tiles = [
+            ["Submitted", submitted.length, "of " + list.length + " assignments & projects"],
+            ["On time", timed.length ? Math.round((100 * (timed.length - late.length)) / timed.length) + "%" : "–", timed.length ? timed.length - late.length + " of " + timed.length + " with a recorded time" : "Record submit times in the calendar"],
+            ["Typical lead", med == null ? "–" : dur(med * 3600000).replace(" early", "").replace(" late", ""), med == null ? "Median time before the deadline" : med >= 0 ? "Median time before the deadline" : "Median time after the deadline"],
+            ["Late", late.length, "Submitted after the deadline"],
+            ["Open", open.length, overdue.length ? overdue.length + " overdue" : "None overdue"],
+          ];
+          $("tiles").innerHTML = tiles
+            .map(function (t) {
+              return '<div class="tile"><div class="k">' + esc(t[0]) + '</div><div class="v">' + esc(t[1]) + '</div><div class="n">' + esc(t[2]) + "</div></div>";
+            })
+            .join("");
+
+          // lead buckets
+          var B = [
+            ["Late", function (h) { return h < 0; }],
+            ["< 6h", function (h) { return h >= 0 && h < 6; }],
+            ["6–24h", function (h) { return h >= 6 && h < 24; }],
+            ["1–2d", function (h) { return h >= 24 && h < 48; }],
+            ["2–4d", function (h) { return h >= 48 && h < 96; }],
+            ["4d+", function (h) { return h >= 96; }],
+          ];
+          var buckets = B.map(function (b) {
+            return { l: b[0], v: timed.filter(function (p) { return b[1](p.h); }).length };
+          });
+          barChart($("c-lead"), buckets, { values: true, label: "Submissions by how early they were", tip: function (d) {
+            return "<b>" + esc(d.l) + "</b>" + d.v + " submission" + (d.v === 1 ? "" : "s") + (timed.length ? " · " + Math.round((100 * d.v) / timed.length) + "%" : "");
+          } });
+
+          var hours = [];
+          for (var i = 0; i < 24; i++) hours.push({ l: i === 0 ? "12a" : i < 12 ? i + "a" : i === 12 ? "12p" : i - 12 + "p", v: 0, h: i });
+          timed.forEach(function (p) { hours[p.at.getHours()].v++; });
+          barChart($("c-hour"), hours, { every: 3, label: "Submissions by hour of day", tip: function (d) {
+            var a = new Date(2000, 0, 1, d.h),
+              b = new Date(2000, 0, 1, d.h + 1);
+            return "<b>" + fmtTime(a) + " – " + fmtTime(b) + "</b>" + d.v + " submission" + (d.v === 1 ? "" : "s");
+          } });
+
+          var dows = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(function (l) { return { l: l, v: 0 }; });
+          timed.forEach(function (p) { dows[p.at.getDay()].v++; });
+          barChart($("c-dow"), dows, { values: true, label: "Submissions by weekday" });
+
+          trendChart($("c-trend"), timed);
+
+          // upcoming 6 weeks
+          var wk0 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()),
+            weeks = [];
+          for (var w = 0; w < 6; w++) {
+            var a = new Date(wk0.getTime() + w * 7 * DAY),
+              b = new Date(a.getTime() + 7 * DAY);
+            weeks.push({
+              l: w === 0 ? "This wk" : fmtDate(a),
+              v: open.filter(function (it) { var d = dueAt(it); return d >= a && d < b; }).length,
+              items: open.filter(function (it) { var d = dueAt(it); return d >= a && d < b; }),
+              a: a,
+            });
+          }
+          barChart($("c-load"), weeks, { values: true, label: "Open work due per week", tip: function (d) {
+            return "<b>Week of " + fmtDate(d.a) + "</b>" + (d.items.length ? d.items.map(function (it) { return esc(it.title); }).join("<br>") : "Nothing due");
+          } });
+
+          // by course
+          var byC = {};
+          list.forEach(function (it) {
+            var c = courseLabel(it.course) || "No course";
+            (byC[c] = byC[c] || { all: [], timed: [] }).all.push(it);
+          });
+          timed.forEach(function (p) { byC[courseLabel(p.it.course) || "No course"].timed.push(p); });
+          var rows = Object.keys(byC).sort().map(function (c) {
+            var x = byC[c],
+              sub = x.all.filter(function (it) { return it.submitted; }).length,
+              lt = x.timed.filter(function (p) { return p.h < 0; }).length,
+              m = median(x.timed.map(function (p) { return p.h; }));
+            return { c: c, total: x.all.length, sub: sub, open: x.all.length - sub, onTime: x.timed.length ? Math.round((100 * (x.timed.length - lt)) / x.timed.length) : null, med: m };
+          });
+          $("t-course").innerHTML =
+            "<thead><tr><th>Course</th><th>Progress</th><th>Submitted</th><th>Open</th><th>On time</th><th>Typical lead</th></tr></thead><tbody>" +
+            (rows.length
+              ? rows.map(function (r) {
+                  return "<tr><td><b>" + esc(r.c) + '</b></td><td><div class="prog" title="' + r.sub + " submitted, " + r.open + ' open"><span style="flex:' + r.sub + '"></span><span style="flex:' + r.open + '"></span></div></td><td class="num">' + r.sub + " / " + r.total + '</td><td class="num">' + r.open + '</td><td class="num">' + (r.onTime == null ? "–" : r.onTime + "%") + '</td><td class="num">' + (r.med == null ? "–" : esc(dur(r.med * 3600000))) + "</td></tr>";
+                }).join("")
+              : '<tr><td colspan="6">No assignments or projects in this range.</td></tr>') +
+            "</tbody>";
+
+          var allRows = submitted.slice().sort(function (a, b) { return dueAt(b) - dueAt(a); });
+          $("t-all").innerHTML =
+            "<thead><tr><th>Title</th><th>Course</th><th>Due</th><th>Submitted</th><th>Lead</th></tr></thead><tbody>" +
+            (allRows.length
+              ? allRows.map(function (it) {
+                  var at = it.submittedAt ? new Date(it.submittedAt) : null,
+                    due = dueAt(it);
+                  return "<tr><td>" + esc(it.title) + "</td><td>" + esc(courseLabel(it.course) || "–") + '</td><td class="num">' + fmtDate(due) + ", " + fmtTime(due) + '</td><td class="num">' + (at ? fmtDate(at) + ", " + fmtTime(at) : "not recorded") + '</td><td class="num">' + (at ? esc(dur(due - at)) : "–") + "</td></tr>";
+                }).join("")
+              : '<tr><td colspan="5">Nothing submitted in this range yet.</td></tr>') +
+            "</tbody>";
+
+          // highlights
+          var notes = [];
+          if (med != null) {
+            var span = dur(Math.abs(med) * 3600000).replace(/ (early|late)$/, "");
+            notes.push("You usually submit <b>" + esc(span) + (med >= 0 ? " before" : " after") + "</b> the deadline.");
+          }
+          var peak = hours.slice().sort(function (a, b) { return b.v - a.v; })[0];
+          if (peak && peak.v) notes.push("Your busiest submitting hour is <b>" + fmtTime(new Date(2000, 0, 1, peak.h)) + "–" + fmtTime(new Date(2000, 0, 1, peak.h + 1)) + "</b>.");
+          var last = timed.filter(function (p) { return p.h >= 0 && p.h < 6; }).length;
+          if (timed.length) notes.push("<b>" + Math.round((100 * last) / timed.length) + "%</b> of submissions come in the last 6 hours before the deadline.");
+          var withMed = rows.filter(function (r) { return r.med != null; });
+          if (withMed.length > 1) {
+            withMed.sort(function (a, b) { return a.med - b.med; });
+            notes.push("Closest to the wire: <b>" + esc(withMed[0].c) + "</b> (" + esc(dur(withMed[0].med * 3600000)) + "). Most ahead: <b>" + esc(withMed[withMed.length - 1].c) + "</b> (" + esc(dur(withMed[withMed.length - 1].med * 3600000)) + ").");
+          }
+          var missing = submitted.length - timed.length;
+          if (missing) notes.push(missing + " submitted item" + (missing === 1 ? " has" : "s have") + ' no recorded time. Add them with <b>Add Time</b> in the <a href="/account/calendar/" style="color:var(--brand)">calendar</a> to include them here.');
+          if (overdue.length) notes.push("<b>" + overdue.length + "</b> open item" + (overdue.length === 1 ? " is" : "s are") + " past the deadline.");
+          $("insights").innerHTML = "<b>Highlights</b>" + (notes.length ? "<ul><li>" + notes.join("</li><li>") + "</li></ul>" : '<p class="cap">Mark work as submitted in the calendar to see patterns here.</p>');
+        }
+
+        function setupFilters() {
+          var ts = terms(),
+            today = new Date(),
+            cur = ts.find(function (t) { return today >= t.start && today <= t.end; });
+          $("f-range").innerHTML = ts
+            .filter(function (t) {
+              return raw.some(function (it) { var d = fromKey(it.endDate || it.date); return d >= t.start && d <= t.end; }) || t === cur;
+            })
+            .map(function (t) { return '<option value="' + t.term + '">' + termName(t.term) + "</option>"; })
+            .join("") + '<option value="">All time</option>';
+          state.range = cur ? cur.term : "";
+          $("f-range").value = state.range;
+          var cs = {};
+          raw.forEach(function (it) { if (WORK[it.kind] && it.course) cs[courseLabel(it.course)] = 1; });
+          $("f-course").innerHTML = '<option value="">All courses</option>' + Object.keys(cs).sort().map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+          $("f-range").onchange = function () { state.range = this.value; render(); };
+          $("f-course").onchange = function () { state.course = this.value; render(); };
+        }
+
+        var shown = false;
+        function onUser(user) {
+          if (shown) return;
+          shown = true;
+          firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
+            var data = doc.exists ? doc.data() : {};
+            raw = Array.isArray(data.calendarEvents) ? data.calendarEvents.filter(Boolean) : [];
+            if (!raw.some(function (it) { return WORK[it.kind]; })) {
+              $("state").innerHTML = 'No assignments or projects yet. Add them in your <a href="/account/calendar/">calendar</a> and mark them submitted to see analytics here.';
+              return;
+            }
+            $("state").hidden = true;
+            $("dash").hidden = false;
+            setupFilters();
+            render();
+          }).catch(function () {
+            $("state").textContent = "Could not load your calendar. Refresh to try again.";
+          });
+        }
+        function onNull() {
+          if (shown) return;
+          $("state").innerHTML = 'Sign in to see your study analytics. <button class="sign-in-btn" type="button" id="sign-in-btn">Sign in</button>';
+          $("sign-in-btn").addEventListener("click", function () {
+            var b = document.querySelector(".shoug-header-actions .shoug-auth-btn") || document.querySelector(".shoug-auth-btn");
+            if (b) b.click();
+          });
+        }
+        window.__shoug_onAuth = function (u) {
+          if (u) onUser(u);
+          else onNull();
+        };
+        var poll = setInterval(function () {
+          try {
+            firebase.app();
+            clearInterval(poll);
+            firebase.auth().onAuthStateChanged(function (u) { if (u) onUser(u); else onNull(); });
+          } catch (e) {}
+        }, 200);
+      })();
+    </script>
+    <script src="/javascripts/register-sw.js" defer></script>
+  </body>
+</html>
