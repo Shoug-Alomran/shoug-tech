@@ -128,6 +128,17 @@ def same_sidebar(old_bytes, new_bytes):
     return squash(a.group(0)) == squash(b.group(0))
 
 
+def same_markup(old, new):
+    """Same page once the sidebar and formatter-only differences are set aside.
+
+    Pages get run through a formatter after generation (wrapped tags, `/>`,
+    `</a >`), which must not mark them stale or get undone on every run."""
+    def norm(text):
+        text = re.sub(r'\s+', '', NAV_RE.sub('', text)).replace('/>', '>')
+        return re.sub(r'(?<![\w.])0\.(\d)', r'.\1', text.replace(';}', '}'))  # minified CSS
+    return norm(old) == norm(new)
+
+
 def is_viewer_dir(path):
     """A generated PDF viewer: a folder holding nothing but its index.html."""
     if not os.path.isdir(path):
@@ -447,7 +458,7 @@ class Build:
             text = recolor(text)
         if os.path.exists(path):
             old = read(path)
-            if NAV_RE.sub('', old) == NAV_RE.sub('', text):
+            if same_markup(old, text):
                 return
             nav = NAV_RE.search(old)
             if nav:                      # keep the stamped sidebar until the builder reruns
