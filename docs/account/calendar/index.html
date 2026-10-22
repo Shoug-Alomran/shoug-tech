@@ -412,6 +412,41 @@
         padding: 16px 18px;
       }
 
+      /* View Focus can fold down to its header. */
+      .panel-collapse {
+        height: 28px;
+        padding: 0 12px;
+        border: 1px solid var(--soft-line);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        font:
+          800 0.58rem/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .panel-collapse:hover {
+        color: var(--brand);
+        border-color: rgba(184, 41, 234, 0.42);
+      }
+
+      .panel-collapse:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+      }
+
+      .panel.is-collapsed .panel-body {
+        display: none;
+      }
+
+      .panel.is-collapsed .panel-head {
+        border-bottom: 0;
+      }
+
       .month-tools {
         display: flex;
         align-items: center;
@@ -3772,6 +3807,15 @@
                     Hide calendar layers without deleting anything
                   </div>
                 </div>
+                <button
+                  class="panel-collapse"
+                  id="focus-collapse-btn"
+                  type="button"
+                  aria-controls="view-filters"
+                  aria-expanded="true"
+                >
+                  Hide
+                </button>
               </div>
               <div class="panel-body">
                 <div class="filter-grid" id="view-filters"></div>
@@ -8465,6 +8509,30 @@
           var el = $("tab-count-assignments");
           if (el) el.textContent = open ? String(open) : "";
         }
+        // ── View Focus: fold it away; the choice is remembered per browser ──
+        (function setupFocusCollapse() {
+          var panel = $("calendar-focus-panel"),
+            btn = $("focus-collapse-btn");
+          if (!panel || !btn) return;
+          function set(open, save) {
+            panel.classList.toggle("is-collapsed", !open);
+            btn.textContent = open ? "Hide" : "Show";
+            btn.setAttribute("aria-expanded", open ? "true" : "false");
+            btn.setAttribute("aria-label", (open ? "Hide" : "Show") + " View Focus");
+            if (save)
+              try {
+                localStorage.setItem("calendar-focus-collapsed", open ? "0" : "1");
+              } catch (e) {}
+          }
+          var collapsed = false;
+          try {
+            collapsed = localStorage.getItem("calendar-focus-collapsed") === "1";
+          } catch (e) {}
+          set(!collapsed, false);
+          btn.addEventListener("click", function () {
+            set(panel.classList.contains("is-collapsed"), true);
+          });
+        })();
         // ── GPA target planner ──
         var gpaPlan = null;
         function gpaTarget() {
