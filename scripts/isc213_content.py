@@ -636,10 +636,10 @@ CHEAT_FLASH = CHEAT_1_FLASH + CHEAT_2_FLASH
 
 CHEAT_META = {
     'slug': 'cheat-sheet',
-    'title': 'Midterm Cheat Sheet — Lectures 1–4',
+    'title': 'Midterm 1 Cheat Sheet — Lectures 1–4',
     'brand_sub': 'Concept, Ijtihad, Rights &amp; Insurance — Lectures 1–4',
-    'h1': 'Midterm Cheat Sheet: Lectures 1–4',
-    'lede': ('All four midterm lectures on one page for the hour before the exam — definitions in their exam '
+    'h1': 'Midterm 1 Cheat Sheet: Lectures 1–4',
+    'lede': ('All four Midterm 1 lectures on one page for the hour before the exam — definitions in their exam '
              'wording, every numbered list with its mnemonic, the exact count of Shariah reasons behind each '
              'incorporeal right, and the two insurance systems kept on separate tracks so their reasoning never '
              'blurs together.'),
