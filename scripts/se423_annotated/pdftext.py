@@ -61,7 +61,9 @@ def _text(line, bold_font):
             out.append(t)
     flush()
     text = re.sub(r'\*\* \*\*', ' ', ' '.join(out))
-    return re.sub(r'\s*\(\s*\)', '', text).strip()
+    text = re.sub(r'\s*\(\s*\)', '', text)
+    text = re.sub(r'(?<=\w) +([.,:;])(?=\s|$)', r'\1', text)
+    return re.sub(r'Copyright ©.*?All Rights Reserved', '', text).strip()
 
 
 def read_deck(pdf_path):

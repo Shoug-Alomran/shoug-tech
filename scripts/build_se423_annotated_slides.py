@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -138,9 +138,19 @@ def auto_box(pdf, page, mode):
         p = doc.pages[page - 1]
         if mode == 'auto':
             boxes = [(i['x0'], i['top'], i['x1'], i['bottom']) for i in p.images
-                     if i['x1'] - i['x0'] > 25 and i['bottom'] - i['top'] > 18 and i['top'] > 50 and i['bottom'] < 430]
+                     if i['x1'] - i['x0'] > 25 and i['bottom'] - i['top'] > 18 and i['top'] > 50 and i['bottom'] < float(p.height) - 15
+                     and i['x1'] - i['x0'] < float(p.width) * 0.95]
             if boxes:
                 return (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+        if mode == 'vec':
+            title_bottom = max([w['bottom'] for w in p.extract_words(extra_attrs=['size']) if w['size'] >= 24 and w['top'] < 130] or [50])
+            objs = [(o['x0'], o['top'], o['x1'], o['bottom']) for o in p.rects + p.lines + p.curves + p.images
+                    if o['top'] > title_bottom + 2 and o['bottom'] < float(p.height) - 36 and (o['x1'] - o['x0']) < float(p.width) * 0.98]
+            if objs:
+                return (max(0, min(o[0] for o in objs) - 6), min(o[1] for o in objs) - 6,
+                        min(float(p.width), max(o[2] for o in objs) + 6), max(o[3] for o in objs) + 6)
+        if mode.startswith('below:'):
+            return (6, float(mode.split(':')[1]), float(p.width) - 6, float(p.height) - 34)
         if mode == 'page':
             return (4, 4, float(p.width) - 4, float(p.height) - 4)
         return (8, 80, float(p.width) - 8, float(p.height) - 24)
@@ -366,7 +376,7 @@ def deck_slides(mod):
             continue
         kind = ann.get('kind', p['kind'])
         body = ann['body'] if 'body' in ann else ([] if ann.get('drop_body') else p['body'])
-        for bad, good in ann.get('fix', {}).items():
+        for bad, good in list(getattr(mod, 'FIX', {}).items()) + list(ann.get('fix', {}).items()):
             body = [line.replace(bad, good) for line in body]
         body = [line for line in body if line.strip('*- ') not in ann.get('drop_lines', ())]
         if 'body' not in ann:
