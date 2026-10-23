@@ -1,0 +1,146 @@
+"""SE423 annotated slides — Chapter 8: Stakeholders (slides/chapter-8).
+Slide text comes from the PDF; see ch01_2_performance_domains.py for the ANN keys."""
+from .common import mcq, tf, scen, short, past, see, tip, trick, trap
+
+DECK = {
+    'key': 'ch8',
+    'slug': '11-stakeholders',
+    'file': 'stakeholders',
+    'title': 'Stakeholders',
+    'chapter': 'Chapter 8',
+    'pdf': '/academics/software-engineering/se423/slides/chapter-8/',
+    'lede': ('Stakeholder management (inputs, tools, outputs), engagement levels, communication planning, '
+             'push/pull/interactive communication, communication channels and the mapping models. Final 242 '
+             'asked for the process’s inputs/techniques/outputs, channels for 7 people and an engagement-level '
+             'table with push/pull/interactive; Final 251 asked how to identify and prioritize stakeholders.'),
+}
+
+FIX = {'in fl uence': 'influence', 'classi fi cation': 'classification', 'classi fi ed': 'classified', 'identi fi es': 'identifies', 'fi es the': 'identifies the',
+       'identi effectively': 'effectively', 'Identi fi ed': 'Identified', 're fi ning': 'refining', 'fl ow': 'flow', 'TypeExamples': 'Type / Examples',
+       'prioritizecommunicationefforts': 'prioritize communication efforts'}
+
+
+def fig(name, alt, cap='', big=False):
+    return (name, alt, cap, big)
+
+
+CROPS = {
+    'stakeholder-examples.png': (3, 'auto'),
+    'engagement-matrix.png': (10, 'auto'),
+    'important-stakeholders.png': (13, 'auto'),
+    'communication-types.png': (19, 'body'),
+    'comm-plan.png': (24, 'auto'),
+    'engagement-cycle.png': (26, 'auto'),
+    'stakeholder-register.png': (27, 'auto'),
+    'stakeholder-management-table.png': (28, 'body'),
+    'engagement-plan.png': (29, 'body'),
+    'salience.png': (30, 'auto'),
+    'knowledge-base.png': (31, 'auto'),
+    'power-interest.png': (33, 'auto'),
+    'formal-informal.png': (36, 'auto'),
+}
+
+PROCESS_PAST = [past('f242', 'Q3.1 · stakeholder management process: inputs, techniques, outputs')]
+PRIORITY_PAST = [past('f251', 'Q3.2 · identify and prioritize stakeholders; communicate with each group')]
+LEVELS_PAST = [past('f242', 'Q3.3 · engagement levels table with Pull / Push / Interactive')]
+PROC_ANSWER = short('How does the stakeholder management process contribute to project success? Give two inputs, techniques and outputs (Final 242).',
+                    'It identifies everyone who can affect or is affected by the project, analyzes their interests and influence, and plans how to engage each one, so support is kept, resistance is handled early and requirements and expectations are clear. Inputs: the project charter (names key stakeholders such as sponsor and client) and procurement documents (reveal vendors and contractors); also enterprise environmental factors and organizational process assets. Tools and techniques: stakeholder analysis (interests, influence, impact, e.g. a power/interest grid) and expert judgment; also meetings. Outputs: the stakeholder register (who they are, requirements, expectations, influence, classification) and the stakeholder management plan (current vs desired engagement, communication needs, strategies).')
+PRIORITY_ANSWER = short('How can project managers identify and prioritize stakeholders, and how should they communicate with each group (Final 251)?',
+                        'Identify: review the charter and procurement documents, brainstorm with the team and experts, and record everyone in a stakeholder register (role, requirements, expectations, influence, support/neutral/resistant). Prioritize with a mapping model: the power/interest grid (manage closely high-power/high-interest, keep satisfied high-power/low-interest, keep informed low-power/high-interest, monitor the rest) or the salience model (power, legitimacy, urgency). Communicate: interactive meetings and demos for key players, push status reports for those to keep satisfied, pull dashboards or a wiki for the informed, and minimal updates for the monitored group, adjusting as engagement levels change.')
+
+ANN = {
+    1: dict(kind='title', body=[], sub='SE423: Software Project Management', notes=['Stakeholder management → communication → stakeholder communication (mapping and engagement).']),
+    2: dict(notes=['Three parts, all exam-relevant.']),
+    3: dict(fig=fig('stakeholder-examples.png', 'Examples of project stakeholders around the project'), seen=[see('ch2', 7, 'Internal vs. external stakeholders'), see('ch1.2', 3, 'Stakeholder definition')],
+            notes=['Stakeholders include sponsors, customers, team, suppliers, regulators, end users, functional managers…']),
+    4: dict(kind='section'),
+    5: dict(refs=['project\'s interests as its goal'], notes=['Stakeholder management = develop strategies → engage → analyze → plan interactions.'], past=PROCESS_PAST),
+    6: dict(hl=['Project charter', 'Procurement documents', 'Stakeholder analysis', 'Stakeholder register', 'Stakeholder management plan'],
+            refs=['communication policies.', 'Meetings/Company visits', 'Stakeholder management plan'],
+            notes=['Inputs: charter, procurement docs, enterprise environmental factors, organizational process assets.', 'Tools: stakeholder analysis, expert judgment, meetings.', 'Outputs: stakeholder REGISTER and stakeholder MANAGEMENT PLAN.'],
+            tips=[tip('This slide answers Final 242 Q3.1 almost word for word. Learn two items per column.')],
+            past=PROCESS_PAST, exam=[PROC_ANSWER, mcq('Which is an OUTPUT of stakeholder management?', ['Stakeholder register', 'Project charter', 'Procurement documents', 'Expert judgment'], 0, '')],
+            weight=3),
+    7: dict(hl=['primary output'], refs=['influence/power/ impact/interest'],
+            notes=['Register per stakeholder: name, position, role, contact, requirements, expectations, influence, phase of interest, classification (internal/external, supporter/neutral/resister).']),
+    8: dict(hl=['Unaware', 'Resistant', 'Neutral', 'Supportive', 'Leading'], refs=['ensuring the project’s success'],
+            notes=['Five engagement levels: Unaware → Resistant → Neutral → Supportive → Leading.'],
+            tips=[trick('“U R No Strong Leader”: Unaware, Resistant, Neutral, Supportive, Leading.')],
+            past=LEVELS_PAST,
+            exam=[short('Compare stakeholder engagement levels and suggest the best communication method (pull, push or interactive) for each (Final 242).',
+                        'Unaware (low knowledge, can’t support yet) → push: announcements and briefings to make them aware. Resistant (aware but opposed; can block) → interactive: meetings to hear concerns and negotiate. Neutral (aware, neither for nor against) → push status updates plus pull access to the wiki or dashboard to build interest. Supportive (aware and in favour) → pull dashboards and push periodic reports to keep them informed and championing. Leading (actively driving success; high influence) → interactive: steering meetings, demos and joint decisions.'),
+                  mcq('A stakeholder who is aware of the project and actively engaged in ensuring its success is:', ['Leading', 'Supportive', 'Neutral', 'Resistant'], 0, '')],
+            weight=3),
+    9: dict(hl=['Desired and current engagement levels'], refs=['inappropriate disclosure'],
+            notes=['The management plan adds current vs DESIRED engagement, communication needs and frequency. It is SENSITIVE, so protect it.']),
+    10: dict(fig=fig('engagement-matrix.png', 'Engagement assessment matrix: C = current, D = desired level per stakeholder'),
+             notes=['C = current, D = desired engagement. The gap shows where to act.'],
+             exam=[mcq('In the stakeholder engagement assessment matrix, “C” and “D” mean:', ['Current and desired engagement', 'Cost and duration', 'Consulted and decided', 'Critical and dependent'], 0, '')]),
+    11: dict(hl=['information radiators'], refs=['short-circuits rumors'], notes=['Agile: be inclusive and transparent; information radiators (e.g., a wiki) reduce rumors.'], seen=[see('ch1.2', 85, 'Information radiators')]),
+    12: dict(refs=['potential'], notes=['Tailoring information per stakeholder can be justified in political projects but is risky.']),
+    13: dict(fig=fig('important-stakeholders.png', 'Important stakeholders such as the champion'), notes=['Champion = a senior, influential supporter who promotes the project.']),
+    14: dict(refs=['on time and on budget.'], notes=['Agile/DevOps need good reporting tools so stakeholders understand iterative progress.']),
+    15: dict(refs=['need to be improved.'], notes=['Dashboards give real-time KPI reporting across projects.']),
+    16: dict(kind='section'),
+    17: dict(drop_lines=['g'], hl=['Communication is the most important factor'], refs=['stakeholders effectively.'], notes=['Communication is THE key to engaging stakeholders.'],
+             past=[past('f251', 'Q3.1 · how communication skills help manage risk and success', related=True)]),
+    18: dict(refs=['plans for the project.'], notes=['Plan: who needs what, why, best way, when/how often, who has it.'],
+             tips=[trick('Who · What · Why · How · When · Who-has.')]),
+    19: dict(fig=fig('communication-types.png', 'Internal/external, formal/informal, vertical/horizontal, official/unofficial, written/oral, verbal/nonverbal; channel and noise considerations'),
+             notes=['Communication dimensions: internal/external, formal/informal, vertical/horizontal, official/unofficial, written/oral, verbal/nonverbal.']),
+    20: dict(body=['- Interactive vs. Push vs. Pull Communication', '- To achieve meeting Success', '-- Send notice in advance / Time limit for the meeting', '-- Regular but not too frequent',
+                   '-- Clear purpose and agenda announced beforehand', '-- Assign deliverables/action items from the meeting w/ clear time limits and distribution channels', '-- Document and publish meeting minutes',
+                   '- Communication Channels', '-- # Communication Channels = N(N − 1) / 2, where N = the number of people', '- Communication Blockers (no agenda, poor timing, ...)'],
+             hl=['N(N − 1) / 2'], refs=['N = the number of people'],
+             notes=['Channels = N(N−1)/2. Team of 7 → 21. This exact calculation was Final 242 Q3.2.'],
+             past=[past('f242', 'Q3.2 · number of communication channels for 7 members')], seen=[see('ch3', 34, 'Communication paths grow with team size')],
+             exam=[mcq('Calculate the number of communication channels for a project team of 7 members.', ['21', '42', '49', '14'], 0, '7 × 6 / 2 = 21.'),
+                   mcq('A team grows from 5 to 8 people. How many channels are added?', ['18', '3', '28', '10'], 0, '28 − 10 = 18.')],
+             weight=3),
+    21: dict(hl=['Change Control Board (CCB)'], refs=['in a project.'],
+             notes=['CCB = stakeholders who review, evaluate and approve/reject change requests.'], seen=[see('ch9', 8, 'Integrated change control')]),
+    22: dict(hl=['Be truthful in all communications'], refs=['only the truth is acceptable'], notes=['Ethics: seek the whole truth, be truthful even when the project is in trouble.'], seen=[see('ch1', 55, 'PMI code: honesty')]),
+    23: dict(refs=['like risks'], notes=['Professional: only accept qualified work, protect information, deal with conflict directly, disclose conflicts of interest.']),
+    24: dict(fig=fig('comm-plan.png', 'Communication management plan columns: what, why, between whom, best method, responsibility, when/how often'),
+             notes=['Primary output of plan communications: what, why, who, method, responsible, when.']),
+    25: dict(kind='section'),
+    26: dict(refs=['Monitor your stakeholders'], fig=fig('engagement-cycle.png', 'Cycle: identify → understand → analyze → prioritize → engage → monitor'),
+             notes=['Six steps: Identify → Understand → Analyze → Prioritize → Engage → Monitor (a cycle).'], past=PRIORITY_PAST,
+             tips=[trick('“I Understand And Prioritize Every Member”.')], weight=2),
+    27: dict(refs=['Stakeholder Management Strategy'], fig=fig('stakeholder-register.png', 'Stakeholder register template'),
+             notes=['Register columns: ID, name, title, department, contact, major requirements, expectations, influence, role, classification.']),
+    28: dict(fig=fig('stakeholder-management-table.png', 'Table: stakeholder, current and desired engagement, actions, priority, point of contact', '', True),
+             notes=['Example: Billy Burr is Resistant → desired Supportive → critical priority.']),
+    29: dict(fig=fig('engagement-plan.png', 'Engagement plan: identify, assess, plan communication, engage, with tasks and outputs', '', True)),
+    30: dict(hl=['Salience Model'], refs=['how much attention they demand.'],
+             fig=fig('salience.png', 'Salience model: power, legitimacy, urgency circles, 7 = definitive'),
+             notes=['Salience = Power + Legitimacy + Urgency. All three = definitive stakeholder (7): highest priority.'],
+             past=PRIORITY_PAST,
+             exam=[mcq('In the salience model, a stakeholder with power, legitimacy AND urgency is:', ['Definitive', 'Dormant', 'Dependent', 'Discretionary'], 0, '')], weight=2),
+    31: dict(hl=['communication tactics'], refs=['support or oppose it.'], fig=fig('knowledge-base.png', 'Knowledge (aware/ignorant) × attitude (support/opposition)'),
+             notes=['Knowledge base chart: aware vs ignorant × support vs opposition.']),
+    32: dict(refs=['strengthen their support.'], notes=['Aware/opposition = risk, manage. Ignorant/opposition = educate them.'],
+             exam=[mcq('A stakeholder who opposes the project because they misunderstand it (ignorant/opposition) should be:', ['Educated to increase understanding', 'Ignored', 'Removed from the project', 'Given control of the budget'], 0, '')]),
+    33: dict(body=['- Power/Interest Grid helps you **prioritize communication efforts** based on two dimensions: a stakeholder’s **power/influence** and their **interest in the project**.'],
+             fig=fig('power-interest.png', 'Power/interest grid: manage closely, meet their needs, keep informed, keep into account'), refs=['**interest in the project**'], past=PRIORITY_PAST,
+             notes=['Power/interest grid: prioritize communication by power and interest; see slide 34.']),
+    34: dict(hl=['Manage closely', 'keep them satisfied', 'Monitor', 'Keep informed'], refs=['Keep informed and maintain interest'],
+             notes=['High P/high I → manage closely. High P/low I → keep satisfied. Low P/high I → keep informed. Low P/low I → monitor.'],
+             tips=[trap('High power + low interest = keep SATISFIED, not manage closely.')],
+             past=PRIORITY_PAST, exam=[PRIORITY_ANSWER, mcq('A regulator with high power but little interest in day-to-day work should be:', ['Kept satisfied', 'Managed closely', 'Kept informed', 'Ignored'], 0, '')],
+             weight=3),
+    35: dict(hl=['soft skills'], refs=['critical thinking.'], notes=['Engagement uses soft skills (listening, conflict management) and leadership.']),
+    36: dict(fig=fig('formal-informal.png', 'Formal vs informal verbal and written communication examples'), notes=['Formal verbal: presentations, reviews. Informal written: email, instant messaging.']),
+    37: dict(hl=['Push', 'Pull'], refs=['assess understanding; therefore, it should be used deliberately.', 'stakeholder concerns.'],
+             notes=['Push = sent out (email, status reports); one-way, can’t gauge reaction.', 'Pull = stakeholder fetches it (intranet, repository). Interactive = two-way (meetings, calls).'],
+             tips=[trick('Push = I send. Pull = you fetch. Interactive = we talk.')],
+             past=LEVELS_PAST,
+             exam=[mcq('Posting templates on an intranet for team members to look up is:', ['Pull communication', 'Push communication', 'Interactive communication', 'Informal verbal'], 0, '')], weight=3),
+    38: dict(refs=['Gain other helpful insights.'], notes=['Quick feedback loops confirm the message was heard and agreed.']),
+    39: dict(refs=['important to the project.'], notes=['Communicate schedule, budget, forecasts, risk/issue/change logs regularly.']),
+    40: dict(hl=['Status Report', 'Progress Report', 'Trend Report', 'Forecasting Report', 'Variance Report'], refs=['useful for future projects?'],
+             notes=['Status = where are we now vs baseline. Progress = what’s been done. Trend = improving or not. Forecast = future. Variance = actual vs baseline.'],
+             exam=[mcq('“Is performance improving or deteriorating?” is answered by a:', ['Trend report', 'Status report', 'Progress report', 'Variance report'], 0, '')], weight=2),
+    41: dict(refs=['Use multiple types of reports'], notes=['Useful reports: right detail and channel, consistent baseline, truthful, cover scope/time/cost + quality, include forecasts.']),
+    42: dict(refs=['Stakeholder’s perspective'], notes=['Honest, tailored communication is the core of stakeholder management.']),
+}
