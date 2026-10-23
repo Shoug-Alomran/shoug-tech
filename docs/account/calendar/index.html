@@ -2220,6 +2220,48 @@
         background: var(--hover);
       }
 
+      .action-menu-items[hidden] {
+        display: none;
+      }
+
+      /* "More" actions float above the page so short or clipped cards
+         never cut the menu off. */
+      .action-menu {
+        position: fixed;
+        z-index: 99998;
+        min-width: 190px;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+      }
+
+      .action-menu .mini-btn {
+        width: 100%;
+        height: 34px;
+        justify-content: flex-start;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        white-space: nowrap;
+      }
+
+      .action-menu .mini-btn:hover,
+      .action-menu .mini-btn:focus-visible {
+        background: var(--hover);
+        outline: none;
+      }
+
+      .action-menu .mini-btn.danger {
+        margin-top: 4px;
+        border-top: 1px solid var(--line);
+        border-radius: 0 0 8px 8px;
+      }
+
       .day-timeline {
         position: relative;
         display: grid;
@@ -2292,7 +2334,7 @@
       .timeline-event.class {
         background: rgba(96, 165, 250, 0.14);
         color: var(--blue);
-        padding-right: 390px;
+        padding-right: 240px;
       }
 
       .timeline-event.class .day-card-actions {
@@ -2301,7 +2343,7 @@
         right: 10px;
         transform: translateY(-50%);
         margin: 0;
-        max-width: 370px;
+        flex-wrap: nowrap;
         justify-content: flex-end;
       }
 
@@ -2446,7 +2488,7 @@
       }
 
       .timeline-event.class.compact {
-        padding-right: 440px;
+        padding-right: 240px;
       }
 
       @media (max-width: 900px) {
@@ -8872,6 +8914,17 @@
         // Wires the Edit / Submit / Delete / class buttons inside any
         // container of rendered events (day sheet, week and day views).
         function bindEventActions(root) {
+          root.querySelectorAll("[data-item-edit]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              openItemEditor(b.dataset.itemEdit);
+            });
+          });
+          root.querySelectorAll("[data-more-actions]").forEach(function (b) {
+            b.addEventListener("click", function (ev) {
+              ev.stopPropagation();
+              toggleActionMenu(b);
+            });
+          });
           root.querySelectorAll("[data-exam-edit]").forEach(function (b) {
             b.addEventListener("click", function () {
               openExamEditor(b.dataset.examEdit);
@@ -8918,6 +8971,16 @@
             });
           });
         }
+        // Secondary actions sit in a "More" menu so every card keeps a
+        // single row of buttons; the menu itself floats above the page.
+        function actionMenuHtml(inner) {
+          return (
+            '<button class="mini-btn more-btn" data-more-actions type="button" aria-haspopup="menu" aria-expanded="false">More</button>' +
+            '<div class="action-menu-items" hidden>' +
+            inner +
+            "</div>"
+          );
+        }
         function eventActionsHtml(e) {
           if (e.examId)
             return (
@@ -8925,59 +8988,127 @@
               esc(e.examId) +
               '" type="button">Edit Exam</button></div>'
             );
-          if (e.classId)
+          if (e.classId) {
+            var classData =
+              '" data-date="' + esc(e.date) + '" type="button">';
+            var editClass =
+              '<button class="mini-btn" data-class-edit="' +
+              esc(e.classId) +
+              classData +
+              "Edit This Class</button>";
             return (
               '<div class="day-card-actions">' +
               (e.online && e.onlineLink
                 ? '<a class="mini-btn" href="' +
                   esc(e.onlineLink) +
                   '" target="_blank" rel="noopener noreferrer">Join Meeting</a>'
-                : "") +
-              (e.online && !e.onlineLink
-                ? '<button class="mini-btn" data-class-edit="' +
+                : editClass) +
+              actionMenuHtml(
+                (e.online && e.onlineLink ? editClass : "") +
+                  (e.online && !e.onlineLink
+                    ? '<button class="mini-btn" data-class-edit="' +
+                      esc(e.classId) +
+                      classData +
+                      "Add Meeting Link</button>"
+                    : "") +
+                  '<button class="mini-btn" data-class-mode="' +
+                  (e.online ? "inperson" : "online") +
+                  '" data-class-id="' +
                   esc(e.classId) +
-                  '" data-date="' +
-                  esc(e.date) +
-                  '" type="button">Add Meeting Link</button>'
-                : "") +
-              '<button class="mini-btn" data-class-edit="' +
-              esc(e.classId) +
-              '" data-date="' +
-              esc(e.date) +
-              '" type="button">Edit This Class</button><button class="mini-btn" data-class-mode="' +
-              (e.online ? "inperson" : "online") +
-              '" data-class-id="' +
-              esc(e.classId) +
-              '" data-date="' +
-              esc(e.date) +
-              '" type="button">' +
-              (e.online ? "Back to In Person" : "Switch to Online") +
-              '</button><button class="mini-btn danger" data-class-remove="' +
-              esc(e.classId) +
-              '" data-date="' +
-              esc(e.date) +
-              '" type="button">Remove This Class</button></div>'
+                  classData +
+                  (e.online ? "Back to In Person" : "Switch to Online") +
+                  '</button><button class="mini-btn danger" data-class-remove="' +
+                  esc(e.classId) +
+                  classData +
+                  "Remove This Class</button>",
+              ) +
+              "</div>"
             );
-          if (e.itemId)
-            return (
-              '<div class="day-card-actions">' +
-              (isWork(e)
-                ? '<button class="mini-btn" data-assignment-edit="' +
-                  esc(e.itemId) +
-                  '" type="button">Edit</button><button class="mini-btn" data-assignment-toggle="' +
-                  esc(e.itemId) +
-                  '" type="button">' +
-                  (e.submitted ? "Mark Not Submitted" : "Mark Submitted") +
-                  "</button>"
-                : "") +
+          }
+          if (e.itemId) {
+            var deleteItem =
               '<button class="mini-btn danger" data-item-delete="' +
               esc(e.itemId) +
               '" type="button">Delete ' +
               (isWork(e) ? workNoun(e) : "Event") +
-              "</button></div>"
+              "</button>";
+            return (
+              '<div class="day-card-actions">' +
+              '<button class="mini-btn" data-item-edit="' +
+              esc(e.itemId) +
+              '" type="button">Edit</button>' +
+              (isWork(e)
+                ? '<button class="mini-btn" data-assignment-toggle="' +
+                  esc(e.itemId) +
+                  '" type="button">' +
+                  (e.submitted ? "Mark Not Submitted" : "Mark Submitted") +
+                  "</button>" +
+                  actionMenuHtml(deleteItem)
+                : deleteItem) +
+              "</div>"
             );
+          }
           return "";
         }
+        var openActionMenu = null;
+        function closeActionMenu() {
+          if (!openActionMenu) return;
+          openActionMenu.button.setAttribute("aria-expanded", "false");
+          openActionMenu.menu.remove();
+          openActionMenu = null;
+        }
+        function toggleActionMenu(button) {
+          var same = openActionMenu && openActionMenu.button === button;
+          closeActionMenu();
+          if (same) return;
+          var menu = document.createElement("div");
+          menu.className = "action-menu";
+          menu.setAttribute("role", "menu");
+          menu.innerHTML = button.nextElementSibling.innerHTML;
+          document.body.appendChild(menu);
+          bindEventActions(menu);
+          menu.querySelectorAll("button, a").forEach(function (x) {
+            x.setAttribute("role", "menuitem");
+            x.addEventListener("click", closeActionMenu);
+          });
+          var r = button.getBoundingClientRect(),
+            w = menu.offsetWidth,
+            h = menu.offsetHeight,
+            top = r.bottom + 6;
+          if (top + h > window.innerHeight - 8) top = r.top - h - 6;
+          menu.style.top = Math.max(8, top) + "px";
+          menu.style.left =
+            Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) +
+            "px";
+          button.setAttribute("aria-expanded", "true");
+          openActionMenu = { button: button, menu: menu };
+          var first = menu.querySelector("button, a");
+          if (first) first.focus();
+        }
+        document.addEventListener("click", function (ev) {
+          if (
+            openActionMenu &&
+            !openActionMenu.menu.contains(ev.target) &&
+            !openActionMenu.button.contains(ev.target)
+          )
+            closeActionMenu();
+        });
+        document.addEventListener("keydown", function (ev) {
+          if (ev.key === "Escape" && openActionMenu) {
+            var b = openActionMenu.button;
+            closeActionMenu();
+            b.focus();
+          }
+        });
+        window.addEventListener("resize", closeActionMenu);
+        document.addEventListener(
+          "scroll",
+          function (ev) {
+            if (openActionMenu && !openActionMenu.menu.contains(ev.target))
+              closeActionMenu();
+          },
+          true,
+        );
         function eventTitleHtml(e) {
           return e.onlineLink
             ? '<a href="' +
@@ -11023,6 +11154,37 @@
           $("event-editor-title").textContent = "Edit " + workNoun(item);
           $("save-event-btn").textContent = "Update " + workNoun(item);
         }
+        function openItemEditor(id) {
+          var item = items.find(function (entry) {
+            return entry.id === id;
+          });
+          if (!item) {
+            toast("Could not find that event");
+            return;
+          }
+          if (isWork(item)) {
+            openAssignmentEditor(id);
+            return;
+          }
+          openEventEditor(item.date);
+          editingEventId = id;
+          var kind = $("event-edit-kind");
+          kind.value = item.kind || "personal";
+          if (!kind.value) kind.value = "personal";
+          kind.dispatchEvent(new Event("change"));
+          $("event-edit-title").value = item.title || "";
+          setDatePickerValue("event-edit-date", item.date || todayKey());
+          setDatePickerValue(
+            "event-edit-end-date",
+            item.endDate || item.date || todayKey(),
+          );
+          $("event-edit-all-day").checked = !item.start && !item.end;
+          syncAllDay("event-edit");
+          $("event-edit-start").value = item.start || "";
+          $("event-edit-end").value = item.end || "";
+          $("event-edit-location").value = item.location || "";
+          $("assignment-edit-course").value = item.course || "";
+        }
         function closeEventEditor() {
           $("event-editor").classList.remove("open");
           $("event-editor").setAttribute("aria-hidden", "true");
@@ -11060,19 +11222,34 @@
             });
             return;
           }
+          var noun = isWork(data) ? workNoun(data) : "Event";
           if (!data.title || !data.date) {
-            toast("Add an assignment title and date");
+            toast("Add a title and date");
             return;
           }
           if (data.endDate < data.date) {
-            toast("Due date cannot be before the available date");
+            toast(
+              isWork(data)
+                ? "Due date cannot be before the available date"
+                : "End date cannot be before start date",
+            );
+            return;
+          }
+          if (
+            !isWork(data) &&
+            data.start &&
+            data.end &&
+            data.end <= data.start &&
+            data.date === data.endDate
+          ) {
+            toast("End time must be after start time");
             return;
           }
           var item = items.find(function (entry) {
             return entry.id === editingEventId;
           });
           if (!item) {
-            toast("Could not find that assignment");
+            toast("Could not find that " + noun.toLowerCase());
             return;
           }
           Object.assign(item, data);
@@ -11083,7 +11260,7 @@
               new CustomEvent("shoug:calendar-reminders-changed"),
             );
             closeEventEditor();
-            toast(workNoun(item) + " updated");
+            toast(noun + " updated");
           });
         }
         function exportDateBounds() {
