@@ -58,7 +58,7 @@ ANN = {
              notes=['SQA audits for compliance with the defined process and escalates noncompliance to senior management.']),
     14: dict(kind='section'),
     15: dict(refs=['As simple as possible but no simpler'], notes=['Think small: tight requirements, one milestone at a time, increments.']),
-    16: dict(drop_body=True, fig=fig('process-spectrum.png', 'Process spectrum from chaos to bureaucracy; balance is crucial', 'Too much medicine can kill the patient. Balance is crucial.'),
+    16: dict(drop_body=True, fig=fig('process-spectrum.png', 'Process spectrum from chaos to bureaucracy; balance is crucial'),
              notes=['Too little process = chaos; too much = bureaucracy. Balance (tailoring again).'], seen=[see('ch1.3', 4, 'Tailoring')]),
     17: dict(hl=['Learn to say “No”', 'Analysis Paralysis'], refs=['process avoidance'],
              notes=['Say no politely (“phase 2”).', 'Analysis paralysis = over-process; paralysis paranoia = avoiding process out of fear.']),
