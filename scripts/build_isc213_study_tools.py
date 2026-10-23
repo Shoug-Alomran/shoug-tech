@@ -483,7 +483,7 @@ def build_lecture_5_9_exams():
     # Midterm 2 takes each in-scope lecture's leading spread: ten MCQs, three written.
     mcq = [q for n in C.MIDTERM_2_SCOPE for q in C.LECTURE_MCQ[n][:10]]
     written = [q for n in C.MIDTERM_2_SCOPE for q in C.LECTURE_WRITTEN[n][:3]]
-    build_exam(exam_meta('Midterm 2', 'Lectures 5–8', mcq, written), mcq, written,
+    build_exam(exam_meta('Midterm 2', 'Lectures 5–9', mcq, written), mcq, written,
                'exams/04-midterm-2/midterm-2.html')
 
 

@@ -1388,7 +1388,7 @@ FINAL_EXTRA_WRITTEN = [
 # --------------------------------------------------------------------------- #
 # Lectures 5–9 — one bank per lecture
 # --------------------------------------------------------------------------- #
-# Midterm 2 covers Lectures 5–8 (Lecture 9 is not on it). Each bank lists its
+# Midterm 2 covers Lectures 5–9. Each bank lists its
 # spread first: the midterm takes the first ten MCQs and first three written
 # questions of every lecture in scope.
 
@@ -2026,4 +2026,4 @@ def _spread(bank):
 
 LECTURE_MCQ = {n: _spread(bank) for n, bank in LECTURE_MCQ.items()}
 
-MIDTERM_2_SCOPE = range(5, 9)
+MIDTERM_2_SCOPE = range(5, 10)
