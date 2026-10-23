@@ -41,6 +41,7 @@
     "calendarClassSchedules",
     "calendarClassAttendance",
     "calendarClassOverrides",
+    "calendarTodos",
     "calendarPsuAcademicVersion",
   ];
   var privateReady = {};
