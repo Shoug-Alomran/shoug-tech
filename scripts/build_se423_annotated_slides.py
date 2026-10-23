@@ -23,13 +23,15 @@ import subprocess
 import sys
 import tempfile
 
-from PIL import Image
+import pdfplumber
+from PIL import Image, ImageOps
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, 'scripts'))
 
 import build_academic_sidebar as sidebar  # noqa: E402
 from se423_annotated.common import DECKS, PAPERS  # noqa: E402
+from se423_annotated import pdftext  # noqa: E402
 
 COURSE = os.path.join(REPO, 'docs', 'academics', 'software-engineering', 'se423')
 BASE = '/academics/software-engineering/se423/'
@@ -38,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -89,7 +91,7 @@ def render_lines(lines, start=1):
             out.append('</li></%s>' % stack.pop()[0])
 
     for raw in lines:
-        m = re.match(r'^(-{1,3}|#{1,2}) (.*)$', raw)
+        m = re.match(r'^(-{1,4}|#{1,2}) (.*)$', raw)
         if not m or m.group(1) == '##':
             close_deeper(0)
             out.append('<h3>%s</h3>' % rich(m.group(2)) if m else '<p>%s</p>' % rich(raw))
@@ -125,14 +127,44 @@ def card_points(points):
 # figures
 # --------------------------------------------------------------------------- #
 
+def deck_pdf(key):
+    folder = os.path.join(COURSE, 'slides', DECKS[key][2])
+    return next(os.path.join(folder, f) for f in sorted(os.listdir(folder)) if f.endswith('.pdf'))
+
+
+def auto_box(pdf, page, mode):
+    """Region to crop: the slide's body images ('auto'), the area under the title ('body') or the whole page ('page')."""
+    with pdfplumber.open(pdf) as doc:
+        p = doc.pages[page - 1]
+        if mode == 'auto':
+            boxes = [(i['x0'], i['top'], i['x1'], i['bottom']) for i in p.images
+                     if i['x1'] - i['x0'] > 25 and i['bottom'] - i['top'] > 18 and i['top'] > 50 and i['bottom'] < 430]
+            if boxes:
+                return (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+        if mode == 'page':
+            return (4, 4, float(p.width) - 4, float(p.height) - 4)
+        return (8, 80, float(p.width) - 8, float(p.height) - 24)
+
+
+def trim(img, pad=10):
+    """Cut the white margin around a crop."""
+    grey = img.convert('L').point(lambda v: 255 if v > 244 else 0)
+    box = ImageOps.invert(grey).getbbox()
+    if not box:
+        return img
+    x0, y0, x1, y1 = box
+    return img.crop((max(0, x0 - pad), max(0, y0 - pad), min(img.width, x1 + pad), min(img.height, y1 + pad)))
+
+
 def crop_figures(deck, mod, out_dir):
-    folder = os.path.join(COURSE, 'slides', DECKS[deck['key']][2])
-    pdf = next(os.path.join(folder, f) for f in os.listdir(folder) if f.endswith('.pdf'))
+    pdf = deck_pdf(deck['key'])
     os.makedirs(out_dir, exist_ok=True)
     dpi = 220
     k = dpi / 72
-    for name, (page, (x0, y0, x1, y1)) in getattr(mod, 'CROPS', {}).items():
+    for name, (page, box) in getattr(mod, 'CROPS', {}).items():
         target = os.path.join(out_dir, name.rsplit('.', 1)[0] + '.webp')
+        mode = box if isinstance(box, str) else None
+        x0, y0, x1, y1 = auto_box(pdf, page, mode) if mode else box
         with tempfile.TemporaryDirectory() as tmp:
             stem = os.path.join(tmp, 'crop')
             subprocess.run(['pdftoppm', '-r', str(dpi), '-f', str(page), '-l', str(page), '-singlefile', '-png',
@@ -140,6 +172,8 @@ def crop_figures(deck, mod, out_dir):
                             '-W', str(int((x1 - x0) * k)), '-H', str(int((y1 - y0) * k)), pdf, stem],
                            check=True, stderr=subprocess.DEVNULL)
             img = Image.open(stem + '.png').convert('RGB')
+            if mode:
+                img = trim(img)
             img.save(target, 'WEBP', quality=86, method=6)
 
 
@@ -210,10 +244,13 @@ def render_slide(deck, s, mod):
             inner.append('<div class="slide-cols">%s</div>' % ''.join(cols))
         elif s['body']:
             inner.append('<div class="slide-text">%s</div>' % render_lines(s['body']))
-        if s['fig']:
-            inner.append(figure_html(s['fig'], slug))
+        figs = s['fig'] if isinstance(s['fig'], list) else [s['fig']] if s['fig'] else []
+        if len(figs) > 1:
+            inner.append('<div class="fig-stack">%s</div>' % ''.join(figure_html(f, slug) for f in figs))
+        elif figs:
+            inner.append(figure_html(figs[0], slug))
         if s['chart']:
-            inner.append(chart_svg(mod.CHARTS[s['chart']]))
+            inner.append(chart_svg(getattr(mod, 'CHARTS', {})[s['chart']]))
         has_text = bool(s['card'] or s['cols'] or s['body'])
         has_fig = bool(s['fig'] or s['chart'])
         cls = 'slide-body' + (' has-fig' if has_text and has_fig else '') + (' fig-only' if has_fig and not has_text else '')
@@ -289,8 +326,59 @@ def render_slide(deck, s, mod):
                '<div class="extras">%s</div>' % ''.join(extras) if extras else ''))
 
 
+MARK_WRAP = {'pm': '{{%s}}', 'pmc': '{(%s)}', 'hl': '==%s==', 'ul': '__%s__', 'circ': '((%s))'}
+
+
+def overlay(lines, ann, n):
+    """Apply an annotation's phrase marks and note anchors to the slide's text lines."""
+    lines = list(lines)
+
+    def place(phrase, fmt):
+        for i, line in enumerate(lines):
+            bare = line.replace('**', '')
+            if phrase in line:
+                lines[i] = line.replace(phrase, fmt % phrase, 1)
+                return
+            if phrase in bare and '**' in line:
+                lines[i] = bare.replace(phrase, fmt % phrase, 1)
+                return
+        raise ValueError('slide %d: phrase not found: %r' % (n, phrase))
+    for i, phrase in enumerate(ann.get('refs', ()), 1):
+        if phrase is not None:
+            place(phrase, '%s^' + str(i))
+    for key, fmt in MARK_WRAP.items():
+        for phrase in ann.get(key, ()):
+            place(phrase, fmt)
+    return lines
+
+
+def deck_slides(mod):
+    """Slides for a deck: hand-written (SLIDES) or the PDF's own text plus annotations (ANN)."""
+    if hasattr(mod, 'SLIDES'):
+        return mod.SLIDES
+    from se423_annotated.common import slide as make
+    pages = pdftext.read_deck(deck_pdf(mod.DECK['key']))
+    out = []
+    for p in pages:
+        ann = mod.ANN.get(p['n'], {})
+        if ann.get('skip'):
+            continue
+        kind = ann.get('kind', p['kind'])
+        body = ann['body'] if 'body' in ann else ([] if ann.get('drop_body') else p['body'])
+        if 'body' not in ann:
+            body = overlay(body, ann, p['n'])
+        elif ann.get('refs') or any(k in ann for k in MARK_WRAP):
+            body = overlay(body, ann, p['n'])
+        weight = ann.get('weight', 2 if ann.get('exam') or ann.get('past') else 1)
+        out.append(make(p['n'], ann.get('title', p['title']), body, kind=kind, sub=ann.get('sub'), cols=ann.get('cols'),
+                        card=ann.get('card'), fig=ann.get('fig'), chart=ann.get('chart'), notes=ann.get('notes', ()),
+                        prof=ann.get('prof', ()), tips=ann.get('tips', ()), seen=ann.get('seen', ()),
+                        exam=ann.get('exam', ()), past=ann.get('past', ()), weight=weight))
+    return out
+
+
 def deck_page(deck, mod):
-    slides = mod.SLIDES
+    slides = deck_slides(mod)
     n_q = sum(len(s['exam']) for s in slides)
     n_past = sum(1 for s in slides if any(not p['related'] for p in s['past']))
     n_rel = sum(1 for s in slides if s['past']) - n_past
