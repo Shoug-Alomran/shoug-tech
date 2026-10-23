@@ -12,12 +12,14 @@
   var SECTION_ORDER = [
     "slide-breakdowns",
     "slides",
+    "annotated-slides",
     "extra-resources",
     "exams",
   ];
   var SECTION_LABELS = {
     "slide-breakdowns": "Slide breakdowns",
     slides: "Slide decks",
+    "annotated-slides": "Annotated slides",
     "extra-resources": "Study material",
     exams: "Practice exams",
   };
