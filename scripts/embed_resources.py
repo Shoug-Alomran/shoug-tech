@@ -357,7 +357,7 @@ def viewer_html(url, ctx, item_label, title, trail, pdf_src, back_url):
     page = re.sub(r'<h1 class="ch-title">.*?</h1>',
                   lambda _m: '<h1 class="ch-title">%s</h1>' % html.escape(title, quote=False),
                   page, count=1, flags=re.S)
-    page = re.sub(r'<a class="btn btn-secondary" href="[^"]*"',
+    page = re.sub(r'<a\s+class="btn btn-secondary"\s+href="[^"]*"',
                   lambda _m: '<a class="btn btn-secondary" href="%s"' % back_url, page, count=1)
     page = re.sub(r'<div class="nav-strip">.*?</div>',
                   lambda _m: '<div class="nav-strip">\n                '
