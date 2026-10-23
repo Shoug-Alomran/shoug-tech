@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach', 'ch05_risk_management']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
