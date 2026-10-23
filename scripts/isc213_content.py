@@ -765,6 +765,139 @@ MINDMAP = [
         ]),
         ('Full comparison', 'Commercial is individual and profit-facing; collaborative is shared and solidarity-facing.', []),
     ]),
+    ('Lecture 5 — Securities &amp; the Stock Market', 'The instruments, then the venue. “Own it or be owed.”', [
+        ('Security', 'A financial instrument representing ownership or a credit, issued by companies or governments as shares or bonds, traded on the bourse.', [
+            ('What it is', 'A financial instrument — a document with monetary value.', []),
+            ('What it represents', 'An ownership position or a credit (a debt owed to you).', []),
+            ('Who issues it', 'Companies or governments.', []),
+            ('Where it trades', 'The stock market — the "bourse".', []),
+        ]),
+        ('Two types', '"Title = Take part, Debt = Deliver back."', [
+            ('Title deeds — shares (E.V.D.)', 'Equal parts of capital, Voting rights, Dividends. The holder is a part-owner.', []),
+            ('Debt deeds — bonds', 'A promise from a bank or company to pay a specific amount on a certain date, in exchange for interest. Usually issued because a company needs a loan to expand.', []),
+            ('Common mistake', 'Dividends belong to shares; interest belongs to bonds. Never swap them.', []),
+        ]),
+        ('Regular market', 'A place or system where buyers and sellers exchange goods, services or financial instruments. Free contact → one uniform price.', []),
+        ('Origin of "bourse"', 'Inn → Purse → Bourse.', [
+            ('1285 · Bruges, Belgium', 'Robert van der Buerze founds the inn Huis Ter Beurze, a meeting place for merchants.', []),
+            ('The "Beurze Purse"', "The managers' financial advice to traders gives the word bourse; the building becomes a commodities-only trading hub and the name spreads.", []),
+            ('18th century · Paris', 'The Paris Bourse speeds up the growth of modern European stock markets.', []),
+        ]),
+        ('Stock exchange', 'A marketplace where securities are bought and sold by brokers and dealers.', [
+            ('Broker vs. dealer', 'Broker = on Behalf of a client. Dealer = Does it for their own account.', []),
+            ('What it does', 'A trading platform; price discovery and liquidity; rules to keep trading fair. E.g. NYSE, LSE.', []),
+            ('The "seat"', 'Traders once bought a seat to trade; now mostly electronic, though some memberships can still be leased.', []),
+            ('What trades (S.B.C.F.)', 'Stocks, Bonds, Commodities (via futures), Foreign exchange (usually a separate market).', []),
+        ]),
+        ('Regular vs. stock market (M.L.I.R.)', 'In a bourse, everything is one step further from the actual goods.', [
+            ('Meeting', 'Face to face vs. sometimes through brokers and intermediaries.', []),
+            ('Location', 'Goods in front of the dealers vs. kept in warehouses or private banks.', []),
+            ('Inspection', 'Priced and delivered after the buyer checks vs. no inspection before the deal.', []),
+            ('Reality', 'Real buying and selling vs. can be speculation without paying the price or delivering the goods.', []),
+        ]),
+    ]),
+    ('Lecture 6 — Shares', 'A share is a deed of ownership, not a loan — owners share profit and loss.', [
+        ('Definition', 'Deeds representing equal, indivisible, tradable units of ownership in a company’s capital. Ownership can be public (exchange-traded) or private.', []),
+        ('Four characteristics (E.I.T.N.)', 'Equal in value, Indivisible against the company, Tradable, Nominal value set by law within limits. Bonds share the same four.', []),
+        ('Four values (N.I.R.M.)', 'Printed → offered → worth → traded.', [
+            ('Nominal (par)', 'Face value printed on the deed; fixed.', []),
+            ('Issue', 'The price offered to the public in an IPO or new issue.', []),
+            ('Real', 'Assets minus liabilities; moves with profitability.', []),
+            ('Market', 'Current exchange price; moves with supply, demand, speculation and conditions.', []),
+        ]),
+        ('By rights', 'Ordinary vs. preferred.', [
+            ('Ordinary shares — eight rights', 'Stay → Vote → Earn → Sell → Watch → Sue → Buy first → Collect at liquidation.', []),
+            ('Preferred shares — forbidden', 'Fixed profit regardless of result, full value back on liquidation, extra votes. Haram: the fixed return is riba, and unequal treatment is unjust.', []),
+        ]),
+        ('By recouping', 'Capital vs. enjoyment.', [
+            ('Capital shares', 'Nominal value never repaid while the company operates.', []),
+            ('Enjoyment shares — forbidden', 'Repaid early by annual lottery (e.g. oil drilling). Once repaid the holder is no longer a partner, so further profit is unjust; the lottery adds gharar.', []),
+        ]),
+        ('By nature', 'In-kind (for non-cash assets) vs. cash (the most common).', []),
+        ('Permissible dealing', '"Halal, Clean, Clear, Not-P, Not-E."', [
+            ('Halal activity', 'Core business is lawful — not alcohol or usurious banks.', []),
+            ('Clean of riba', 'No riba even in some of its transactions.', []),
+            ('Clear company', 'Known, transparent, financially sound.', []),
+            ('Not preferred, not enjoyment', 'Fixed profit is riba; enjoyment shares leave no partnership and add lottery gharar.', []),
+        ]),
+        ('Trading rules', 'No buying with an interest-bearing loan; no short selling. Shares may be sold, transferred or mortgaged, and paid in installments.', []),
+        ('Zakat on shares', 'Hold → the company pays (as Saudi companies do). Trade → you pay on market value once a lunar year.', []),
+    ]),
+    ('Lecture 7 — Bonds (Debentures)', 'Same traits as shares, opposite substance — debt, not ownership.', [
+        ('Definition', 'Transferable deeds issued by companies or governments representing long-term loans for incremental revenue, usually sold by public subscription.', [
+            ('Four characteristics (E.N.T.I.)', 'Equal, Nominal value, Transferable, Indivisible against the company.', []),
+        ]),
+        ('Investment certificates', 'Three types — all pay interest on a loan.', [
+            ('a. Increasing nature', 'Held up to ten years, accumulating principal plus interest.', []),
+            ('b. Current yield', 'A specified annual interest.', []),
+            ('c. Increasing value with lottery draws', 'Interest plus prize draws — an "encouragement to save".', []),
+        ]),
+        ('Treasury bills', 'Government, about Three months, sold by Tenders, Top liquidity but scant revenue — the best-seller for commercial banks.', []),
+        ('Loan bonds', 'Negotiable, equal-value certificates for amounts lent to the company long-term, repaid with interest.', [
+            ('a. Ordinary', 'Paid at face value; face value returned at maturity.', []),
+            ('b. Redeemable with an issue premium', 'Pay 900 for a 1,000 bond; interest is on the 1,000 and the 100 is paid back at maturity.', []),
+            ('c. Guaranteed', 'Backed by a personal guarantee (government or bank) or a real one (a mortgage).', []),
+        ]),
+        ('Bonds vs. shares', '"Debt, Fixed, Silent, First."', [
+            ('Debt', 'A debt on the company vs. a portion of the capital.', []),
+            ('Fixed', 'Fixed return in profit or loss vs. nothing without profit.', []),
+            ('Silent', 'No assembly, vote or control vs. full shareholder rights.', []),
+            ('First', 'Repaid first at dissolution vs. paid after all debts.', []),
+        ]),
+        ('Ruling — prohibited', 'Based on riba. Hadith of Jabir (Muslim): the one who takes it, pays it, records it and the two witnesses — "they are all the same."', []),
+        ('Legitimate alternatives', '', [
+            ('Company in deficit', 'Equity — issue new shares, joint ventures and partnerships.', []),
+            ('Government in deficit', '"Loan, Zakat, Give, Tax": good loans without riba, advancing zakat (al-Abbas), voluntary donations, exceptional taxes.', []),
+        ]),
+    ]),
+    ('Lecture 8 — Lease Ending with Ownership', 'Calling a sale a lease — and the four conditions that fix it.', [
+        ('Leasing (ijarah)', 'A contract transferring a known benefit of an asset for a specified period for an agreed rent. Lessor = Owner; lessee = tenant.', [
+            ('Evidence', 'Hadith qudsi (Bukhari): Allah is against one who hires a worker, takes full work and does not pay him.', []),
+        ]),
+        ('Rights and obligations', '', [
+            ('Owner (lessor)', 'Deliver usable; bear ownership risk and structural repairs; reclaim at the end.', []),
+            ('Tenant (lessee)', 'Pay rent on schedule; ordinary maintenance; return at the end.', []),
+        ]),
+        ('How it works', 'Bank leases a car or house at above-market rent, promising to transfer ownership by a second contract once all installments are paid.', []),
+        ('Vs. installment sale', 'Same goal and payments; installment sale = one contract, owned on day one. Ownership-lease = two contracts, owned on the last day.', []),
+        ('Vs. standard lease', 'Eventual ownership and two contracts vs. temporary use and one contract.', []),
+        ('Ruling — common form not allowed', '"Overpay, Unclear, Unfair."', [
+            ('Overpay', 'Inflated "rent" that is really purchase price; lost with the asset on early end.', []),
+            ('Unclear', 'Neither sale nor lease; pushing structural repairs onto the tenant makes an invalid hybrid.', []),
+            ('Unfair', 'On default, keeping purchase-level payments as rent is exploitation.', []),
+        ]),
+        ('Four conditions to permit', '"Period, Price, Pass, No down payment."', [
+            ('Period', 'Lease period specified; lease rules apply throughout.', []),
+            ('Price', 'Each installment fixed — no increase for late payment.', []),
+            ('Pass', 'Ownership passes at the end as a gift or a nominal-price sale, per the earlier promise.', []),
+            ('No down payment', 'So the tenant loses nothing if they cannot finish.', []),
+        ]),
+    ]),
+    ('Lecture 9 — Murabaha (Cost-Plus Financing)', 'One promise and two contracts — Promise, Purchase, Profit.', [
+        ('Sale contract', 'Transferring full ownership for money. Permissible: "Allah has permitted trade and forbidden interest" (2:275); option to cancel before separating (Bukhari, Muslim).', []),
+        ('Seven conditions of sale', '"Can Legal Owners Deliver Known Items Now?"', [
+            ('Consent', 'Mutual agreement.', []),
+            ('Legal capacity', 'Mature and of sound mind.', []),
+            ('Legal permissibility', 'The item has lawful value.', []),
+            ('Ownership', 'The seller owns the goods at contract time — the condition Murabaha turns on.', []),
+            ('Deliverability', 'Can be delivered physically or legally.', []),
+            ('Knowledge', 'Goods and price clearly specified.', []),
+            ('Now', 'Takes effect immediately.', []),
+        ]),
+        ('Direct installment sale', 'Markup for deferred payment (50,000 cash → 60,000 deferred). Permissible if the price is fixed — it may not grow on late payment.', []),
+        ('Murabaha', 'Cost-plus sale with cost and markup disclosed. Originally two parties; today three — customer, bank, original seller.', [
+            ('1 · The promise', 'Customer promises to buy. Not binding before the first contract; the bank takes no money ("don\'t sell what you don\'t have"). Binding once the bank buys.', []),
+            ('2 · First contract', 'Bank buys from the seller and must fully own the item before the second contract.', []),
+            ('3 · Second contract', '"Agree, Bundle, Freeze, Avoid, Secure."', [
+                ('Agree', 'Cash or deferred agreed; price specified.', []),
+                ('Bundle', 'Profit is part of the price, not separate interest.', []),
+                ('Freeze', 'No increase for late payment.', []),
+                ('Avoid', 'Not hand-to-hand usurious items like gold or dates.', []),
+                ('Secure', 'The bank may take a guarantee or mortgage.', []),
+            ]),
+        ]),
+        ('Installment sale vs. Murabaha', 'Two parties, one sale, cost not disclosed vs. three parties, a promise plus two sales, cost disclosed. Both fix the price.', []),
+    ]),
 ]
 
 # --------------------------------------------------------------------------- #

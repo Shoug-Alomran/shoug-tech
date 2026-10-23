@@ -388,8 +388,8 @@ def build_overview():
 
 def build_mindmap_directory():
     section = 'extra-resources/03-mindmap'
-    SECTIONS[section] = [(f'0{n}-lecture-{n}', f'Lecture {n} Mindmap', f'خريطة المحاضرة {n}') for n in range(1, 5)]
-    EMBED[section] = {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 5)}
+    SECTIONS[section] = [(f'0{n}-lecture-{n}', f'Lecture {n} Mindmap', f'خريطة المحاضرة {n}') for n in range(1, 10)]
+    EMBED[section] = {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 10)}
     with open(os.path.join(DST, 'extra-resources/index.html'), encoding='utf-8') as fh:
         page = fh.read()
     page = re.sub(r'<a href="[^"]*" class="dir-row">.*?</a>\s*', '', page, flags=re.S)
