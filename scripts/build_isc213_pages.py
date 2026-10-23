@@ -52,6 +52,10 @@ SECTIONS = {
     'exams': [
         *[(f'lesson-{n}', f'Lecture {n} Comprehensive Exam', f'اختبار شامل للمحاضرة {n}') for n in range(1, 5)],
         ('01-midterm-1', 'Midterm 1', 'الاختبار الفصلي الأول'),
+        ('02-midterm-1-comprehensive', 'Midterm 1 Comprehensive Exam', 'الاختبار الفصلي الأول الشامل'),
+        *[(f'lesson-{n}', f'Lecture {n} Comprehensive Exam', f'اختبار شامل للمحاضرة {n}') for n in range(5, 9)],
+        ('04-midterm-2', 'Midterm 2', 'الاختبار الفصلي الثاني'),
+        ('lesson-9', 'Lecture 9 Comprehensive Exam', 'اختبار شامل للمحاضرة 9'),
         ('03-final-exam', 'Final Exam', 'الاختبار النهائي'),
     ],
 }
@@ -66,7 +70,9 @@ EMBED = {
     },
     'exams': {
         '01-midterm-1': './midterm-1.html',
-        **{f'lesson-{n}': f'./lesson-{n}.html' for n in range(1, 5)},
+        '02-midterm-1-comprehensive': './midterm-1-comprehensive.html',
+        '04-midterm-2': './midterm-2.html',
+        **{f'lesson-{n}': f'./lesson-{n}.html' for n in range(1, 10)},
         '03-final-exam': './final-exam.html',
     },
 }
@@ -198,10 +204,13 @@ EXAM_GROUP_CSS = '        .dir-group {\n            font-family: var(--font-mono
 def dir_rows(section):
     rows = []
     for n, (slug, title, title_ar) in enumerate(SECTIONS[section], start=1):
-        if section == 'exams' and slug in ('lesson-1', '03-final-exam'):
-            en, ar = (('Midterm 1 scope — Lectures 1–4', 'نطاق الاختبار الفصلي الأول — المحاضرات 1–4')
-                      if slug == 'lesson-1' else
-                      ('Final exam scope — comprehensive review', 'نطاق الاختبار النهائي — مراجعة شاملة'))
+        groups = {
+            'lesson-1': ('Midterm 1 scope — Lectures 1–4', 'نطاق الاختبار الفصلي الأول — المحاضرات 1–4'),
+            'lesson-5': ('Midterm 2 scope — Lectures 5–8', 'نطاق الاختبار الفصلي الثاني — المحاضرات 5–8'),
+            'lesson-9': ('Final exam scope — comprehensive review', 'نطاق الاختبار النهائي — مراجعة شاملة'),
+        }
+        if section == 'exams' and slug in groups:
+            en, ar = groups[slug]
             rows.append(f'                <div class="dir-group" data-en-text="{en}" data-ar-text="{ar}">{en}</div>')
         attrs = f' data-en-text="{title}" data-ar-text="{title_ar}"' if title_ar else ''
         title_html = f'<div class="dir-title"{attrs}>{title}</div>'
