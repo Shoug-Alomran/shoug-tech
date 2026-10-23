@@ -472,7 +472,22 @@ def main():
     final_mcq = (C.EXAM_1_MCQ[::2] + C.EXAM_2_MCQ[::2] + C.FINAL_EXTRA_MCQ)
     final_written = (C.EXAM_1_WRITTEN[::3] + C.EXAM_2_WRITTEN[::3] + C.FINAL_EXTRA_WRITTEN)
     build_exam(C.FINAL_META, final_mcq, final_written, 'exams/03-final-exam/final-exam.html')
+    build_lecture_5_9_exams()
+
+
+def build_lecture_5_9_exams():
+    for n in C.LECTURE_MCQ:
+        mcq, written = C.LECTURE_MCQ[n], C.LECTURE_WRITTEN[n]
+        build_exam(exam_meta(f'Lecture {n} Comprehensive Exam', f'Lecture {n}', mcq, written),
+                   mcq, written, f'exams/lesson-{n}/lesson-{n}.html')
+    # Midterm 2 takes each in-scope lecture's leading spread: ten MCQs, three written.
+    mcq = [q for n in C.MIDTERM_2_SCOPE for q in C.LECTURE_MCQ[n][:10]]
+    written = [q for n in C.MIDTERM_2_SCOPE for q in C.LECTURE_WRITTEN[n][:3]]
+    build_exam(exam_meta('Midterm 2', 'Lectures 5–8', mcq, written), mcq, written,
+               'exams/04-midterm-2/midterm-2.html')
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    # --lectures-5-9 rebuilds only those exams; the older pages carry later hand edits.
+    build_lecture_5_9_exams() if '--lectures-5-9' in sys.argv else main()
