@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the ISC213 standalone study pages.
 
-Emits the midterm cheat sheet, four lesson mindmaps, and six practice exams into
+Emits the midterm cheat sheet, nine lesson mindmaps, and six practice exams into
 docs/academics/other-courses/isc213/. Each page is a single self-contained file
 in the same visual language as the lecture slide-breakdowns, sharing
 docs/styles/isc213.css so the course reads as one design.
@@ -457,8 +457,9 @@ def write(rel, page):
 def main():
     build_cheat_sheet(C.CHEAT_META, C.CHEAT_SECTIONS, C.CHEAT_FLASH,
                       'extra-resources/01-cheat-sheet/cheat-sheet.html')
-    for n in range(1, 5):
+    for n in range(1, len(C.MINDMAP) + 1):
         build_mindmap(n, f'extra-resources/03-mindmap/0{n}-lecture-{n}/lecture-{n}.html')
+    for n in range(1, 5):
         mcq, written = lesson_questions(n)
         build_exam(exam_meta(f'Lecture {n} Comprehensive Exam', f'Lecture {n}', mcq, written),
                    mcq, written, f'exams/lesson-{n}/lesson-{n}.html')
