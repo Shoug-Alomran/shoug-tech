@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach', 'ch05_risk_management', 'ch06_estimation']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach', 'ch05_risk_management', 'ch06_estimation', 'ch06_2_scheduling']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -172,8 +172,19 @@ def crop_figures(deck, mod, out_dir):
     os.makedirs(out_dir, exist_ok=True)
     dpi = 220
     k = dpi / 72
+    cache_file = os.path.join(tempfile.gettempdir(), 'se423-annotated-crops.json')
+    try:
+        with open(cache_file) as fh:
+            cache = json.load(fh)
+    except (OSError, ValueError):
+        cache = {}
     for name, (page, box) in getattr(mod, 'CROPS', {}).items():
         target = os.path.join(out_dir, name.rsplit('.', 1)[0] + '.webp')
+        # Re-rendering every crop is slow; skip ones whose spec is unchanged since the last run.
+        spec = json.dumps([pdf, os.path.getmtime(pdf), page, box])
+        if os.path.exists(target) and cache.get(target) == spec:
+            continue
+        cache[target] = spec
         mode = box if isinstance(box, str) else None
         x0, y0, x1, y1 = auto_box(pdf, page, mode) if mode else box
         with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +197,8 @@ def crop_figures(deck, mod, out_dir):
             if mode:
                 img = trim(img)
             img.save(target, 'WEBP', quality=86, method=6)
+    with open(cache_file, 'w') as fh:
+        json.dump(cache, fh)
 
 
 def figure_html(fig, slug):
