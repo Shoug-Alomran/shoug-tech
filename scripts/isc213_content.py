@@ -1384,3 +1384,646 @@ FINAL_EXTRA_WRITTEN = [
      payout — more than paid in is ribā al-fadl, exactly what was paid is ribā al-nasī'ah, and nothing paid
      means the company took the money illegitimately.</p>'''),
 ]
+
+# --------------------------------------------------------------------------- #
+# Lectures 5–9 — one bank per lecture
+# --------------------------------------------------------------------------- #
+# Midterm 2 covers Lectures 5–8 (Lecture 9 is not on it). Each bank lists its
+# spread first: the midterm takes the first ten MCQs and first three written
+# questions of every lecture in scope.
+
+LECTURE_MCQ = {
+    5: [
+        ("Which is the lecture's definition of a security?",
+         "L5 · Block 1",
+         ["A loan contract between a bank and a single borrower",
+          "A financial instrument representing an ownership position or a credit, issued by companies or governments as shares or bonds and traded on the bourse",
+          "Any physical commodity traded through a futures contract",
+          "A government guarantee attached to a company's debts"], 1,
+         "Four working parts: a financial instrument, representing ownership or a credit, issued by companies or governments, traded on the bourse."),
+        ("A shareholder and a bondholder stand in which positions towards the issuer?",
+         "L5 · Block 2",
+         ["Both are creditors", "Both are part-owners",
+          "The shareholder is a part-owner; the bondholder is a creditor",
+          "The shareholder is a creditor; the bondholder is a part-owner"], 2,
+         "“Title = Take part, Debt = Deliver back.” A title deed is ownership; a debt deed is a loan the issuer must repay."),
+        ("Which of these is NOT one of the three facts the slide gives about shares (E.V.D.)?",
+         "L5 · Block 3",
+         ["Equal parts of the company's capital", "Voting rights on company matters",
+          "Receiving dividends", "A specific amount paid on a certain date plus interest"], 3,
+         "A fixed amount on a set date plus interest describes a bond. Shares are Equal parts, Voting, Dividends."),
+        ("Why is a bond usually issued?",
+         "L5 · Block 4",
+         ["To divide the capital into equal parts",
+          "Because the company needs a loan to expand its business",
+          "To give the public voting rights",
+          "To distribute surplus profits to owners"], 1,
+         "A bond is the company borrowing; dividing capital into equal parts is what shares do."),
+        ("In a regular market, why do prices of the same goods tend to become uniform?",
+         "L5 · Block 5",
+         ["The government fixes every price",
+          "Buyers and sellers deal with each other freely, so nobody can charge much more than the next seller",
+          "Brokers set a single price each morning",
+          "Goods are kept in one central warehouse"], 1,
+         "“Free contact → one price.”"),
+        ("Where does the word “bourse” come from?",
+         "L5 · Block 6",
+         ["The Paris Bourse, founded in 1285",
+          "An inn in Bruges, Belgium — Huis Ter Beurze, founded in 1285 by Robert van der Buerze",
+          "The London Stock Exchange in the 18th century",
+          "A Latin word for a trading floor"], 1,
+         "Inn → Purse → Bourse. Bruges gives the name; Paris (18th century) drives modern European growth. Don't swap the cities."),
+        ("What is the difference between a broker and a dealer?",
+         "L5 · Block 7",
+         ["A broker trades for their own account; a dealer trades for clients",
+          "A broker trades for a client; a dealer trades for their own account",
+          "Brokers trade only bonds; dealers trade only shares",
+          "There is no difference — the words are synonyms"], 1,
+         "Broker = on Behalf of someone else. Dealer = Does it for themselves."),
+        ("How are commodities such as gold or oil traded on an exchange?",
+         "L5 · Block 8",
+         ["Through futures contracts", "Only by physical delivery on the trading floor",
+          "Through a separate foreign-exchange market", "They are never traded on an exchange"], 0,
+         "S.B.C.F. — the catch is that commodities trade via futures, and forex usually lives in its own market."),
+        ("Which difference between a regular market and a bourse do exam questions lean on most?",
+         "L5 · Block 9",
+         ["The bourse is always closed on weekends",
+          "Deals in the bourse can be speculation on price differences without paying the price or delivering the goods",
+          "The bourse only sells goods in front of the dealers",
+          "Regular markets always use brokers"], 1,
+         "The slide says “can be”, not “always” — real purchases still happen on an exchange too."),
+        ("In a stock market, where are the goods being traded usually kept?",
+         "L5 · Block 9",
+         ["Right in front of the dealers", "In warehouses or private banks",
+          "With the buyer before the deal", "Nowhere — goods are never involved"], 1,
+         "M.L.I.R. — Location: in a regular market the goods are present; in a bourse they are stored elsewhere."),
+        ("Traditionally, what did a trader have to buy to become a member of an exchange?",
+         "L5 · Block 7",
+         ["A licence from the central bank", "A “seat”", "A share in every listed company", "A bond issued by the exchange"], 1,
+         "Leasing seats is less common now because most trading is electronic, though some exchanges still lease memberships or access rights."),
+        ("Which pair of words must never be swapped in an answer about securities?",
+         "L5 · Block 4",
+         ["Broker and dealer only", "Dividends (shares) and interest (bonds)",
+          "Bruges and Belgium", "Issuer and company"], 1,
+         "Shareholders get dividends as owners; bondholders get a fixed amount plus interest as lenders."),
+    ],
+    6: [
+        ("What is a share, in one idea?",
+         "L6 · Block 1",
+         ["A loan the company must repay with interest",
+          "A deed of ownership in a company's capital, so the owner shares in profit and loss",
+          "A government guarantee of the company's debts",
+          "A promise to deliver goods at a future date"], 1,
+         "Hold that one idea and every ruling in the lecture follows from it."),
+        ("“Indivisible against the company” means:",
+         "L6 · Block 2",
+         ["A share can never be sold",
+          "If several people share one share, only one of them represents them before the company",
+          "The company can never issue new shares",
+          "Shares cannot be inherited"], 1,
+         "E.I.T.N. — Equal, Indivisible, Tradable, Nominal value. Bonds carry the same four traits."),
+        ("Which value of a share is printed on the deed and does not change?",
+         "L6 · Block 3",
+         ["Market value", "Real value", "Nominal (par) value", "Issue value"], 2,
+         "N.I.R.M.: Nominal is printed, Issue is offered, Real is worth, Market is traded."),
+        ("A share's real value is calculated from:",
+         "L6 · Block 3",
+         ["Supply and demand on the exchange", "Assets minus liabilities",
+          "The IPO price", "The legal minimum set by law"], 1,
+         "Real value comes from the balance sheet; market value comes from the exchange. Both move, for different reasons."),
+        ("Which of these is NOT a right of an ordinary shareholder?",
+         "L6 · Block 4",
+         ["Voting in the general assembly, one vote per share",
+          "Priority in subscription when new shares are issued",
+          "A fixed profit whether the company makes a profit or a loss",
+          "Suing board members for liability over their errors"], 2,
+         "A fixed profit regardless of the result is a feature of preferred shares — and it is exactly why they are forbidden."),
+        ("What is the first reason the lecture gives for forbidding preferred shares?",
+         "L6 · Block 5",
+         ["They give extra votes", "A fixed profit regardless of profit or loss is riba",
+          "They cannot be traded", "They are issued only to foreigners"], 1,
+         "Riba is the first reason; treating shareholders unequally, against the justice Islam requires, is the second."),
+        ("Why are enjoyment shares not permissible?",
+         "L6 · Block 6",
+         ["Because they are issued for non-cash assets",
+          "Once the holder recovers the share's value they are no longer a partner, so further profit is illegitimate — and the lottery adds gharar",
+          "Because they carry no voting rights at all",
+          "Because they can only be held by the government"], 1,
+         "Consuming others' wealth unjustly, plus the uncertainty of choosing who is repaid by lottery."),
+        ("A company's core business is halal, but it takes interest-bearing loans in some of its transactions. Is dealing in its shares permissible under the lecture's conditions?",
+         "L6 · Block 8",
+         ["Yes, because the core business is halal",
+          "No — the company must not deal in riba, even in some of its transactions",
+          "Yes, as long as the shares are ordinary",
+          "Only if the shares are bought in installments"], 1,
+         "“Halal, Clean, Clear, Not-P, Not-E.” Halal activity alone is not enough; the company must also be clean of riba."),
+        ("Which of these is permissible when trading shares?",
+         "L6 · Block 9",
+         ["Buying shares with an interest-bearing loan", "Short selling",
+          "Paying for a share in installments over time", "Selling a share you do not yet own"], 2,
+         "Installments are allowed. What is forbidden is borrowing with interest to buy, and selling what you don't own."),
+        ("A long-term investor holds shares in a Saudi company for its dividends. How is zakat paid?",
+         "L6 · Block 10",
+         ["The investor pays on market value every month",
+          "No zakat is due directly from the shareholder, provided the company pays zakat on its shareholders' behalf",
+          "Zakat is never due on shares",
+          "The investor pays on nominal value once a lunar year"], 1,
+         "Hold → the company pays. Trade → you pay on market value once a lunar year."),
+        ("Enjoyment shares are typically found in which kind of company?",
+         "L6 · Block 6",
+         ["Banks", "Petroleum drilling and other depleting businesses",
+          "Retail chains", "Insurance companies"], 1,
+         "A depleting business may not have enough left at closure, so it refunds shares annually, chosen by lottery."),
+        ("In-kind shares are issued in exchange for:",
+         "L6 · Block 7",
+         ["Cash", "Non-cash assets such as property, equipment or intellectual property",
+          "A promise to pay later", "Government bonds"], 1,
+         "Cash shares are the most common; in-kind shares are paid for with assets. Both are permissible."),
+    ],
+    7: [
+        ("Which is the lecture's definition of bonds?",
+         "L7 · Block 1",
+         ["Deeds representing equal units of ownership in a company's capital",
+          "Transferable deeds issued by companies or governments representing long-term loans for incremental financial revenue, usually sold by public subscription",
+          "Short-term promises to deliver commodities",
+          "Certificates of ownership in a cooperative fund"], 1,
+         "Same four traits as shares (E.N.T.I.) — but the substance is the opposite: debt, not ownership."),
+        ("Investment certificates “with increasing value and lottery draws” are:",
+         "L7 · Block 2",
+         ["A permissible product because the prize replaces interest",
+          "Still interest on a loan, with a lottery added on top",
+          "A form of shares",
+          "A government gift with no return"], 1,
+         "Every one of the three types still pays interest on a loan; type c simply adds prize draws."),
+        ("Which describes treasury bills?",
+         "L7 · Block 3",
+         ["Issued by companies for ten years with high revenue",
+          "Issued by the government, usually for three months, sold by tenders, with very high liquidity but scant revenue",
+          "Issued by banks to shareholders as dividends",
+          "Issued only to foreign governments"], 1,
+         "T-bills = Three months, Tenders, Top liquidity — the best-seller for commercial banks despite the low yield."),
+        ("A holder pays 900 SAR for a 1,000 SAR bond redeemable with an issue premium. On what is interest calculated?",
+         "L7 · Block 5",
+         ["On the 900 paid", "On the 1,000 nominal value",
+          "On the 100 difference only", "No interest is paid on this type"], 1,
+         "The holder gains twice: interest on money never paid, plus the 100 SAR premium returned at maturity."),
+        ("A guaranteed bond with a “real” guarantee is backed by:",
+         "L7 · Block 5",
+         ["The government's promise", "A bank's personal guarantee",
+          "A mortgage on the company's real estate", "The shareholders' dividends"], 2,
+         "Personal guarantee = government or bank; real guarantee = a mortgage."),
+        ("When a company is dissolved, who is repaid first?",
+         "L7 · Block 6",
+         ["Shareholders", "Bondholders", "Preferred and ordinary shareholders equally", "Board members"], 1,
+         "“Debt, Fixed, Silent, First.” Shareholders get nothing until bonds and debts are paid."),
+        ("What rights does a bondholder have in the company's general assembly?",
+         "L7 · Block 6",
+         ["One vote per bond", "Attendance but no vote",
+          "None — no assembly, no vote, no control", "The same rights as shareholders"], 2,
+         "The bondholder is Silent in the company."),
+        ("According to the hadith of Jabir in Sahih Muslim, who is cursed in a riba transaction?",
+         "L7 · Block 7",
+         ["Only the one who takes it",
+          "The one who takes it and the one who pays it only",
+          "The one who takes it, the one who pays it, the one who records it and the two witnesses",
+          "Only the bank"], 2,
+         "“They are all the same.” Four are named, not just the lender."),
+        ("What is the legitimate alternative for a company in deficit?",
+         "L7 · Block 8",
+         ["Issue more bonds at a lower rate", "Raise equity — issue new shares, or form joint ventures and partnerships",
+          "Take treasury bills", "Advance the zakat of its shareholders"], 1,
+         "For companies, one answer: shares, not bonds."),
+        ("The Prophet ﷺ taking the zakat of his uncle Al-Abbas two years in advance supports which government alternative?",
+         "L7 · Block 8",
+         ["Exceptional taxes", "Voluntary donations", "Advancing zakat collection", "Good loans without riba"], 2,
+         "“Loan, Zakat, Give, Tax” — a good Loan, early Zakat, public Giving, exceptional Tax."),
+        ("Which investment certificate keeps the money with the bank for up to ten years, accumulating an ascending increase on principal and interest?",
+         "L7 · Block 2",
+         ["Current yield", "Increasing nature", "Increasing value with lottery draws", "Treasury bill"], 1,
+         "Type b (current yield) pays a specified annual interest instead."),
+        ("What is the ruling on bonds, and why?",
+         "L7 · Block 7",
+         ["Permissible, because they are transferable",
+          "Prohibited, because they are based on riba",
+          "Permissible if issued by the government",
+          "Disliked but not prohibited"], 1,
+         "Riba is forbidden by the Quran and the Sunnah; the evidence given is the hadith of Jabir in Sahih Muslim."),
+    ],
+    8: [
+        ("In leasing (ijarah), what is actually transferred to the lessee?",
+         "L8 · Block 1",
+         ["Ownership of the asset", "A known benefit or usability of the asset for a specified period",
+          "The right to sell the asset", "The asset's structural repairs"], 1,
+         "The benefit is sold, not the asset, for a specified period and an agreed rent."),
+        ("Which party is the lessor?",
+         "L8 · Block 1",
+         ["The tenant", "The owner", "The bank's guarantor", "The witness to the contract"], 1,
+         "Lessor = the Owner (both have an “o”); lessee = the user, the tenant."),
+        ("The hadith qudsi used as evidence for leasing condemns:",
+         "L8 · Block 2",
+         ["One who leases a house above market rent",
+          "One who hires a workman, takes full work from him and does not pay his wages",
+          "One who repairs a rented asset without permission",
+          "One who returns a leased asset late"], 1,
+         "Sahih al-Bukhari. Hiring is a recognised contract, and withholding the agreed payment is a grave sin."),
+        ("Who bears ownership risk and structural repairs in a lease?",
+         "L8 · Block 3",
+         ["The tenant", "The owner", "They split it equally", "Whoever the contract names"], 1,
+         "The tenant only does ordinary maintenance. Pushing major repairs onto the tenant is one reason the ownership-lease fails."),
+        ("In a lease ending with ownership as banks usually offer it, the “rent” is typically:",
+         "L8 · Block 4",
+         ["Below market rent", "Equal to market rent", "Above standard market rent", "Zero until the end of the term"], 2,
+         "The payments really include the buyer's equity — that is the first problem (Overpay)."),
+        ("What is the key difference between an installment sale and a lease ending with ownership?",
+         "L8 · Block 5",
+         ["Only the installment sale aims at ownership",
+          "Installment sale: one contract, owned on day one. Ownership-lease: two contracts, owned on the last day",
+          "Only the ownership-lease is paid over time",
+          "There is no difference"], 1,
+         "Same goal, same payments, different timing of ownership."),
+        ("How many contracts does a standard lease involve, compared with a lease ending with ownership?",
+         "L8 · Block 6",
+         ["One vs. two", "Two vs. one", "Two vs. three", "One vs. one"], 0,
+         "The ownership-lease adds a final transfer contract; the standard lease is a tenancy for the whole term."),
+        ("What is the core problem with the commonly practised lease ending with ownership?",
+         "L8 · Block 7",
+         ["It is paid in installments",
+          "A contradiction between its name and its reality — it is called a lease but is really a sale",
+          "The bank owns the asset during the term",
+          "It is only offered for cars"], 1,
+         "“Overpay, Unclear, Unfair” — all three come from calling a sale a lease."),
+        ("Which is NOT one of the four conditions that make a leasing-based sale permissible?",
+         "L8 · Block 8",
+         ["The lease period is specified", "Each installment is fixed, with no increase for delay",
+          "A down payment is taken at the start to secure the bank",
+          "Ownership passes at the end by gift or a nominal-price sale"], 2,
+         "The fourth condition is the opposite: NO down payment, so the tenant loses nothing if they can't finish."),
+        ("Under the permissible form, how does ownership pass to the tenant at the end?",
+         "L8 · Block 8",
+         ["Automatically with the last rent payment, inside the lease",
+          "As a gift, or by sale at a nominal price, according to the earlier promise",
+          "By a court order", "Only if the tenant pays the full market price again"], 1,
+         "“Period, Price, Pass, No down payment.”"),
+        ("A client defaults in the final year of a common ownership-lease and loses both the payments and the car. Which problem does this illustrate?",
+         "L8 · Block 7",
+         ["Overpay", "Unclear", "Unfair — keeping purchase-level payments as rent is exploitation", "None — this is permitted"], 2,
+         "They paid purchase-level amounts without receiving ownership."),
+        ("Which of these is a tenant's obligation in an ordinary lease?",
+         "L8 · Block 3",
+         ["Bear ownership risk", "Carry out structural repairs",
+          "Pay the agreed rent on schedule and maintain the asset properly", "Reclaim the asset at the end"], 2,
+         "Tenant: pay, maintain, return. Owner: deliver usable, bear risk and structural repairs, reclaim."),
+    ],
+    9: [
+        ("What is the evidence from the Quran that sale is permissible?",
+         "L9 · Block 1",
+         ["“Allah has permitted trade and has forbidden interest” (al-Baqarah 2:275)",
+          "“Do not consume one another's wealth unjustly”",
+          "“Cooperate in righteousness and piety”",
+          "“Fulfil the contracts”"], 0,
+         "The second piece of evidence is the hadith on the option to cancel before the parties separate."),
+        ("According to the hadith in Bukhari and Muslim, until when may both parties annul a sale?",
+         "L9 · Block 1",
+         ["For three days after the contract", "As long as they have not separated, or if it is a sale with an option to cancel",
+          "Until the goods are delivered", "Never — a sale is binding on offer"], 1,
+         "Sahih al-Bukhari 2112 / Sahih Muslim 1531."),
+        ("Which of the seven conditions of sale does the whole Murabaha section turn on?",
+         "L9 · Block 2",
+         ["Mutual consent", "Legal capacity", "Ownership — the seller owns the goods at the time of the contract", "Deliverability"], 2,
+         "A bank that sells before it owns breaks condition 4 — that is why the bank must buy first."),
+        ("“The goods and the price are clearly specified — type, quantity, weight or description” is which condition?",
+         "L9 · Block 2",
+         ["Knowledge", "Execution", "Legal permissibility", "Consent"], 0,
+         "“Can Legal Owners Deliver Known Items Now?” — Known is knowledge, to prevent dispute."),
+        ("An item sells for 50,000 riyals cash or 60,000 riyals over a year. What is the ruling?",
+         "L9 · Block 3",
+         ["Riba — any increase for time is forbidden",
+          "Permissible, on condition that the price is fixed and cannot grow if payment is late",
+          "Permissible only if paid in gold",
+          "Permissible only with three parties"], 1,
+         "The extra is part of a sale price fixed at the contract. It becomes riba only if the debt grows because of late payment."),
+        ("How many parties does Murabaha involve as Islamic banks practise it today?",
+         "L9 · Block 4",
+         ["Two — buyer and seller", "Three — customer, bank and original seller",
+          "Four — customer, bank, seller and guarantor", "One — the bank alone"], 1,
+         "Originally it was a simple two-party cost-plus trade."),
+        ("Before the bank's first contract, the customer's promise to buy is:",
+         "L9 · Block 5",
+         ["Legally binding, and the bank takes a deposit",
+          "Not legally binding, and the bank may not take any money from the customer",
+          "Void", "Binding only if written"], 1,
+         "“Don't sell what you don't have.” Breaking the promise could still be sinful if it harms a party."),
+        ("Once the bank has bought the commodity, what happens to the customer's promise?",
+         "L9 · Block 5",
+         ["It lapses", "It becomes binding — the customer buys or pays compensation",
+          "It turns into a lease", "The bank must refund the customer"], 1,
+         "Promise, Purchase, Profit — one promise and two contracts, always in that order."),
+        ("Which is a condition of Murabaha's second contract?",
+         "L9 · Block 7",
+         ["The profit is listed as interest separate from the base price",
+          "The price increases if payments are late",
+          "The goods are not items that must be exchanged hand-to-hand, like gold or dates",
+          "The bank may not take any guarantee"], 2,
+         "“Agree, Bundle, Freeze, Avoid, Secure.” The bank may take a guarantee or mortgage."),
+        ("What distinguishes Murabaha from a direct installment sale?",
+         "L9 · Block 9",
+         ["Only Murabaha fixes the price",
+          "Murabaha has three parties, a promise plus two sales, and the cost and markup are disclosed",
+          "Only the installment sale allows deferred payment",
+          "Murabaha allows the price to rise on late payment"], 1,
+         "Shared rule: the price is fixed at the contract in both."),
+        ("What must be checked before the bank signs the second contract with the customer?",
+         "L9 · Block 6",
+         ["That the customer has paid a deposit", "That the bank fully owns the commodity through its purchase order",
+          "That the seller has agreed to a lower price", "That the customer has a guarantor"], 1,
+         "The condition people forget in the first contract."),
+        ("“The contract takes effect immediately, without delay or suspension” is which condition of sale?",
+         "L9 · Block 2",
+         ["Deliverability", "Execution (Now)", "Ownership", "Mutual consent"], 1,
+         "N for Now closes the seven conditions."),
+    ],
+}
+
+LECTURE_WRITTEN = {
+    5: [
+        ("Define a security, break the definition into its four working parts, and explain the two types of security.",
+         "L5 · Blocks 1–4",
+         '''<p>A security is a financial instrument that represents an ownership position or a credit, issued by
+     companies or governments in the form of shares or bonds, and traded in the stock market (the bourse).</p>
+     <p><strong>What it is:</strong> a financial instrument — a document with monetary value. <strong>What it
+     represents:</strong> ownership or a credit (a debt owed to you). <strong>Who issues it:</strong> companies or
+     governments. <strong>Where it trades:</strong> the bourse.</p>
+     <p><strong>Title deeds (shares)</strong> represent equal parts of the company's capital; the holder is a
+     part-owner with voting rights who receives dividends. <strong>Debt deeds (bonds)</strong> are a promise from a
+     bank or company to pay a specific amount on a certain date in exchange for interest; the holder is a creditor,
+     and bonds are usually issued because the company needs a loan to expand. Dividends belong to shares and
+     interest to bonds — never swap them.</p>'''),
+        ("Explain the four differences between a regular market and a stock market.",
+         "L5 · Block 9",
+         '''<p><strong>1. Meeting:</strong> in a regular market the seller meets the buyer face to face; in a bourse deals
+     are sometimes done through brokers and intermediaries.</p>
+     <p><strong>2. Location:</strong> in a regular market the goods are in front of the dealers; in a bourse they are
+     kept elsewhere, in warehouses or private banks.</p>
+     <p><strong>3. Inspection:</strong> in a regular market delivery and pricing happen after the buyer checks the
+     goods; in a bourse there is no inspection before the deal.</p>
+     <p><strong>4. Reality:</strong> in a regular market buying and selling are real; in a bourse the deal can be
+     speculation on price differences without paying the price or delivering the goods — “can be”, not always.</p>
+     <p>In one line: in a bourse, everything is one step further from the actual goods (M.L.I.R.).</p>'''),
+        ("Define the stock exchange, distinguish a broker from a dealer, and list what the exchange does and what trades on it.",
+         "L5 · Blocks 7–8",
+         '''<p>A stock exchange is a marketplace where securities, such as stocks and bonds, are bought and sold by
+     brokers and dealers. A <strong>broker</strong> buys and sells for a client; a <strong>dealer</strong> buys and
+     sells for their own account.</p>
+     <p>The exchange gives investors a platform to trade, helps with price discovery and liquidity, and sets rules to
+     keep trading fair — for example the NYSE and the LSE. Traders traditionally bought a “seat” to become members;
+     this is less common now that trading is electronic, though some exchanges still lease memberships.</p>
+     <p>What trades (S.B.C.F.): <strong>stocks</strong> (ownership), <strong>bonds</strong> (debt securities),
+     <strong>commodities</strong> such as gold or oil, traded through futures contracts, and <strong>foreign
+     exchange</strong>, which usually happens in a separate market.</p>'''),
+        ("Trace the origin of the word “bourse”, with its two dates.",
+         "L5 · Block 6",
+         '''<p>In <strong>1285</strong> in Bruges, Belgium, Robert van der Buerze founded the inn Huis Ter Beurze, a
+     meeting place for European merchants and traders. Its managers gave financial advice to visiting traders, and
+     that service became the “Beurze Purse” — the root of the word bourse, meaning an organised trading venue.</p>
+     <p>The building became a place used only for trading commodities, the model spread to other cities, and many
+     exchanges adopted the name. In the <strong>18th century</strong> the founding of the Paris Bourse shaped and
+     sped up the growth of modern stock markets across Europe. Inn → Purse → Bourse; Bruges gives the name, Paris
+     drives the growth.</p>'''),
+        ("Define a regular market and explain why its prices become uniform.",
+         "L5 · Block 5",
+         '''<p>A regular market is a place or system where buyers and sellers interact to exchange goods, services or
+     financial instruments.</p>
+     <p>Because buyers and sellers deal with each other freely, the prices of the same goods tend to become uniform
+     across the whole market, easily and quickly: when everyone can see and reach everyone else, nobody can charge
+     much more than the seller next door — “free contact → one price.”</p>'''),
+    ],
+    6: [
+        ("Explain what preferred shares and enjoyment shares are, and why each is forbidden.",
+         "L6 · Blocks 5–6",
+         '''<p><strong>Preferred shares</strong> give special rights to attract subscribers: a fixed profit whether the
+     company profits or loses, recouping the full share value on liquidation, and more than one vote. They may not
+     be issued: first, a fixed profit regardless of profit or loss is <strong>riba</strong> — it turns an owner into
+     a lender; second, treating shareholders unequally contradicts the <strong>justice</strong> Islam requires.</p>
+     <p><strong>Enjoyment shares</strong> have their nominal value repaid early, while the company still runs —
+     typical of depleting businesses such as petroleum drilling, which refund shares annually and choose them by
+     lottery. They are not permissible: once a holder recovers the value of their shares they are no longer a
+     partner in the capital or the work, so any further profit is illegitimate money; and the lottery adds
+     manipulation and uncertainty. Together: consuming others' wealth unjustly, plus <strong>gharar</strong>.</p>'''),
+        ("State the five conditions under which dealing in shares is permissible, with the reason for each.",
+         "L6 · Block 8",
+         '''<p><strong>1. Halal activity:</strong> the company's objectives and core business are lawful — shares in a
+     company making alcohol or running usurious banks are impermissible, because its profits are unlawful and buying
+     in is partnering in sin.</p>
+     <p><strong>2. Clean of riba:</strong> the company does not deal in riba, even in some of its transactions.</p>
+     <p><strong>3. Clear company:</strong> it is known and transparent, with clear integrity and financial health.</p>
+     <p><strong>4. Not preferred shares:</strong> fixed profit is riba and unequal treatment is unjust.</p>
+     <p><strong>5. Not enjoyment shares:</strong> no partnership is left after repayment, and the lottery adds
+     gharar.</p>
+     <p>Mnemonic: “Halal, Clean, Clear, Not-P, Not-E.”</p>'''),
+        ("Explain the four values of a share and say which of them change, and why.",
+         "L6 · Block 3",
+         '''<p><strong>Nominal (par) value:</strong> the face value printed on the deed, the legal minimum price at
+     which shares can be issued. It is fixed.</p>
+     <p><strong>Issue value:</strong> the price at which shares are offered to the public in an IPO or a new issue;
+     it is set at each issue.</p>
+     <p><strong>Real value:</strong> assets minus liabilities — the share's actual financial worth. It changes with
+     the company's profitability.</p>
+     <p><strong>Market value:</strong> the current trading price on the exchange. It changes with supply and demand,
+     speculation, and political and economic conditions.</p>
+     <p>Real value comes from the balance sheet, market value from the exchange (N.I.R.M.: printed → offered →
+     worth → traded).</p>'''),
+        ("Define a share and explain its four characteristics.",
+         "L6 · Blocks 1–2",
+         '''<p>Shares are deeds representing units of ownership in a company's capital. Each has an equal value, cannot
+     be split, can be traded, and proves ownership rights as a shareholder; ownership can be public (exchange-traded)
+     or private. A share is a deed of ownership, not a loan, so its owner shares in profit and loss.</p>
+     <p><strong>Equal in value:</strong> the capital is divided into equal parts. <strong>Indivisible against the
+     company:</strong> if several people share one share, only one of them represents them before the company.
+     <strong>Tradable:</strong> shares can be sold, bought or traded. <strong>Nominal value:</strong> a stated value
+     on the deed, set by law within a maximum or minimum limit (E.I.T.N.).</p>'''),
+        ("List the eight rights of an ordinary shareholder.",
+         "L6 · Block 4",
+         '''<p>Ordinary shares are equal in value and give every holder equal rights, in the order a shareholder would
+     use them:</p>
+     <p>(1) <strong>Remain</strong> in the company — no expulsion or forced taking of shares; (2) <strong>vote</strong>
+     in the general assembly, one vote per share; (3) <strong>receive dividends</strong>; (4) <strong>dispose</strong>
+     of shares by sale, gift and so on; (5) <strong>monitor</strong> the business through the balance sheet and
+     records; (6) <strong>sue</strong> board members for their errors; (7) <strong>priority in subscription</strong>
+     when new shares are issued; (8) <strong>recoup</strong> their share from what is left on liquidation.</p>
+     <p>Stay → Vote → Earn → Sell → Watch → Sue → Buy first → Collect at the end.</p>'''),
+        ("Give the rules for trading shares and explain how zakat is paid on them.",
+         "L6 · Blocks 9–10",
+         '''<p><strong>Trading rules:</strong> buying shares with an interest-bearing loan is strictly prohibited; short
+     selling — selling a share you do not yet own — is forbidden; shares are fully negotiable and may be sold,
+     transferred or used as collateral for a mortgage; and paying for a share in installments is permissible.</p>
+     <p><strong>Zakat:</strong> a long-term investor who holds for periodic dividends owes no zakat directly,
+     provided the company pays zakat on its shareholders' behalf, as companies in Saudi Arabia do. An active trader
+     values the whole portfolio at market value at the end of the lunar year and pays zakat on that value.</p>'''),
+    ],
+    7: [
+        ("Compare bonds and shares across the four differences the lecture gives.",
+         "L7 · Block 6",
+         '''<p><strong>1. What it is:</strong> a bond is a debt on the company; a share is a portion of the capital.</p>
+     <p><strong>2. Return:</strong> a bond earns a fixed profit whether the company is in profit or loss; a share
+     earns nothing if the company makes no profit.</p>
+     <p><strong>3. Rights:</strong> a bondholder has no general assembly, no vote and no control; a shareholder can
+     attend, vote, control and enjoy other privileges.</p>
+     <p><strong>4. At dissolution:</strong> bonds are repaid first; shares get nothing until bonds and debts are
+     paid.</p>
+     <p>“Debt, Fixed, Silent, First” — flip each word and you describe a shareholder.</p>'''),
+        ("State the ruling on bonds with its evidence, then give the legitimate alternatives for companies and for governments.",
+         "L7 · Blocks 7–8",
+         '''<p>Bonds are <strong>prohibited</strong> because they are based on riba, which the Quran and the Sunnah
+     forbid. Jabir reported in Sahih Muslim that the Messenger of Allah ﷺ cursed the one who accepts riba, the one
+     who gives it, the one who records it and its two witnesses, and said, “They are all the same.”</p>
+     <p><strong>A company in deficit</strong> should raise capital through equity — issuing new shares — or by forming
+     joint ventures and partnerships.</p>
+     <p><strong>A government in deficit</strong> may use good loans from individuals without riba; advance zakat
+     collection, as the Prophet ﷺ took the zakat of Al-Abbas two years in advance; encourage voluntary donations;
+     and impose exceptional taxes (“Loan, Zakat, Give, Tax”).</p>'''),
+        ("Name the three kinds of instrument bonds go by — investment certificates, treasury bills and loan bonds — and describe each.",
+         "L7 · Blocks 2–4",
+         '''<p><strong>Investment certificates</strong> come in three types: (a) increasing nature — money stays with the
+     bank for up to ten years, accumulating an increase on principal and interest; (b) current yield — a specified
+     annual interest; (c) increasing value with lottery draws — increasing interest plus prize draws, sold as an
+     “encouragement to save”. All three pay interest on a loan.</p>
+     <p><strong>Treasury bills</strong> are issued by the government for a short term, usually three months, sold by
+     tenders. They have very high liquidity but scant revenue, and are the best-seller for commercial banks.</p>
+     <p><strong>Loan bonds</strong> are negotiable, indivisible certificates of equal face value issued to subscribers
+     for amounts lent to the company as a long-term loan through public subscription, repaid with interest over a
+     specified period.</p>'''),
+        ("Explain the three types of corporate bond, including why the premium bond gains the holder twice.",
+         "L7 · Block 5",
+         '''<p><strong>Ordinary bond:</strong> paid at face value, interest on face value, face value returned at
+     maturity.</p>
+     <p><strong>Redeemable with an issue premium:</strong> the holder pays less than nominal — for example 900 SAR
+     for a 1,000 SAR bond — but interest is calculated on the 1,000 nominal value, and the 100 SAR difference is paid
+     back at maturity. So the holder gains twice: interest on money never paid, and the premium.</p>
+     <p><strong>Guaranteed bond:</strong> paid at face value and backed by a personal guarantee (a government or a
+     bank) or a real guarantee (a mortgage on the company's real estate).</p>'''),
+        ("Define bonds and explain how their characteristics compare with those of shares.",
+         "L7 · Block 1",
+         '''<p>Bonds are transferable deeds issued by companies or governments which represent long-term loans for
+     incremental financial revenue, usually allocated by public subscription.</p>
+     <p>They carry the same four characteristics as shares: equal in value, a nominal value, transferable, and
+     indivisible against the company (E.N.T.I.). The traits match, but the substance is the opposite: a bond is debt,
+     not ownership.</p>'''),
+    ],
+    8: [
+        ("Explain why the lease ending with ownership, as commonly practised, is not allowed.",
+         "L8 · Block 7",
+         '''<p>The core problem is a contradiction between its name and its reality: it is called a lease but intended
+     as a sale. Three problems follow (“Overpay, Unclear, Unfair”):</p>
+     <p><strong>Overpay:</strong> the payments are above market rent because they include the buyer's equity, yet
+     all of it is called rent; if the contract ends early, the client loses what they paid and the asset.</p>
+     <p><strong>Unclear:</strong> the contract cannot be classified as sale or lease, each with its own rules.
+     Structural repairs and ownership risk belong to the owner; making the tenant carry them turns it into an invalid
+     hybrid.</p>
+     <p><strong>Unfair:</strong> if the client defaults mid-term, keeping every earlier payment as “rent” is
+     exploitation — they paid purchase-level amounts without receiving ownership.</p>'''),
+        ("Give the four conditions under which a sale based on leasing can be permissible, and show which problem each one answers.",
+         "L8 · Block 8",
+         '''<p><strong>1. Period:</strong> the lease period is specified and the lease conditions apply throughout it —
+     this removes the sale-or-lease confusion, since it is a true lease until the end.</p>
+     <p><strong>2. Price:</strong> each installment is fixed, with no increase if payment is delayed.</p>
+     <p><strong>3. Pass:</strong> ownership passes at the end as a gift or by sale at a nominal price, according to
+     the earlier promise between owner and tenant — a separate transfer, not hidden inside the rent.</p>
+     <p><strong>4. No down payment:</strong> nothing is taken at the start, so the tenant does not lose it if they
+     cannot complete the payments — answering the unfair loss on default.</p>
+     <p>An exam answer should give both the reasons it fails and these conditions, not just “it is haram”.</p>'''),
+        ("Explain how a lease ending with ownership works, then compare it with an installment sale and with a standard lease.",
+         "L8 · Blocks 4–6",
+         '''<p>The bank leases an asset such as a car or house for a set period, at a rent that often exceeds market rent,
+     and promises to transfer ownership through a separate agreement once every installment is paid. The client is a
+     tenant throughout; the bank owns the asset until the end.</p>
+     <p><strong>Vs. installment sale:</strong> both aim at ownership and are paid in structured payments, but an
+     installment sale is one contract with ownership passing immediately, while the ownership-lease uses two
+     contracts with ownership on the last day.</p>
+     <p><strong>Vs. standard lease:</strong> the ownership-lease aims at eventual ownership with two contracts; a
+     standard lease gives temporary use only, the user stays a tenant for the whole term, and there is one
+     contract.</p>'''),
+        ("Define leasing (ijarah), give its evidence, and set out the rights and obligations of each party.",
+         "L8 · Blocks 1–3",
+         '''<p>Ijarah is a contract transferring a known benefit or usability of an asset for a specified period in
+     exchange for an agreed payment. The lessor (owner) grants the lessee (tenant) the right to use the asset; the
+     benefit is sold, not the asset.</p>
+     <p><strong>Evidence:</strong> the hadith qudsi in Sahih al-Bukhari in which Allah says He will be against three
+     on the Day of Resurrection — including one who hires a workman, takes full work from him and does not pay his
+     wages. Hiring is therefore a recognised contract, and withholding the payment a grave sin.</p>
+     <p><strong>Owner:</strong> deliver the asset in usable condition, bear ownership risk and structural repairs,
+     reclaim the asset at the end. <strong>Tenant:</strong> pay the rent on schedule, maintain the asset properly,
+     return it at the end.</p>'''),
+        ("A client in a common ownership-lease defaults in the last year. Analyse what happens under the common form and under the permissible form.",
+         "L8 · Blocks 7–8",
+         '''<p><strong>Common form:</strong> the bank keeps every earlier payment as rent and takes back the asset. The
+     client has paid above-market, purchase-level amounts — including their equity — and leaves with nothing. This
+     is the “Unfair” problem, and it shows the “Overpay” problem too.</p>
+     <p><strong>Permissible form:</strong> there was no down payment to lose, each installment was a fixed, genuine
+     rent for a specified period, and ownership was only ever to pass at the end by gift or nominal sale. So the
+     client has paid rent for the use they actually received, and the outcome is a fair lease rather than a lost
+     purchase.</p>'''),
+    ],
+    9: [
+        ("Explain Murabaha as practised by Islamic banks, element by element and in order.",
+         "L9 · Blocks 4–8",
+         '''<p>Murabaha is a cost-plus sale in which the seller fully discloses the original cost and the markup. Today
+     it involves three parties — customer, bank and original seller.</p>
+     <p><strong>1. The promise:</strong> the customer asks the bank to buy a specific item and promises to buy it.
+     Before the first contract it is not legally binding, and the bank may not take any money — “don't sell what you
+     don't have.”</p>
+     <p><strong>2. The first contract:</strong> the bank buys from the seller and must fully own the commodity
+     through its purchase order, checked before the second contract. The promise now binds: the customer buys or
+     pays compensation.</p>
+     <p><strong>3. The second contract:</strong> the bank sells to the customer at cost plus a disclosed, fixed
+     markup, paid in installments, with no increase for late payment. “Promise, Purchase, Profit” — swap the order
+     and the deal fails the ownership condition.</p>'''),
+        ("State the five conditions of Murabaha's second contract.",
+         "L9 · Block 7",
+         '''<p><strong>a. Agree:</strong> both parties agree on cash or deferred payment, and the price is specified.</p>
+     <p><strong>b. Bundle:</strong> the installment profit is part of the price, not listed as interest separate
+     from the base price.</p>
+     <p><strong>c. Freeze:</strong> if payment lags, the buyer pays nothing beyond the agreed installments.</p>
+     <p><strong>d. Avoid:</strong> the goods are not items that must be exchanged hand-to-hand, like gold or dates,
+     because Murabaha defers all or part of the price.</p>
+     <p><strong>e. Secure:</strong> the bank may protect its rights with a guarantee or a mortgage.</p>'''),
+        ("List the seven conditions of a sale and explain which one Murabaha turns on.",
+         "L9 · Blocks 1–2",
+         '''<p>(1) <strong>Mutual consent</strong>; (2) <strong>legal capacity</strong> — mature and of sound mind;
+     (3) <strong>legal permissibility</strong> — the item has recognised, lawful value; (4) <strong>ownership</strong>
+     — the seller owns the goods at the time of the contract; (5) <strong>deliverability</strong> — physically or
+     legally; (6) <strong>knowledge</strong> — goods and price clearly specified; (7) <strong>execution</strong> —
+     the contract takes effect immediately. “Can Legal Owners Deliver Known Items Now?”</p>
+     <p>Murabaha turns on <strong>ownership</strong>: a bank that sells before it owns breaks it, which is why the
+     bank must buy first and may take no money at the promise stage.</p>'''),
+        ("Define the direct installment sale, give its ruling and evidence, and explain when it would become riba.",
+         "L9 · Block 3",
+         '''<p>A direct installment sale is selling with a markup over the initial price in exchange for delayed payment
+     or payment in installments — for example 50,000 riyals cash or 60,000 riyals over a year.</p>
+     <p>It is <strong>permissible</strong> on condition that the price is fixed. The evidence is the hadith in Sahih
+     al-Bukhari: “Whoever pays in advance the price of a thing to be delivered should pay it for a specified measure
+     and a specified weight for a specified period.”</p>
+     <p>The extra is part of a sale price fixed at the contract; it becomes riba only if the debt grows because
+     payment is late.</p>'''),
+        ("Compare the direct installment sale with Murabaha.",
+         "L9 · Block 9",
+         '''<p><strong>Parties:</strong> two (seller and buyer) vs. three (customer, bank, original seller).</p>
+     <p><strong>Contracts:</strong> one sale vs. a promise plus two sales.</p>
+     <p><strong>Cost disclosed:</strong> not required vs. cost and markup disclosed.</p>
+     <p><strong>Shared rule:</strong> in both, the price is fixed at the contract and does not increase for late
+     payment.</p>'''),
+    ],
+}
+
+
+def _spread(bank):
+    """Rotate each question's options so the correct answer's position varies."""
+    out = []
+    for i, (q, src, opts, correct, why) in enumerate(bank):
+        k = (correct - i) % len(opts)
+        out.append((q, src, opts[k:] + opts[:k], (correct - k) % len(opts), why))
+    return out
+
+
+LECTURE_MCQ = {n: _spread(bank) for n, bank in LECTURE_MCQ.items()}
+
+MIDTERM_2_SCOPE = range(5, 9)
