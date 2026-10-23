@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach', 'ch05_risk_management', 'ch06_estimation', 'ch06_2_scheduling', 'ch07_quality', 'ch08_stakeholders']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team', 'ch04_development_approach', 'ch05_risk_management', 'ch06_estimation', 'ch06_2_scheduling', 'ch07_quality', 'ch08_stakeholders', 'ch09_change_management']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -394,12 +394,20 @@ def deck_slides(mod):
         for bad, good in list(getattr(mod, 'FIX', {}).items()) + list(ann.get('fix', {}).items()):
             body = [line.replace(bad, good) for line in body]
         body = [line for line in body if line.strip('*- ') not in ann.get('drop_lines', ())]
-        if 'body' not in ann:
+        cols = ann.get('cols')
+        if cols and 'body' not in ann:
+            # Columns replace the PDF text, so the marks go on the column lines instead.
+            marked = overlay([line for col in cols for line in col], ann, p['n'])
+            cols, i = [], 0
+            for col in ann['cols']:
+                cols.append(marked[i:i + len(col)])
+                i += len(col)
+        elif 'body' not in ann:
             body = overlay(body, ann, p['n'])
         elif ann.get('refs') or any(k in ann for k in MARK_WRAP):
             body = overlay(body, ann, p['n'])
         weight = ann.get('weight', 2 if ann.get('exam') or ann.get('past') else 1)
-        out.append(make(p['n'], ann.get('title', p['title']), body, kind=kind, sub=ann.get('sub'), cols=ann.get('cols'),
+        out.append(make(p['n'], ann.get('title', p['title']), body, kind=kind, sub=ann.get('sub'), cols=cols,
                         card=ann.get('card'), fig=ann.get('fig'), chart=ann.get('chart'), notes=ann.get('notes', ()),
                         prof=ann.get('prof', ()), tips=ann.get('tips', ()), seen=ann.get('seen', ()),
                         exam=ann.get('exam', ()), past=ann.get('past', ()), weight=weight))
