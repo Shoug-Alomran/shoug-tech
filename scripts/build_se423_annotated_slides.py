@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -182,8 +182,9 @@ def figure_html(fig, slug):
     src = 'figures/' + name.rsplit('.', 1)[0] + '.webp'
     path = os.path.join(COURSE, 'annotated-slides', slug, src)
     w, h = Image.open(path).size
-    return ('<figure class="slide-fig"><img src="%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">'
-            '<figcaption>%s</figcaption></figure>' % (src, e(alt), w, h, rich(cap)))
+    shape = ' tall' if h > w * 0.75 else ''
+    return ('<figure class="slide-fig%s"><img src="%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">'
+            '<figcaption>%s</figcaption></figure>' % (shape, src, e(alt), w, h, rich(cap)))
 
 
 def chart_svg(chart):
@@ -365,6 +366,9 @@ def deck_slides(mod):
             continue
         kind = ann.get('kind', p['kind'])
         body = ann['body'] if 'body' in ann else ([] if ann.get('drop_body') else p['body'])
+        for bad, good in ann.get('fix', {}).items():
+            body = [line.replace(bad, good) for line in body]
+        body = [line for line in body if line.strip('*- ') not in ann.get('drop_lines', ())]
         if 'body' not in ann:
             body = overlay(body, ann, p['n'])
         elif ann.get('refs') or any(k in ann for k in MARK_WRAP):
