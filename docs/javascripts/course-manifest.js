@@ -10431,6 +10431,15 @@ var COURSE_PAGES = [
     courseUrl: "/academics/software-engineering/se423/",
     courseTitle: "SE423 // Software Project Management",
   },
+  {
+    url: "/academics/software-engineering/se423/annotated-slides/01-introduction/",
+    title: "SE423 | Introduction - Chapter 1 (Annotated Slides)",
+    track: "software-engineering",
+    course: "se423",
+    section: "annotated-slides",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
 ];
 var COURSE_MANIFEST = {
   cs101: 8,
@@ -10460,7 +10469,7 @@ var COURSE_MANIFEST = {
   se365: 44,
   se371: 200,
   se401: 53,
-  se423: 60,
+  se423: 61,
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -10490,5 +10499,5 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 60,
+  "software-engineering/se423": 61,
 };
