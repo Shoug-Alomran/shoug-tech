@@ -15,8 +15,8 @@ DECK = {
 }
 
 
-def fig(name, alt, cap=''):
-    return (name, alt, cap)
+def fig(name, alt, cap='', big=False):
+    return (name, alt, cap, big)
 
 
 CROPS = {
@@ -123,7 +123,7 @@ ANN = {
              exam=[tf('Retrospectives are an opportunity to further tailor the process.', True, '')],
              weight=2),
     21: dict(title='Tailoring Suggestions by Situation', kind='content', drop_body=True,
-             fig=fig('tailoring-situations.png', 'Table: situation → tailoring suggestion (e.g. poor quality deliverables → add feedback and quality steps; long approval delays → streamline approvals)'),
+             fig=fig('tailoring-situations.png', 'Table: situation → tailoring suggestion (e.g. poor quality deliverables → add feedback and quality steps; long approval delays → streamline approvals)', '', True),
              notes=['Pattern: problem → add the missing control. Poor quality → more verification. Slow approvals → fewer approvers. Too much work in progress → value-stream mapping and kanban.'],
              exam=[scen('Your team keeps waiting days for approvals. What tailoring suggestion does the table give?',
                         'Streamline approval decisions: have fewer people authorized to decide, up to certain value thresholds.')]),
@@ -201,21 +201,21 @@ ANN = {
              past=[past('f251', 'Q3.2 · identify and prioritize stakeholders', related=True)],
              seen=[see('ch8', 30, 'Stakeholder mapping models')]),
     34: dict(title='Models by Performance Domain', kind='content', drop_body=True,
-             fig=fig('models-by-domain.png', 'Table mapping each model to the performance domains it supports'), notes=[TABLE_NOTE]),
+             fig=fig('models-by-domain.png', 'Table mapping each model to the performance domains it supports', '', True), notes=[TABLE_NOTE]),
     35: dict(hl=['Data gathering and analysis', 'Estimating', 'Meetings and events'], refs=['Other methods'],
              notes=['Method families: data gathering and analysis, estimating, meetings and events, other.'],
              seen=[see('ch6', 8, 'Estimation methods')]),
     36: dict(title='Methods by Performance Domain (1)', kind='content', drop_body=True,
-             fig=fig('methods-by-domain-1.png', 'Table mapping data-gathering and analysis methods to performance domains'), notes=[TABLE_NOTE]),
+             fig=fig('methods-by-domain-1.png', 'Table mapping data-gathering and analysis methods to performance domains', '', True), notes=[TABLE_NOTE]),
     37: dict(title='Methods by Performance Domain (2)', kind='content', drop_body=True,
-             fig=fig('methods-by-domain-2.png', 'Table mapping estimating, meeting and other methods to performance domains'), notes=[TABLE_NOTE]),
+             fig=fig('methods-by-domain-2.png', 'Table mapping estimating, meeting and other methods to performance domains', '', True), notes=[TABLE_NOTE]),
     38: dict(hl=['Strategy Artifacts', 'Logs and registers', 'Baselines'], refs=['Business Case)', 'communication logs)'],
              notes=['Strategy artifacts: strategic plan, vision and mission, roadmap, business case.', 'Logs and registers: issue log, risk register, communication log.'],
              exam=[mcq('A business case belongs to which artifact category?', ['Strategy artifacts', 'Logs and registers', 'Baselines', 'Reports'], 0, '')]),
     39: dict(title='Artifacts by Performance Domain (1)', kind='content', drop_body=True,
-             fig=fig('artifacts-by-domain-1.png', 'Table mapping strategy, log and plan artifacts to performance domains'), notes=[TABLE_NOTE]),
+             fig=fig('artifacts-by-domain-1.png', 'Table mapping strategy, log and plan artifacts to performance domains', '', True), notes=[TABLE_NOTE]),
     40: dict(title='Artifacts by Performance Domain (2)', kind='content', drop_body=True,
-             fig=fig('artifacts-by-domain-2.png', 'Table mapping hierarchy charts, baselines and visual artifacts to performance domains'), notes=[TABLE_NOTE]),
+             fig=fig('artifacts-by-domain-2.png', 'Table mapping hierarchy charts, baselines and visual artifacts to performance domains', '', True), notes=[TABLE_NOTE]),
     41: dict(title='Artifacts by Performance Domain (3)', kind='content', drop_body=True,
-             fig=fig('artifacts-by-domain-3.png', 'Table mapping reports, agreements and other artifacts to performance domains'), notes=[TABLE_NOTE]),
+             fig=fig('artifacts-by-domain-3.png', 'Table mapping reports, agreements and other artifacts to performance domains', '', True), notes=[TABLE_NOTE]),
 }

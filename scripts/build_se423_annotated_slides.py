@@ -40,7 +40,7 @@ SITE = 'https://shoug-tech.com'
 AR_LABEL = 'الشرائح المشروحة'
 
 # Decks with annotation content, in course order.
-BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context']
+BUILT = ['ch01_introduction', 'ch01_2_performance_domains', 'ch01_3_tailoring', 'ch02_organizational_context', 'ch03_team']
 
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
@@ -188,11 +188,12 @@ def crop_figures(deck, mod, out_dir):
 
 
 def figure_html(fig, slug):
-    name, alt, cap = fig
+    name, alt, cap = fig[:3]
+    big = len(fig) > 3 and fig[3]
     src = 'figures/' + name.rsplit('.', 1)[0] + '.webp'
     path = os.path.join(COURSE, 'annotated-slides', slug, src)
     w, h = Image.open(path).size
-    shape = ' tall' if h > w * 0.75 else ''
+    shape = ' tall' if big or h > w * 1.1 else ''
     return ('<figure class="slide-fig%s"><img src="%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">'
             '<figcaption>%s</figcaption></figure>' % (shape, src, e(alt), w, h, rich(cap)))
 
