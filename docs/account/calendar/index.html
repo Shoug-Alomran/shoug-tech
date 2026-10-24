@@ -1149,6 +1149,26 @@
         font-size: 0.86rem;
       }
 
+      .todo-plan-head {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 8px;
+        font:
+          800 0.7rem/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .todo-item.todo-plan {
+        grid-template-columns: auto minmax(0, 1fr);
+        border-left: 3px solid var(--green);
+      }
+
       .todo-done-toggle {
         margin-top: 8px;
         padding: 6px 0;
@@ -2299,6 +2319,7 @@
         border-left-color: #c084fc;
       }
 
+      .agenda-entry.submitted,
       .day-card.submitted,
       .timeline-event.submitted,
       .event.submitted {
@@ -3837,7 +3858,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
-    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261024a" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261025a" />
   </head>
 
   <body>
@@ -5555,6 +5576,7 @@
           todos = [],
           studyPlan = {},
           todoShowDone = false,
+          todoShowAllPlan = false,
           editingTodoId = "",
           classOverrides = [],
           examMap = {},
@@ -6943,7 +6965,7 @@
                 start: assignment ? "" : i.start || "",
                 end: assignment ? "" : i.end || "",
                 location: i.location || "",
-                submitted: Boolean(i.submitted),
+                submitted: Boolean(i.submitted || i.planDone),
                 urgency: assignment ? assignmentUrgencyClass(i) : "",
                 sort: assignment ? "00:01" : i.start || "99:99",
               });
@@ -9178,9 +9200,81 @@
             '" type="button">Remove</button></div></div>'
           );
         }
+        // Study plan sessions from two days ago (missed, still open) through
+        // the next week, listed under the to-dos so they can be ticked off.
+        function studyPlanSessions() {
+          var from = addDays(todayKey(), -2),
+            to = addDays(todayKey(), 6);
+          return items
+            .filter(function (i) {
+              return (
+                i.planSource === "study-plan" &&
+                i.date >= from &&
+                i.date <= to &&
+                (i.date >= todayKey() || !i.planDone)
+              );
+            })
+            .sort(function (a, b) {
+              return (a.date + (a.start || "")).localeCompare(
+                b.date + (b.start || ""),
+              );
+            });
+        }
+        function planSessionsHtml(list) {
+          if (!list.length) return "";
+          var today = todayKey(),
+            shown = todoShowAllPlan ? list : list.slice(0, 6);
+          return (
+            '<div class="todo-plan-head"><span>Study plan · next 7 days</span><button class="remove-btn edit" type="button" data-open-study-plan>Open study plan</button></div>' +
+            shown
+              .map(function (i) {
+                var when =
+                    i.date === today
+                      ? "Today"
+                      : i.date === addDays(today, 1)
+                        ? "Tomorrow"
+                        : fromKey(i.date).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          }),
+                  missed = !i.planDone && i.date < today;
+                return (
+                  '<div class="todo-item todo-plan' +
+                  (i.planDone ? " done" : "") +
+                  '"><input type="checkbox" data-plan-done="' +
+                  esc(i.id) +
+                  '" aria-label="Mark ' +
+                  esc(i.title) +
+                  (i.planDone ? ' not done"' : ' done"') +
+                  (i.planDone ? " checked" : "") +
+                  '><div><div class="item-title">' +
+                  esc(i.title) +
+                  '</div><div class="item-meta' +
+                  (missed ? " overdue" : i.date === today ? " soon" : "") +
+                  '">' +
+                  (missed ? "Missed · " : "") +
+                  esc(when) +
+                  (i.start ? " · " + esc(timeRange(i.start, i.end)) : "") +
+                  "</div></div></div>"
+                );
+              })
+              .join("") +
+            (list.length > 6
+              ? '<button class="todo-done-toggle" type="button" data-plan-more aria-expanded="' +
+                todoShowAllPlan +
+                '">' +
+                (todoShowAllPlan
+                  ? "Show fewer sessions"
+                  : "Show all " + list.length + " sessions this week") +
+                "</button>"
+              : "")
+          );
+        }
         function renderTodos() {
           var list = $("todo-list");
           if (!list) return;
+          var sessions = studyPlanSessions();
           var open = todos
               .filter(function (t) {
                 return !t.done;
@@ -9201,20 +9295,32 @@
             overdue = open.filter(function (t) {
               return t.due && t.due < todayKey();
             }).length;
-          $("todo-summary").textContent = todos.length
-            ? open.length +
-              " open" +
-              (overdue ? " · " + overdue + " overdue" : "") +
-              (done.length ? " · " + done.length + " done" : "")
-            : "Quick tasks that don't need a calendar slot";
+          var openSessions = sessions.filter(function (i) {
+            return !i.planDone;
+          }).length;
+          $("todo-summary").textContent =
+            todos.length || sessions.length
+              ? open.length +
+                " open" +
+                (overdue ? " · " + overdue + " overdue" : "") +
+                (done.length ? " · " + done.length + " done" : "") +
+                (openSessions
+                  ? " · " +
+                    openSessions +
+                    " study session" +
+                    (openSessions === 1 ? "" : "s") +
+                    " this week"
+                  : "")
+              : "Quick tasks that don't need a calendar slot";
           list.innerHTML =
-            (open.length
+            (open.length || sessions.length
               ? open.map(todoRowHtml).join("")
               : '<div class="empty">' +
                 (done.length
                   ? "All caught up."
                   : "Nothing yet. Add a task above.") +
                 "</div>") +
+            planSessionsHtml(sessions) +
             (done.length
               ? '<button class="todo-done-toggle" id="todo-done-toggle" type="button" aria-expanded="' +
                 todoShowDone +
@@ -9228,6 +9334,29 @@
                     '<button class="remove-btn" id="todo-clear-done" type="button">Clear completed</button>'
                   : "")
               : "");
+          list.querySelectorAll("[data-plan-done]").forEach(function (c) {
+            c.addEventListener("change", function () {
+              var it = items.find(function (x) {
+                return x.id === c.dataset.planDone;
+              });
+              if (!it) return;
+              it.planDone = c.checked;
+              persist().then(renderAll);
+            });
+          });
+          list.querySelectorAll("[data-plan-more]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              todoShowAllPlan = !todoShowAllPlan;
+              renderTodos();
+            });
+          });
+          list.querySelectorAll("[data-open-study-plan]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              showCalendarTab("study-plan");
+              var app = $("calendar-app");
+              if (app) app.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          });
           list.querySelectorAll("[data-todo-toggle]").forEach(function (c) {
             c.addEventListener("change", function () {
               updateTodo(c.dataset.todoToggle, {
@@ -12718,7 +12847,7 @@
       defer
     ></script>
     <script src="/javascripts/calendar-views.js?v=20261021b" defer></script>
-    <script src="/javascripts/study-plan.js?v=20261024a" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261025a" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=1" defer></script>
   </body>
