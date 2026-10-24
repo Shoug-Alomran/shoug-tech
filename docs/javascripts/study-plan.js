@@ -958,87 +958,91 @@
     function pct(v) {
       return Math.ceil(v) + "%";
     }
+    function mark(v) {
+      return String(Math.ceil(v * 10) / 10);
+    }
     function cls(v) {
       return v === null ? "" : v <= 0 ? "secured" : v > 100 ? "gone" : v >= 85 ? "hard" : v >= 70 ? "stretch" : "ok";
     }
-    var paceTxt = n.pace === null ? "" : Math.round(n.pace * 100) + "%",
-      reach = n.needs.filter(function (x) {
-        return x.avg !== null && x.avg <= 100;
-      }),
-      best = reach[0] || null,
-      secured = n.needs.filter(function (x) {
-        return x.avg !== null && x.avg <= 0;
-      })[0];
     if (n.remaining <= 0.05)
       return (
         '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">Everything in this course is graded: <b>' +
-        Math.round(n.weighted * 10) / 10 +
-        "%</b>.</p></div>"
+        mark(n.weighted) +
+        " / 100</b>.</p></div>"
       );
+    var cwLeft = Math.max(0, n.cwMax - n.cwUsed),
+      reach = n.needs.filter(function (x) {
+        return x.avg <= 100;
+      }),
+      best = reach[0] || null,
+      secured = n.needs.filter(function (x) {
+        return x.avg <= 0;
+      })[0];
+    // For each letter: the average needed on everything left, spent evenly
+    // across the coursework still to come and the final.
     var rows = n.needs
       .map(function (x) {
-        var fp = x.finalMarks === null ? null : (x.finalMarks / n.fw) * 100;
+        var r = Math.max(0, x.avg / 100),
+          cwTarget = n.cwComplete ? n.cw : n.cw + r * cwLeft,
+          finalTarget = n.cwComplete ? x.finalMarks : r * n.fw,
+          c = cls(x.avg),
+          cwCell,
+          finalCell;
+        if (x.avg > 100) cwCell = finalCell = "Out of reach";
+        else if (x.avg <= 0) cwCell = finalCell = "Secured";
+        else {
+          cwCell =
+            n.cwComplete
+              ? mark(n.cw) + " / " + n.cwMax
+              : "<b>" + mark(cwTarget) + " / " + n.cwMax + "</b><span>" + mark(r * cwLeft) + " more of the " + mark(cwLeft) + " left</span>";
+          finalCell = "<b>" + mark(finalTarget) + " / " + n.fw + "</b><span>" + pct((finalTarget / n.fw) * 100) + "</span>";
+        }
         return (
           '<tr class="' +
-          cls(x.avg) +
+          c +
           (best && x.letter === best.letter ? " best" : "") +
           '"><th scope="row">' +
           esc(x.letter) +
           '</th><td class="' +
-          cls(x.avg) +
+          c +
           '">' +
-          (x.avg <= 0 ? "Secured" : x.avg > 100 ? "Out of reach" : pct(x.avg)) +
-          "</td>" +
-          (n.cwComplete || n.pace === null
-            ? ""
-            : '<td class="' +
-              cls(fp) +
-              '">' +
-              (fp <= 0
-                ? "Secured"
-                : fp > 100
-                  ? "Not at this pace"
-                  : Math.ceil(x.finalMarks * 10) / 10 + " / " + n.fw) +
-              "</td>") +
-          "</tr>"
+          cwCell +
+          '</td><td class="' +
+          c +
+          '">' +
+          finalCell +
+          "</td></tr>"
         );
       })
       .join("");
     var summary =
       (best
-        ? "Best grade still possible: <b>" +
-          esc(best.letter) +
-          "</b>" +
-          (best.avg > 0
-            ? ", if you average " + pct(best.avg) + " on everything left."
-            : ".")
+        ? "Best grade still possible: <b>" + esc(best.letter) + "</b>."
         : "Even full marks on everything left won't reach a D.") +
       (secured ? " <b>" + esc(secured.letter) + "</b> or better is already secured." : "");
     return (
       '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">' +
-      "Graded so far: <b>" +
-      Math.round(n.used) +
-      "%</b> of the course, and you've earned <b>" +
-      Math.round(n.weighted * 10) / 10 +
-      "</b> of those points. Still ahead: <b>" +
-      Math.round(n.remaining) +
-      "%</b>" +
-      (n.cwComplete
-        ? " (the final)."
-        : " (" + Math.round(n.cwMax - n.cwUsed) + "% coursework + " + n.fw + "% final).") +
-      " " +
+      "Coursework is <b>" +
+      n.cwMax +
+      "</b> and the final <b>" +
+      n.fw +
+      "</b>. So far you have <b>" +
+      mark(n.cw) +
+      " / " +
+      n.cwMax +
+      "</b> from the " +
+      mark(n.cwUsed) +
+      " coursework points graded" +
+      (n.cwComplete ? " (coursework complete" + (n.cw !== n.projected ? ", rounds to " + n.projected : "") + ")" : ", with " + mark(cwLeft) + " still to come") +
+      ". " +
       summary +
-      '</p><table class="sp-need-table"><thead><tr><th scope="col">Grade</th><th scope="col">Average needed on the remaining ' +
-      Math.round(n.remaining) +
-      "%</th>" +
-      (n.cwComplete
-        ? ""
-        : n.pace === null
-          ? ""
-          : '<th scope="col">Final needed if coursework stays at ' + paceTxt + "</th>") +
-      "</tr></thead><tbody>" +
+      '</p><table class="sp-need-table"><thead><tr><th scope="col">Grade</th><th scope="col">Coursework total needed (out of ' +
+      n.cwMax +
+      ')</th><th scope="col">Final exam needed (out of ' +
+      n.fw +
+      ")</th></tr></thead><tbody>" +
       rows +
-      "</tbody></table></div>"
+      '</tbody></table><p class="sp-muted">Both columns assume the same average on everything still ahead. Do better on one and you need less on the other. PSU rounds the coursework total to a whole mark before adding the final.</p></div>'
     );
   }
   function statsHtml(a) {
