@@ -1370,6 +1370,8 @@
       #calendar-app[data-tab="calendar"] [data-tab]:not([data-tab="calendar"]),
       #calendar-app[data-tab="assignments"]
         [data-tab]:not([data-tab="assignments"]),
+      #calendar-app[data-tab="study-plan"]
+        [data-tab]:not([data-tab="study-plan"]),
       #calendar-app[data-tab="grades"] [data-tab]:not([data-tab="grades"]),
       #calendar-app[data-tab="classes"] [data-tab]:not([data-tab="classes"]),
       #calendar-app[data-tab="add-class"]
@@ -1388,7 +1390,8 @@
         grid-template-columns: minmax(0, 1fr);
       }
 
-      #calendar-app[data-tab="calendar"] .side {
+      #calendar-app[data-tab="calendar"] .side,
+      #calendar-app[data-tab="study-plan"] .side {
         display: none;
       }
 
@@ -3834,6 +3837,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261024a" />
   </head>
 
   <body>
@@ -3920,6 +3924,14 @@
           >
             Assignments
             <span class="cal-tab-count" id="tab-count-assignments"></span>
+          </button>
+          <button
+            class="cal-tab"
+            role="tab"
+            type="button"
+            data-cal-tab="study-plan"
+          >
+            Study plan
           </button>
           <button
             class="cal-tab"
@@ -4145,6 +4157,11 @@
               <div class="month-grid" id="month-grid"></div>
               <div class="time-view" id="time-view" hidden></div>
               <div class="phone-day" id="phone-day" hidden></div>
+            </section>
+            <section class="panel study-plan-panel" id="calendar-studyplan-panel">
+              <div id="study-plan-root" class="sp-root">
+                <div class="empty">Loading your study plan...</div>
+              </div>
             </section>
             <section
               class="panel assignment-panel aw-panel"
@@ -5536,6 +5553,7 @@
           recordOpen = null,
           classAttendance = [],
           todos = [],
+          studyPlan = {},
           todoShowDone = false,
           editingTodoId = "",
           classOverrides = [],
@@ -6469,6 +6487,10 @@
             ? data.calendarClassOverrides
             : [];
           todos = Array.isArray(data.calendarTodos) ? data.calendarTodos : [];
+          studyPlan =
+            data.calendarStudyPlan && typeof data.calendarStudyPlan === "object"
+              ? data.calendarStudyPlan
+              : {};
           grades = Array.isArray(data.calendarGrades)
             ? data.calendarGrades
             : [];
@@ -6524,6 +6546,7 @@
             calendarCourseFinals: firestoreSafe(courseFinals),
             calendarClassAttendance: firestoreSafe(classAttendance),
             calendarTodos: firestoreSafe(todos),
+            calendarStudyPlan: firestoreSafe(studyPlan),
             calendarClassOverrides: firestoreSafe(classOverrides),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
@@ -6811,7 +6834,9 @@
               return a.title.localeCompare(b.title);
             });
         }
-        function eventsFor(k) {
+        // all = true skips the View Focus and semester filters, for callers
+        // that need every commitment on the day (the Study Plan scheduler).
+        function eventsFor(k, all) {
           var d = fromKey(k),
             day = WEEKDAYS[d.getDay()],
             out = [];
@@ -6927,8 +6952,9 @@
             out.push(e);
           });
           return out
-            .filter(isInSemesterScope)
-            .filter(isVisibleEvent)
+            .filter(function (e) {
+              return all || (isInSemesterScope(e) && isVisibleEvent(e));
+            })
             .sort(function (a, b) {
               return (
                 a.sort.localeCompare(b.sort) || a.title.localeCompare(b.title)
@@ -7990,7 +8016,8 @@
           if (g.termId && term) return g.termId === term;
           var record = (academicRecord.courses || {})[courseLabel(g.course)];
           if (record && record.term && term) return record.term === term;
-          return !term && current.indexOf(courseLabel(g.course)) > -1;
+          // No record to go by: the course you're registered in this term.
+          return current.indexOf(courseLabel(g.course)) > -1;
         }
         function fmtMark(n) {
           return String(Math.round(n * 10) / 10);
@@ -8462,17 +8489,20 @@
                 delete courseFinals[c].letter;
                 persist();
               }
-              setRecordCourse(
-                c,
-                sel.value
-                  ? {
-                      letter: sel.value,
-                      hours: creditHours(c),
-                      term: recordTerm(),
-                      finished: true,
-                    }
-                  : null,
-              );
+              // The record entry also ties the course (and its untagged
+              // grades) to its term, so "Not yet" only clears the letter.
+              var prev = (academicRecord.courses || {})[c] || {};
+              if (sel.value)
+                setRecordCourse(
+                  c,
+                  Object.assign({}, prev, {
+                    letter: sel.value,
+                    hours: creditHours(c),
+                    term: prev.term || recordTerm(),
+                    finished: true,
+                  }),
+                );
+              else clearRecordLetter(c);
             });
           });
         }
@@ -8488,6 +8518,35 @@
           ["D+", 65],
           ["D", 60],
         ];
+        // For the Study Plan tab: this term's coursework in a course and the
+        // final-exam score each letter needs on top of it.
+        function finalNeeds(course) {
+          var current = knownCourses(),
+            rows = grades.filter(function (g) {
+              return (
+                courseLabel(g.course) === course && gradeInSemester(g, current)
+              );
+            }),
+            st = courseStats(course, rows);
+          return {
+            entered: rows.length,
+            fw: st.fw,
+            cw: st.cwPts,
+            cwUsed: st.cwUsed,
+            cwMax: st.cwMax,
+            cwComplete: st.cwComplete,
+            needs: LETTER_BANDS.filter(function (b) {
+              return b[0] !== "F";
+            }).map(function (b) {
+              var cw = st.cwComplete ? st.cwRounded : st.cwPts;
+              return {
+                letter: b[0],
+                marks: b[1] - cw,
+                percent: ((b[1] - cw) / st.fw) * 100,
+              };
+            }),
+          };
+        }
         function gradeNeedsHtml(weighted, used) {
           var remaining = 100 - used;
           if (remaining <= 0.05)
@@ -8696,6 +8755,7 @@
             "calendar-personal-panel",
           ],
           assignments: ["calendar-assignment-panel"],
+          "study-plan": ["calendar-studyplan-panel"],
           grades: ["calendar-grade-panel"],
           classes: ["saved-list", "attendance-list"],
           "add-class": ["calendar-class-panel"],
@@ -8910,6 +8970,21 @@
           if (entry) academicRecord.courses[course] = entry;
           else delete academicRecord.courses[course];
           courses[course] = entry || firebase.firestore.FieldValue.delete();
+          renderGradebook();
+          return writeRecord({ courses: courses });
+        }
+        function clearRecordLetter(course) {
+          var prev = (academicRecord.courses || {})[course];
+          if (!prev) return Promise.resolve();
+          var entry = Object.assign({}, prev, { finished: false }),
+            courses = {};
+          delete entry.letter;
+          academicRecord.courses = Object.assign({}, academicRecord.courses);
+          academicRecord.courses[course] = entry;
+          // A merge write keeps fields it isn't told to remove.
+          courses[course] = Object.assign({}, entry, {
+            letter: firebase.firestore.FieldValue.delete(),
+          });
           renderGradebook();
           return writeRecord({ courses: courses });
         }
@@ -9241,6 +9316,7 @@
           renderGradebook();
           updateTabCounts();
           if (window.__shougCalViews) window.__shougCalViews.render();
+          if (window.__shougStudyPlan) window.__shougStudyPlan.render();
         }
         function openDay(k) {
           var d = fromKey(k),
@@ -10608,7 +10684,9 @@
             );
           });
         }
-        function openExamEditor(id, date) {
+        // prefill ({course, type}) seeds a new exam, e.g. from the Study Plan
+        // tab's "Add final date" button.
+        function openExamEditor(id, date, prefill) {
           var e = id
             ? exams.find(function (x) {
                 return x.id === id;
@@ -10623,9 +10701,13 @@
           $("exam-editor-sub").textContent = e
             ? "Update the course, type, date, time, and location"
             : "Add an exam date without leaving the calendar";
-          $("exam-edit-course").value = e ? e.course || "" : "";
+          $("exam-edit-course").value = e
+            ? e.course || ""
+            : (prefill && prefill.course) || "";
           examCourseAck = "";
-          $("exam-edit-type").value = e ? canonicalExamType(e.type) : "midterm";
+          $("exam-edit-type").value = e
+            ? canonicalExamType(e.type)
+            : (prefill && prefill.type) || "midterm";
           var selectedDate = e ? e.date || "" : date || activeDayKey || "";
           examPickerMonth = selectedDate
             ? fromKey(selectedDate)
@@ -12370,6 +12452,18 @@
           get signedIn() {
             return Boolean(profileRef);
           },
+          get studyPlan() {
+            return studyPlan;
+          },
+          saveStudyPlan: function (plan) {
+            studyPlan = plan || {};
+            return persist();
+          },
+          knownCourses: knownCourses,
+          finalNeeds: finalNeeds,
+          canonicalExamType: canonicalExamType,
+          openExamEditor: openExamEditor,
+          uid: uid,
           eventsFor: eventsFor,
           eventClasses: eventClasses,
           eventAttrs: eventAttrs,
@@ -12608,6 +12702,7 @@
       defer
     ></script>
     <script src="/javascripts/calendar-views.js?v=20261021b" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261024a" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=1" defer></script>
   </body>
