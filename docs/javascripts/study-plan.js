@@ -230,15 +230,44 @@
   }
 
   // ── Scope and remaining work ──────────────────────────────────────────
-  function scopeIds(a, exam) {
-    var s = exam && (plan().scope || {})[exam.id];
+  // Which chapters an exam covers, from the course overview page's exam
+  // cards (exam_scopes in the analysis). The Nth quiz or major of a course
+  // on the calendar maps to its Nth card of that type; anything without a
+  // card covers every chapter.
+  function examScope(a, exam) {
     var all = a.chapters.map(function (c) {
       return c.id;
     });
-    if (!Array.isArray(s) || !s.length) return all;
-    return all.filter(function (id) {
-      return s.indexOf(id) > -1;
+    var type = exam ? C.canonicalExamType(exam.type) : season();
+    if (type === "bonus-quiz") type = "quiz";
+    var cards = (a.exam_scopes || []).filter(function (x) {
+      return x.type === type;
     });
+    if (!cards.length) return { ids: all, label: "" };
+    var n = 0;
+    if (exam) {
+      var course = C.courseLabel(exam.course),
+        same = C.exams
+          .filter(function (e) {
+            var t = C.canonicalExamType(e.type);
+            return (
+              C.courseLabel(e.course) === course &&
+              (t === "bonus-quiz" ? "quiz" : t) === type
+            );
+          })
+          .sort(function (x, y) {
+            return examTime(x).localeCompare(examTime(y));
+          });
+      n = Math.max(0, same.indexOf(exam));
+    }
+    var card = cards[Math.min(n, cards.length - 1)],
+      ids = all.filter(function (id) {
+        return card.chapters.indexOf(id) > -1;
+      });
+    return { ids: ids.length ? ids : all, label: card.label };
+  }
+  function scopeIds(a, exam) {
+    return examScope(a, exam).ids;
   }
   function chapterItems(a, chId) {
     return (a.items || []).filter(function (i) {
@@ -685,10 +714,33 @@
       '%"></span></span>'
     );
   }
+  // Each course keeps the colour the calendar gives it.
+  function hue(course) {
+    var h = C.courseHue ? C.courseHue(course) : 262;
+    return ' style="--h:' + (isFinite(h) ? h : 262) + '"';
+  }
+  function ring(pct, label, cls) {
+    var p = Math.max(0, Math.min(100, Math.round(pct)));
+    return (
+      '<span class="sp-ring' +
+      (cls ? " " + cls : "") +
+      '" style="--p:' +
+      p +
+      '" role="img" aria-label="' +
+      p +
+      '% ready"><span>' +
+      (label === undefined ? p + "%" : label) +
+      "</span></span>"
+    );
+  }
+  function shortDate(k) {
+    return C.prettyDate(k).replace(/, \d{4}$/, "");
+  }
   function headHtml(sid) {
     return (
-      '<div class="panel-head sp-head"><div><div class="panel-title">Study Plan</div>' +
-      '<div class="panel-sub">Your registered courses, your exam dates and what each course\'s slides actually contain</div></div>' +
+      '<div class="sp-head"><div class="sp-head-text"><div class="sp-eyebrow">Study plan</div>' +
+      "<h2>What to study, and when</h2>" +
+      "<p>Built from your registered courses, your exam dates and what each course's slides actually contain.</p></div>" +
       '<div class="sp-season" role="tablist" aria-label="Exam season">' +
       SEASONS.map(function (s) {
         return (
@@ -704,12 +756,91 @@
       "</div></div>"
     );
   }
+  // The next exam up close, then every exam of the season on one track.
+  function heroHtml(sid) {
+    var ex = seasonExams(sid),
+      noun = seasonInfo(sid).noun;
+    if (!ex.length) return "";
+    var next = ex[0],
+      nc = C.courseLabel(next.course),
+      a = analysis(nc, sid),
+      prog = a ? courseProgress(nc, a, next) : null,
+      d = daysUntil(next.date),
+      today = C.todayKey(),
+      last = ex[ex.length - 1].date,
+      span = Math.max(7, daysUntil(last)),
+      planned = plannedItems(sid).filter(function (i) {
+        return i.linkedExamId === next.id;
+      }).length;
+    // Labels go above and below the track, and further out when exams sit
+    // too close together to share a row.
+    var lastIn = [-100, -100, -100, -100],
+      marks = ex
+        .map(function (e) {
+          var c = C.courseLabel(e.course),
+            left = Math.min(100, Math.max(0, (daysUntil(e.date) / span) * 100)),
+            lane = 0;
+          while (lane < 3 && left - lastIn[lane] < 16) lane++;
+          lastIn[lane] = left;
+          return (
+            '<div class="sp-tl-mark lane' +
+            lane +
+            (left > 86 ? " end" : "") +
+            '" style="left:' +
+            left +
+            "%;--h:" +
+            (C.courseHue ? C.courseHue(c) : 262) +
+            '"><span class="sp-tl-dot"></span><span class="sp-tl-label"><b>' +
+            esc(c) +
+            "</b>" +
+            esc(shortDate(e.date)) +
+            "</span></div>"
+          );
+        })
+        .join("");
+    return (
+      '<div class="sp-hero"' +
+      hue(nc) +
+      '><div class="sp-next"><div class="sp-eyebrow">Next ' +
+      esc(noun.toLowerCase()) +
+      '</div><div class="sp-next-main"><div><div class="sp-next-course">' +
+      esc(nc) +
+      '</div><div class="sp-next-when">' +
+      esc(examLabel(next)) +
+      (next.location ? " · " + esc(next.location) : "") +
+      '</div></div><div class="sp-countdown"><b>' +
+      d +
+      "</b><span>" +
+      (d === 0 ? "today" : d === 1 ? "day left" : "days left") +
+      "</span></div></div>" +
+      '<div class="sp-next-foot">' +
+      (prog
+        ? ring(prog.ready) +
+          "<div><b>" +
+          hours(prog.left) +
+          "</b> of study left<br><span>" +
+          (planned ? planned + " sessions on your calendar" : "No sessions planned yet") +
+          "</span></div>"
+        : "<div><span>No slide analysis for this course yet</span></div>") +
+      "</div></div>" +
+      '<div class="sp-timeline"><div class="sp-eyebrow">' +
+      esc(seasonInfo(sid).label) +
+      " ahead</div>" +
+      '<div class="sp-tl"><div class="sp-tl-track"></div><div class="sp-tl-today"><span>Today</span></div>' +
+      marks +
+      '</div><div class="sp-tl-ends"><span>' +
+      esc(shortDate(today)) +
+      "</span><span>" +
+      esc(shortDate(last)) +
+      "</span></div></div></div>"
+    );
+  }
   function examCardsHtml(sid, courses) {
     var noun = seasonInfo(sid).noun;
     if (!courses.length)
-      return '<div class="empty">Add your classes on the calendar first. The plan uses your registered courses.</div>';
+      return '<div class="sp-empty">Add your classes on the calendar first. The plan uses your registered courses.</div>';
     return (
-      '<div class="sp-exams">' +
+      '<div class="sp-rail" role="list">' +
       courses
         .map(function (course) {
           var exam = examFor(course, sid),
@@ -717,70 +848,69 @@
             marked = !exam && !past && markedDone(course, sid),
             a = analysis(course, sid),
             sel = course === ui.course,
-            body;
-          if (past)
+            prog = exam && a ? courseProgress(course, a, exam) : null,
+            body,
+            lead;
+          if (past || marked) {
+            lead = ring(100, "", "done");
             body =
-              '<div class="sp-exam-when">' +
-              esc(examLabel(past)) +
-              '</div><div class="sp-exam-done">' +
+              '<div class="sp-card-when">' +
+              (past ? esc(examLabel(past)) : "") +
+              '</div><div class="sp-tag done">' +
               esc(noun) +
-              " done</div>";
-          else if (marked)
+              " done</div>" +
+              (marked
+                ? '<button class="sp-link-btn" type="button" data-sp-undone="' +
+                  esc(course) +
+                  '">Undo</button>'
+                : "");
+          } else if (!exam) {
+            lead = ring(0, "?", "missing");
             body =
-              '<div class="sp-exam-done">' +
-              esc(noun) +
-              ' done</div><button class="mini-btn" type="button" data-sp-undone="' +
-              esc(course) +
-              '">Undo</button>';
-          else if (!exam)
-            body =
-              '<div class="sp-exam-when muted">No ' +
+              '<div class="sp-card-when muted">No ' +
               noun.toLowerCase() +
-              ' date yet</div><button class="mini-btn" type="button" data-sp-add-exam="' +
+              ' date yet</div><div class="sp-card-actions"><button class="sp-chip-btn" type="button" data-sp-add-exam="' +
               esc(course) +
-              '">Add ' +
-              noun.toLowerCase() +
-              " date</button>" +
-              '<button class="mini-btn" type="button" data-sp-done="' +
+              '">Add date</button><button class="sp-link-btn" type="button" data-sp-done="' +
               esc(course) +
-              '">Mark as done</button>';
-          else {
-            var d = daysUntil(exam.date),
-              prog = a ? courseProgress(course, a, exam) : null;
+              '">Already done</button></div>';
+          } else {
+            var d = daysUntil(exam.date);
+            lead = prog ? ring(prog.ready) : ring(0, "–", "missing");
             body =
-              '<div class="sp-exam-when">' +
+              '<div class="sp-card-when">' +
               esc(examLabel(exam)) +
-              '</div><div class="sp-exam-days"><b>' +
+              '</div><div class="sp-card-meta"><span class="sp-days' +
+              (d <= 7 ? " soon" : "") +
+              '">' +
               d +
-              "</b> day" +
-              (d === 1 ? "" : "s") +
-              " left</div>" +
+              "d</span>" +
               (prog
-                ? bar(prog.ready) +
-                  '<div class="sp-exam-meta">' +
-                  prog.ready +
-                  "% ready · " +
-                  hours(prog.left) +
-                  " to go</div>"
-                : '<div class="sp-exam-meta">' +
-                  (a === undefined ? "Loading analysis..." : "No slide analysis yet") +
-                  "</div>");
+                ? hours(prog.left) + " to go"
+                : a === undefined
+                  ? "Loading..."
+                  : "No analysis yet") +
+              "</div>";
           }
-          // The whole card selects the course; its own buttons still work.
           return (
-            '<div class="sp-exam' +
+            '<div class="sp-course-card' +
             (sel ? " selected" : "") +
             (past || marked ? " done" : "") +
-            (exam && daysUntil(exam.date) <= 7 ? " soon" : "") +
-            '" role="button" tabindex="0" data-sp-course="' +
+            '" role="listitem"' +
+            hue(course) +
+            '><div class="sp-course-card-hit" role="button" tabindex="0" data-sp-course="' +
             esc(course) +
             '" aria-pressed="' +
             sel +
-            '"><div class="sp-exam-pick">' +
+            '" aria-label="Show ' +
+            esc(course) +
+            '"></div>' +
+            lead +
+            '<div class="sp-card-body"><div class="sp-card-code">' +
             esc(course) +
             "</div>" +
             body +
-            "</div>"
+            "</div></div>"
           );
         })
         .join("") +
@@ -810,7 +940,7 @@
       noun = seasonInfo(sid).noun.toLowerCase(),
       planned = plannedItems(sid),
       pv = ui.preview,
-      out = '<div class="sp-card sp-planner"><div class="sp-card-head"><h3>Schedule</h3>';
+      out = '<div class="sp-box sp-planner"><div class="sp-box-head"><h3>Schedule</h3>';
     if (!ex.length)
       return (
         out +
@@ -951,7 +1081,7 @@
       w = (a && a.syllabus && a.syllabus.final_weight) || n.fw;
     if (!n.entered)
       return (
-        '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">Final is worth ' +
+        '<div class="sp-box"><h3>Finishing the course safely</h3><p class="sp-muted">Final is worth ' +
         esc(w) +
         "% of the grade. Add your quiz, major and assignment marks under Grades &amp; GPA to see exactly what you need on the final.</p></div>"
       );
@@ -966,7 +1096,7 @@
     }
     if (n.remaining <= 0.05)
       return (
-        '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">Everything in this course is graded: <b>' +
+        '<div class="sp-box"><h3>Finishing the course safely</h3><p class="sp-muted">Everything in this course is graded: <b>' +
         mark(n.weighted) +
         " / 100</b>.</p></div>"
       );
@@ -1021,7 +1151,7 @@
         : "Even full marks on everything left won't reach a D.") +
       (secured ? " <b>" + esc(secured.letter) + "</b> or better is already secured." : "");
     return (
-      '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">' +
+      '<div class="sp-box"><h3>Finishing the course safely</h3><p class="sp-muted">' +
       "Coursework is <b>" +
       n.cwMax +
       "</b> and the final <b>" +
@@ -1045,125 +1175,10 @@
       '</tbody></table><p class="sp-muted">Both columns assume the same average on everything still ahead. Do better on one and you need less on the other. PSU rounds the coursework total to a whole mark before adding the final.</p></div>'
     );
   }
-  function statsHtml(a) {
-    var t = a.totals,
-      k = t.kinds || {},
-      tiles = [
-        ["Chapters", t.chapters],
-        ["Slides", t.slides],
-        ["Study time", hours(t.minutes)],
-      ];
-    if (a.curated)
-      tiles = tiles.concat([
-        ["Concepts and topics", t.items],
-        ["Formulas", k.formula],
-        ["Key numbers", k.number],
-        ["Lists to memorize", k.list],
-        ["Problem types", k.calc],
-        ["Comparisons", k.compare],
-      ]);
-    if (a.syllabus && a.syllabus.final_weight)
-      tiles.push(["Final weight", a.syllabus.final_weight + "%"]);
-    return (
-      '<div class="sp-stats">' +
-      tiles
-        .map(function (x) {
-          return (
-            '<div class="sp-stat"><b>' +
-            esc(x[1] === undefined ? 0 : x[1]) +
-            "</b><span>" +
-            esc(x[0]) +
-            "</span></div>"
-          );
-        })
-        .join("") +
-      "</div>"
-    );
-  }
   function itemById(a, id) {
     return a.items.find(function (i) {
       return i.id === id;
     });
-  }
-  function repeatedHtml(a) {
-    if (!a.curated || !a.repeated) return "";
-    var list = a.repeated.map(function (id) {
-        return itemById(a, id);
-      }),
-      max = list[0] ? list[0].slides : 1;
-    return (
-      '<div class="sp-card"><h3>Most repeated across the slides</h3><p class="sp-muted">Slides that mention each topic. The more a topic comes back, the safer a bet it is for the exam.</p><div class="sp-rep">' +
-      list
-        .map(function (i) {
-          return (
-            '<div class="sp-rep-row"><span>' +
-            esc(i.name) +
-            "</span>" +
-            bar((i.slides / max) * 100, "thin") +
-            "<em>" +
-            i.slides +
-            " slides · " +
-            i.decks +
-            " deck" +
-            (i.decks === 1 ? "" : "s") +
-            "</em></div>"
-          );
-        })
-        .join("") +
-      "</div></div>"
-    );
-  }
-  function memorizeHtml(course, a) {
-    if (!a.curated) return "";
-    var groups = ["formula", "number", "list"];
-    var count = a.items.filter(function (i) {
-      return groups.indexOf(i.kind) > -1;
-    }).length;
-    return (
-      '<div class="sp-card"><div class="sp-card-head"><h3>Memorize sheet · ' +
-      count +
-      ' items</h3><label class="filter-toggle"><input type="checkbox" data-sp-drill' +
-      (ui.drill ? " checked" : "") +
-      "> Drill mode</label></div>" +
-      '<p class="sp-muted">' +
-      (ui.drill
-        ? "Answers are hidden. Say each one out loud, then tap to check."
-        : "Everything you need word for word.") +
-      "</p>" +
-      groups
-        .map(function (g) {
-          var its = a.items.filter(function (i) {
-            return i.kind === g;
-          });
-          if (!its.length) return "";
-          return (
-            '<h4 class="sp-sub">' +
-            esc(a.kind_labels[g]) +
-            " (" +
-            its.length +
-            ")</h4><div class=\"sp-mem\">" +
-            its
-              .map(function (i) {
-                var hidden = ui.drill && !ui.revealed[i.id];
-                return (
-                  '<button type="button" class="sp-mem-row' +
-                  (hidden ? " hidden-answer" : "") +
-                  '" data-sp-reveal="' +
-                  esc(i.id) +
-                  '"><b>' +
-                  esc(i.name) +
-                  "</b><span>" +
-                  (hidden ? "Tap to reveal" : esc(i.memorize)) +
-                  "</span></button>"
-                );
-              })
-              .join("") +
-            "</div>"
-          );
-        })
-        .join("") +
-      "</div>"
-    );
   }
   function levelButtons(unit, lv) {
     return (
@@ -1186,57 +1201,192 @@
       "</span>"
     );
   }
+  function statsHtml(a) {
+    var t = a.totals,
+      k = t.kinds || {},
+      tiles = [
+        ["Slides", t.slides],
+        ["Chapters", t.chapters],
+        ["Study time", hours(t.minutes)],
+      ];
+    if (a.curated)
+      tiles = tiles.concat([
+        ["Topics", t.items],
+        ["Formulas", k.formula],
+        ["Key numbers", k.number],
+        ["Lists", k.list],
+        ["Problem types", k.calc],
+        ["Comparisons", k.compare],
+        ["Processes", k.process],
+      ]);
+    if (a.syllabus && a.syllabus.final_weight)
+      tiles.push(["Final weight", a.syllabus.final_weight + "%"]);
+    return (
+      '<section class="sp-box"><h3>At a glance</h3><div class="sp-stats">' +
+      tiles
+        .filter(function (x) {
+          return x[1] !== undefined && x[1] !== 0;
+        })
+        .map(function (x) {
+          return (
+            '<div class="sp-stat"><b>' + esc(x[1]) + "</b><span>" + esc(x[0]) + "</span></div>"
+          );
+        })
+        .join("") +
+      "</div></section>"
+    );
+  }
+  function repeatedHtml(a) {
+    if (!a.curated || !a.repeated || !a.repeated.length) return "";
+    var list = a.repeated
+        .map(function (id) {
+          return itemById(a, id);
+        })
+        .filter(Boolean),
+      max = list[0] ? list[0].slides : 1;
+    return (
+      '<section class="sp-box"><h3>Most repeated</h3><p class="sp-muted">Slides that come back to each topic. The more it repeats, the safer a bet it is.</p><ol class="sp-rep">' +
+      list
+        .map(function (i, n) {
+          return (
+            '<li><span class="sp-rep-rank">' +
+            (n + 1) +
+            '</span><span class="sp-rep-name">' +
+            esc(i.name) +
+            '<span class="sp-rep-bar"><span style="width:' +
+            Math.max(6, (i.slides / max) * 100) +
+            '%"></span></span></span><span class="sp-rep-count"><b>' +
+            i.slides +
+            "</b> slides<br>" +
+            i.decks +
+            " deck" +
+            (i.decks === 1 ? "" : "s") +
+            "</span></li>"
+          );
+        })
+        .join("") +
+      "</ol></section>"
+    );
+  }
+  function memorizeHtml(course, a) {
+    if (!a.curated) return "";
+    var groups = ["formula", "number", "list"],
+      count = a.items.filter(function (i) {
+        return groups.indexOf(i.kind) > -1;
+      }).length;
+    if (!count) return "";
+    return (
+      '<section class="sp-box"><div class="sp-box-head"><div><h3>Memorize</h3><p class="sp-muted">' +
+      count +
+      (ui.drill
+        ? " cards. Say each one out loud, then tap to check."
+        : " items, word for word.") +
+      '</p></div><label class="sp-switch"><input type="checkbox" data-sp-drill' +
+      (ui.drill ? " checked" : "") +
+      "><span></span>Drill</label></div>" +
+      groups
+        .map(function (g) {
+          var its = a.items.filter(function (i) {
+            return i.kind === g;
+          });
+          if (!its.length) return "";
+          return (
+            '<h4 class="sp-sub">' +
+            esc(a.kind_labels[g]) +
+            " · " +
+            its.length +
+            '</h4><div class="sp-mem">' +
+            its
+              .map(function (i) {
+                var hidden = ui.drill && !ui.revealed[i.id];
+                return (
+                  '<button type="button" class="sp-flash' +
+                  (hidden ? "" : " flipped") +
+                  '" data-sp-reveal="' +
+                  esc(i.id) +
+                  '" aria-pressed="' +
+                  !hidden +
+                  '"><b>' +
+                  esc(i.name) +
+                  "</b><span>" +
+                  (hidden ? "Tap to reveal" : esc(i.memorize)) +
+                  "</span></button>"
+                );
+              })
+              .join("") +
+            "</div>"
+          );
+        })
+        .join("") +
+      "</section>"
+    );
+  }
   function chaptersHtml(course, a, exam) {
     var ids = scopeIds(a, exam);
     return (
-      '<div class="sp-card"><div class="sp-card-head"><h3>Chapters</h3>' +
-      (exam ? '<span class="sp-muted">Untick chapters this exam doesn\'t cover</span>' : "") +
-      "</div>" +
+      '<section class="sp-box"><div class="sp-box-head"><div><h3>Chapters</h3><p class="sp-muted">' +
+      (a.curated
+        ? "Open a chapter and mark each topic as you learn it."
+        : "Mark each chapter as you get through it.") +
+      "</p></div></div>" +
+      (function () {
+        var sc = examScope(a, exam),
+          outN = a.chapters.length - sc.ids.length;
+        return sc.label
+          ? '<p class="sp-scope"><b>' +
+              esc(sc.label) +
+              "</b> covers " +
+              (outN ? sc.ids.length + " of " + a.chapters.length + " chapters" : "every chapter") +
+              ', from the <a href="' +
+              esc(a.course_page) +
+              '#section-page-count-by-exam">course overview</a>.</p>'
+          : "";
+      })() +
+      '<div class="sp-chapters">' +
       a.chapters
+        .filter(function (ch) {
+          return ids.indexOf(ch.id) > -1;
+        })
         .map(function (ch) {
           var inScope = ids.indexOf(ch.id) > -1,
             left = chapterLeft(course, a, ch),
             ready = ch.minutes ? Math.round((1 - left / ch.minutes) * 100) : 0,
             its = chapterItems(a, ch.id),
-            open = ui.open[ch.id];
+            open = ui.open[ch.id],
+            parts = String(ch.title).split(" · "),
+            num = parts.length > 1 ? parts[0] : "",
+            name = parts.length > 1 ? parts.slice(1).join(" · ") : parts[0];
           var head =
             '<div class="sp-ch' +
             (inScope ? "" : " out") +
-            '"><div class="sp-ch-main">' +
-            (exam
-              ? '<input type="checkbox" data-sp-scope="' +
-                esc(ch.id) +
-                '" aria-label="Include ' +
-                esc(ch.title) +
-                '"' +
-                (inScope ? " checked" : "") +
-                ">"
-              : "") +
-            '<div><div class="sp-ch-title">' +
-            esc(ch.title) +
-            '</div><div class="sp-ch-meta">' +
+            (open ? " open" : "") +
+            '">' +
+
+            ring(ready, undefined, "sm") +
+            '<div class="sp-ch-text">' +
+            (num ? '<span class="sp-ch-num">' + esc(num) + "</span>" : "") +
+            '<span class="sp-ch-title">' +
+            esc(name) +
+            '</span><span class="sp-ch-meta">' +
             ch.slides +
             " slides" +
-            (its.length ? " · " + its.length + " items" : "") +
+            (its.length ? " · " + its.length + " topics" : "") +
             " · " +
             hours(left) +
-            " of " +
-            hours(ch.minutes) +
             " left" +
-            (ch.syllabus_share ? " · " + Math.round(ch.syllabus_share * 100) + "% of class time" : "") +
-            "</div>" +
-            bar(ready, "thin") +
-            "</div></div><div class=\"sp-ch-side\">" +
+            "</span></div>" +
             (a.curated
-              ? '<button type="button" class="mini-btn" data-sp-open="' +
+              ? '<button type="button" class="sp-chev" data-sp-open="' +
                 esc(ch.id) +
                 '" aria-expanded="' +
                 Boolean(open) +
-                '">' +
-                (open ? "Hide items" : "Show items") +
-                "</button>"
+                '" aria-label="' +
+                (open ? "Hide" : "Show") +
+                " topics in " +
+                esc(ch.title) +
+                '"></button>'
               : levelButtons("ch:" + ch.id, level(course, a, "ch:" + ch.id))) +
-            "</div></div>";
+            "</div>";
           var links = (ch.links || []).length
             ? '<div class="sp-links">' +
               ch.links
@@ -1246,61 +1396,56 @@
                 .join("") +
               "</div>"
             : "";
-          var body =
-            a.curated && open
-              ? '<div class="sp-items">' +
-                its
-                  .slice()
-                  .sort(function (x, y) {
-                    return KIND_ORDER.indexOf(x.kind) - KIND_ORDER.indexOf(y.kind) || y.score - x.score;
-                  })
-                  .map(function (i) {
-                    var lv = level(course, a, i.id);
-                    return (
-                      '<div class="sp-item l' +
-                      lv +
-                      '"><div><div class="sp-item-name"><span class="sp-tier ' +
-                      i.tier +
-                      '">' +
-                      esc(TIER_LABEL[i.tier] || i.tier) +
-                      '</span><span class="sp-kind">' +
-                      esc(KIND_ONE[i.kind] || i.kind) +
-                      "</span>" +
-                      esc(i.name) +
-                      '</div><div class="sp-item-meta">' +
-                      i.slides +
-                      " slide" +
-                      (i.slides === 1 ? "" : "s") +
-                      (i.decks > 1 ? " across " + i.decks + " decks" : "") +
-                      (i.practice ? " · in " + i.practice + " practice question" + (i.practice === 1 ? "" : "s") : "") +
-                      " · " +
-                      i.minutes +
-                      " min</div>" +
-                      (i.memorize
-                        ? '<div class="sp-item-mem">' + esc(i.memorize) + "</div>"
-                        : "") +
-                      "</div>" +
-                      levelButtons(i.id, lv) +
-                      "</div>"
-                    );
-                  })
-                  .join("") +
-                links +
-                "</div>"
-              : !a.curated
-                ? links
-                : "";
-          return head + body;
+          if (!a.curated) return head;
+          if (!open) return head;
+          return (
+            head +
+            '<div class="sp-items">' +
+            its
+              .slice()
+              .sort(function (x, y) {
+                return KIND_ORDER.indexOf(x.kind) - KIND_ORDER.indexOf(y.kind) || y.score - x.score;
+              })
+              .map(function (i) {
+                var lv = level(course, a, i.id);
+                return (
+                  '<div class="sp-item l' +
+                  lv +
+                  '"><div class="sp-item-text"><div class="sp-item-tags"><span class="sp-tier ' +
+                  i.tier +
+                  '">' +
+                  esc(TIER_LABEL[i.tier] || i.tier) +
+                  '</span><span class="sp-kind">' +
+                  esc(KIND_ONE[i.kind] || i.kind) +
+                  '</span><span class="sp-item-count">' +
+                  i.slides +
+                  " slide" +
+                  (i.slides === 1 ? "" : "s") +
+                  (i.decks > 1 ? " · " + i.decks + " decks" : "") +
+                  (i.practice ? " · " + i.practice + " practice" : "") +
+                  '</span></div><div class="sp-item-name">' +
+                  esc(i.name) +
+                  "</div>" +
+                  (i.memorize ? '<div class="sp-item-mem">' + esc(i.memorize) + "</div>" : "") +
+                  "</div>" +
+                  levelButtons(i.id, lv) +
+                  "</div>"
+                );
+              })
+              .join("") +
+            links +
+            "</div>"
+          );
         })
         .join("") +
-      "</div>"
+      "</div></section>"
     );
   }
   function styleHtml(a) {
     var parts = [];
     if (a.style && a.style.question_types)
       parts.push(
-        '<div class="sp-card"><h3>How this instructor asks</h3><p class="sp-muted">From ' +
+        '<section class="sp-box"><h3>How the exam asks</h3><p class="sp-muted">From ' +
           esc(a.style.source) +
           '.</p><ul class="sp-list">' +
           a.style.question_types
@@ -1308,19 +1453,27 @@
               return "<li>" + esc(q) + "</li>";
             })
             .join("") +
-          "</ul></div>",
+          "</ul></section>",
       );
-    if ((a.resources || []).length || (a.syllabus && a.syllabus.weights))
+    if ((a.syllabus && a.syllabus.weights) || (a.resources || []).length)
       parts.push(
-        '<div class="sp-card"><h3>Grade weights and resources</h3>' +
+        '<section class="sp-box"><h3>Grade weights and resources</h3>' +
           (a.syllabus && a.syllabus.weights
-            ? '<ul class="sp-list">' +
+            ? '<div class="sp-weights">' +
               a.syllabus.weights
                 .map(function (w) {
-                  return "<li>" + esc(w.label) + " · <b>" + esc(w.percent) + "%</b></li>";
+                  return (
+                    '<div class="sp-weight"><span>' +
+                    esc(w.label) +
+                    '</span><span class="sp-weight-bar"><span style="width:' +
+                    Math.min(100, w.percent * 2) +
+                    '%"></span></span><b>' +
+                    esc(w.percent) +
+                    "%</b></div>"
+                  );
                 })
                 .join("") +
-              "</ul>"
+              "</div>"
             : "") +
           ((a.resources || []).length
             ? '<div class="sp-links">' +
@@ -1331,51 +1484,63 @@
                 .join("") +
               "</div>"
             : "") +
-          "</div>",
+          "</section>",
       );
     return parts.join("");
   }
   function courseHtml(course, sid) {
     var a = analysis(course, sid),
       exam = examFor(course, sid);
-    if (a === undefined) return '<div class="empty">Loading the ' + esc(course) + " analysis...</div>";
+    if (a === undefined)
+      return '<div class="sp-empty">Loading the ' + esc(course) + " analysis...</div>";
     if (a === null)
       return (
-        '<div class="sp-card"><h3>' +
+        '<div class="sp-course"' +
+        hue(course) +
+        '><div class="sp-course-head"><div><div class="sp-eyebrow">' +
         esc(course) +
-        '</h3><p class="sp-muted">There\'s no slide analysis for this course yet, so it can\'t be planned. It needs its slides on the site first.</p></div>' +
-        needsHtml(course, null)
+        '</div><h3>No slide analysis yet</h3><p class="sp-muted">This course needs its slides on the site before it can be planned.</p></div></div><div class="sp-work"><div class="sp-aside">' +
+        needsHtml(course, null) +
+        "</div></div></div>"
       );
     var seasonNote =
       a.season !== sid
-        ? '<div class="sp-note">This uses the final-exam analysis. Untick the chapters this ' +
+        ? '<div class="sp-note">This uses the final-exam analysis, limited to the chapters this ' +
           seasonInfo(sid).noun.toLowerCase() +
-          " doesn't cover.</div>"
+          " covers on the course overview.</div>"
         : "";
-    var syl = a.syllabus || {};
+    var syl = a.syllabus || {},
+      prog = courseProgress(course, a, exam);
     return (
-      '<div class="sp-course-head"><div><h3>' +
+      '<div class="sp-course"' +
+      hue(course) +
+      '><div class="sp-course-head">' +
+      ring(prog.ready, undefined, "lg") +
+      '<div class="sp-course-title"><div class="sp-eyebrow">' +
       esc(course) +
-      (a.title ? " · " + esc(a.title) : "") +
+      (exam ? " · " + esc(seasonInfo(sid).noun) + " " + esc(examLabel(exam)) : "") +
+      "</div><h3>" +
+      esc(a.title || course) +
       '</h3><p class="sp-muted">' +
       (a.curated
-        ? "Full analysis of every slide deck: each concept, formula and problem type, counted slide by slide."
-        : "Baseline analysis: slide counts and study time. Mark each chapter as you go; the concept breakdown isn't built for this course yet.") +
+        ? "Every slide deck read topic by topic: each concept, formula and problem type, counted slide by slide."
+        : "Slide counts and study time only so far.") +
       (syl.scope_note && a.curated ? " " + esc(syl.scope_note) : "") +
       "</p></div>" +
-      (a.course_page ? '<a class="mini-btn" href="' + esc(a.course_page) + '">Course page</a>' : "") +
+      (a.course_page
+        ? '<a class="sp-chip-btn" href="' + esc(a.course_page) + '">Course page</a>'
+        : "") +
       "</div>" +
       seasonNote +
-      statsHtml(a) +
-      '<div class="sp-grid">' +
-      needsHtml(course, a) +
-      repeatedHtml(a) +
-      "</div>" +
+      '<div class="sp-work"><div class="sp-main">' +
       chaptersHtml(course, a, exam) +
       memorizeHtml(course, a) +
-      '<div class="sp-grid">' +
+      '</div><div class="sp-aside">' +
+      statsHtml(a) +
+      needsHtml(course, a) +
+      repeatedHtml(a) +
       styleHtml(a) +
-      "</div>"
+      "</div></div></div>"
     );
   }
   function render() {
@@ -1388,7 +1553,8 @@
     var scrollY = window.scrollY;
     root.innerHTML =
       headHtml(sid) +
-      '<div class="panel-body sp-body">' +
+      '<div class="sp-body">' +
+      heroHtml(sid) +
       examCardsHtml(sid, courses) +
       clashHtml(sid) +
       plannerHtml(sid) +
@@ -1442,27 +1608,6 @@
         if (lv) p.ready[key][d.spUnit] = lv;
         else delete p.ready[key][d.spUnit];
       });
-    } else if (d.spScope !== undefined) {
-      var a2 = analysis(ui.course, season()),
-        exam = examFor(ui.course, season());
-      if (!a2 || !exam) return;
-      var ids = scopeIds(a2, exam),
-        on = t.checked;
-      ids = on
-        ? ids.concat([d.spScope])
-        : ids.filter(function (x) {
-            return x !== d.spScope;
-          });
-      if (!ids.length) {
-        t.checked = true;
-        C.toast("Keep at least one chapter in scope");
-        return;
-      }
-      ui.preview = null;
-      updatePlan(function (p) {
-        p.scope = p.scope || {};
-        p.scope[exam.id] = ids.length === a2.chapters.length ? [] : ids;
-      });
     } else if (d.spOpen) {
       ui.open[d.spOpen] = !ui.open[d.spOpen];
       render();
@@ -1482,7 +1627,7 @@
     C = window.__shougCal;
     $("study-plan-root").addEventListener("click", onClick);
     $("study-plan-root").addEventListener("keydown", function (ev) {
-      var card = ev.target.closest && ev.target.closest(".sp-exam[data-sp-course]");
+      var card = ev.target.closest && ev.target.closest("[data-sp-course]");
       if (card && ev.target === card && (ev.key === "Enter" || ev.key === " ")) {
         ev.preventDefault();
         card.click();
