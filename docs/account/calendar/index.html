@@ -8527,7 +8527,15 @@
                 courseLabel(g.course) === course && gradeInSemester(g, current)
               );
             }),
-            st = courseStats(course, rows);
+            st = courseStats(course, rows),
+            remaining = Math.max(0, 100 - st.used),
+            // Coursework average so far, applied to what's still ungraded.
+            pace = st.cwUsed > 0 ? st.cwPts / st.cwUsed : null,
+            projected = st.cwComplete
+              ? st.cwRounded
+              : pace === null
+                ? null
+                : Math.floor(st.cwPts + (st.cwMax - st.cwUsed) * pace + 0.5 + 1e-9);
           return {
             entered: rows.length,
             fw: st.fw,
@@ -8535,14 +8543,22 @@
             cwUsed: st.cwUsed,
             cwMax: st.cwMax,
             cwComplete: st.cwComplete,
+            weighted: st.weighted,
+            used: st.used,
+            remaining: remaining,
+            pace: pace,
+            projected: projected,
             needs: LETTER_BANDS.filter(function (b) {
               return b[0] !== "F";
             }).map(function (b) {
-              var cw = st.cwComplete ? st.cwRounded : st.cwPts;
               return {
                 letter: b[0],
-                marks: b[1] - cw,
-                percent: ((b[1] - cw) / st.fw) * 100,
+                // Average needed on everything not graded yet (coursework
+                // still to come plus the final), as on the Grades tab.
+                avg: remaining > 0 ? ((b[1] - st.weighted) / remaining) * 100 : null,
+                // Final score needed if the rest of the coursework goes at
+                // the current average.
+                finalMarks: projected === null ? null : b[1] - projected,
               };
             }),
           };
