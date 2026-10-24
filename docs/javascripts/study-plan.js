@@ -182,6 +182,28 @@
       }) || null
     );
   }
+  // The latest exam of this season that's already behind you.
+  function pastExamFor(course, sid) {
+    var types = seasonInfo(sid).types,
+      today = C.todayKey(),
+      past = C.exams
+        .filter(function (e) {
+          return (
+            e.date &&
+            e.date < today &&
+            C.courseLabel(e.course) === course &&
+            types.indexOf(C.canonicalExamType(e.type)) > -1
+          );
+        })
+        .sort(function (a, b) {
+          return examTime(b).localeCompare(examTime(a));
+        });
+    return past[0] || null;
+  }
+  // Exams that happened but were never put on the calendar.
+  function markedDone(course, sid) {
+    return Boolean(((plan().done || {})[sid] || {})[course]);
+  }
   function courseList(sid) {
     var seen = {};
     C.knownCourses().forEach(function (c) {
@@ -196,6 +218,10 @@
         eb = examFor(b, sid);
       if (ea && eb) return examTime(ea).localeCompare(examTime(eb));
       if (ea || eb) return ea ? -1 : 1;
+      // Without an upcoming exam: missing dates first, finished ones last.
+      var pa = pastExamFor(a, sid) || markedDone(a, sid),
+        pb = pastExamFor(b, sid) || markedDone(b, sid);
+      if (Boolean(pa) !== Boolean(pb)) return pa ? 1 : -1;
       return a.localeCompare(b);
     });
   }
@@ -687,10 +713,26 @@
       courses
         .map(function (course) {
           var exam = examFor(course, sid),
+            past = exam ? null : pastExamFor(course, sid),
+            marked = !exam && !past && markedDone(course, sid),
             a = analysis(course, sid),
             sel = course === ui.course,
             body;
-          if (!exam)
+          if (past)
+            body =
+              '<div class="sp-exam-when">' +
+              esc(examLabel(past)) +
+              '</div><div class="sp-exam-done">' +
+              esc(noun) +
+              " done</div>";
+          else if (marked)
+            body =
+              '<div class="sp-exam-done">' +
+              esc(noun) +
+              ' done</div><button class="mini-btn" type="button" data-sp-undone="' +
+              esc(course) +
+              '">Undo</button>';
+          else if (!exam)
             body =
               '<div class="sp-exam-when muted">No ' +
               noun.toLowerCase() +
@@ -698,7 +740,10 @@
               esc(course) +
               '">Add ' +
               noun.toLowerCase() +
-              " date</button>";
+              " date</button>" +
+              '<button class="mini-btn" type="button" data-sp-done="' +
+              esc(course) +
+              '">Mark as done</button>';
           else {
             var d = daysUntil(exam.date),
               prog = a ? courseProgress(course, a, exam) : null;
@@ -721,17 +766,19 @@
                   (a === undefined ? "Loading analysis..." : "No slide analysis yet") +
                   "</div>");
           }
+          // The whole card selects the course; its own buttons still work.
           return (
             '<div class="sp-exam' +
             (sel ? " selected" : "") +
+            (past || marked ? " done" : "") +
             (exam && daysUntil(exam.date) <= 7 ? " soon" : "") +
-            '"><button class="sp-exam-pick" type="button" data-sp-course="' +
+            '" role="button" tabindex="0" data-sp-course="' +
             esc(course) +
             '" aria-pressed="' +
             sel +
-            '">' +
+            '"><div class="sp-exam-pick">' +
             esc(course) +
-            "</button>" +
+            "</div>" +
             body +
             "</div>"
           );
@@ -908,46 +955,90 @@
         esc(w) +
         "% of the grade. Add your quiz, major and assignment marks under Grades &amp; GPA to see exactly what you need on the final.</p></div>"
       );
-    var chips = n.needs
-      .slice()
-      .reverse()
+    function pct(v) {
+      return Math.ceil(v) + "%";
+    }
+    function cls(v) {
+      return v === null ? "" : v <= 0 ? "secured" : v > 100 ? "gone" : v >= 85 ? "hard" : v >= 70 ? "stretch" : "ok";
+    }
+    var paceTxt = n.pace === null ? "" : Math.round(n.pace * 100) + "%",
+      reach = n.needs.filter(function (x) {
+        return x.avg !== null && x.avg <= 100;
+      }),
+      best = reach[0] || null,
+      secured = n.needs.filter(function (x) {
+        return x.avg !== null && x.avg <= 0;
+      })[0];
+    if (n.remaining <= 0.05)
+      return (
+        '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">Everything in this course is graded: <b>' +
+        Math.round(n.weighted * 10) / 10 +
+        "%</b>.</p></div>"
+      );
+    var rows = n.needs
       .map(function (x) {
-        var cls =
-          x.marks <= 0 ? "secured" : x.percent > 100 ? "gone" : x.percent >= 85 ? "hard" : x.percent >= 65 ? "stretch" : "";
+        var fp = x.finalMarks === null ? null : (x.finalMarks / n.fw) * 100;
         return (
-          '<span class="sp-need ' +
-          cls +
-          '"><b>' +
+          '<tr class="' +
+          cls(x.avg) +
+          (best && x.letter === best.letter ? " best" : "") +
+          '"><th scope="row">' +
           esc(x.letter) +
-          "</b>" +
-          (x.marks <= 0
-            ? "secured"
-            : x.percent > 100
-              ? "out of reach"
-              : Math.ceil(x.marks * 10) / 10 + "/" + n.fw + " (" + Math.ceil(x.percent) + "%)") +
-          "</span>"
+          '</th><td class="' +
+          cls(x.avg) +
+          '">' +
+          (x.avg <= 0 ? "Secured" : x.avg > 100 ? "Out of reach" : pct(x.avg)) +
+          "</td>" +
+          (n.cwComplete || n.pace === null
+            ? ""
+            : '<td class="' +
+              cls(fp) +
+              '">' +
+              (fp <= 0
+                ? "Secured"
+                : fp > 100
+                  ? "Not at this pace"
+                  : Math.ceil(x.finalMarks * 10) / 10 + " / " + n.fw) +
+              "</td>") +
+          "</tr>"
         );
       })
       .join("");
-    var pass = n.needs.find(function (x) {
-      return x.letter === "D";
-    });
+    var summary =
+      (best
+        ? "Best grade still possible: <b>" +
+          esc(best.letter) +
+          "</b>" +
+          (best.avg > 0
+            ? ", if you average " + pct(best.avg) + " on everything left."
+            : ".")
+        : "Even full marks on everything left won't reach a D.") +
+      (secured ? " <b>" + esc(secured.letter) + "</b> or better is already secured." : "");
     return (
-      '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">Coursework so far: <b>' +
-      Math.round(n.cw * 10) / 10 +
-      "</b> of " +
-      n.cwMax +
-      " (" +
-      Math.round(n.cwUsed) +
-      "% of it graded" +
-      (n.cwComplete ? "" : ", so these are based on what's entered") +
-      "). " +
-      (pass && pass.marks > 0
-        ? "To pass you need <b>" + Math.ceil(pass.marks * 10) / 10 + " of " + n.fw + "</b> on the final."
-        : "You've already passed the course on coursework.") +
-      '</p><div class="sp-needs">' +
-      chips +
-      "</div></div>"
+      '<div class="sp-card"><h3>Finishing the course safely</h3><p class="sp-muted">' +
+      "Graded so far: <b>" +
+      Math.round(n.used) +
+      "%</b> of the course, and you've earned <b>" +
+      Math.round(n.weighted * 10) / 10 +
+      "</b> of those points. Still ahead: <b>" +
+      Math.round(n.remaining) +
+      "%</b>" +
+      (n.cwComplete
+        ? " (the final)."
+        : " (" + Math.round(n.cwMax - n.cwUsed) + "% coursework + " + n.fw + "% final).") +
+      " " +
+      summary +
+      '</p><table class="sp-need-table"><thead><tr><th scope="col">Grade</th><th scope="col">Average needed on the remaining ' +
+      Math.round(n.remaining) +
+      "%</th>" +
+      (n.cwComplete
+        ? ""
+        : n.pace === null
+          ? ""
+          : '<th scope="col">Final needed if coursework stays at ' + paceTxt + "</th>") +
+      "</tr></thead><tbody>" +
+      rows +
+      "</tbody></table></div>"
     );
   }
   function statsHtml(a) {
@@ -1304,7 +1395,7 @@
 
   // ── Events ────────────────────────────────────────────────────────────
   function onClick(ev) {
-    var t = ev.target.closest("button, input");
+    var t = ev.target.closest("button, input, a, [data-sp-course]");
     if (!t || !$("study-plan-root").contains(t)) return;
     var d = t.dataset;
     if (d.spSeason) {
@@ -1317,6 +1408,16 @@
       render();
     } else if (d.spAddExam !== undefined) {
       C.openExamEditor("", "", { course: d.spAddExam, type: season() === "quiz" ? "quiz" : season() });
+    } else if (d.spDone !== undefined || d.spUndone !== undefined) {
+      var dc = d.spDone !== undefined ? d.spDone : d.spUndone,
+        on = d.spDone !== undefined,
+        ds = season();
+      updatePlan(function (p) {
+        p.done = p.done || {};
+        p.done[ds] = p.done[ds] || {};
+        if (on) p.done[ds][dc] = true;
+        else delete p.done[ds][dc];
+      }, true);
     } else if (t.hasAttribute("data-sp-build")) {
       ui.preview = buildSchedule(season());
       render();
@@ -1376,6 +1477,13 @@
     if (!$("study-plan-root")) return;
     C = window.__shougCal;
     $("study-plan-root").addEventListener("click", onClick);
+    $("study-plan-root").addEventListener("keydown", function (ev) {
+      var card = ev.target.closest && ev.target.closest(".sp-exam[data-sp-course]");
+      if (card && ev.target === card && (ev.key === "Enter" || ev.key === " ")) {
+        ev.preventDefault();
+        card.click();
+      }
+    });
     render();
   }
   window.__shougStudyPlan = { render: render };
