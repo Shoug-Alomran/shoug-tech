@@ -14,6 +14,10 @@
  *    time before each exam, splitting hours by how much each course still
  *    needs per day left, and raises the daily cap until everything fits.
  *    Sessions are saved as Study events (planSource "study-plan").
+ *  - Exam format: what the instructor said about an exam (question types,
+ *    length, what's covered). It narrows the scope, picks practice prompts
+ *    in that format and shapes the scheduled sessions. Saved per exam in
+ *    plan.formats, with the previous versions kept when it changes.
  *
  * The calendar page owns the data and saving; this reads it through
  * window.__shougCal and re-renders from renderAll().
@@ -54,13 +58,141 @@
     concept: "Concept",
   };
   var TIER_LABEL = { core: "Must know", high: "Likely", review: "Lower" };
+  // Question formats an instructor might announce. `re` picks them out of
+  // what the student types; `kinds` and `match` choose the slide topics
+  // that suit practising that way; `ask` turns a topic into a prompt.
+  var CODE_RE = /code|coding|class|implement|program|method|interface|algorithm|function|query|sql|pseudo|singleton|factory|adapter|observer|iterator|composite|facade|builder|principle|responsib|substitution|segregation|inversion|open-closed/i;
+  // Topics already phrased as a task ("Write a quality attribute
+  // scenario") are used as they are.
+  var TASK_RE = /^(pick|write|match|name|draw|spot|fill|list|explain|apply|find|calculate|compute|solve|identify|choose|compare|design|convert|trace)\b/i;
+  function task(i, fallback) {
+    return TASK_RE.test(i.name) ? i.name + "." : fallback;
+  }
+  var FORMATS = [
+    {
+      id: "solve",
+      label: "Problem solving",
+      short: "Solving",
+      re: /solv|problem|calculat|compute|numeric|math|work out/i,
+      kinds: ["calc", "formula", "number", "process"],
+      match: /calculat|compute|solve|apply|find|spot|scenario/i,
+      tip: "Practise on paper with a timer. Write every step; reading a worked answer doesn't count as practice.",
+      ask: function (i) {
+        return task(i, "Work a full problem on " + i.name + ".") + " Write every step on paper, then check it.";
+      },
+      session: "solve problems on paper, timed",
+    },
+    {
+      id: "code",
+      label: "Code",
+      short: "Code",
+      re: /\bcode|coding|program|implement|java|python|c\+\+|pseudo|sql/i,
+      kinds: ["calc"],
+      match: CODE_RE,
+      tip: "Write code by hand from a blank page: classes, methods and how they're called. Then compare with the slides and fix what you missed.",
+      ask: function (i) {
+        return "From a blank page, write the code for " + i.name + ": the classes, methods and how they're used.";
+      },
+      session: "write the code by hand from a blank page",
+    },
+    {
+      id: "diagram",
+      label: "Diagrams",
+      short: "Diagrams",
+      re: /diagram|draw|uml|sketch/i,
+      kinds: ["calc", "process"],
+      match: /diagram|uml|draw|flow|model|pattern|architecture/i,
+      tip: "Draw each one from memory, label every part, then check it.",
+      ask: function (i) {
+        return task(i, "Draw " + i.name + " from memory.") + " Label every part.";
+      },
+      session: "draw the diagrams from memory",
+    },
+    {
+      id: "mcq",
+      label: "Multiple choice",
+      short: "MCQ",
+      re: /multiple|mcq|choice|choose/i,
+      kinds: ["compare", "concept", "list", "number"],
+      tip: "Wrong options are usually look-alike terms. Know exactly how each topic differs from its neighbours.",
+      ask: function (i) {
+        return i.kind === "compare"
+          ? "Name the difference: " + i.name + ". Which detail would a wrong option swap?"
+          : "Pick " + i.name + " out of a one-line description, and say what it's often confused with.";
+      },
+      session: "quiz yourself on look-alike terms",
+    },
+    {
+      id: "tf",
+      label: "True / False",
+      short: "T/F",
+      re: /true|false|t\/f/i,
+      kinds: ["concept", "compare", "number", "list"],
+      tip: "Statements are usually one word off. For each topic, say one true statement and change one word to make it false.",
+      ask: function (i) {
+        return "Say one true statement about " + i.name + ", then change one word to make it false.";
+      },
+      session: "turn each topic into true and false statements",
+    },
+    {
+      id: "short",
+      label: "Short answer",
+      short: "Short answer",
+      re: /short|defin|\blist\b|name the/i,
+      kinds: ["concept", "list", "process", "number"],
+      tip: "Answer in two or three sentences or a short list, out loud or on paper, without looking.",
+      ask: function (i) {
+        return i.kind === "list"
+          ? "List every part of " + i.name + " without looking."
+          : "Define " + i.name + " in two or three sentences.";
+      },
+      session: "answer short questions without notes",
+    },
+    {
+      id: "essay",
+      label: "Explain / essay",
+      short: "Explain",
+      re: /essay|discuss|long answer|explain|paragraph/i,
+      kinds: ["concept", "compare", "process"],
+      tip: "Practise full answers: the definition, why it matters, and an example.",
+      ask: function (i) {
+        return "Explain " + i.name + " in a paragraph: what it is, why it matters, and an example.";
+      },
+      session: "write full explanations with an example",
+    },
+    {
+      id: "fill",
+      label: "Fill in / match",
+      short: "Fill in",
+      re: /fill|blank|match/i,
+      kinds: ["list", "concept", "number"],
+      tip: "Learn the exact terms; these questions want the word from the slides.",
+      ask: function (i) {
+        return "Fill in the exact terms for " + i.name + ".";
+      },
+      session: "fill in the exact terms",
+    },
+    {
+      id: "case",
+      label: "Case study",
+      short: "Case study",
+      re: /case|scenario|situation/i,
+      kinds: ["calc", "compare", "concept"],
+      tip: "Practise spotting which topic a scenario is about, then justify the choice.",
+      ask: function (i) {
+        return task(i, "Make up a short scenario where " + i.name + " is the answer.") + " Say why the alternatives don't fit.";
+      },
+      session: "apply topics to scenarios",
+    },
+  ];
+  var BOOK = { "": "Not said", closed: "Closed book", open: "Open book", sheet: "Cheat sheet allowed" };
 
   var index = null,
     files = {},
     pending = {},
     localPlan = null,
     saveTimer = null,
-    ui = { course: "", preview: null, drill: true, revealed: {}, open: {} };
+    ui = { course: "", preview: null, drill: true, revealed: {}, open: {}, fmtEdit: {}, fmtAll: {} };
 
   // ── Data ──────────────────────────────────────────────────────────────
   function fetchJson(url) {
@@ -235,6 +367,21 @@
   // on the calendar maps to its Nth card of that type; anything without a
   // card covers every chapter.
   function examScope(a, exam) {
+    var base = overviewScope(a, exam),
+      f = formatFor(C.courseLabel(a.course), exam, season());
+    if (!f || !f.chapters || !f.chapters.length) return base;
+    var ids = a.chapters
+      .map(function (c) {
+        return c.id;
+      })
+      .filter(function (id) {
+        return f.chapters.indexOf(id) > -1;
+      });
+    return ids.length
+      ? { ids: ids, label: base.label, custom: true }
+      : base;
+  }
+  function overviewScope(a, exam) {
     var all = a.chapters.map(function (c) {
       return c.id;
     });
@@ -265,6 +412,61 @@
         return card.chapters.indexOf(id) > -1;
       });
     return { ids: ids.length ? ids : all, label: card.label };
+  }
+  // ── Exam format ──────────────────────────────────────────────────────
+  // Saved per calendar exam; before the exam has a date it's saved per
+  // course and season, and that one still applies once the date is added.
+  function formatKeys(course, exam, sid) {
+    return (exam ? ["exam:" + exam.id] : []).concat(course + "|" + sid);
+  }
+  function formatFor(course, exam, sid) {
+    var all = plan().formats || {},
+      keys = formatKeys(course, exam, sid);
+    for (var n = 0; n < keys.length; n++) if (all[keys[n]]) return all[keys[n]];
+    return null;
+  }
+  function formatInfo(id) {
+    return FORMATS.find(function (f) {
+      return f.id === id;
+    });
+  }
+  function detectFormats(text) {
+    return FORMATS.filter(function (f) {
+      return f.re.test(text || "");
+    }).map(function (f) {
+      return f.id;
+    });
+  }
+  function formatSummary(f, short) {
+    if (!f) return "";
+    var parts = (f.types || []).map(function (id) {
+      var x = formatInfo(id);
+      return x ? (short ? x.short : x.label) : id;
+    });
+    if (short) return parts.join(" · ");
+    if (f.questions) parts.push(f.questions + " questions");
+    if (f.minutes) parts.push(f.minutes + " min");
+    if (f.book) parts.push(BOOK[f.book]);
+    return parts.join(" · ");
+  }
+  // Topics in scope that suit practising in a format, best first.
+  function formatTopics(a, exam, fid) {
+    var x = formatInfo(fid),
+      ids = scopeIds(a, exam),
+      inScope = (a.items || []).filter(function (i) {
+        return ids.indexOf(i.chapter) > -1;
+      }),
+      fits = inScope.filter(function (i) {
+        var text = i.name + " " + (i.memorize || "");
+        return x.match ? x.kinds.indexOf(i.kind) > -1 || x.match.test(text) : x.kinds.indexOf(i.kind) > -1;
+      });
+    if (x.id === "code")
+      fits = inScope.filter(function (i) {
+        return CODE_RE.test(i.name + " " + (i.memorize || ""));
+      });
+    return fits.sort(function (p, q) {
+      return q.score - p.score;
+    });
   }
   function scopeIds(a, exam) {
     return examScope(a, exam).ids;
@@ -319,7 +521,24 @@
     var noun = seasonInfo(sid).noun,
       ids = scopeIds(a, exam),
       learn = [],
-      reviews = {};
+      reviews = {},
+      fmt = formatFor(course, exam, sid),
+      fTypes = ((fmt && fmt.types) || []).map(formatInfo).filter(Boolean),
+      fitIds = {},
+      fmtLine = fTypes.length
+        ? "Exam format: " + formatSummary(fmt) + ". Practise as it'll be asked: " +
+          fTypes
+            .map(function (x) {
+              return x.session;
+            })
+            .join("; ") +
+          ". "
+        : "";
+    fTypes.forEach(function (x) {
+      formatTopics(a, exam, x.id).forEach(function (i) {
+        fitIds[i.id] = true;
+      });
+    });
     a.chapters.forEach(function (ch) {
       if (ids.indexOf(ch.id) < 0) return;
       var left = chapterLeft(course, a, ch);
@@ -332,7 +551,8 @@
             return level(course, a, i.id) < 2;
           })
           .sort(function (x, y) {
-            return y.score - x.score;
+            // Topics that suit the announced format come first.
+            return (fitIds[y.id] ? 1 : 0) - (fitIds[x.id] ? 1 : 0) || y.score - x.score;
           })
           .slice(0, 5)
           .map(function (i) {
@@ -345,7 +565,7 @@
           last: k === n - 1,
           minutes: part,
           title: name + (k ? " (continued)" : ""),
-          notes: focus.length ? "Focus: " + focus.join("; ") : "",
+          notes: fmtLine + (focus.length ? "Focus: " + focus.join("; ") : ""),
         });
       reviews[ch.id] = {
         kind: "review",
@@ -353,7 +573,9 @@
         minutes: 30,
         notBefore: null,
         title: course + " " + noun + " · Review " + chapterName(ch),
-        notes: "Active recall: close the slides, write what you remember, then check.",
+        notes: fTypes.length
+          ? fmtLine + "Close the slides and do one question of each type from this chapter, then check."
+          : "Active recall: close the slides, write what you remember, then check.",
       };
     });
     return {
@@ -364,7 +586,12 @@
             kind: "final",
             minutes: a.curated ? 120 : 90,
             title: course + " " + noun + " · Final review",
-            notes: a.curated
+            notes: fTypes.length
+              ? fmtLine +
+                "Do a timed mock in that format" +
+                (fmt.minutes ? " (" + fmt.minutes + " min" + (fmt.questions ? ", " + fmt.questions + " questions" : "") + ")" : "") +
+                ", then redo anything you got wrong."
+              : a.curated
               ? "Formulas, key numbers and lists from the memorize sheet, then one timed problem of each type."
               : "Skim every chapter's slides and redo anything marked Shaky.",
           }
@@ -890,7 +1117,13 @@
                 : a === undefined
                   ? "Loading..."
                   : "No analysis yet") +
-              "</div>";
+              "</div>" +
+              (function () {
+                var f = formatFor(course, exam, sid);
+                return f && (f.types || []).length
+                  ? '<div class="sp-card-format">' + esc(formatSummary(f, true)) + "</div>"
+                  : '<div class="sp-card-format unset">Format not set</div>';
+              })();
           }
           return (
             '<div class="sp-course-card' +
@@ -1175,6 +1408,224 @@
       '</tbody></table><p class="sp-muted">Both columns assume the same average on everything still ahead. Do better on one and you need less on the other. PSU rounds the coursework total to a whole mark before adding the final.</p></div>'
     );
   }
+  function formatEditorHtml(course, a, exam, sid, f) {
+    var key = formatKeys(course, exam, sid)[0],
+      noun = seasonInfo(sid).noun,
+      types = (f && f.types) || [],
+      base = a ? overviewScope(a, exam) : null,
+      chosen = f && f.chapters && f.chapters.length ? f.chapters : base ? base.ids : [];
+    return (
+      '<form class="sp-fmt-form" data-sp-format-form="' +
+      esc(key) +
+      '"><label class="sp-fmt-field wide"><span>What did your instructor say?</span><textarea name="notes" rows="2" placeholder="e.g. All problem solving and code, 5 questions, 30 minutes, closed book">' +
+      esc((f && f.notes) || "") +
+      '</textarea><small class="sp-fmt-detect" aria-live="polite"></small></label>' +
+      '<fieldset class="sp-fmt-field wide"><legend>Question types</legend><div class="sp-fmt-chips">' +
+      FORMATS.map(function (x) {
+        return (
+          '<label class="sp-fmt-chip"><input type="checkbox" name="type" value="' +
+          x.id +
+          '"' +
+          (types.indexOf(x.id) > -1 ? " checked" : "") +
+          "><span>" +
+          esc(x.label) +
+          "</span></label>"
+        );
+      }).join("") +
+      '</div></fieldset><div class="sp-fmt-row"><label class="sp-fmt-field"><span>Questions</span><input type="number" name="questions" min="1" max="200" placeholder="Not said" value="' +
+      esc((f && f.questions) || "") +
+      '"></label><label class="sp-fmt-field"><span>Minutes</span><input type="number" name="minutes" min="5" max="600" step="5" placeholder="Not said" value="' +
+      esc((f && f.minutes) || "") +
+      '"></label><label class="sp-fmt-field"><span>Book</span><select name="book">' +
+      Object.keys(BOOK)
+        .map(function (k) {
+          return '<option value="' + k + '"' + (((f && f.book) || "") === k ? " selected" : "") + ">" + BOOK[k] + "</option>";
+        })
+        .join("") +
+      "</select></label></div>" +
+      (a
+        ? '<fieldset class="sp-fmt-field wide"><legend>What it covers</legend><p class="sp-muted">' +
+          (base && base.label ? "Set from the course overview (" + esc(base.label) + "). " : "") +
+          "Change it only if your instructor changed what's on the " +
+          noun.toLowerCase() +
+          '.</p><div class="sp-fmt-chips">' +
+          a.chapters
+            .map(function (ch) {
+              return (
+                '<label class="sp-fmt-chip"><input type="checkbox" name="ch" value="' +
+                esc(ch.id) +
+                '"' +
+                (chosen.indexOf(ch.id) > -1 ? " checked" : "") +
+                "><span>" +
+                esc(chapterName(ch)) +
+                "</span></label>"
+              );
+            })
+            .join("") +
+          "</div></fieldset>"
+        : "") +
+      '<label class="sp-fmt-field wide"><span>Topics to focus on or skip (optional)</span><input name="topics" placeholder="e.g. Focus on Liskov and DIP; no Observer" value="' +
+      esc((f && f.topics) || "") +
+      '"></label><div class="sp-fmt-actions"><button class="btn solid" type="submit">Save format</button>' +
+      (f ? '<button class="btn" type="button" data-sp-fmt-cancel="' + esc(key) + '">Cancel</button>' : "") +
+      (f
+        ? '<button class="sp-link-btn" type="button" data-sp-fmt-remove="' + esc(key) + '">Remove format</button>'
+        : "") +
+      "</div></form>"
+    );
+  }
+  function formatHtml(course, a, exam, sid) {
+    var f = formatFor(course, exam, sid),
+      noun = seasonInfo(sid).noun,
+      key = formatKeys(course, exam, sid)[0],
+      editing = !f || ui.fmtEdit[key],
+      sc = a ? examScope(a, exam) : null;
+    var head =
+      '<div class="sp-box-head"><div><div class="sp-eyebrow">Exam format</div><h3>' +
+      (f && !editing
+        ? esc(formatSummary(f)) || "Format saved"
+        : "How will the " + esc(noun.toLowerCase()) + " ask?") +
+      "</h3>" +
+      (f && !editing
+        ? '<p class="sp-muted">Updated ' +
+          esc(shortDate(f.updated || C.todayKey())) +
+          (sc && sc.custom ? " · covers your updated chapters" : "") +
+          "</p>"
+        : '<p class="sp-muted">Tell it what your instructor said. Practice and study sessions switch to that format.</p>') +
+      "</div>" +
+      (f && !editing
+        ? '<button class="sp-chip-btn" type="button" data-sp-fmt-edit="' + esc(key) + '">Update format</button>'
+        : "") +
+      "</div>";
+    if (editing)
+      return (
+        '<section class="sp-box sp-fmt' +
+        (f ? "" : " unset") +
+        '">' +
+        head +
+        formatEditorHtml(course, a, exam, sid, f) +
+        "</section>"
+      );
+    var said =
+      (f.notes ? '<blockquote class="sp-fmt-quote">' + esc(f.notes) + "</blockquote>" : "") +
+      (f.topics ? '<p class="sp-fmt-topics"><b>Focus:</b> ' + esc(f.topics) + "</p>" : "") +
+      (sc && sc.custom
+        ? '<p class="sp-fmt-topics"><b>Covers:</b> ' +
+          esc(
+            a.chapters
+              .filter(function (ch) {
+                return sc.ids.indexOf(ch.id) > -1;
+              })
+              .map(chapterName)
+              .join(", "),
+          ) +
+          "</p>"
+        : "");
+    var pace =
+      f.minutes && f.questions
+        ? '<div class="sp-note">About <b>' +
+          Math.max(1, Math.round(f.minutes / f.questions)) +
+          " min per question</b>. Time your practice at that pace.</div>"
+        : "";
+    var history = (f.history || []).length
+      ? '<details class="sp-fmt-history"><summary>Earlier versions (' +
+        f.history.length +
+        ")</summary><ul>" +
+        f.history
+          .map(function (h) {
+            return "<li><b>" + esc(shortDate(h.at)) + "</b> " + esc(h.summary) + "</li>";
+          })
+          .join("") +
+        "</ul></details>"
+      : "";
+    return (
+      '<section class="sp-box sp-fmt">' +
+      head +
+      said +
+      pace +
+      (a && a.curated ? formatPrepHtml(course, a, exam, f) : "") +
+      history +
+      "</section>"
+    );
+  }
+  function formatPrepHtml(course, a, exam, f) {
+    var types = (f.types || []).map(formatInfo).filter(Boolean);
+    if (!types.length) return "";
+    return (
+      '<div class="sp-fmt-prep">' +
+      types
+        .map(function (x) {
+          var list = formatTopics(a, exam, x.id),
+            k = x.id,
+            all = ui.fmtAll[k],
+            shown = all ? list : list.slice(0, 5),
+            solid = list.filter(function (i) {
+              return level(course, a, i.id) === 2;
+            }).length;
+          return (
+            '<div class="sp-fmt-type"><div class="sp-fmt-type-head"><h4>' +
+            esc(x.label) +
+            "</h4><span>" +
+            (list.length ? solid + " of " + list.length + " solid" : "") +
+            '</span></div><p class="sp-muted">' +
+            esc(x.tip) +
+            "</p>" +
+            (list.length
+              ? '<ol class="sp-fmt-list">' +
+                shown
+                  .map(function (i) {
+                    var rid = "fmt:" + k + ":" + i.id,
+                      open = ui.revealed[rid],
+                      ch = a.chapters.find(function (c) {
+                        return c.id === i.chapter;
+                      }),
+                      link = ch && (ch.links || [])[0];
+                    return (
+                      '<li class="sp-item l' +
+                      level(course, a, i.id) +
+                      '"><div class="sp-item-text"><div class="sp-item-name">' +
+                      esc(x.ask(i)) +
+                      '</div><div class="sp-item-tags"><span class="sp-kind">' +
+                      esc(ch ? chapterName(ch) : "") +
+                      "</span>" +
+                      (i.memorize || link
+                        ? '<button type="button" class="sp-link-btn" data-sp-reveal="' +
+                          esc(rid) +
+                          '" aria-expanded="' +
+                          Boolean(open) +
+                          '">' +
+                          (open ? "Hide check" : "Check answer") +
+                          "</button>"
+                        : "") +
+                      "</div>" +
+                      (open
+                        ? '<div class="sp-item-mem">' +
+                          (i.memorize ? esc(i.memorize) : "Check it against the slides.") +
+                          (link ? ' <a href="' + esc(link.url) + '">Open ' + esc(link.label) + "</a>" : "") +
+                          "</div>"
+                        : "") +
+                      "</div>" +
+                      levelButtons(i.id, level(course, a, i.id)) +
+                      "</li>"
+                    );
+                  })
+                  .join("") +
+                "</ol>" +
+                (list.length > 5
+                  ? '<button type="button" class="sp-link-btn" data-sp-fmt-all="' +
+                    k +
+                    '">' +
+                    (all ? "Show fewer" : "Show all " + list.length) +
+                    "</button>"
+                  : "")
+              : '<p class="sp-muted">Nothing in these chapters\' slides is tagged for this type. Use the past papers and practice on the course page.</p>') +
+            "</div>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
   function itemById(a, id) {
     return a.items.find(function (i) {
       return i.id === id;
@@ -1332,6 +1783,16 @@
       (function () {
         var sc = examScope(a, exam),
           outN = a.chapters.length - sc.ids.length;
+        if (sc.custom)
+          return (
+            '<p class="sp-scope">Covers <b>' +
+            sc.ids.length +
+            " of " +
+            a.chapters.length +
+            " chapters</b>, as you updated it in Exam format" +
+            (sc.label ? " (the course overview says " + esc(sc.label) + ")" : "") +
+            ".</p>"
+          );
         return sc.label
           ? '<p class="sp-scope"><b>' +
               esc(sc.label) +
@@ -1499,7 +1960,9 @@
         hue(course) +
         '><div class="sp-course-head"><div><div class="sp-eyebrow">' +
         esc(course) +
-        '</div><h3>No slide analysis yet</h3><p class="sp-muted">This course needs its slides on the site before it can be planned.</p></div></div><div class="sp-work"><div class="sp-aside">' +
+        '</div><h3>No slide analysis yet</h3><p class="sp-muted">This course needs its slides on the site before it can be planned.</p></div></div>' +
+        formatHtml(course, null, exam, sid) +
+        '<div class="sp-work"><div class="sp-aside">' +
         needsHtml(course, null) +
         "</div></div></div>"
       );
@@ -1532,6 +1995,7 @@
         : "") +
       "</div>" +
       seasonNote +
+      formatHtml(course, a, exam, sid) +
       '<div class="sp-work"><div class="sp-main">' +
       chaptersHtml(course, a, exam) +
       memorizeHtml(course, a) +
@@ -1611,6 +2075,26 @@
     } else if (d.spOpen) {
       ui.open[d.spOpen] = !ui.open[d.spOpen];
       render();
+    } else if (d.spFmtEdit) {
+      ui.fmtEdit[d.spFmtEdit] = true;
+      render();
+    } else if (d.spFmtCancel) {
+      delete ui.fmtEdit[d.spFmtCancel];
+      render();
+    } else if (d.spFmtRemove) {
+      if (!window.confirm("Remove this exam format? Practice goes back to the general view.")) return;
+      var rk = d.spFmtRemove;
+      delete ui.fmtEdit[rk];
+      ui.preview = null;
+      updatePlan(function (p) {
+        p.formats = p.formats || {};
+        formatKeys(ui.course, examFor(ui.course, season()), season()).forEach(function (k) {
+          delete p.formats[k];
+        });
+      }, true);
+    } else if (d.spFmtAll) {
+      ui.fmtAll[d.spFmtAll] = !ui.fmtAll[d.spFmtAll];
+      render();
     } else if (d.spReveal) {
       ui.revealed[d.spReveal] = !ui.revealed[d.spReveal];
       render();
@@ -1621,11 +2105,91 @@
     }
   }
 
+  function saveFormat(form) {
+    var key = form.dataset.spFormatForm,
+      fd = new FormData(form),
+      num = function (n) {
+        var v = Math.round(Number(fd.get(n)));
+        return isFinite(v) && v > 0 ? v : "";
+      },
+      sid = season(),
+      exam = examFor(ui.course, sid),
+      prev = formatFor(ui.course, exam, sid),
+      a = analysis(ui.course, sid),
+      base = a ? overviewScope(a, exam).ids : [],
+      chapters = fd.getAll("ch"),
+      next = {
+        notes: String(fd.get("notes") || "").trim(),
+        types: fd.getAll("type"),
+        questions: num("questions"),
+        minutes: num("minutes"),
+        book: String(fd.get("book") || ""),
+        topics: String(fd.get("topics") || "").trim(),
+        // Only a change from the overview's chapters is stored.
+        chapters:
+          chapters.length && chapters.sort().join() !== base.slice().sort().join() ? chapters : null,
+        updated: C.todayKey(),
+      };
+    if (!next.types.length) next.types = detectFormats(next.notes);
+    if (!next.types.length && !next.notes) {
+      C.toast("Pick at least one question type, or type what your instructor said");
+      return;
+    }
+    var history = (prev && prev.history) || [];
+    if (prev) {
+      var was =
+        formatSummary(prev) +
+        (prev.notes ? ' ("' + prev.notes + '")' : "") +
+        (prev.chapters ? " · covered " + prev.chapters.join(", ").replace(/ch/g, "Ch ") : "");
+      if (was !== formatSummary(next) + (next.notes ? ' ("' + next.notes + '")' : "") || String(prev.chapters) !== String(next.chapters))
+        history = [{ at: prev.updated || C.todayKey(), summary: was }].concat(history).slice(0, 5);
+    }
+    next.history = history;
+    delete ui.fmtEdit[key];
+    ui.preview = null;
+    updatePlan(function (p) {
+      p.formats = p.formats || {};
+      // A course-level format moves onto the exam once it has a date.
+      formatKeys(ui.course, exam, sid).forEach(function (k) {
+        delete p.formats[k];
+      });
+      p.formats[key] = next;
+    }, true);
+    C.toast(
+      (prev ? "Exam format updated" : "Exam format saved") +
+        (plannedItems(sid).length ? ". Build the plan again to update planned sessions." : ""),
+    );
+  }
   function boot() {
     if (!window.__shougCal) return setTimeout(boot, 50);
     if (!$("study-plan-root")) return;
     C = window.__shougCal;
     $("study-plan-root").addEventListener("click", onClick);
+    $("study-plan-root").addEventListener("submit", function (ev) {
+      var form = ev.target.closest("[data-sp-format-form]");
+      if (!form) return;
+      ev.preventDefault();
+      saveFormat(form);
+    });
+    // Ticks the question types it recognises in what was typed.
+    $("study-plan-root").addEventListener("input", function (ev) {
+      if (ev.target.name !== "notes") return;
+      var form = ev.target.closest("[data-sp-format-form]"),
+        found = detectFormats(ev.target.value);
+      if (!form) return;
+      found.forEach(function (id) {
+        var box = form.querySelector('input[name="type"][value="' + id + '"]');
+        if (box) box.checked = true;
+      });
+      form.querySelector(".sp-fmt-detect").textContent = found.length
+        ? "Picked up: " +
+          found
+            .map(function (id) {
+              return formatInfo(id).label;
+            })
+            .join(", ")
+        : "";
+    });
     $("study-plan-root").addEventListener("keydown", function (ev) {
       var card = ev.target.closest && ev.target.closest("[data-sp-course]");
       if (card && ev.target === card && (ev.key === "Enter" || ev.key === " ")) {
