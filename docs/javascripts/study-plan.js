@@ -14,6 +14,9 @@
  *    time before each exam, splitting hours by how much each course still
  *    needs per day left, and raises the daily cap until everything fits.
  *    Sessions are saved as Study events (planSource "study-plan").
+ *  - Remaining: every exam and deadline still ahead, in the order to start
+ *    them, and how heavy each week looks against your free time. An
+ *    overview only, with no chapters or practice.
  *  - Exam format: what the instructor said about an exam (question types,
  *    length, what's covered). It narrows the scope, picks practice prompts
  *    in that format and shapes the scheduled sessions. Saved per exam in
@@ -35,7 +38,18 @@
     { id: "quiz", label: "Quizzes", noun: "Quiz", types: ["quiz", "bonus-quiz"] },
     { id: "midterm", label: "Midterms", noun: "Midterm", types: ["midterm"] },
     { id: "final", label: "Finals", noun: "Final", types: ["final"] },
+    {
+      id: "remaining",
+      label: "Remaining",
+      noun: "Exam",
+      types: ["quiz", "bonus-quiz", "midterm", "final"],
+    },
   ];
+  // A comfortable amount of study for one course in a day, used to say
+  // when to start on an exam.
+  var EASY_DAY = 90;
+  // How much study a day is realistic in total, for judging a week.
+  var STUDY_DAY = 180;
   var LEVELS = ["New", "Shaky", "Solid"];
   // Share of an item's study time still needed at each readiness level.
   var FACTOR = [1, 0.55, 0.15];
@@ -651,7 +665,7 @@
           return i.id === e.itemId;
         });
       // The plan being rebuilt doesn't block itself.
-      if (raw && raw.planSource === "study-plan" && raw.planSeason === sid)
+      if (raw && raw.planSource === "study-plan" && (raw.planSeason === sid || sid === "remaining"))
         return;
       if (!e.start) {
         if (e.kind === "busy" || e.kind === "travel") all = true;
@@ -2170,12 +2184,310 @@
       "</div></div></div>"
     );
   }
+  // ── Remaining ─────────────────────────────────────────────────────────
+  function examSeason(e) {
+    var t = C.canonicalExamType(e.type);
+    return t === "bonus-quiz" ? "quiz" : t;
+  }
+  function weightFor(a, sid) {
+    var re = { quiz: /quiz/i, midterm: /mid|major/i, final: /final/i }[sid],
+      w = ((a && a.syllabus && a.syllabus.weights) || []).find(function (x) {
+        return re.test(x.label);
+      });
+    return w ? w.percent : null;
+  }
+  // Everything still ahead: exams with the study left for them, and
+  // unsubmitted assignments and projects with their estimated hours.
+  function remainingEntries() {
+    var today = C.todayKey(),
+      out = [];
+    C.exams.forEach(function (e) {
+      if (!e.date || e.date < today) return;
+      var course = C.courseLabel(e.course),
+        sid = examSeason(e),
+        a = analysis(course, sid),
+        prog = a ? courseProgress(course, a, e) : null,
+        sc = a ? examScope(a, e) : null,
+        name = sc && sc.label ? sc.label.split(/ [—–-] /)[0] : seasonInfo(sid).noun;
+      if (/^(Final Exam|Final)$/i.test(name)) name = "Final";
+      out.push({
+        type: "exam",
+        sid: sid,
+        course: course,
+        name: name,
+        date: e.date,
+        time: e.start || "",
+        minutes: prog ? prog.left : null,
+        loading: a === undefined,
+        weight: a ? weightFor(a, sid) : null,
+        format: formatFor(course, e, sid),
+      });
+    });
+    C.items.forEach(function (i) {
+      if ((i.kind !== "assignment" && i.kind !== "project") || i.submitted || !i.date || i.date < today) return;
+      out.push({
+        type: "due",
+        course: C.courseLabel(i.course || "") || "",
+        name: i.title || (i.kind === "project" ? "Project" : "Assignment"),
+        kind: i.kind,
+        date: i.date,
+        time: i.end || i.start || "",
+        minutes: (Number(i.estimatedHours) || 2) * 60,
+        priority: i.priority || "",
+      });
+    });
+    out.forEach(function (x) {
+      var days = Math.max(1, Math.ceil((x.minutes || 0) / EASY_DAY));
+      // An exam also needs its last day for the final review.
+      x.startBy = C.addDays(x.date, -(days + (x.type === "exam" ? 1 : 0)));
+      x.daysLeft = daysUntil(x.date);
+      x.perDay = x.minutes ? x.minutes / Math.max(1, x.daysLeft) : 0;
+    });
+    return out.sort(function (p, q) {
+      return p.startBy.localeCompare(q.startBy) || p.date.localeCompare(q.date);
+    });
+  }
+  function freeMinutes(day) {
+    var today = C.todayKey(),
+      now = new Date(),
+      start = DAY_START;
+    if (day === today) start = Math.max(DAY_START, now.getHours() * 60 + now.getMinutes());
+    return freeSlots(day, "remaining", start).reduce(function (m, sl) {
+      return m + (sl[1] - sl[0]);
+    }, 0);
+  }
+  function weekStart(k) {
+    return C.addDays(k, -C.fromKey(k).getDay());
+  }
+  function aboutHours(min) {
+    if (min < 50) return Math.max(15, Math.round(min / 15) * 15) + " min";
+    return hours(min);
+  }
+  function entryLabel(x) {
+    return x.course ? x.course + " " + x.name : x.name;
+  }
+  function remainingHtml() {
+    var list = remainingEntries(),
+      today = C.todayKey();
+    if (!list.length)
+      return '<div class="sp-empty">Nothing left on your calendar. Add exam dates and assignments and they\'ll show up here.</div>';
+    var exams = list.filter(function (x) {
+        return x.type === "exam";
+      }),
+      dues = list.length - exams.length,
+      totalMin = list.reduce(function (m, x) {
+        return m + (x.minutes || 0);
+      }, 0),
+      last = list.reduce(function (m, x) {
+        return x.date > m ? x.date : m;
+      }, today);
+    // Courses still waiting on a final date.
+    var noFinal = C.knownCourses().filter(function (c) {
+      return (
+        !markedDone(c, "final") &&
+        !pastExamFor(c, "final") &&
+        !exams.some(function (x) {
+          return x.course === c && x.sid === "final";
+        })
+      );
+    });
+    var summary =
+      '<div class="sp-rem-summary"><div><b>' +
+      exams.length +
+      "</b><span>exam" +
+      (exams.length === 1 ? "" : "s") +
+      " left</span></div><div><b>" +
+      dues +
+      "</b><span>deadline" +
+      (dues === 1 ? "" : "s") +
+      "</span></div><div><b>" +
+      hours(totalMin) +
+      "</b><span>of work left</span></div><div><b>" +
+      esc(shortDate(last)) +
+      "</b><span>last one</span></div></div>" +
+      (noFinal.length
+        ? '<div class="sp-note">No final date yet for ' +
+          esc(noFinal.join(", ")) +
+          ". Add it on the calendar so it's counted here.</div>"
+        : "");
+
+    // Focus now: whatever should already be under way.
+    var soon = C.addDays(today, 2),
+      focus = list.filter(function (x) {
+        return x.startBy <= soon && x.minutes;
+      });
+    var focusHtml =
+      '<section class="sp-box sp-rem-focus"><div class="sp-eyebrow">Focus now</div>' +
+      (focus.length
+        ? "<h3>" +
+          (focus.length === 1 ? "One thing needs your time" : focus.length + " things need your time") +
+          ' right now</h3><ol class="sp-rem-focus-list">' +
+          focus
+            .slice(0, 4)
+            .map(function (x) {
+              return (
+                "<li><b>" +
+                esc(entryLabel(x)) +
+                "</b><span>" +
+                (x.type === "exam" ? "in " + x.daysLeft + " day" + (x.daysLeft === 1 ? "" : "s") : "due " + esc(shortDate(x.date))) +
+                " · about " +
+                esc(aboutHours(x.perDay)) +
+                " a day</span></li>"
+              );
+            })
+            .join("") +
+          "</ol>" +
+          (focus.length > 4 ? '<p class="sp-muted">And ' + (focus.length - 4) + " more below.</p>" : "")
+        : "<h3>Nothing urgent</h3><p class=\"sp-muted\">Nothing needs starting in the next couple of days. Get ahead on the next one, or take the time off.</p>") +
+      "</section>";
+
+    // Priorities, in the order to start them.
+    var rows = list
+      .map(function (x) {
+        var state, cls;
+        if (x.loading) {
+          state = "Working it out...";
+          cls = "";
+        } else if (!x.minutes) {
+          state = x.type === "exam" ? "No slide analysis" : "";
+          cls = "";
+        } else if (x.startBy <= today) {
+          state = x.perDay > 180 ? "Behind · " + aboutHours(x.perDay) + " a day" : "Start now";
+          cls = x.perDay > 180 ? " late" : " now";
+        } else {
+          state = "Start by " + shortDate(x.startBy);
+          cls = x.startBy <= C.addDays(today, 7) ? " soon" : "";
+        }
+        var meta = [x.type === "exam" ? shortDate(x.date) + (x.time ? " · " + C.timeLabel(x.time) : "") : "Due " + shortDate(x.date)];
+        if (x.minutes) meta.push(hours(x.minutes) + (x.type === "exam" ? " to study" : " of work"));
+        if (x.weight) meta.push(x.weight + "% of the grade");
+        if (x.format && (x.format.types || []).length) meta.push(formatSummary(x.format, true));
+        return (
+          '<li class="sp-rem-row' +
+          cls +
+          '"' +
+          hue(x.course) +
+          '><span class="sp-rem-days"><b>' +
+          x.daysLeft +
+          "</b>day" +
+          (x.daysLeft === 1 ? "" : "s") +
+          '</span><span class="sp-rem-main"><span class="sp-rem-name">' +
+          esc(entryLabel(x)) +
+          (x.type === "due" ? '<span class="sp-rem-kind">' + esc(x.kind) + "</span>" : "") +
+          '</span><span class="sp-rem-meta">' +
+          esc(meta.join(" · ")) +
+          "</span></span>" +
+          (state ? '<span class="sp-rem-state">' + esc(state) + "</span>" : "<span></span>") +
+          (x.type === "exam"
+            ? '<button type="button" class="sp-link-btn" data-sp-goto="' +
+              esc(x.sid + "|" + x.course) +
+              '">Open</button>'
+            : "<span></span>") +
+          "</li>"
+        );
+      })
+      .join("");
+    var prio =
+      '<section class="sp-box"><h3>What to start first</h3><p class="sp-muted">In the order to begin them, at about ' +
+      EASY_DAY / 60 +
+      " h a day for each, with a day spare before each exam.</p><ol class=\"sp-rem-list\">" +
+      rows +
+      "</ol></section>";
+
+    // Week by week: the study each week asks for against your free time.
+    var load = {};
+    list.forEach(function (x) {
+      if (!x.minutes) return;
+      var from = x.startBy < today ? today : x.startBy,
+        to = x.type === "exam" ? C.addDays(x.date, -1) : x.date;
+      if (to < from) to = from;
+      var n = 0;
+      for (var d = from; d <= to; d = C.addDays(d, 1)) n++;
+      for (var d2 = from; d2 <= to; d2 = C.addDays(d2, 1)) {
+        var w = weekStart(d2);
+        load[w] = (load[w] || 0) + x.minutes / n;
+      }
+    });
+    var weeks = [];
+    for (var w = weekStart(today); w <= last; w = C.addDays(w, 7)) weeks.push(w);
+    var weekHtml =
+      '<section class="sp-box"><h3>Week by week</h3><p class="sp-muted">Study each week asks for if you start on time, next to your free time (9 AM to 10 PM, after classes, work, events and the drive). A week is tight when it needs close to 3 h of study a day.</p><div class="sp-rem-weeks">' +
+      weeks
+        .map(function (w) {
+          var free = 0,
+            budget = 0;
+          for (var i = 0; i < 7; i++) {
+            var d = C.addDays(w, i);
+            if (d < today) continue;
+            var f = freeMinutes(d);
+            free += f;
+            budget += Math.min(f, STUDY_DAY);
+          }
+          // Judged against a realistic study budget (3 h a day at most),
+          // not every free minute.
+          var need = load[w] || 0,
+            ratio = budget ? need / budget : need ? 2 : 0,
+            label = !need ? "Free" : ratio < 0.5 ? "Comfortable" : ratio < 0.85 ? "Busy" : "Tight",
+            cls = !need ? "free" : ratio < 0.5 ? "ok" : ratio < 0.85 ? "busy" : "tight",
+            here = list.filter(function (x) {
+              return weekStart(x.date) === w;
+            });
+          return (
+            '<div class="sp-rem-week ' +
+            cls +
+            '"><div class="sp-rem-week-head"><b>' +
+            esc(shortDate(w < today ? today : w)) +
+            " – " +
+            esc(shortDate(C.addDays(w, 6))) +
+            '</b><span class="sp-rem-pill">' +
+            label +
+            '</span></div><div class="sp-rem-load"><span style="width:' +
+            Math.min(100, ratio * 100) +
+            '%"></span></div><div class="sp-rem-week-meta">' +
+            (need ? "About " + hours(need) + " of study" : "No study needed") +
+            " · " +
+            hours(free) +
+            " free" +
+            (cls === "tight" ? ". Starting the next exam a few days early would spread this out." : "") +
+            "</div>" +
+            (here.length
+              ? '<div class="sp-rem-chips">' +
+                here
+                  .map(function (x) {
+                    return (
+                      '<span class="sp-rem-chip ' +
+                      x.type +
+                      '"' +
+                      hue(x.course) +
+                      ">" +
+                      esc(C.prettyDate(x.date).split(",")[0]) +
+                      " · " +
+                      esc(entryLabel(x)) +
+                      "</span>"
+                    );
+                  })
+                  .join("") +
+                "</div>"
+              : "") +
+            "</div>"
+          );
+        })
+        .join("") +
+      "</div></section>";
+    return summary + focusHtml + '<div class="sp-rem-grid">' + prio + weekHtml + "</div>";
+  }
   function render() {
     var root = $("study-plan-root");
     if (!root || !C) return;
     loadIndex();
-    var sid = season(),
-      courses = courseList(sid);
+    var sid = season();
+    if (sid === "remaining") {
+      var y = window.scrollY;
+      root.innerHTML = headHtml(sid) + '<div class="sp-body">' + remainingHtml() + "</div>";
+      if (Math.abs(window.scrollY - y) > 2) window.scrollTo(0, y);
+      return;
+    }
+    var courses = courseList(sid);
     if (!ui.course || courses.indexOf(ui.course) < 0) ui.course = courses[0] || "";
     var scrollY = window.scrollY;
     root.innerHTML =
@@ -2255,6 +2567,14 @@
           delete p.formats[k];
         });
       }, true);
+    } else if (d.spGoto) {
+      var g = d.spGoto.split("|");
+      ui.course = g[1];
+      ui.preview = null;
+      updatePlan(function (p) {
+        p.season = g[0];
+      }, true);
+      window.scrollTo(0, $("study-plan-root").getBoundingClientRect().top + window.scrollY - 20);
     } else if (d.spUniClear) {
       saveUni(d.spUniClear, { leave: "", back: "" });
     } else if (d.spFmtAll) {
