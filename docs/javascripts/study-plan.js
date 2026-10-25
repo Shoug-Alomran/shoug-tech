@@ -598,6 +598,49 @@
         : null,
     };
   }
+  // Minutes of driving each way to campus (plan.commute, 30 if never set).
+  function commute() {
+    var v = Number(plan().commute);
+    return plan().commute === undefined || !isFinite(v) || v < 0 ? 30 : v;
+  }
+  // When you're on campus: the first in-person class or exam to the end of
+  // the last one. Online classes don't count.
+  function campusSpan(day) {
+    var span = null;
+    C.eventsFor(day, true).forEach(function (e) {
+      if (!e.start || !((e.kind === "class" && !e.online) || e.kind === "exam")) return;
+      var s = C.minutes(e.start),
+        en = e.end ? C.minutes(e.end) : s + (e.kind === "exam" ? 120 : 60);
+      if (s === null) return;
+      span = span ? [Math.min(span[0], s), Math.max(span[1], en)] : [s, en];
+    });
+    return span;
+  }
+  var UNI_DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  // Your usual times for a weekday (plan.uni[weekday] = {leave, back}).
+  function uniTimes(day) {
+    return ((plan().uni || {})[UNI_DAYS[C.fromKey(day).getDay()]]) || {};
+  }
+  // The two drives on a uni day. Times you've set for the weekday win; the
+  // rest come from your first and last campus class or exam. Your times
+  // also count on online-class days, since you said you go in, but not on
+  // days with no class at all (holidays, breaks).
+  function uniTrip(day) {
+    var span = campusSpan(day),
+      t = uniTimes(day),
+      drive = commute(),
+      leave = t.leave ? C.minutes(t.leave) : null,
+      back = t.back ? C.minutes(t.back) : null;
+    if (!span) {
+      var anyClass = C.eventsFor(day, true).some(function (e) {
+        return e.kind === "class";
+      });
+      if (!anyClass || leave === null || back === null) return null;
+    }
+    if (leave === null || (span && leave + drive > span[0])) leave = span[0] - drive;
+    if (back === null || (span && back < span[1])) back = span[1];
+    return { leave: leave, arrive: leave + drive, back: back, home: back + drive, drive: drive, set: Boolean(t.leave || t.back) };
+  }
   function busyFor(day, sid) {
     var all = false,
       busy = [];
@@ -626,6 +669,12 @@
       if (s === null) return;
       busy.push([s - BUFFER, Math.max(en, s + 15) + BUFFER]);
     });
+    // The drive there and back. Gaps on campus stay free for study.
+    var trip = uniTrip(day);
+    if (trip) {
+      busy.push([trip.leave - BUFFER, trip.arrive]);
+      busy.push([trip.back, trip.home + BUFFER]);
+    }
     return { all: all, busy: busy };
   }
   function freeSlots(day, sid, startMin) {
@@ -1168,6 +1217,63 @@
       ? '<div class="sp-note warn">' + out.join(". ") + ". The day before the first one goes to its final review, so the second one's final review comes after the first exam ends.</div>"
       : "";
   }
+  function uniTimesHtml() {
+    var all = plan().uni || {},
+      n = Object.keys(all).filter(function (k) {
+        return all[k] && (all[k].leave || all[k].back);
+      }).length;
+    return (
+      '<details class="sp-uni"' +
+      (ui.uniOpen ? " open" : "") +
+      "><summary>When you leave home and uni" +
+      (n ? " · set for " + n + " day" + (n === 1 ? "" : "s") : "") +
+      '</summary><p class="sp-muted">Leave a day blank to work it out from your classes. Study isn\'t scheduled while you\'re driving.</p><div class="sp-uni-grid"><span></span><span>Leave home</span><span>Leave uni</span><span></span>' +
+      UNI_DAYS.slice(0, 5)
+        .map(function (d) {
+          var t = all[d] || {};
+          return (
+            "<b>" +
+            d.charAt(0).toUpperCase() +
+            d.slice(1, 3) +
+            '</b><input type="time" data-sp-uni="' +
+            d +
+            '" data-f="leave" value="' +
+            esc(t.leave || "") +
+            '" aria-label="' +
+            d +
+            ' leave home" /><input type="time" data-sp-uni="' +
+            d +
+            '" data-f="back" value="' +
+            esc(t.back || "") +
+            '" aria-label="' +
+            d +
+            ' leave uni" />' +
+            (t.leave || t.back
+              ? '<button type="button" class="sp-link-btn" data-sp-uni-clear="' + d + '">Clear</button>'
+              : "<span></span>")
+          );
+        })
+        .join("") +
+      "</div></details>"
+    );
+  }
+  function saveUni(day, patch) {
+    var rebuild = Boolean(ui.preview);
+    ui.uniOpen = true;
+    updatePlan(function (p) {
+      p.uni = p.uni || {};
+      var t = Object.assign({}, p.uni[day], patch);
+      Object.keys(t).forEach(function (k) {
+        if (!t[k]) delete t[k];
+      });
+      if (Object.keys(t).length) p.uni[day] = t;
+      else delete p.uni[day];
+    }, true);
+    if (rebuild) {
+      ui.preview = buildSchedule(season());
+      render();
+    }
+  }
   function plannerHtml(sid) {
     var ex = seasonExams(sid),
       noun = seasonInfo(sid).noun.toLowerCase(),
@@ -1188,7 +1294,11 @@
       (planned.length
         ? '<button class="btn muted" type="button" data-sp-clear>Remove planned sessions</button>'
         : "") +
-      "</div></div>";
+      "</div></div>" +
+      '<label class="sp-commute">Drive to and from uni<input type="number" min="0" max="240" step="5" data-sp-commute value="' +
+      commute() +
+      '" aria-label="Minutes of driving each way" /><span>min each way</span></label>' +
+      uniTimesHtml();
     if (planned.length && !pv) {
       var next = planned.slice().sort(function (x, y) {
         return (x.date + x.start).localeCompare(y.date + y.start);
@@ -1207,7 +1317,7 @@
         ". Mark items Solid as you go and re-plan whenever you fall behind or finish early.</p>";
     } else if (!pv)
       out +=
-        '<p class="sp-muted">Builds learn sessions chapter by chapter, a review three days after each chapter, and a final review the day before each exam, all in your free time between 9 AM and 10 PM around classes, exams and events.</p>';
+        '<p class="sp-muted">Builds learn sessions chapter by chapter, a review three days after each chapter, and a final review the day before each exam, all in your free time between 9 AM and 10 PM around classes, exams, events and the drive to and from uni.</p>';
     if (pv) {
       out += '<div class="sp-preview">';
       if (pv.skipped.length)
@@ -1275,6 +1385,17 @@
               "</b><span>" +
               hours(total) +
               "</span></div>" +
+              (function () {
+                var trip = uniTrip(d);
+                return trip
+                  ? '<div class="sp-day-campus">Leave home ' +
+                      esc(C.timeLabel(C.toTime(trip.leave))) +
+                      " · leave uni " +
+                      esc(C.timeLabel(C.toTime(trip.back))) +
+                      (trip.drive ? " · home " + esc(C.timeLabel(C.toTime(trip.home))) : "") +
+                      "</div>"
+                  : "";
+              })() +
               list
                 .map(function (p) {
                   return (
@@ -1652,17 +1773,37 @@
       "</span>"
     );
   }
-  function statsHtml(a) {
-    var t = a.totals,
-      k = t.kinds || {},
+  // Counts for the chapters the selected exam covers.
+  function statsHtml(a, exam, sid) {
+    var sc = examScope(a, exam),
+      chs = a.chapters.filter(function (ch) {
+        return sc.ids.indexOf(ch.id) > -1;
+      }),
+      its = (a.items || []).filter(function (i) {
+        return sc.ids.indexOf(i.chapter) > -1;
+      }),
+      k = {},
+      t = { slides: 0, minutes: 0 };
+    chs.forEach(function (ch) {
+      t.slides += ch.slides;
+      t.minutes += ch.minutes;
+    });
+    its.forEach(function (i) {
+      k[i.kind] = (k[i.kind] || 0) + 1;
+    });
+    var noun = seasonInfo(sid).noun,
+      wre = { quiz: /quiz/i, midterm: /mid|major/i, final: /final/i }[sid],
+      w = ((a.syllabus && a.syllabus.weights) || []).find(function (x) {
+        return wre.test(x.label);
+      }),
       tiles = [
         ["Slides", t.slides],
-        ["Chapters", t.chapters],
+        ["Chapters", chs.length],
         ["Study time", hours(t.minutes)],
       ];
     if (a.curated)
       tiles = tiles.concat([
-        ["Topics", t.items],
+        ["Topics", its.length],
         ["Formulas", k.formula],
         ["Key numbers", k.number],
         ["Lists", k.list],
@@ -1670,10 +1811,32 @@
         ["Comparisons", k.compare],
         ["Processes", k.process],
       ]);
-    if (a.syllabus && a.syllabus.final_weight)
+    if (w) tiles.push([sid === "final" ? "Final weight" : w.label, w.percent + "%"]);
+    else if (sid === "final" && a.syllabus && a.syllabus.final_weight)
       tiles.push(["Final weight", a.syllabus.final_weight + "%"]);
     return (
-      '<section class="sp-box"><h3>At a glance</h3><div class="sp-stats">' +
+      '<section class="sp-box"><h3>At a glance</h3><p class="sp-muted">' +
+      (chs.length < a.chapters.length
+        ? "For " +
+          esc(sc.label ? sc.label.split(/ [—-] /)[0] : noun) +
+          ": " +
+          esc(
+            chs
+              .map(function (ch) {
+                return chapterName(ch).split(" ").slice(0, 2).join(" ");
+              })
+              .filter(function (n, i, all) {
+                return all.indexOf(n) === i;
+              })
+              .join(", "),
+          ) +
+          " (" +
+          chs.length +
+          " of " +
+          a.chapters.length +
+          " chapters)."
+        : "For the " + esc(noun.toLowerCase()) + ": every chapter.") +
+      '</p><div class="sp-stats">' +
       tiles
         .filter(function (x) {
           return x[1] !== undefined && x[1] !== 0;
@@ -2000,7 +2163,7 @@
       chaptersHtml(course, a, exam) +
       memorizeHtml(course, a) +
       '</div><div class="sp-aside">' +
-      statsHtml(a) +
+      statsHtml(a, exam, sid) +
       needsHtml(course, a) +
       repeatedHtml(a) +
       styleHtml(a) +
@@ -2092,6 +2255,8 @@
           delete p.formats[k];
         });
       }, true);
+    } else if (d.spUniClear) {
+      saveUni(d.spUniClear, { leave: "", back: "" });
     } else if (d.spFmtAll) {
       ui.fmtAll[d.spFmtAll] = !ui.fmtAll[d.spFmtAll];
       render();
@@ -2165,6 +2330,38 @@
     if (!$("study-plan-root")) return;
     C = window.__shougCal;
     $("study-plan-root").addEventListener("click", onClick);
+    // Keep the leave-times panel open across re-renders once opened.
+    $("study-plan-root").addEventListener(
+      "toggle",
+      function (ev) {
+        if (ev.target.classList && ev.target.classList.contains("sp-uni")) ui.uniOpen = ev.target.open;
+      },
+      true,
+    );
+    $("study-plan-root").addEventListener("change", function (ev) {
+      var ud = ev.target.dataset && ev.target.dataset.spUni;
+      if (ud) {
+        var patch = {};
+        patch[ev.target.dataset.f] = ev.target.value;
+        saveUni(ud, patch);
+        return;
+      }
+      if (!ev.target.hasAttribute("data-sp-commute")) return;
+      var v = Math.round(Number(ev.target.value));
+      if (!isFinite(v) || v < 0 || v > 240) {
+        C.toast("Enter the drive in minutes, 0 to 240");
+        ev.target.value = commute();
+        return;
+      }
+      var rebuild = Boolean(ui.preview);
+      updatePlan(function (p) {
+        p.commute = v;
+      }, true);
+      if (rebuild) {
+        ui.preview = buildSchedule(season());
+        render();
+      }
+    });
     $("study-plan-root").addEventListener("submit", function (ev) {
       var form = ev.target.closest("[data-sp-format-form]");
       if (!form) return;
