@@ -5511,9 +5511,61 @@
             <label>Apply Change To</label
             ><select id="class-edit-scope">
               <option value="date">This date only</option>
+              <option value="move">Move this meeting to another date</option>
               <option value="week">This week (Sun–Sat)</option>
               <option value="schedule">Entire schedule</option>
             </select>
+          </div>
+          <div id="class-edit-move-fields" hidden>
+            <div class="grid-2">
+              <div class="field">
+                <label>New Date</label
+                ><input id="class-move-date" type="hidden" />
+                <div class="mini-date compact-date" id="class-move-date-picker">
+                  <button
+                    class="mini-date-trigger is-empty"
+                    id="class-move-date-trigger"
+                    type="button"
+                  >
+                    Choose the new date
+                  </button>
+                  <div class="mini-date-pop" id="class-move-date-pop">
+                    <div class="mini-date-head">
+                      <button
+                        class="mini-date-nav"
+                        id="class-move-date-prev"
+                        type="button"
+                        aria-label="Previous month"
+                      >
+                        &lt;
+                      </button>
+                      <div class="mini-date-month" id="class-move-date-month"></div>
+                      <button
+                        class="mini-date-nav"
+                        id="class-move-date-next"
+                        type="button"
+                        aria-label="Next month"
+                      >
+                        &gt;
+                      </button>
+                    </div>
+                    <div class="mini-date-weekdays">
+                      <span>Sun</span><span>Mon</span><span>Tue</span
+                      ><span>Wed</span><span>Thu</span><span>Fri</span
+                      ><span>Sat</span>
+                    </div>
+                    <div class="mini-date-grid" id="class-move-date-grid"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Meeting</label
+                ><select id="class-move-mode">
+                  <option value="inperson">In person</option>
+                  <option value="online">Online</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="grid-2">
             <div class="field">
@@ -5530,7 +5582,9 @@
               placeholder="Room or building for in-person days"
             />
           </div>
-          <label class="filter-toggle class-online-toggle"
+          <label
+            class="filter-toggle class-online-toggle"
+            id="class-edit-online-only-toggle"
             ><input id="class-edit-online-only" type="checkbox" />Fully online
             course</label
           >
@@ -6321,6 +6375,11 @@
             return o.classId === c.id && o.date === k;
           });
         }
+        // A meeting moved with "Reschedule" leaves its original day.
+        function isMovedAway(c, k) {
+          var o = classOverride(c, k);
+          return Boolean(o && o.movedTo && o.movedTo !== k);
+        }
         function effectiveClass(c, k) {
           return Object.assign({}, c, classOverride(c, k) || {});
         }
@@ -6887,7 +6946,8 @@
                 (c.days || []).indexOf(day) > -1 &&
                 isDuringPsuClasses(k, c.termId) &&
                 inDateRange(k, c.startDate, c.endDate) &&
-                !classRecord(c, k)
+                !classRecord(c, k) &&
+                !isMovedAway(c, k)
               );
             })
             .forEach(function (c) {
@@ -6934,6 +6994,44 @@
                   adjusted: seg.adjusted,
                   sort: seg.start || effective.start || "99:99",
                 });
+              });
+            });
+          // Meetings rescheduled onto this day from another date.
+          classOverrides
+            .filter(function (o) {
+              return o.movedTo === k && o.movedTo !== o.date;
+            })
+            .forEach(function (o) {
+              var c = scopedClasses().find(function (x) {
+                return x.id === o.classId;
+              });
+              if (!c) return;
+              var online = o.mode === "online",
+                from = fromKey(o.date).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                }),
+                meta = [timeRange(o.start || c.start, o.end || c.end)];
+              if (online) meta.push(o.onlineLink || c.onlineLink ? "Online meeting" : "Online");
+              else if (o.location || c.location) meta.push(o.location || c.location);
+              meta.push("Rescheduled from " + from);
+              out.push({
+                kind: "class",
+                termId: c.termId || "",
+                classId: c.id,
+                movedFrom: o.date,
+                course: c.title || "",
+                title: c.title || "Class",
+                meta: meta.join(" · "),
+                date: k,
+                endDate: k,
+                start: o.start || c.start || "",
+                end: o.end || c.end || "",
+                online: online,
+                onlineLink: o.onlineLink || c.onlineLink || "",
+                adjusted: true,
+                sort: o.start || c.start || "99:99",
               });
             });
           items
@@ -9577,6 +9675,16 @@
               openClassRemoval(b.dataset.classRemove, b.dataset.date);
             });
           });
+          root.querySelectorAll("[data-class-move]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              openClassEdit(b.dataset.classMove, b.dataset.date, "move");
+            });
+          });
+          root.querySelectorAll("[data-class-unmove]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              unmoveClass(b.dataset.classUnmove, b.dataset.date);
+            });
+          });
           root.querySelectorAll("[data-class-edit]").forEach(function (b) {
             b.addEventListener("click", function () {
               openClassEdit(b.dataset.classEdit, b.dataset.date);
@@ -9613,6 +9721,29 @@
               esc(e.examId) +
               '" type="button">Edit Exam</button></div>'
             );
+          if (e.classId && e.movedFrom) {
+            var movedData =
+              '" data-date="' + esc(e.movedFrom) + '" type="button">';
+            return (
+              '<div class="day-card-actions">' +
+              (e.online && e.onlineLink
+                ? '<a class="mini-btn" href="' +
+                  esc(e.onlineLink) +
+                  '" target="_blank" rel="noopener noreferrer">Join Meeting</a>'
+                : "") +
+              '<button class="mini-btn" data-class-move="' +
+              esc(e.classId) +
+              movedData +
+              "Edit Reschedule</button>" +
+              actionMenuHtml(
+                '<button class="mini-btn danger" data-class-unmove="' +
+                  esc(e.classId) +
+                  movedData +
+                  "Undo Reschedule</button>",
+              ) +
+              "</div>"
+            );
+          }
           if (e.classId) {
             var classData =
               '" data-date="' + esc(e.date) + '" type="button">';
@@ -9636,6 +9767,10 @@
                       classData +
                       "Add Meeting Link</button>"
                     : "") +
+                  '<button class="mini-btn" data-class-move="' +
+                  esc(e.classId) +
+                  classData +
+                  "Reschedule</button>" +
                   '<button class="mini-btn" data-class-mode="' +
                   (e.online ? "inperson" : "online") +
                   '" data-class-id="' +
@@ -10687,7 +10822,15 @@
             scope === "schedule"
               ? "Update the recurring schedule, including the optional online link"
               : date + " · change one meeting or the recurring schedule";
+          var existing = classOverride(c, date);
+          if (!scope && existing && existing.movedTo) scope = "move";
           $("class-edit-scope").value = scope || "date";
+          setDatePickerValue(
+            "class-move-date",
+            (existing && existing.movedTo) || "",
+          );
+          $("class-move-mode").value = classIsOnline(c, date) ? "online" : "inperson";
+          syncClassEditScope();
           $("class-edit-start").value = effective.start || "";
           $("class-edit-end").value = effective.end || "";
           $("class-edit-location").value = effective.location || "";
@@ -10696,6 +10839,29 @@
           $("class-edit-editor").classList.add("open");
           $("class-edit-editor").setAttribute("aria-hidden", "false");
           document.body.style.overflow = "hidden";
+        }
+        function syncClassEditScope() {
+          var move = $("class-edit-scope").value === "move";
+          $("class-edit-move-fields").hidden = !move;
+          $("class-edit-online-only-toggle").style.display = move ? "none" : "";
+          if (pendingClassEdit && $("class-edit-scope").value !== "schedule")
+            $("class-edit-sub").textContent = move
+              ? "Moving the " +
+                prettyDate(pendingClassEdit.date).replace(/, \d{4}$/, "") +
+                " meeting. Pick the new date, time and whether it's online."
+              : pendingClassEdit.date + " · change one meeting or the recurring schedule";
+        }
+        function unmoveClass(classId, date) {
+          var before = classOverrides.length;
+          classOverrides = classOverrides.filter(function (o) {
+            return !(o.classId === classId && o.date === date && o.movedTo);
+          });
+          if (classOverrides.length === before) return;
+          persist().then(function () {
+            renderAll();
+            if (activeDayKey) openDay(activeDayKey);
+            toast("Class back on " + date);
+          });
         }
         function closeClassEdit() {
           $("class-edit-editor").classList.remove("open");
@@ -10731,14 +10897,54 @@
             toast("End time must be after start time");
             return;
           }
+          if (scope === "move") {
+            var to = $("class-move-date").value,
+              mode = $("class-move-mode").value;
+            if (!to) {
+              toast("Choose the new date");
+              return;
+            }
+            var from = pendingClassEdit.date;
+            classOverrides = classOverrides.filter(function (o) {
+              return !(o.classId === c.id && o.date === from);
+            });
+            classOverrides.push({
+              id: uid(),
+              classId: c.id,
+              date: from,
+              movedTo: to,
+              start: start,
+              end: end,
+              location: location,
+              onlineLink: onlineLink,
+              mode: mode,
+            });
+            persist().then(function () {
+              closeClassEdit();
+              renderAll();
+              openDay(to);
+              toast(
+                (c.title || "Class") +
+                  " moved to " +
+                  fromKey(to).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  }) +
+                  (mode === "online" ? ", online" : ", in person"),
+              );
+            });
+            return;
+          }
           if (scope === "schedule") {
             c.start = start;
             c.end = end;
             c.location = location;
             c.onlineLink = onlineLink;
             c.onlineOnly = onlineOnly;
+            // Reschedules are deliberate one-offs; keep them.
             classOverrides = classOverrides.filter(function (o) {
-              return o.classId !== c.id;
+              return o.classId !== c.id || o.movedTo;
             });
           } else {
             var dates =
@@ -12056,6 +12262,8 @@
         setupDatePicker("event-edit-date", "Choose start date");
         setupDatePicker("event-edit-end-date", "Choose end date");
         setupDatePicker("todo-date", "No due date");
+        setupDatePicker("class-move-date", "Choose the new date");
+        $("class-edit-scope").addEventListener("change", syncClassEditScope);
         setupCalendarTabs();
         $("add-class-btn").addEventListener("click", addClass);
         $("schedule-import-btn").addEventListener("click", function () {
