@@ -1149,6 +1149,155 @@
         font-size: 0.86rem;
       }
 
+      .syl-table {
+        container-type: inline-size;
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .syl-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        font:
+          800 0.68rem/1.2 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .syl-head a {
+        color: var(--brand);
+      }
+
+      .syl-sum.warn {
+        color: var(--amber);
+      }
+
+      .syl-cols,
+      .syl-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 76px 132px 84px 28px;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .syl-cols {
+        font-size: 0.68rem;
+        color: var(--muted);
+        padding: 0 2px;
+      }
+
+      .syl-row input {
+        width: 100%;
+        min-width: 0;
+        height: 34px;
+        padding: 0 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--input);
+        color: var(--text);
+        font: inherit;
+        font-size: 0.82rem;
+        box-sizing: border-box;
+      }
+
+      .syl-row input:focus {
+        outline: none;
+        border-color: var(--brand);
+      }
+
+      .syl-row.filled .syl-title {
+        border-color: color-mix(in srgb, var(--green) 45%, var(--line));
+      }
+
+      .syl-weight {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .syl-score {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+        gap: 4px;
+        color: var(--muted);
+      }
+
+      .syl-pts {
+        font-size: 0.76rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--dim);
+      }
+
+      .syl-x {
+        width: 28px;
+        height: 28px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 1.1rem;
+        cursor: pointer;
+      }
+
+      .syl-x:hover {
+        background: var(--hover);
+        color: var(--red);
+      }
+
+      .syl-restore {
+        align-self: flex-start;
+        padding: 4px 0;
+        border: 0;
+        background: none;
+        color: var(--brand);
+        font:
+          800 0.7rem/1 "JetBrains Mono",
+          monospace;
+        cursor: pointer;
+      }
+
+      /* Course cards are narrow on desktop too, so stack by card width. */
+      @container (max-width: 520px) {
+        .syl-cols {
+          display: none;
+        }
+
+        .syl-row {
+          grid-template-columns: minmax(0, 1fr) 76px;
+          padding: 8px;
+          border: 1px solid var(--line);
+          border-radius: 10px;
+        }
+
+        .syl-score {
+          grid-column: 1;
+        }
+
+        .syl-pts {
+          grid-column: 2;
+        }
+
+        .syl-x {
+          position: absolute;
+          right: 4px;
+          top: 4px;
+        }
+
+        .syl-row {
+          position: relative;
+          padding-right: 36px;
+        }
+      }
+
       .todo-plan-head {
         grid-column: 1 / -1;
         display: flex;
@@ -3858,7 +4007,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
-    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261025a" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261025b" />
   </head>
 
   <body>
@@ -8218,6 +8367,268 @@
           }
           return out + "</div>";
         }
+        // ── Syllabus assessments ──
+        // Each course's assessments and weights come from its syllabus
+        // (syllabus-weights.json); the card lists them so only scores need
+        // filling in. Renames, weight changes and hidden items before a score
+        // exists live in courseFinals[course].template[key].
+        var syllabusWeights = null;
+        fetch("/account/calendar/syllabus-weights.json", { cache: "no-cache" })
+          .then(function (r) {
+            return r.ok ? r.json() : {};
+          })
+          .catch(function () {
+            return {};
+          })
+          .then(function (j) {
+            syllabusWeights = j || {};
+            renderGradebook();
+          });
+        function gradeCategory(title) {
+          var t = String(title || "").toLowerCase(),
+            n = t.match(/\b(1|2|3|i{1,3}|one|two|three|first|second|third)\b/),
+            num = n
+              ? { 1: 1, i: 1, one: 1, first: 1, 2: 2, ii: 2, two: 2, second: 2, 3: 3, iii: 3, three: 3, third: 3 }[n[1]]
+              : 0;
+          var cat = /final/.test(t)
+            ? "final"
+            : /quiz/.test(t)
+              ? "quiz"
+              : /major|midterm|\bmid\b|exam/.test(t)
+                ? "exam"
+                : /attend/.test(t)
+                  ? "attendance"
+                  : /project|milestone|deliverable/.test(t)
+                    ? "project"
+                    : /presentation/.test(t)
+                      ? "presentation"
+                      : /lab|assign|\bhw\b|homework|activit|practice|case stud|participation/.test(t)
+                        ? "work"
+                        : "";
+          return { cat: cat, num: num };
+        }
+        function syllabusItems(course) {
+          var base = (syllabusWeights && syllabusWeights[course]) || null;
+          if (!base) return { items: [], hidden: 0, source: "" };
+          var edits = ((courseFinals[course] || {}).template) || {},
+            hidden = 0,
+            out = [];
+          base.items.forEach(function (it) {
+            var e = edits[it.key] || {};
+            if (e.removed) {
+              hidden++;
+              return;
+            }
+            out.push({
+              key: it.key,
+              title: e.title || it.title,
+              // The final follows the card's Final % setting.
+              weight:
+                it.key === "final" && (courseFinals[course] || {}).weight
+                  ? courseFinalWeight(course)
+                  : e.weight !== undefined
+                    ? e.weight
+                    : it.weight,
+            });
+          });
+          return { items: out, hidden: hidden, source: base.syllabus || "" };
+        }
+        // Pair each syllabus item with at most one entered grade: an explicit
+        // syllabusKey first, then the same kind of assessment and number,
+        // then the same kind alone.
+        function matchSyllabus(items, rows) {
+          var used = {},
+            pairs = items.map(function (it) {
+              return { item: it, grade: null };
+            });
+          pairs.forEach(function (p) {
+            var g = rows.find(function (r) {
+              return !used[r.id] && r.syllabusKey === p.item.key;
+            });
+            if (g) {
+              used[g.id] = true;
+              p.grade = g;
+            }
+          });
+          [true, false].forEach(function (strict) {
+            pairs.forEach(function (p) {
+              if (p.grade) return;
+              var ic = gradeCategory(p.item.title);
+              if (!ic.cat) return;
+              var same = items.filter(function (x) {
+                return gradeCategory(x.title).cat === ic.cat;
+              }).length;
+              var g = rows.find(function (r) {
+                if (used[r.id] || r.syllabusKey) return false;
+                var rc = gradeCategory(r.title);
+                if (rc.cat !== ic.cat) return false;
+                if (!strict) return same === 1 || !rc.num || !ic.num;
+                return rc.num === ic.num || (same === 1 && (!rc.num || !ic.num));
+              });
+              if (g) {
+                used[g.id] = true;
+                p.grade = g;
+              }
+            });
+          });
+          return {
+            pairs: pairs,
+            others: rows.filter(function (r) {
+              return !used[r.id];
+            }),
+          };
+        }
+        function gradeRowHtml(course, key, g, title, weight) {
+          var earned = g ? g.earned : "",
+            possible = g ? g.possible : "",
+            pts =
+              g && Number(g.possible) > 0
+                ? (Number(g.earned) / Number(g.possible)) * Number(g.weight)
+                : null;
+          return (
+            '<div class="syl-row' +
+            (g ? " filled" : "") +
+            '" data-syl-course="' +
+            esc(course) +
+            '" data-syl-key="' +
+            esc(key || "") +
+            '" data-syl-grade="' +
+            esc(g ? g.id : "") +
+            '"><input class="syl-title" data-f="title" aria-label="Assessment" value="' +
+            esc(title) +
+            '" /><label class="syl-weight"><input type="number" min="0" max="100" step="0.5" data-f="weight" aria-label="Weight (%)" value="' +
+            esc(weight) +
+            '" />%</label><span class="syl-score"><input type="number" min="0" step="0.25" data-f="earned" aria-label="Score" placeholder="Score" value="' +
+            esc(earned) +
+            '" /><span>/</span><input type="number" min="0" step="0.25" data-f="possible" aria-label="Out of" placeholder="' +
+            esc(weight) +
+            '" value="' +
+            esc(possible) +
+            '" /></span><span class="syl-pts">' +
+            (pts === null ? "–" : fmtMark(pts) + " / " + fmtMark(Number(g.weight))) +
+            '</span><button type="button" class="syl-x" data-syl-remove aria-label="' +
+            (g ? "Clear this score" : key ? "Hide this item" : "Delete this grade") +
+            '" title="' +
+            (g ? (key ? "Clear score" : "Delete") : "Hide") +
+            '">&times;</button></div>'
+          );
+        }
+        function assessmentTableHtml(course, rows) {
+          var syl = syllabusItems(course),
+            m = matchSyllabus(syl.items, rows),
+            sum = 0;
+          m.pairs.forEach(function (p) {
+            sum += Number(p.grade ? p.grade.weight : p.item.weight) || 0;
+          });
+          m.others.forEach(function (g) {
+            sum += Number(g.weight) || 0;
+          });
+          if (!syl.items.length && !rows.length) return "";
+          return (
+            '<div class="syl-table">' +
+            (syl.items.length
+              ? '<div class="syl-head"><span>Assessments from the <a href="' +
+                esc(syl.source) +
+                '" target="_blank" rel="noopener">syllabus</a></span>' +
+                (Math.abs(sum - 100) > 0.05
+                  ? '<span class="syl-sum warn">Weights add up to ' + fmtMark(sum) + "%</span>"
+                  : '<span class="syl-sum">100%</span>') +
+                "</div>"
+              : "") +
+            '<div class="syl-cols"><span>Assessment</span><span>Weight</span><span>Score</span><span>Points</span><span></span></div>' +
+            m.pairs
+              .map(function (p) {
+                return gradeRowHtml(
+                  course,
+                  p.item.key,
+                  p.grade,
+                  p.grade ? p.grade.title : p.item.title,
+                  p.grade ? p.grade.weight : p.item.weight,
+                );
+              })
+              .join("") +
+            m.others
+              .map(function (g) {
+                return gradeRowHtml(course, "", g, g.title || "Assessment", g.weight);
+              })
+              .join("") +
+            (syl.hidden
+              ? '<button type="button" class="syl-restore" data-syl-restore="' +
+                esc(course) +
+                '">Show ' +
+                syl.hidden +
+                " hidden syllabus item" +
+                (syl.hidden === 1 ? "" : "s") +
+                "</button>"
+              : "") +
+            "</div>"
+          );
+        }
+        function setTemplateEdit(course, key, patch) {
+          courseFinals[course] = Object.assign({}, courseFinals[course]);
+          var t = Object.assign({}, courseFinals[course].template);
+          t[key] = Object.assign({}, t[key], patch);
+          courseFinals[course].template = t;
+        }
+        function saveSyllabusRow(row) {
+          var course = row.dataset.sylCourse,
+            key = row.dataset.sylKey,
+            id = row.dataset.sylGrade,
+            val = function (f) {
+              return row.querySelector('[data-f="' + f + '"]').value.trim();
+            },
+            title = val("title"),
+            weight = Number(val("weight")),
+            earnedRaw = val("earned"),
+            earned = Number(earnedRaw),
+            possible = Number(val("possible")) || weight;
+          if (!title || !isFinite(weight) || weight < 0 || weight > 100) {
+            toast("Give it a name and a weight between 0 and 100");
+            renderGradebook();
+            return;
+          }
+          if (earnedRaw !== "" && (!isFinite(earned) || earned < 0 || !(possible > 0))) {
+            toast("Enter a score and what it's out of");
+            return;
+          }
+          var g = id
+            ? grades.find(function (x) {
+                return x.id === id;
+              })
+            : null;
+          if (g) {
+            if (earnedRaw === "") {
+              grades = grades.filter(function (x) {
+                return x.id !== id;
+              });
+              if (key) setTemplateEdit(course, key, { title: title, weight: weight });
+            } else
+              Object.assign(g, {
+                title: title,
+                weight: weight,
+                earned: earned,
+                possible: possible,
+                syllabusKey: key || g.syllabusKey || "",
+              });
+          } else if (earnedRaw !== "") {
+            grades.push({
+              id: uid(),
+              termId: gradeTerm(),
+              course: course,
+              title: title,
+              earned: earned,
+              possible: possible,
+              weight: weight,
+              syllabusKey: key,
+            });
+          } else if (key) setTemplateEdit(course, key, { title: title, weight: weight });
+          // The final's weight is also the course's Final % setting.
+          if (key === "final") {
+            courseFinals[course] = Object.assign({}, courseFinals[course], { weight: weight });
+          }
+          renderGradebook();
+          persist();
+        }
         function renderGradebook() {
           var wrap = $("grade-summary");
           if (!wrap) return;
@@ -8523,29 +8934,50 @@
                       (st.letter
                         ? finalRangeHtml(st)
                         : gradeNeedsHtml(st.weighted, st.used)) +
-                      rows
-                        .map(function (g) {
-                          return (
-                            '<div class="grade-entry"><span>' +
-                            esc(g.title || "Assessment") +
-                            (isFinalEntry(g) ? " (final)" : "") +
-                            " · " +
-                            esc(g.earned) +
-                            "/" +
-                            esc(g.possible) +
-                            " · " +
-                            esc(g.weight) +
-                            '%</span><button data-grade-delete="' +
-                            esc(g.id) +
-                            '">Delete</button></div>'
-                          );
-                        })
-                        .join("") +
+                      assessmentTableHtml(course, rows) +
                       "</div>"
                     );
                   })
                   .join("")
               : '<div class="empty">Add graded work to calculate each course average.</div>';
+          wrap.querySelectorAll(".syl-row input").forEach(function (input) {
+            input.addEventListener("change", function () {
+              saveSyllabusRow(input.closest(".syl-row"));
+            });
+            input.addEventListener("keydown", function (ev) {
+              if (ev.key === "Enter") input.blur();
+            });
+          });
+          wrap.querySelectorAll("[data-syl-remove]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              var row = b.closest(".syl-row"),
+                course = row.dataset.sylCourse,
+                key = row.dataset.sylKey,
+                id = row.dataset.sylGrade;
+              if (id)
+                grades = grades.filter(function (g) {
+                  return g.id !== id;
+                });
+              else if (key) setTemplateEdit(course, key, { removed: true });
+              renderGradebook();
+              persist().then(function () {
+                toast(id ? "Score cleared" : "Hidden. Use \"Show hidden\" to bring it back.");
+              });
+            });
+          });
+          wrap.querySelectorAll("[data-syl-restore]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              var c = b.dataset.sylRestore,
+                t = Object.assign({}, (courseFinals[c] || {}).template);
+              Object.keys(t).forEach(function (k) {
+                t[k] = Object.assign({}, t[k]);
+                delete t[k].removed;
+              });
+              courseFinals[c] = Object.assign({}, courseFinals[c], { template: t });
+              renderGradebook();
+              persist();
+            });
+          });
           wrap.querySelectorAll("[data-grade-delete]").forEach(function (b) {
             b.addEventListener("click", function () {
               grades = grades.filter(function (g) {
@@ -13055,7 +13487,7 @@
       defer
     ></script>
     <script src="/javascripts/calendar-views.js?v=20261021b" defer></script>
-    <script src="/javascripts/study-plan.js?v=20261025a" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261025b" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=1" defer></script>
   </body>
