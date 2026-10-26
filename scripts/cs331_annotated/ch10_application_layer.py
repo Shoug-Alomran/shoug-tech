@@ -9,7 +9,7 @@ DECK = {
     'file': 'application-layer',
     'title': 'Application Layer: DNS',
     'chapter': 'Chapter 10',
-    'pdf': '/academics/computer-science/cs331/slides-with-notes/chapter-10-application-layer-notes/#set-b',
+    'pdf': '/academics/computer-science/cs331/slides-with-notes/chapter-10-application-layer-notes/',
     'lede': ('The Domain Name System: why names, the hierarchical name space and its labels, domains, FQDN vs. '
              'PQDN, name servers (root, primary, secondary, zone transfer, caching), and recursive vs. iterative '
              'resolution, traced step by step for lab.CS.PSU.EDU.SA looking up sales.mcgraw.com. Rebuilt from '

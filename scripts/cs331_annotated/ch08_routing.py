@@ -9,7 +9,7 @@ DECK = {
     'file': 'network-layer-routing',
     'title': 'Network Layer: Routing of Packets',
     'chapter': 'Chapter 8',
-    'pdf': '/academics/computer-science/cs331/slides-with-notes/chapter-08-network-layer-routing-notes/#set-b',
+    'pdf': '/academics/computer-science/cs331/slides-with-notes/chapter-08-network-layer-routing-notes/',
     'lede': ('How routers fill their tables: the internet as a weighted graph, static vs. dynamic routing, '
              'host-specific, network-specific and default routes, forwarding with masks (longest mask first), '
              'distance-vector (Bellman-Ford) vs. link-state (Dijkstra) routing, and autonomous systems with '
