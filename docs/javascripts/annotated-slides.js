@@ -36,13 +36,24 @@
     root.setAttribute("data-theme", t);
     if (themeBtn) {
       themeBtn.textContent = t === "light" ? "☾ Dark" : "☀︎ Light";
-      themeBtn.setAttribute("aria-label", "Switch to " + (t === "light" ? "dark" : "light") + " theme");
+      themeBtn.setAttribute(
+        "aria-label",
+        "Switch to " + (t === "light" ? "dark" : "light") + " theme",
+      );
     }
   }
 
   var storedTheme = load("shoug-theme", null);
-  var prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-  applyTheme(storedTheme === "light" || storedTheme === "dark" ? storedTheme : prefersLight ? "light" : "dark");
+  var prefersLight =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: light)").matches;
+  applyTheme(
+    storedTheme === "light" || storedTheme === "dark"
+      ? storedTheme
+      : prefersLight
+        ? "light"
+        : "dark",
+  );
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
       var t = root.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -59,16 +70,32 @@
   }
 
   function setPressed(group, value) {
-    document.querySelectorAll('[data-group="' + group + '"]').forEach(function (b) {
-      b.setAttribute("aria-pressed", String(b.getAttribute("data-value") === value));
-    });
+    document
+      .querySelectorAll('[data-group="' + group + '"]')
+      .forEach(function (b) {
+        b.setAttribute(
+          "aria-pressed",
+          String(b.getAttribute("data-value") === value),
+        );
+      });
   }
 
   function updateFlipBar() {
     var list = visible();
     var i = list.indexOf(sheets[current]);
-    if (posText) posText.textContent = list.length ? "Slide " + sheets[current].getAttribute("data-n") + " · " + (i + 1) + " / " + list.length : "No slides";
-    if (posFill) posFill.style.width = list.length ? ((i + 1) / list.length) * 100 + "%" : "0";
+    if (posText)
+      posText.textContent = list.length
+        ? "Slide " +
+          sheets[current].getAttribute("data-n") +
+          " · " +
+          (i + 1) +
+          " / " +
+          list.length
+        : "No slides";
+    if (posFill)
+      posFill.style.width = list.length
+        ? ((i + 1) / list.length) * 100 + "%"
+        : "0";
     if (prevBtn) prevBtn.disabled = i <= 0;
     if (nextBtn) nextBtn.disabled = i < 0 || i >= list.length - 1;
     if (jump) jump.value = sheets[current] ? sheets[current].id : "";
@@ -78,8 +105,17 @@
   // site wrapper that embeds the deck in an iframe.
   function scrollToSheet(sheet, behavior) {
     var bar = document.querySelector(".as-top");
-    var offset = bar && getComputedStyle(bar).position === "sticky" ? bar.offsetHeight + 12 : 10;
-    window.scrollTo({ top: Math.max(0, sheet.getBoundingClientRect().top + window.pageYOffset - offset), behavior: behavior });
+    var offset =
+      bar && getComputedStyle(bar).position === "sticky"
+        ? bar.offsetHeight + 12
+        : 10;
+    window.scrollTo({
+      top: Math.max(
+        0,
+        sheet.getBoundingClientRect().top + window.pageYOffset - offset,
+      ),
+      behavior: behavior,
+    });
   }
 
   function show(index, direction, scroll) {
@@ -101,7 +137,8 @@
     }
     // Inside the site wrapper's iframe a hash change scrolls the parent page, so only
     // keep the URL in sync when the deck is opened on its own.
-    if (scroll !== false && window.top === window && history.replaceState) history.replaceState(null, "", "#" + sheet.id);
+    if (scroll !== false && window.top === window && history.replaceState)
+      history.replaceState(null, "", "#" + sheet.id);
     updateFlipBar();
   }
 
@@ -121,8 +158,10 @@
     sheets.forEach(function (s) {
       s.classList.remove("is-current", "turn-next", "turn-prev");
     });
-    if (sheets[current] && sheets[current].hidden) current = sheets.indexOf(visible()[0] || sheets[0]);
-    if (mode === "flip" && sheets[current]) sheets[current].classList.add("is-current");
+    if (sheets[current] && sheets[current].hidden)
+      current = sheets.indexOf(visible()[0] || sheets[0]);
+    if (mode === "flip" && sheets[current])
+      sheets[current].classList.add("is-current");
     show(current, 0, scroll !== false);
   }
 
@@ -148,6 +187,22 @@
     annBtn.addEventListener("click", function () {
       setAnn(body.classList.contains("no-ann"));
     });
+  }
+
+  var overviewBtn = document.getElementById("as-overview");
+  function setOverview(on) {
+    body.classList.toggle("no-overview", !on);
+    if (overviewBtn) {
+      overviewBtn.setAttribute("aria-pressed", String(on));
+      overviewBtn.textContent = on ? "▤ Overview on" : "▤ Overview off";
+    }
+    save("as-overview", on ? "on" : "off");
+  }
+  if (overviewBtn) {
+    overviewBtn.addEventListener("click", function () {
+      setOverview(body.classList.contains("no-overview"));
+    });
+    setOverview(load("as-overview", "on") !== "off");
   }
 
   /* -------------------------------------------------------------- filter */
@@ -184,13 +239,20 @@
       if (s) show(sheets.indexOf(s), 0);
     });
   }
-  if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
-  if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
+  if (prevBtn)
+    prevBtn.addEventListener("click", function () {
+      step(-1);
+    });
+  if (nextBtn)
+    nextBtn.addEventListener("click", function () {
+      step(1);
+    });
 
   document.addEventListener("keydown", function (e) {
     if (!body.classList.contains("mode-flip")) return;
     var tag = (e.target && e.target.tagName) || "";
-    if (/INPUT|SELECT|TEXTAREA/.test(tag) || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (/INPUT|SELECT|TEXTAREA/.test(tag) || e.altKey || e.ctrlKey || e.metaKey)
+      return;
     if (e.key === "ArrowRight" || e.key === "PageDown") {
       e.preventDefault();
       step(1);
@@ -202,18 +264,28 @@
 
   var touchX = null;
   var touchY = null;
-  document.addEventListener("touchstart", function (e) {
-    if (!body.classList.contains("mode-flip") || e.touches.length !== 1) return;
-    touchX = e.touches[0].clientX;
-    touchY = e.touches[0].clientY;
-  }, { passive: true });
-  document.addEventListener("touchend", function (e) {
-    if (touchX === null) return;
-    var dx = e.changedTouches[0].clientX - touchX;
-    var dy = e.changedTouches[0].clientY - touchY;
-    touchX = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
-  }, { passive: true });
+  document.addEventListener(
+    "touchstart",
+    function (e) {
+      if (!body.classList.contains("mode-flip") || e.touches.length !== 1)
+        return;
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    },
+    { passive: true },
+  );
+  document.addEventListener(
+    "touchend",
+    function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      var dy = e.changedTouches[0].clientY - touchY;
+      touchX = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5)
+        step(dx < 0 ? 1 : -1);
+    },
+    { passive: true },
+  );
 
   // In-deck links (#s-N) work in both modes.
   document.addEventListener("click", function (e) {
@@ -228,16 +300,21 @@
 
   // Track the slide in view while scrolling so the jump menu and position stay in sync.
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      if (body.classList.contains("mode-flip")) return;
-      entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          current = sheets.indexOf(en.target);
-          if (jump) jump.value = en.target.id;
-        }
-      });
-    }, { rootMargin: "-30% 0px -60% 0px" });
-    sheets.forEach(function (s) { io.observe(s); });
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (body.classList.contains("mode-flip")) return;
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            current = sheets.indexOf(en.target);
+            if (jump) jump.value = en.target.id;
+          }
+        });
+      },
+      { rootMargin: "-30% 0px -60% 0px" },
+    );
+    sheets.forEach(function (s) {
+      io.observe(s);
+    });
   }
 
   /* --------------------------------------------------------- exam radar */
@@ -249,7 +326,9 @@
         btn.classList.add(right ? "right" : "wrong");
         btn.disabled = true;
         if (right) {
-          q.querySelectorAll(".opt").forEach(function (o) { o.disabled = true; });
+          q.querySelectorAll(".opt").forEach(function (o) {
+            o.disabled = true;
+          });
           if (why) why.hidden = false;
         }
       });
@@ -267,7 +346,9 @@
 
   /* ---------------------------------------------------------------- start */
   setAnn(load("as-ann", "on") !== "off");
-  var start = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+  var start = location.hash
+    ? document.getElementById(location.hash.slice(1))
+    : null;
   current = start && sheets.indexOf(start) >= 0 ? sheets.indexOf(start) : 0;
   setMode(load("as-mode", "scroll") === "flip" ? "flip" : "scroll", !!start);
 })();

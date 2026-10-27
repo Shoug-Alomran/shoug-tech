@@ -14,6 +14,7 @@ scripts/academic-sidebar.json. It is safe to re-run.
 A course calls build(Course(...)); see build_se423_annotated_slides.py and
 build_cs331_annotated_slides.py.
 """
+import glob
 import hashlib
 import html
 import importlib
@@ -23,9 +24,11 @@ import re
 import subprocess
 import sys
 import tempfile
+import csv
+import io
 
 import pdfplumber
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageOps
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, 'scripts'))
@@ -44,7 +47,8 @@ class Course:
     package          the content package, e.g. 'se423_annotated' (its common.py holds DECKS and PAPERS)
     built            deck modules with annotation content, in course order
     read_deck        pdf path -> pages (the package's pdftext.read_deck)
-    template         slide-breakdown wrapper to clone: (folder, standalone file name)
+    template         slide-breakdown wrapper to clone: (folder, standalone file name), or
+                     (other course path, folder, file) to borrow one from a course of the same track
     after            section the new tab and sidebar entry follow: (url part, tab label)
     page_name        deck -> name used in the wrapper title and breadcrumb
     item_label       DECKS label -> label in the sidebar and the section directory
@@ -74,6 +78,9 @@ TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
 CIRCLED = '⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫'
 
+
+# Figures and whole-slide images are JPEG so they open and save in Preview and other image editors.
+FIG_EXT = '.jpg'
 
 def e(s):
     return html.escape(str(s), quote=True)
@@ -164,6 +171,8 @@ def deck_folder(key):
 
 def deck_pdf(key):
     folder = os.path.join(C.dir, deck_folder(key))
+    if folder.endswith('.pdf'):  # a deck stored as a loose PDF in slides/
+        return folder
     return next(os.path.join(folder, f) for f in sorted(os.listdir(folder)) if f.endswith('.pdf'))
 
 
@@ -218,9 +227,101 @@ def trim(img, pad=10):
     return img.crop((max(0, x0 - pad), max(0, y0 - pad), min(img.width, x1 + pad), min(img.height, y1 + pad)))
 
 
+_PAGES = {}
+
+
+def read_pages(pdf):
+    """C.read_deck, read once per build."""
+    if pdf not in _PAGES:
+        _PAGES[pdf] = C.read_deck(pdf)
+    return _PAGES[pdf]
+
+
+def auto_figure(mod, p, ann):
+    """With AUTO_SLIDES on, a slide that has no hand-made figure or body gets one: the whole slide
+    when its layout is too rich to retype (tables, diagrams, two columns), else its picture."""
+    if getattr(mod, 'AUTO_SLIDES', False) == 'all':
+        return 'slide-%02d.png' % p['n'], 'slide'
+    if not getattr(mod, 'AUTO_SLIDES', False):
+        return None
+    if p['kind'] == 'title' and 'kind' not in ann and 'title' not in ann:
+        return 'slide-%02d.png' % p['n'], 'slide'  # an unannotated cover slide: show the cover itself
+    if ann.get('kind', p['kind']) != 'content':
+        return None
+    if any(k in ann for k in ('fig', 'body', 'cols', 'card', 'chart')) or ann.get('drop_body') or ann.get('no_auto'):
+        return None
+    if p['complex'] or ann.get('whole'):
+        return 'slide-%02d.png' % p['n'], 'slide'
+    if p['pictures']:
+        return 'picture-%02d.png' % p['n'], 'auto'
+    return None
+
+
+def deck_crops(mod):
+    crops = dict(getattr(mod, 'CROPS', {}))
+    if getattr(mod, 'AUTO_SLIDES', False):
+        for p in read_pages(deck_pdf(mod.DECK['key'])):
+            auto = auto_figure(mod, p, mod.ANN.get(p['n'], {}))
+            if auto:
+                crops[auto[0]] = (p['n'], auto[1])
+    return crops
+
+
+_HIGHLIGHT_STOP = set('a an and are as at be been between by can code do does for from has have how in into is it its of on or that the their them then there these this to was were what when where which with would'.split())
+_HIGHLIGHT_GENERIC = set('chapter lecture slide slides overview summary introduction extra example examples design software system component components class method object objects pattern patterns code diagram figure following above below'.split())
+
+
+def fallback_highlights(pages):
+    """Pick a couple of concise terms for original slides lacking manual highlights."""
+    def words(text):
+        return re.findall(r"[\w]+", re.sub(r'\*+', '', text).casefold())
+
+    page_words = {p['n']: words(' '.join([p.get('title', '')] + p.get('body', []))) for p in pages}
+    df = {}
+    for terms in page_words.values():
+        for token in set(terms):
+            df[token] = df.get(token, 0) + 1
+    total = max(1, len(pages))
+    result = {}
+    for p in pages:
+        title = p.get('title', '')
+        body = p.get('body', [])
+        emphasized = []
+        for text in [title] + body:
+            emphasized.extend(re.findall(r'\*\*(.+?)\*\*', text))
+        candidates = []
+        for phrase in emphasized:
+            candidates.extend(t for t in words(phrase)
+                              if len(t) >= 4 and t not in _HIGHLIGHT_GENERIC | _HIGHLIGHT_STOP)
+        terms = page_words[p['n']]
+        scored = []
+        for i, term in enumerate(terms):
+            if len(term) < 4 or term in _HIGHLIGHT_STOP | _HIGHLIGHT_GENERIC:
+                continue
+            score = 1.0 + (total - df.get(term, 0)) / total + min(len(term), 12) * 0.02
+            scored.append((score - i * 0.0005, term))
+        for _, term in sorted(scored, reverse=True):
+            if term not in candidates:
+                candidates.append(term)
+            if len(candidates) >= 2:
+                break
+        if not candidates:
+            candidates = [title]
+        result[p['n']] = candidates[:2]
+    return result
+
+
 def crop_figures(deck, mod, out_dir):
     pdf = deck_pdf(deck['key'])
     os.makedirs(out_dir, exist_ok=True)
+    pages = read_pages(pdf)
+    fallback_hl = fallback_highlights(pages)
+    page_data = {p['n']: p for p in pages}
+    pdf_word_pages = {}
+    if getattr(mod, 'AUTO_SLIDES', False) == 'all':
+        with pdfplumber.open(pdf) as source_pdf:
+            pdf_word_pages = {i: (float(p.width), float(p.height), p.extract_words())
+                              for i, p in enumerate(source_pdf.pages, 1)}
     dpi = 220
     k = dpi / 72
     cache_file = os.path.join(tempfile.gettempdir(), '%s-annotated-crops.json' % C.code.lower())
@@ -229,25 +330,134 @@ def crop_figures(deck, mod, out_dir):
             cache = json.load(fh)
     except (OSError, ValueError):
         cache = {}
-    for name, (page, box) in getattr(mod, 'CROPS', {}).items():
-        target = os.path.join(out_dir, name.rsplit('.', 1)[0] + '.webp')
+    for name, (page, box) in deck_crops(mod).items():
+        target = os.path.join(out_dir, name.rsplit('.', 1)[0] + FIG_EXT)
+        highlights = ((mod.ANN[page]['hl'] if 'hl' in mod.ANN.get(page, {}) else fallback_hl.get(page, ()))
+                      if box == 'slide' else ())
         # Re-rendering every crop is slow; skip ones whose spec is unchanged since the last run.
-        spec = json.dumps([pdf, os.path.getmtime(pdf), page, box])
+        manual_boxes = mod.ANN.get(page, {}).get('hl_boxes', ()) if box == 'slide' else ()
+        spec_parts = [pdf, os.path.getmtime(pdf), page, box, list(highlights)]
+        spec_parts.append(list(manual_boxes))
+        if manual_boxes:
+            spec_parts.append('manual-highlight-box-v2')
+        if box == 'slide':
+            spec_parts.append('1200-jpeg-highlight-v5')
+        spec = json.dumps(spec_parts)
         if os.path.exists(target) and cache.get(target) == spec:
             continue
         cache[target] = spec
         mode = box if isinstance(box, str) else None
-        x0, y0, x1, y1 = auto_box(pdf, page, mode) if mode else box
         with tempfile.TemporaryDirectory() as tmp:
             stem = os.path.join(tmp, 'crop')
-            subprocess.run(['pdftoppm', '-r', str(dpi), '-f', str(page), '-l', str(page), '-singlefile', '-png',
-                            '-x', str(int(x0 * k)), '-y', str(int(y0 * k)),
-                            '-W', str(int((x1 - x0) * k)), '-H', str(int((y1 - y0) * k)), pdf, stem],
-                           check=True, stderr=subprocess.DEVNULL)
+            if mode == 'slide':
+                # A whole slide shown as an image: full page, sized for reading, not zooming.
+                subprocess.run(['pdftoppm', '-scale-to-x', '1200', '-scale-to-y', '-1', '-f', str(page), '-l', str(page),
+                                '-singlefile', '-png', pdf, stem], check=True, stderr=subprocess.DEVNULL)
+            else:
+                x0, y0, x1, y1 = auto_box(pdf, page, mode) if mode else box
+                subprocess.run(['pdftoppm', '-r', str(dpi), '-f', str(page), '-l', str(page), '-singlefile', '-png',
+                                '-x', str(int(x0 * k)), '-y', str(int(y0 * k)),
+                                '-W', str(int((x1 - x0) * k)), '-H', str(int((y1 - y0) * k)), pdf, stem],
+                               check=True, stderr=subprocess.DEVNULL)
             img = Image.open(stem + '.png').convert('RGB')
-            if mode:
+            if mode and mode != 'slide':
                 img = trim(img)
-            img.save(target, 'WEBP', quality=86, method=6)
+            elif mode == 'slide' and (highlights or manual_boxes):
+                page_w, page_h, words = pdf_word_pages.get(page, (float(img.width), float(img.height), []))
+                scale_x, scale_y = img.width / page_w, img.height / page_h
+                def tokens(value):
+                    return re.findall(r"[\w]+", value.casefold())
+                overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                draw = ImageDraw.Draw(overlay)
+                word_tokens = [tokens(w['text']) for w in words]
+                marked = 0
+                def draw_pdf_phrase(phrase):
+                    nonlocal marked
+                    wanted = tokens(phrase)
+                    if not wanted:
+                        return False
+                    for start in range(len(words)):
+                        combined = []
+                        end = start
+                        while end < len(words) and len(combined) < len(wanted):
+                            if abs(float(words[end]['top']) - float(words[start]['top'])) > 3.5:
+                                break
+                            combined.extend(word_tokens[end])
+                            end += 1
+                        if combined[:len(wanted)] == wanted:
+                            matched = words[start:end]
+                            x0 = min(w['x0'] for w in matched) * scale_x - 2
+                            y0 = min(w['top'] for w in matched) * scale_y - 1
+                            x1 = max(w['x1'] for w in matched) * scale_x + 2
+                            y1 = max(w['bottom'] for w in matched) * scale_y + 1
+                            draw.rounded_rectangle((x0, y0, x1, y1), radius=4, fill=(255, 220, 55, 105))
+                            marked += 1
+                            return True
+                    return False
+                for phrase in highlights:
+                    draw_pdf_phrase(phrase)
+                # A few slides embed code as a raster image, so neither PDF text extraction
+                # nor OCR can locate useful words. Allow a small, intentional highlight on
+                # a known line in those cases, using normalized slide coordinates.
+                for x0, y0, x1, y1 in manual_boxes:
+                    draw.rounded_rectangle((x0 * img.width, y0 * img.height,
+                                            x1 * img.width, y1 * img.height),
+                                           radius=4, fill=(255, 220, 55, 105))
+                    marked += 1
+                if marked == 0:
+                    # Some lecture PDFs store slide text as vector outlines or embedded images,
+                    # so pdfplumber cannot locate the phrases. Use OCR boxes for those slides.
+                    ocr = subprocess.run(['tesseract', stem + '.png', 'stdout', 'tsv'],
+                                         check=False, capture_output=True, text=True).stdout
+                    rows = [r for r in csv.DictReader(io.StringIO(ocr), delimiter='\t')
+                            if r.get('level') == '5' and r.get('text', '').strip()]
+                    rows = [r for r in rows if float(r.get('conf') or -1) >= 25]
+                    title = page_data.get(page, {}).get('title', '')
+                    body = ' '.join(page_data.get(page, {}).get('body', []))
+                    notes = ' '.join(mod.ANN.get(page, {}).get('notes', []))
+                    candidates = list(highlights)
+                    candidates.extend(re.findall(r'\*\*(.+?)\*\*', ' '.join((title, body, notes))))
+                    candidates.extend(t for t in re.findall(r'[A-Za-z][A-Za-z0-9-]*', title)
+                                      if len(t) >= 4 and t.casefold() not in _HIGHLIGHT_GENERIC | _HIGHLIGHT_STOP)
+                    ocr_tokens = [tokens(r['text']) for r in rows]
+                    for phrase in candidates:
+                        wanted = tokens(phrase)
+                        if not wanted:
+                            continue
+                        for start in range(len(rows)):
+                            combined = []
+                            end = start
+                            while end < len(rows) and len(combined) < len(wanted):
+                                combined.extend(ocr_tokens[end])
+                                end += 1
+                            if combined[:len(wanted)] == wanted:
+                                matched = rows[start:end]
+                                x0 = min(int(r['left']) for r in matched) - 2
+                                y0 = min(int(r['top']) for r in matched) - 1
+                                x1 = max(int(r['left']) + int(r['width']) for r in matched) + 2
+                                y1 = max(int(r['top']) + int(r['height']) for r in matched) + 1
+                                draw.rounded_rectangle((x0, y0, x1, y1), radius=4, fill=(255, 220, 55, 105))
+                                marked += 1
+                                break
+                        if marked >= 2:
+                            break
+                    if marked == 0:
+                        for row in sorted(rows, key=lambda r: (int(r['top']), -float(r['conf']))):
+                            term = row['text'].strip()
+                            if (len(term) < 5 or not re.search(r'[A-Za-z]', term)
+                                    or term.casefold() in _HIGHLIGHT_STOP | _HIGHLIGHT_GENERIC):
+                                continue
+                            x0, y0 = int(row['left']) - 2, int(row['top']) - 1
+                            x1, y1 = x0 + int(row['width']) + 4, y0 + int(row['height']) + 2
+                            draw.rounded_rectangle((x0, y0, x1, y1), radius=4, fill=(255, 220, 55, 105))
+                            marked += 1
+                            if marked >= 2:
+                                break
+                img = Image.alpha_composite(img.convert('RGBA'), overlay).convert('RGB')
+            img.save(target, 'JPEG', quality=80 if mode == 'slide' else 88, optimize=True, progressive=True)
+    # Figures used to be WebP, which Preview and most editors can't edit in place; drop the old copies.
+    for old in glob.glob(os.path.join(out_dir, '*.webp')):
+        os.remove(old)
     with open(cache_file, 'w') as fh:
         json.dump(cache, fh)
 
@@ -255,7 +465,7 @@ def crop_figures(deck, mod, out_dir):
 def figure_html(fig, slug):
     name, alt, cap = fig[:3]
     big = len(fig) > 3 and fig[3]
-    src = 'figures/' + name.rsplit('.', 1)[0] + '.webp'
+    src = 'figures/' + name.rsplit('.', 1)[0] + FIG_EXT
     path = os.path.join(C.dir, 'annotated-slides', slug, src)
     w, h = Image.open(path).size
     shape = ' tall' if big or h > w * 1.1 else ''
@@ -296,7 +506,7 @@ def chart_svg(chart):
 def deck_url(key, n=None):
     slug, file_, _, _ = C.decks[key]
     if key in C.built_keys:
-        return '../%s/%s.html%s' % (slug, file_, '#s-%d' % n if n else ''), False
+        return '../%s/%s.html%s' % (slug, file_, '#slide-%d' % n if n else ''), False
     return C.base + deck_folder(key) + '/', True
 
 
@@ -338,11 +548,18 @@ def render_slide(deck, s, mod):
     foot = '<div class="slide-foot"><span class="bar"></span><span class="num">%d</span></div>' % n
     direct = [p for p in s['past'] if not p['related']]
     stamp = '<div class="stamp">%s</div>' % C.papers['stamp'] if direct else ''
-    slide_html = '<div class="slide %s">%s<div class="slide-inner">%s%s%s</div></div>' % (kind, stamp, head, body, foot)
+    if kind == 'image':
+        # The original slide shown as it is (AUTO_SLIDES): the picture is the whole slide.
+        src = 'figures/' + s['fig'][0].rsplit('.', 1)[0] + FIG_EXT
+        w, h = Image.open(os.path.join(C.dir, 'annotated-slides', slug, src)).size
+        slide_html = ('<div class="slide image">%s<img src="%s" alt="Slide %d: %s" width="%d" height="%d" loading="lazy" decoding="async"></div>'
+                      % (stamp, src, n, e(s['fig'][1]), w, h))
+    else:
+        slide_html = '<div class="slide %s">%s<div class="slide-inner">%s%s%s</div></div>' % (kind, stamp, head, body, foot)
     prof = ''.join('<p class="prof-note">%s</p>' % rich(p) for p in s['prof'])
 
     margin = ''
-    if s['notes'] or kind == 'content':
+    if s['notes'] or kind in ('content', 'image'):
         label, dots = WEIGHT[s['weight']]
         notes = ''.join('<li data-n="%d">%s</li>' % (i, rich(t)) for i, t in enumerate(s['notes'], 1))
         margin = ('<div class="margin" role="note" aria-label="Notes for slide %d"><div class="weight" title="How likely this slide is to be examined">'
@@ -445,12 +662,19 @@ def deck_slides(mod):
     if hasattr(mod, 'SLIDES'):
         return mod.SLIDES
     make = importlib.import_module(C.package + '.common').slide
-    pages = C.read_deck(deck_pdf(mod.DECK['key']))
+    pages = read_pages(deck_pdf(mod.DECK['key']))
     out = []
     for p in pages:
         ann = mod.ANN.get(p['n'], {})
         if ann.get('skip'):
             continue
+        auto = auto_figure(mod, p, ann)
+        if auto:
+            ann = dict(ann, fig=(auto[0], ann.get('alt', p['title'] or 'Slide %d' % p['n']), ''))
+            if auto[1] == 'slide':
+                # No text to mark up on an image slide.
+                ann = {k: v for k, v in ann.items() if k not in MARK_WRAP and k != 'refs'}
+                ann['drop_body'], ann['kind'] = True, 'image'
         kind = ann.get('kind', p['kind'])
         body = ann['body'] if 'body' in ann else ([] if ann.get('drop_body') else p['body'])
         for bad, good in list(getattr(mod, 'FIX', {}).items()) + list(ann.get('fix', {}).items()):
@@ -476,15 +700,164 @@ def deck_slides(mod):
     return out
 
 
+# --------------------------------------------------------------------------- #
+# the deck page in the linked-notes format (annotated_page.py)
+# --------------------------------------------------------------------------- #
+
+WRAPPED = re.compile(r'\{\((.+?)\)\}|\{\{(.+?)\}\}|==(.+?)==|__(.+?)__|\(\((.+?)\)\)')
+NOTE_REF = re.compile(r'\^(\d+)(?![\d.])')
+
+
+def unmark(text):
+    """Engine markup -> the page's: marks and note anchors dropped, **bold** kept."""
+    out = text
+    while WRAPPED.search(out):
+        out = WRAPPED.sub(lambda m: next(g for g in m.groups() if g is not None), out)
+    out = NOTE_REF.sub('', out).replace('***', '**')
+    return out
+
+
+def _key(t):
+    return re.sub(r'[^0-9a-z]+', '', t.lower())
+
+
+def slide_marks(s):
+    """(phrase, note number or None) for every mark and note anchor in a slide's text."""
+    lines = list(s['body'])
+    for col in s['cols'] or ():
+        lines += col
+    if s['card']:
+        lines += [s['card'][1]] + [p for p in s['card'][2]]
+    out = []
+    for line in lines:
+        for line in line.split('\n'):
+            line = re.sub(r'^(-{1,4}|#{1,2}) ', '', line).replace('*', '')
+            for m in WRAPPED.finditer(line):
+                ref = NOTE_REF.match(line, m.end())
+                out.append((unmark(m.group(0)), int(ref.group(1)) if ref else None))
+            # bare anchors ("Project Managers^3"): the words just before the anchor
+            start = 0
+            for m in NOTE_REF.finditer(line):
+                before = line[start:m.start()]
+                start = m.end()
+                if WRAPPED.search(before[-200:]) and re.search(r'(==|__|\}\}|\)\}|\)\))$', before):
+                    continue  # already taken with its mark
+                words = unmark(before).strip(' .,:;–-').split()[-8:]
+                if words:
+                    out.append((' '.join(words), int(m.group(1))))
+    return out
+
+
+def note_for(phrase, notes):
+    """The first note that mentions phrase, or 0."""
+    k = _key(phrase)
+    if len(k) < 3:
+        return 0
+    for i, t in enumerate(notes, 1):
+        if k in _key(t):
+            return i
+    return 0
+
+
+def exam_items(s):
+    """Past-paper pointers first, then the practice questions (a question whose explanation names a real paper is tagged past)."""
+    out = []
+    for p in s['past']:
+        title, folder = C.paper_list[p['paper']]
+        href = C.base + C.papers['folder'] + folder + ('' if folder.endswith('.html') else '/')
+        out.append({'kind': 'past', 'ref': title, 'href': href, 'label': ('Related question: ' if p['related'] else '') + p['label']})
+    titles = [t for t, _ in C.paper_list.values()]
+    for q in s['exam']:
+        named = [t for t in titles if t in (q.get('why') or '')]
+        item = {'kind': 'past' if named else 'predict', 'ref': ' · '.join(named), 'q': unmark(q['q']), 'why': unmark(q.get('why') or '')}
+        if q['type'] == 'mcq':
+            order = option_order(q)
+            item.update(opts=[unmark(q['opts'][j]) for j in order], a=order.index(q['a']))
+        elif q['type'] == 'tf':
+            item.update(tf=bool(q['a']))
+        else:
+            item.update(a=unmark(q['a']), why='')
+        out.append(item)
+    return out
+
+
+def page_slides(deck, mod):
+    """deck_slides() in the page schema: numbered notes with the slide's marks linked to them."""
+    out = {}
+    for s in deck_slides(mod):
+        texts = [unmark(t) for t in s['notes']]
+        notes = list(texts)
+        notes += [{'text': unmark(t), 'kind': 'prof'} for t in s['prof']]
+        notes += [{'text': unmark(t), 'kind': k} for k, t in s['tips']]
+        for ref in s['seen']:
+            if ref['deck'] == deck['key']:
+                href, where = '#slide-%d' % ref['n'], 'this deck'
+            else:
+                href, _ = deck_url(ref['deck'], ref['n'])
+                where = C.decks[ref['deck']][3].split(' · ')[0]
+            notes.append({'text': '[%s, slide %d](%s): %s' % (where[0].upper() + where[1:], ref['n'], href, unmark(ref['label'])), 'kind': 'seen'})
+        all_text = [n if isinstance(n, str) else n['text'] for n in notes]
+        hl, seen = [], set()
+        for phrase, ref in slide_marks(s):
+            note = ref if ref and ref <= len(notes) else note_for(phrase, all_text)
+            if (phrase, note) not in seen:
+                seen.add((phrase, note))
+                hl.append((phrase, note))
+        have = {_key(p) for p, _ in hl}
+        for i, t in enumerate(all_text, 1):  # bold terms in a note, found on the slide, point to that note
+            for term in re.findall(r'\*\*(.+?)\*\*', t):
+                if 3 <= len(_key(term)) and len(term) <= 40 and _key(term) not in have:
+                    have.add(_key(term))
+                    hl.append((term, i, 0, True))
+        out[s['n']] = {'notes': notes, 'hl': hl, 'exam': exam_items(s), 'title': unmark(s['title'])}
+    return out
+
+
+def build_page(deck, mod, out):
+    """Write the deck page (and figures) with annotated_page; decks rewritten in the page schema name it in DECK['page']."""
+    import annotated_page
+    url = SITE + C.section + deck['slug'] + '/'
+    spec = dict(out_dir=out, file=deck['file'], url=url, key='%s-%s' % (C.code.lower(), deck['slug']),
+                chapter='%s · %s' % (C.code, deck['chapter']), title=deck['title'], lede=deck['lede'],
+                original=deck['pdf'],
+                footer='Original slides from the %s lecture deck, with study notes. Check exact wording against the '
+                       '[original deck](%s). Notes and questions are study aids. Made by Shoug Alomran.' % (C.code, deck['pdf']))
+    if deck.get('page'):
+        page = importlib.import_module('%s.%s' % (C.package, deck['page']))
+        spec.update(src=os.path.join(REPO, deck['src']) if deck.get('src') else deck_pdf(deck['key']),
+                    title=page.TITLE, chapter=page.CHAPTER, overview=page.OVERVIEW, slides=page.SLIDES,
+                    titles=getattr(page, 'TITLES', {}), strict=True, pdf='--no-pdf' not in sys.argv,
+                    width=deck.get('width', annotated_page.WIDTH))
+        spec['footer'] = getattr(page, 'FOOTER', spec['footer'])
+    else:
+        slides = page_slides(deck, mod)
+        summary = '\n\n'.join(p for p in (getattr(mod, 'OVERVIEW', ''), deck['lede']) if p)
+        spec.update(src=deck_pdf(deck['key']), slides=slides, overview={'summary': summary},
+                    titles={n: sd['title'] for n, sd in slides.items() if sd['title']})
+    spec['head_title'] = '%s · %s · Annotated Slides' % (C.code, deck['chapter'])
+    spec['description'] = ('%s %s annotated slides: every original slide with numbered study notes linked to the highlighted '
+                           'words, past-exam links and practice questions.' % (C.code, deck['chapter']))
+    report = annotated_page.build(spec)
+    print('  %s: %d slides, %d highlights%s' % (deck['slug'], report['slides'], report['highlights'],
+                                                ', %d marks not found on the slide' % len(report['missing']) if report['missing'] else ''))
+    return report
+
+
 def deck_page(deck, mod):
     slides = deck_slides(mod)
     n_q = sum(len(s['exam']) for s in slides)
     n_past = sum(1 for s in slides if any(not p['related'] for p in s['past']))
     n_rel = sum(1 for s in slides if s['past']) - n_past
     title = '%s — %s' % (deck['chapter'], deck['title'])
+    overview_title = deck['chapter'].split(' · ')[0] + ' overview'
+    overview = getattr(mod, 'OVERVIEW', '')
+    overview_html = ('<div class="chapter-overview"><div class="overview-heading"><h2>%s</h2>'
+                     '<button type="button" class="chip-btn" id="as-overview" aria-pressed="true">▤ Overview on</button>'
+                     '</div><p class="overview-content">%s</p></div>' % (e(overview_title), e(overview))) if overview else ''
     options = ''.join('<option value="s-%d">%d · %s</option>' % (s['n'], s['n'], e(s['title'])) for s in slides)
     sheets = ''.join(render_slide(deck, s, mod) for s in slides)
-    desc = C.code + ' %s annotated slides: every slide rebuilt with notes, memory tricks, cross-references and likely exam questions.' % title
+    rendering = 'original slides' if getattr(mod, 'AUTO_SLIDES', False) == 'all' else 'rebuilt slides'
+    desc = C.code + ' %s annotated slides: %s with notes, memory tricks, cross-references and likely exam questions.' % (title, rendering)
     return '''<!doctype html>
 <html lang="en" data-theme="light">
 <head>
@@ -516,6 +889,7 @@ def deck_page(deck, mod):
 <div class="kicker">{chapter} · Annotated slides</div>
 <h1>{name}</h1>
 <p>{lede}</p>
+{overview}
 <ul class="as-stats"><li><b>{count}</b> slides</li><li><b>{n_past}</b> {w_direct}</li><li><b>{n_rel}</b> {w_related}</li><li><b>{n_q}</b> practice questions</li></ul>
 <div class="legend" aria-label="Ink key">
 <span><i class="lg-ink"></i>Slide text</span>
@@ -530,13 +904,14 @@ def deck_page(deck, mod):
 {sheets}
 <p class="empty-filter" id="as-empty" hidden>No slides match this filter.</p>
 </main>
-<footer class="as-foot">Rebuilt from the {code} lecture slides as a study aid. Check exact wording against the <a href="{pdf}" target="_top">original deck</a>. Made by Shoug Alomran.</footer>
+<footer class="as-foot">{display} from the {code} lecture slides, with study notes. Check exact wording against the <a href="{pdf}" target="_top">original deck</a>. Made by Shoug Alomran.</footer>
 </div>
 <nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
 <script src="/javascripts/annotated-slides.js"></script>
 </body>
 </html>
-'''.format(code=C.code, w_direct=C.papers['n_direct'], w_related=C.papers['n_related'],
+'''.format(code=C.code, w_direct=C.papers['n_direct'], w_related=C.papers['n_related'], overview=overview_html,
+           display='Original slides' if getattr(mod, 'AUTO_SLIDES', False) == 'all' else 'Rebuilt slides',
            prof_legend='<span><i class="lg-prof"></i>Instructor’s marks (from the original PDF)</span>\n' if C.prof_legend else '',
            title=e(title), desc=e(desc), site=SITE, section=C.section, slug=deck['slug'], options=options,
            chapter=e(deck['chapter']), name=e(deck['title']), lede=e(deck['lede']), count=len(slides),
@@ -636,12 +1011,22 @@ def outside_nav(page, fn):
 
 def build_wrapper(deck, data, prev_key, next_key):
     key = deck['key']
-    folder, template_file = C.template
-    page = read(os.path.join(C.dir, 'slide-breakdowns', folder, 'index.html'))
+    donor = None
+    if len(C.template) == 3:
+        # The course has no slide breakdowns: borrow another course's wrapper (same track) and
+        # rewrite its course references; the whole sidebar is re-rendered below.
+        donor, folder, template_file = C.template
+        page = read(os.path.join(REPO, 'docs', 'academics', donor, 'slide-breakdowns', folder, 'index.html'))
+        donor_code = donor.rsplit('/', 1)[1].upper()
+        page = page.replace('/academics/%s/' % donor, C.base)
+        page = re.sub(r'\b%s\b' % donor_code, C.code, page)
+    else:
+        folder, template_file = C.template
+        page = read(os.path.join(C.dir, 'slide-breakdowns', folder, 'index.html'))
     url = C.section + deck['slug'] + '/'
     name = C.page_name(deck)
     title = '%s | %s (Annotated Slides)' % (C.code, e(name))
-    desc = C.code + ' %s annotated slides: the original slides rebuilt with study notes, memory tricks, cross-references and likely exam questions.' % e(name)
+    desc = C.code + ' %s annotated slides: every original slide with numbered study notes linked to the highlighted words, past-exam links and practice questions.' % e(name)
     page = replace_meta(page, title, desc, C.base + 'slide-breakdowns/%s/' % folder, url)
 
     def crumb(m):
@@ -669,14 +1054,17 @@ def build_wrapper(deck, data, prev_key, next_key):
                       part, count=1, flags=re.S)
         return part
     page = outside_nav(page, body)
-    page = set_sections(page, data, url)
+    if donor:
+        page = sidebar.NAV_RE.sub(lambda m: sidebar.render_nav(data, url), page, count=1)
+    else:
+        page = set_sections(page, data, url)
     write(os.path.join(C.dir, 'annotated-slides', deck['slug'], 'index.html'), page)
 
 
 def build_directory(data):
     page = read(os.path.join(C.dir, 'slides', 'index.html'))
     title = 'SHOUG.TECH | %s Annotated Slides' % C.code
-    desc = ('%s %s annotated slides: every lecture slide rebuilt with study notes, '
+    desc = ('%s %s annotated slides: every original lecture slide with linked study notes, '
             'memory tricks, cross-references, %s links and likely exam questions.' % (C.code, C.name, C.papers['desc']))
     page = replace_meta(page, title, desc, C.base + 'slides/', C.section)
 
@@ -764,18 +1152,28 @@ def wire_course_pages():
 
 # --------------------------------------------------------------------------- #
 
+def load_deck(name):
+    """A deck module, or 'module:Name' for one of several short decks kept in a single module."""
+    module, _, attr = name.partition(':')
+    mod = importlib.import_module('%s.%s' % (C.package, module))
+    return getattr(mod, attr) if attr else mod
+
+
 def build(course):
     global C
     C = course
-    mods = [importlib.import_module('%s.%s' % (C.package, name)) for name in C.built]
+    mods = [load_deck(name) for name in C.built]
     C.built_keys = {m.DECK['key'] for m in mods}
     data = update_sidebar_data()
     keys = [k for k in C.decks if k in C.built_keys]
+    # --deck KEY (repeatable) rebuilds only those decks' pages and wrappers.
+    only = {sys.argv[i + 1] for i, a in enumerate(sys.argv[:-1]) if a == '--deck'}
     for mod in mods:
         deck = mod.DECK
         out = os.path.join(C.dir, 'annotated-slides', deck['slug'])
-        crop_figures(deck, mod, os.path.join(out, 'figures'))
-        write(os.path.join(out, deck['file'] + '.html'), deck_page(deck, mod))
+        if only and deck['key'] not in only:
+            continue
+        build_page(deck, mod, out)
         i = keys.index(deck['key'])
         build_wrapper(deck, data, keys[i - 1] if i > 0 else None, keys[i + 1] if i + 1 < len(keys) else None)
     build_directory(data)

@@ -1,0 +1,67 @@
+"""CS101 annotated slides — Chapter 6: Methods. See ch01_introduction.py for the setup."""
+from .common import mcq, scen, short, tf, tip, trap, trick
+
+AUTO_SLIDES = True
+
+DECK = {
+    'key': 'ch6',
+    'slug': '06-methods',
+    'file': 'methods',
+    'title': 'Methods',
+    'chapter': 'Chapter 6',
+    'pdf': '/academics/computer-science/cs101/slides/chapter-6/',
+    'lede': ('Defining and calling methods, signatures, formal vs. actual parameters, return types, void methods, '
+             'the call stack, pass-by-value, overloading (and ambiguous calls), variable scope, method '
+             'abstraction and stepwise refinement, with the random-character case study.'),
+}
+
+ANN = {
+    1: dict(kind='title', title='Methods', body=[], sub='CS101 · Chapter 6'),
+    2: dict(notes=['Objectives: define, call, pass parameters, overload, scope, abstraction.']),
+    3: dict(notes=['Sum 1–10, 20–30, 35–45: the same code three times → write one method.']),
+    4: dict(notes=['Problem repeated.']), 5: dict(notes=['Problem repeated.']),
+    6: dict(notes=['Solution: sum(int i1, int i2) reused three times.']),
+    7: dict(notes=['A method = modifiers, return type, name, parameters, body.']),
+    8: dict(notes=['public static int max(int num1, int num2) { … }']),
+    9: dict(notes=['Method signature = name + parameter list.'],
+            exam=[mcq('A method signature consists of:', ['The method name and parameter list', 'The return type and name', 'The modifiers and body', 'Only the name'], 0, '')], weight=3),
+    10: dict(notes=['Formal parameters: the variables in the method header.']),
+    11: dict(notes=['Actual parameters (arguments): the values passed in the call.'],
+             exam=[mcq('In max(3, 7), the values 3 and 7 are:', ['Actual parameters (arguments)', 'Formal parameters', 'Return values', 'Local constants'], 0, '')], weight=3),
+    12: dict(notes=['Return type: the type of the value returned; void returns nothing.']),
+    13: dict(notes=['Calling a method transfers control to it; return gives control back.']),
+    14: dict(notes=['Trace.']), 15: dict(notes=['Trace.']), 16: dict(notes=['Trace.']), 17: dict(notes=['Trace.']), 18: dict(notes=['Trace.']),
+    19: dict(notes=['Trace.']), 20: dict(notes=['Trace.']), 21: dict(notes=['Trace.']), 22: dict(notes=['Trace.']), 23: dict(notes=['Trace.']), 24: dict(notes=['Trace.']),
+    25: dict(notes=['A value-returning method must return a value on every path; the compiler rejects a missing return after if/else-if.'],
+             tips=[trap('if (n > 0) return 1; else if (n == 0) return 0; else if (n < 0) return -1; → compile error: the compiler can’t prove a return.')], weight=2),
+    26: dict(notes=['Call static methods of other classes: ClassName.methodName(...).']),
+    27: dict(notes=['Each call gets an activation record on the call stack (parameters and locals); popped on return.'],
+             exam=[tf('Each method call creates a new activation record on the call stack.', True, '')], weight=3),
+    28: dict(notes=['Call stack trace.']), 29: dict(notes=['Trace.']), 30: dict(notes=['Trace.']), 31: dict(notes=['Trace.']), 32: dict(notes=['Trace.']),
+    33: dict(notes=['Trace.']), 34: dict(notes=['Trace.']), 35: dict(notes=['Trace.']), 36: dict(notes=['Trace.']), 37: dict(notes=['Trace.']),
+    38: dict(notes=['Arguments must match the parameters in order, number and compatible type.']),
+    39: dict(notes=['void method example: printGrade(score).']),
+    40: dict(notes=['Pass by value: the method gets a COPY; changing the parameter doesn’t change the caller’s variable.'],
+             exam=[short('A method increments its int parameter. Does the caller’s variable change? Why?', 'No. Java passes primitives by value: the method works on a copy, so the caller’s variable keeps its original value.')], weight=3),
+    41: dict(notes=['swap(num1, num2) inside a method doesn’t swap the caller’s values.']),
+    42: dict(notes=['Modularize code: GCD and prime-number methods.']),
+    43: dict(notes=['Overloading: same name, different parameter lists (max(int,int), max(double,double)).'],
+             tips=[trap('Different return type alone does NOT overload a method.')],
+             exam=[tf('Two methods can be overloaded if they differ only in return type.', False, 'Parameter lists must differ.')], weight=3),
+    44: dict(notes=['Ambiguous invocation: two equally good matches → compile error (max(1, 2) with max(int,double) and max(double,int)).']),
+    45: dict(notes=['Ambiguous invocation example.']),
+    46: dict(notes=['Scope of a local variable: from its declaration to the end of its block.'],
+             exam=[mcq('The scope of a variable declared in a for-loop header is:', ['The loop only', 'The whole method', 'The whole class', 'The whole program'], 0, '')], weight=3),
+    47: dict(notes=['A parameter is a local variable whose scope is the whole method.']),
+    48: dict(notes=['A variable declared in a for header is in scope only inside the loop.']),
+    49: dict(notes=['Same name allowed in non-nested blocks; not in nested blocks.']),
+    50: dict(notes=['Scope examples.']),
+    51: dict(notes=['Method abstraction: use a method knowing only its signature (black box).']),
+    52: dict(notes=['Benefits: write once reuse, hide details, reduce complexity.']),
+    53: dict(notes=['Random characters: (char)(\'a\' + Math.random() * (\'z\' − \'a\' + 1)).']),
+    54: dict(notes=['Case study continued.']), 55: dict(notes=['Continued.']), 56: dict(notes=['Continued.']), 57: dict(notes=['Continued.']),
+    58: dict(notes=['RandomCharacter class with getRandomCharacter, getRandomLowerCaseLetter, getRandomDigitCharacter.']),
+    59: dict(notes=['Stepwise refinement: top-down design of a calendar program.']),
+    60: dict(notes=['Top-down vs. bottom-up implementation with stubs.']),
+    61: dict(notes=['Benefits: simpler programs, reuse, easier development, debugging and testing, teamwork.']),
+}

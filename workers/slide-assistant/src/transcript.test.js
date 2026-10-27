@@ -20,7 +20,11 @@ test("transcript upload rejects oversized bodies before parsing", async () => {
   const response = await worker.fetch(
     new Request("https://worker.test/v1/transcript-import", {
       method: "POST",
-      headers: { origin, "content-type": "multipart/form-data; boundary=x", "content-length": "6000000" },
+      headers: {
+        origin,
+        "content-type": "multipart/form-data; boundary=x",
+        "content-length": "6000000",
+      },
       body: "",
     }),
     {},
@@ -32,7 +36,10 @@ test("transcript endpoint rejects non-site origins", async () => {
   const response = await worker.fetch(
     new Request("https://worker.test/v1/transcript-import", {
       method: "POST",
-      headers: { origin: "https://attacker.example", "content-type": "application/json" },
+      headers: {
+        origin: "https://attacker.example",
+        "content-type": "application/json",
+      },
       body: "{}",
     }),
     {},
@@ -57,7 +64,13 @@ test("transcript terms map to the site's PSU term codes", () => {
 test("each row is checked on its own; pending grades become in-progress courses", () => {
   const result = normalizeTranscript({
     courses: [
-      { code: "cs331", title: "Algorithms", hours: 3, grade: "+A", term: "20251" },
+      {
+        code: "cs331",
+        title: "Algorithms",
+        hours: 3,
+        grade: "+A",
+        term: "20251",
+      },
       { code: "PHY 105", hours: 4, grade: "F", term: "20242" },
       { code: "PHY 105", hours: 4, grade: "C", term: "20243" },
       { code: "SE 322", hours: 3, grade: "ت", term: "20261" },
@@ -71,16 +84,28 @@ test("each row is checked on its own; pending grades become in-progress courses"
     { code: "PHY 105", title: "", hours: 4, grade: "F", term: "242" },
     { code: "PHY 105", title: "", hours: 4, grade: "C", term: "243" },
   ]);
-  assert.deepEqual(result.inProgress, [{ code: "SE 322", title: "", hours: 3, grade: "", term: "261" }]);
+  assert.deepEqual(result.inProgress, [
+    { code: "SE 322", title: "", hours: 3, grade: "", term: "261" },
+  ]);
   assert.equal(result.skipped, 2);
-  assert.deepEqual(result.summary, { cumulativeGpa: 2.82, earnedHours: 41, totalPoints: null });
+  assert.deepEqual(result.summary, {
+    cumulativeGpa: 2.82,
+    earnedHours: 41,
+    totalPoints: null,
+  });
 });
 
 test("model answers are read as text, fenced text, parsed objects or chat choices", () => {
   const body = { courses: [] };
   assert.deepEqual(modelJson({ response: body }), body);
-  assert.deepEqual(modelJson({ response: "```json\n{\"courses\":[]}\n```" }), body);
-  assert.deepEqual(modelJson({ choices: [{ message: { content: "Here: {\"courses\":[]}" } }] }), body);
+  assert.deepEqual(
+    modelJson({ response: '```json\n{"courses":[]}\n```' }),
+    body,
+  );
+  assert.deepEqual(
+    modelJson({ choices: [{ message: { content: 'Here: {"courses":[]}' } }] }),
+    body,
+  );
   assert.equal(modelJson({ response: "no json here" }), null);
 });
 
@@ -97,7 +122,14 @@ test("EduGate rows: reversed codes, * pending, preparatory flag, swapped hours/p
     summary: { cumulativeGpa: 3, earnedHours: 76, totalPoints: 227.75 },
   });
   assert.deepEqual(
-    result.courses.map((c) => [c.code, c.hours, c.grade, c.term, c.prep || false, c.flag || ""]),
+    result.courses.map((c) => [
+      c.code,
+      c.hours,
+      c.grade,
+      c.term,
+      c.prep || false,
+      c.flag || "",
+    ]),
     [
       ["ARAB 101", 2, "C", "231", false, ""],
       ["MATH 001", 4, "D+", "231", true, ""],
@@ -106,8 +138,15 @@ test("EduGate rows: reversed codes, * pending, preparatory flag, swapped hours/p
       ["CS 175", 3, "A", "241", false, "check"],
     ],
   );
-  assert.deepEqual(result.inProgress.map((c) => c.code), ["CS 331"]);
-  assert.deepEqual(result.summary, { cumulativeGpa: 3, earnedHours: 76, totalPoints: 227.75 });
+  assert.deepEqual(
+    result.inProgress.map((c) => c.code),
+    ["CS 331"],
+  );
+  assert.deepEqual(result.summary, {
+    cumulativeGpa: 3,
+    earnedHours: 76,
+    totalPoints: 227.75,
+  });
 });
 
 import { clock, dayName, normalizeSchedule } from "./schedule.js";
@@ -122,14 +161,42 @@ test("schedule import: Arabic and English days, 12/24-hour times, labs kept sepa
   assert.equal(clock("02:00 PM"), "14:00");
   const result = normalizeSchedule({
     classes: [
-      { code: "SE322", title: "Software Design", section: "171", type: "Lecture", days: ["الأحد", "الثلاثاء"], start: "10:00", end: "11:15", room: "B101-204" },
-      { code: "322SE", type: "lab", days: "Thu", start: "1:00", end: "2:50", room: "Lab 3" },
-      { code: "SE 322", type: "lecture", days: ["sunday", "tuesday"], start: "10:00", end: "11:15" },
+      {
+        code: "SE322",
+        title: "Software Design",
+        section: "171",
+        type: "Lecture",
+        days: ["الأحد", "الثلاثاء"],
+        start: "10:00",
+        end: "11:15",
+        room: "B101-204",
+      },
+      {
+        code: "322SE",
+        type: "lab",
+        days: "Thu",
+        start: "1:00",
+        end: "2:50",
+        room: "Lab 3",
+      },
+      {
+        code: "SE 322",
+        type: "lecture",
+        days: ["sunday", "tuesday"],
+        start: "10:00",
+        end: "11:15",
+      },
       { code: "CS 331", days: [], start: "8:00", end: "9:15" },
     ],
   });
   assert.deepEqual(
-    result.classes.map((c) => [c.code, c.type, c.days.join(","), c.start, c.end]),
+    result.classes.map((c) => [
+      c.code,
+      c.type,
+      c.days.join(","),
+      c.start,
+      c.end,
+    ]),
     [
       ["SE 322", "lecture", "sunday,tuesday", "10:00", "11:15"],
       ["SE 322", "lab", "thursday", "13:00", "14:50"],

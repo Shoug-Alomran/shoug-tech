@@ -34,7 +34,13 @@
   }
   function esc(v) {
     return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[c];
     });
   }
   function pad(n) {
@@ -52,7 +58,11 @@
   function termShort(code) {
     var y = Number(code.slice(0, 2)),
       n = code.charAt(2);
-    return n === "1" ? "1st ’" + pad(y) : n === "2" ? "2nd ’" + pad(y) : "Sum ’" + pad(y + 1);
+    return n === "1"
+      ? "1st ’" + pad(y)
+      : n === "2"
+        ? "2nd ’" + pad(y)
+        : "Sum ’" + pad(y + 1);
   }
 
   // ── Semester history ─────────────────────────────────────────────────────
@@ -62,7 +72,13 @@
       courses = record.courses || {};
     Object.keys(courses).forEach(function (code) {
       var c = courses[code];
-      if (!c || c.finished === false || !AR.counts(c, code) || !/^\d{3}$/.test(String(c.term))) return;
+      if (
+        !c ||
+        c.finished === false ||
+        !AR.counts(c, code) ||
+        !/^\d{3}$/.test(String(c.term))
+      )
+        return;
       var t = byTerm[c.term] || (byTerm[c.term] = { qp: 0, hours: 0 });
       t.qp += AR.POINTS[c.letter] * Number(c.hours);
       t.hours += Number(c.hours);
@@ -75,7 +91,13 @@
         var t = byTerm[term];
         qp += t.qp;
         hours += t.hours;
-        return { term: term, gpa: t.qp / t.hours, hours: t.hours, cum: qp / hours, cumHours: hours };
+        return {
+          term: term,
+          gpa: t.qp / t.hours,
+          hours: t.hours,
+          cum: qp / hours,
+          cumHours: hours,
+        };
       });
   }
 
@@ -95,22 +117,60 @@
       plotW = W - m.l - m.r,
       plotH = H - m.t - m.b;
     function x(i) {
-      return m.l + (rows.length === 1 ? plotW / 2 : (i * plotW) / (rows.length - 1));
+      return (
+        m.l + (rows.length === 1 ? plotW / 2 : (i * plotW) / (rows.length - 1))
+      );
     }
     function y(v) {
       return m.t + ((4 - v) / (4 - yMin)) * plotH;
     }
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img", "aria-label": "Term GPA and cumulative GPA by semester" }, host);
+    var svg = el(
+      "svg",
+      {
+        viewBox: "0 0 " + W + " " + H,
+        width: W,
+        height: H,
+        role: "img",
+        "aria-label": "Term GPA and cumulative GPA by semester",
+      },
+      host,
+    );
     for (var v = yMin; v <= 4.001; v += 0.5) {
-      el("line", { class: "ti-grid", x1: m.l, x2: W - m.r + 8, y1: y(v), y2: y(v) }, svg);
-      el("text", { class: "ti-axis", x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v.toFixed(1);
+      el(
+        "line",
+        { class: "ti-grid", x1: m.l, x2: W - m.r + 8, y1: y(v), y2: y(v) },
+        svg,
+      );
+      el(
+        "text",
+        { class: "ti-axis", x: m.l - 8, y: y(v) + 4, "text-anchor": "end" },
+        svg,
+      ).textContent = v.toFixed(1);
     }
-    var every = Math.max(1, Math.ceil(rows.length / Math.max(2, Math.floor(plotW / 52))));
+    var every = Math.max(
+      1,
+      Math.ceil(rows.length / Math.max(2, Math.floor(plotW / 52))),
+    );
     rows.forEach(function (r, i) {
       if (i % every && i !== rows.length - 1) return;
-      el("text", { class: "ti-axis", x: x(i), y: H - 8, "text-anchor": "middle" }, svg).textContent = termShort(r.term);
+      el(
+        "text",
+        { class: "ti-axis", x: x(i), y: H - 8, "text-anchor": "middle" },
+        svg,
+      ).textContent = termShort(r.term);
     });
-    var cross = el("line", { class: "ti-cross", x1: 0, x2: 0, y1: m.t, y2: H - m.b, visibility: "hidden" }, svg);
+    var cross = el(
+      "line",
+      {
+        class: "ti-cross",
+        x1: 0,
+        x2: 0,
+        y1: m.t,
+        y2: H - m.b,
+        visibility: "hidden",
+      },
+      svg,
+    );
     var series = [
       { key: "gpa", cls: "ti-s1", label: "Term", short: "Term" },
       { key: "cum", cls: "ti-s2", label: "Cumulative", short: "Cum." },
@@ -119,12 +179,18 @@
     series.forEach(function (s) {
       var d = rows
         .map(function (r, i) {
-          return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(r[s.key]).toFixed(1);
+          return (
+            (i ? "L" : "M") + x(i).toFixed(1) + " " + y(r[s.key]).toFixed(1)
+          );
         })
         .join(" ");
       el("path", { class: "ti-line " + s.cls, d: d }, svg);
       rows.forEach(function (r, i) {
-        el("circle", { class: "ti-dot " + s.cls, cx: x(i), cy: y(r[s.key]), r: 4 }, svg);
+        el(
+          "circle",
+          { class: "ti-dot " + s.cls, cx: x(i), cy: y(r[s.key]), r: 4 },
+          svg,
+        );
       });
       ends.push({ s: s, y: y(rows[rows.length - 1][s.key]) });
     });
@@ -136,8 +202,15 @@
       ends[1 - up].y = mid + 8;
     }
     ends.forEach(function (e) {
-      var t = el("text", { class: "ti-end", x: x(rows.length - 1) + 10, y: e.y + 4 }, svg);
-      t.textContent = (narrow ? e.s.short : e.s.label) + " " + rows[rows.length - 1][e.s.key].toFixed(2);
+      var t = el(
+        "text",
+        { class: "ti-end", x: x(rows.length - 1) + 10, y: e.y + 4 },
+        svg,
+      );
+      t.textContent =
+        (narrow ? e.s.short : e.s.label) +
+        " " +
+        rows[rows.length - 1][e.s.key].toFixed(2);
     });
     // Hover and touch: one hit column per semester, wider than the marks.
     var tip = document.createElement("div");
@@ -146,15 +219,42 @@
     host.appendChild(tip);
     rows.forEach(function (r, i) {
       var half = rows.length === 1 ? plotW / 2 : plotW / (rows.length - 1) / 2;
-      var hit = el("rect", { class: "ti-hit", x: x(i) - half, y: m.t, width: half * 2, height: plotH, tabindex: 0, "aria-label": AR.termName(r.term) + ": term GPA " + r.gpa.toFixed(2) + ", cumulative " + r.cum.toFixed(2) }, svg);
+      var hit = el(
+        "rect",
+        {
+          class: "ti-hit",
+          x: x(i) - half,
+          y: m.t,
+          width: half * 2,
+          height: plotH,
+          tabindex: 0,
+          "aria-label":
+            AR.termName(r.term) +
+            ": term GPA " +
+            r.gpa.toFixed(2) +
+            ", cumulative " +
+            r.cum.toFixed(2),
+        },
+        svg,
+      );
       function show() {
         cross.setAttribute("x1", x(i));
         cross.setAttribute("x2", x(i));
         cross.setAttribute("visibility", "visible");
         tip.innerHTML =
-          "<b>" + esc(AR.termName(r.term)) + "</b>" +
-          '<span><i class="ti-key ti-s1"></i>Term GPA ' + r.gpa.toFixed(2) + " · " + r.hours + " hrs</span>" +
-          '<span><i class="ti-key ti-s2"></i>Cumulative ' + r.cum.toFixed(2) + " · " + r.cumHours + " hrs</span>";
+          "<b>" +
+          esc(AR.termName(r.term)) +
+          "</b>" +
+          '<span><i class="ti-key ti-s1"></i>Term GPA ' +
+          r.gpa.toFixed(2) +
+          " · " +
+          r.hours +
+          " hrs</span>" +
+          '<span><i class="ti-key ti-s2"></i>Cumulative ' +
+          r.cum.toFixed(2) +
+          " · " +
+          r.cumHours +
+          " hrs</span>";
         tip.hidden = false;
         var left = x(i) + 12;
         if (left + tip.offsetWidth > W) left = x(i) - 12 - tip.offsetWidth;
@@ -184,7 +284,17 @@
       "<table><thead><tr><th>Semester</th><th>Hours</th><th>Term GPA</th><th>Cumulative</th></tr></thead><tbody>" +
       rows
         .map(function (r) {
-          return "<tr><td>" + esc(AR.termName(r.term)) + "</td><td>" + r.hours + "</td><td>" + r.gpa.toFixed(2) + "</td><td>" + r.cum.toFixed(2) + "</td></tr>";
+          return (
+            "<tr><td>" +
+            esc(AR.termName(r.term)) +
+            "</td><td>" +
+            r.hours +
+            "</td><td>" +
+            r.gpa.toFixed(2) +
+            "</td><td>" +
+            r.cum.toFixed(2) +
+            "</td></tr>"
+          );
         })
         .join("") +
       "</tbody></table>";
@@ -194,10 +304,18 @@
 
   var plans = {};
   function literal(source, name) {
-    var m = source.match(new RegExp("(?:const|let|var)\\s+" + name + "\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;"));
+    var m = source.match(
+      new RegExp(
+        "(?:const|let|var)\\s+" + name + "\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;",
+      ),
+    );
     if (!m) return {};
     try {
-      return JSON.parse(m[1].replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3').replace(/,\s*([}\]])/g, "$1"));
+      return JSON.parse(
+        m[1]
+          .replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3')
+          .replace(/,\s*([}\]])/g, "$1"),
+      );
     } catch (e) {
       return {};
     }
@@ -211,21 +329,35 @@
       })
       .then(function (html) {
         var source = Array.prototype.map
-          .call(new DOMParser().parseFromString(html, "text/html").scripts, function (s) {
-            return s.textContent;
-          })
+          .call(
+            new DOMParser().parseFromString(html, "text/html").scripts,
+            function (s) {
+              return s.textContent;
+            },
+          )
           .find(function (t) {
             return /COURSES_RAW\s*=/.test(t);
           });
-        var m = source && source.match(/(?:const|let|var)\s+COURSES_RAW\s*=\s*(\[[\s\S]*?\n\s*\]);/);
+        var m =
+          source &&
+          source.match(
+            /(?:const|let|var)\s+COURSES_RAW\s*=\s*(\[[\s\S]*?\n\s*\]);/,
+          );
         if (!m) throw Error("No course list in this plan");
         var text = m[1]
           .replace(/\/\*[\s\S]*?\*\//g, "")
           .replace(/^\s*\/\/.*$/gm, "")
           .replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3')
           .replace(/,\s*([}\]])/g, "$1");
-        var key = source.match(/localStorage\.setItem\(\s*["']([^"']*choices)["']/);
-        return { courses: JSON.parse(text), limits: literal(source, "GROUP_LIMITS"), meta: literal(source, "GROUP_META"), choicesKey: key ? key[1] : "" };
+        var key = source.match(
+          /localStorage\.setItem\(\s*["']([^"']*choices)["']/,
+        );
+        return {
+          courses: JSON.parse(text),
+          limits: literal(source, "GROUP_LIMITS"),
+          meta: literal(source, "GROUP_META"),
+          choicesKey: key ? key[1] : "",
+        };
       });
     plans[value].catch(function () {
       delete plans[value];
@@ -251,11 +383,16 @@
       var c = courses[code],
         key = EQUIVALENT[code] || code;
       if (!c) return;
-      var passed = c.finished !== false && c.letter && NOT_PASSED.indexOf(c.letter) < 0;
+      var passed =
+        c.finished !== false && c.letter && NOT_PASSED.indexOf(c.letter) < 0;
       if (passed) {
         status[key] = { state: "done", code: code, hours: Number(c.hours) };
         if (!AR.isPrep(code)) counted[key] = code;
-      } else if (!c.letter && String(c.term) === current && !(status[key] && status[key].state === "done")) {
+      } else if (
+        !c.letter &&
+        String(c.term) === current &&
+        !(status[key] && status[key].state === "done")
+      ) {
         status[key] = { state: "now", code: code, hours: Number(c.hours) };
       }
     });
@@ -294,14 +431,25 @@
           )
           .slice(0, limit);
       needed = needed.concat(pick);
-      if (pick.length < limit) open.push({ group: g, label: plan.meta[g] || "Elective group " + g, missing: limit - pick.length, hours: options[0].hours });
+      if (pick.length < limit)
+        open.push({
+          group: g,
+          label: plan.meta[g] || "Elective group " + g,
+          missing: limit - pick.length,
+          hours: options[0].hours,
+        });
     });
     var done = [],
       now = [],
       left = [];
     needed.forEach(function (c) {
       var s = st(c.id);
-      (s && s.state === "done" ? done : s && s.state === "now" ? now : left).push(c);
+      (s && s.state === "done"
+        ? done
+        : s && s.state === "now"
+          ? now
+          : left
+      ).push(c);
     });
     function sum(list) {
       return list.reduce(function (t, c) {
@@ -336,7 +484,8 @@
     Object.keys(courses).forEach(function (code) {
       var c = courses[code],
         t = String((c && c.term) || "");
-      if (/^\d{2}[12]$/.test(t) && (c.letter || t === current)) perTerm[t] = (perTerm[t] || 0) + Number(c.hours || 0);
+      if (/^\d{2}[12]$/.test(t) && (c.letter || t === current))
+        perTerm[t] = (perTerm[t] || 0) + Number(c.hours || 0);
     });
     var recent = Object.keys(perTerm).sort().slice(-3),
       pace = recent.length
@@ -401,9 +550,23 @@
   function chip(c, note, summerOn) {
     var code = AR.courseCode(c.id);
     return (
-      '<li class="ti-chip' + (summerOn ? " ti-is-summer" : "") + '"><div><b>' + esc(code) + "</b> " + esc(c.name || "") +
-      " <span>" + esc(c.hours) + " hrs" + (note ? " · " + esc(note) : "") + (summerOn ? " · planned for summer" : "") + "</span></div>" +
-      '<button type="button" class="ti-summer" data-summer="' + esc(code) + '" aria-pressed="' + (summerOn ? "true" : "false") + '" title="Plan this course for a summer term">Summer</button></li>'
+      '<li class="ti-chip' +
+      (summerOn ? " ti-is-summer" : "") +
+      '"><div><b>' +
+      esc(code) +
+      "</b> " +
+      esc(c.name || "") +
+      " <span>" +
+      esc(c.hours) +
+      " hrs" +
+      (note ? " · " + esc(note) : "") +
+      (summerOn ? " · planned for summer" : "") +
+      "</span></div>" +
+      '<button type="button" class="ti-summer" data-summer="' +
+      esc(code) +
+      '" aria-pressed="' +
+      (summerOn ? "true" : "false") +
+      '" title="Plan this course for a summer term">Summer</button></li>'
     );
   }
   // "Math Elective - choose 1" -> "Math elective".
@@ -414,8 +577,13 @@
     });
   }
   function gridPlanUrl(value) {
-    var match = /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(String(value || ""));
-    return match ? "/academic-plan-themes/" + match[1] + "/grid.html" : "/academic-plan-themes/se-cys/grid.html";
+    var match =
+      /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+        String(value || ""),
+      );
+    return match
+      ? "/academic-plan-themes/" + match[1] + "/grid.html"
+      : "/academic-plan-themes/se-cys/grid.html";
   }
   function renderProgress(record) {
     var card = $("progress-card"),
@@ -430,7 +598,8 @@
     try {
       saved = localStorage.getItem(PLAN_KEY) || "";
     } catch (e) {}
-    if (saved && select.querySelector('option[value="' + saved + '"]')) select.value = saved;
+    if (saved && select.querySelector('option[value="' + saved + '"]'))
+      select.value = saved;
     var gridLink = $("progress-grid-link");
     if (gridLink) gridLink.href = gridPlanUrl(select.value);
     var body = $("progress-body"),
@@ -438,26 +607,64 @@
     loadPlan(value)
       .then(function (plan) {
         if (select.value !== value) return;
-        var p = progress(record, plan, (lastOpts.plan && lastOpts.plan.summer) || []),
+        var p = progress(
+            record,
+            plan,
+            (lastOpts.plan && lastOpts.plan.summer) || [],
+          ),
           pct = function (h) {
             return p.total ? Math.min(100, (h / p.total) * 100) : 0;
           };
         body.innerHTML =
-          '<div class="ti-stats"><div><b>' + p.doneHours + "</b><span>of " + p.total + " plan hours done</span></div>" +
-          "<div><b>" + p.nowHours + "</b><span>hours in progress this semester</span></div>" +
-          "<div><b>" + (p.leftHours ? esc(AR.termName(p.finish)) : "This semester") + "</b><span>" +
+          '<div class="ti-stats"><div><b>' +
+          p.doneHours +
+          "</b><span>of " +
+          p.total +
+          " plan hours done</span></div>" +
+          "<div><b>" +
+          p.nowHours +
+          "</b><span>hours in progress this semester</span></div>" +
+          "<div><b>" +
+          (p.leftHours ? esc(AR.termName(p.finish)) : "This semester") +
+          "</b><span>" +
           (p.leftHours
             ? "estimated graduation · " +
               (p.regularLeft
-                ? p.regularLeft + " hours over about " + p.terms + " more semester" + (p.terms === 1 ? "" : "s") + " at your usual " + p.pace + " hours"
+                ? p.regularLeft +
+                  " hours over about " +
+                  p.terms +
+                  " more semester" +
+                  (p.terms === 1 ? "" : "s") +
+                  " at your usual " +
+                  p.pace +
+                  " hours"
                 : "") +
-              (p.summerHours ? (p.regularLeft ? ", plus " : "") + p.summerHours + " hours in " + (p.summers === 1 ? "a summer term" : p.summers + " summer terms") : "")
+              (p.summerHours
+                ? (p.regularLeft ? ", plus " : "") +
+                  p.summerHours +
+                  " hours in " +
+                  (p.summers === 1
+                    ? "a summer term"
+                    : p.summers + " summer terms")
+                : "")
             : "everything left is in progress now") +
           "</span></div></div>" +
-          '<div class="ti-bar" role="img" aria-label="' + p.doneHours + " of " + p.total + " hours done, " + p.nowHours + ' in progress"><span class="ti-done" style="width:' + pct(p.doneHours) + '%"></span><span class="ti-now" style="width:' + pct(p.nowHours) + '%"></span></div>' +
+          '<div class="ti-bar" role="img" aria-label="' +
+          p.doneHours +
+          " of " +
+          p.total +
+          " hours done, " +
+          p.nowHours +
+          ' in progress"><span class="ti-done" style="width:' +
+          pct(p.doneHours) +
+          '%"></span><span class="ti-now" style="width:' +
+          pct(p.nowHours) +
+          '%"></span></div>' +
           '<div class="ti-bar-key"><span><i class="ti-done"></i>Done</span><span><i class="ti-now"></i>This semester</span><span><i class="ti-left"></i>Left</span></div>' +
           (p.ready.length
-            ? '<h3 class="ti-h">Ready to take next <span>' + p.ready.length + "</span></h3><ul class=\"ti-chips\">" +
+            ? '<h3 class="ti-h">Ready to take next <span>' +
+              p.ready.length +
+              '</span></h3><ul class="ti-chips">' +
               p.ready
                 .sort(function (a, b) {
                   return (a.level || 0) - (b.level || 0);
@@ -469,44 +676,78 @@
               "</ul>"
             : "") +
           (p.waiting.length
-            ? '<details class="ti-more"><summary>Needs a prerequisite first <span>' + p.waiting.length + '</span></summary><ul class="ti-chips">' +
+            ? '<details class="ti-more"><summary>Needs a prerequisite first <span>' +
+              p.waiting.length +
+              '</span></summary><ul class="ti-chips">' +
               p.waiting
                 .map(function (w) {
-                  return chip(w.course, "after " + w.after.map(AR.courseCode).join(", "), p.summerSet[AR.courseCode(w.course.id)]);
+                  return chip(
+                    w.course,
+                    "after " + w.after.map(AR.courseCode).join(", "),
+                    p.summerSet[AR.courseCode(w.course.id)],
+                  );
                 })
                 .join("") +
               "</ul></details>"
             : "") +
           (p.open.length
-            ? '<h3 class="ti-h">Electives to choose <span>' + p.open.length + '</span></h3><div class="ti-electives">' +
+            ? '<h3 class="ti-h">Electives to choose <span>' +
+              p.open.length +
+              '</span></h3><div class="ti-electives">' +
               p.open
                 .map(function (o) {
                   return (
-                    '<label class="ti-elective"><span>' + esc(groupLabel(o.label)) + (o.missing > 1 ? " (choose " + o.missing + ")" : "") + "</span>" +
-                    '<select data-elective="' + esc(o.group) + '"><option value="">Choose a course</option>' +
+                    '<label class="ti-elective"><span>' +
+                    esc(groupLabel(o.label)) +
+                    (o.missing > 1 ? " (choose " + o.missing + ")" : "") +
+                    "</span>" +
+                    '<select data-elective="' +
+                    esc(o.group) +
+                    '"><option value="">Choose a course</option>' +
                     p.groups[o.group]
                       .map(function (c) {
-                        return '<option value="' + esc(c.id) + '">' + esc(AR.courseCode(c.id) + " · " + (c.name || "") + " · " + c.hours + " hrs") + "</option>";
+                        return (
+                          '<option value="' +
+                          esc(c.id) +
+                          '">' +
+                          esc(
+                            AR.courseCode(c.id) +
+                              " · " +
+                              (c.name || "") +
+                              " · " +
+                              c.hours +
+                              " hrs",
+                          ) +
+                          "</option>"
+                        );
                       })
                       .join("") +
-                    "</select><small class=\"ti-elective-note\"><span>Counted as " + o.hours + " hours until you choose.</span><a href=\"" + gridPlanUrl(value) + "\">Choose on the grid plan</a></small></label>"
+                    '</select><small class="ti-elective-note"><span>Counted as ' +
+                    o.hours +
+                    ' hours until you choose.</span><a href="' +
+                    gridPlanUrl(value) +
+                    '">Choose on the grid plan</a></small></label>'
                   );
                 })
                 .join("") +
               "</div>"
             : "") +
           (p.outside.length
-            ? '<p class="muted ti-open">Counted in your GPA but not in this plan: ' + p.outside.map(esc).join(", ") + ".</p>"
+            ? '<p class="muted ti-open">Counted in your GPA but not in this plan: ' +
+              p.outside.map(esc).join(", ") +
+              ".</p>"
             : "");
       })
       .catch(function () {
-        body.innerHTML = '<p class="muted">Could not load this plan. Check your connection and try again.</p>';
+        body.innerHTML =
+          '<p class="muted">Could not load this plan. Check your connection and try again.</p>';
       });
   }
 
   // Summer toggles and elective pickers inside the progress card.
   document.addEventListener("click", function (e) {
-    var btn = e.target.closest && e.target.closest("#progress-body [data-summer]");
+    var btn =
+      e.target.closest && e.target.closest("#progress-body [data-summer]");
     if (!btn || !lastRecord) return;
     var code = btn.dataset.summer,
       plan = Object.assign({}, lastOpts.plan),
@@ -520,18 +761,26 @@
     if (lastOpts.save) lastOpts.save(plan);
   });
   document.addEventListener("change", function (e) {
-    var sel = e.target.closest && e.target.closest("#progress-body [data-elective]");
+    var sel =
+      e.target.closest && e.target.closest("#progress-body [data-elective]");
     if (!sel || !sel.value || !lastRecord) return;
     loadPlan($("progress-plan").value).then(function (plan) {
       if (!plan.choicesKey) return;
       var choices = {};
       try {
-        choices = JSON.parse(localStorage.getItem(plan.choicesKey) || "{}") || {};
+        choices =
+          JSON.parse(localStorage.getItem(plan.choicesKey) || "{}") || {};
       } catch (err) {}
       var g = sel.dataset.elective,
         limit = Number(plan.limits[g]) || 1;
       // Same shape as the plan page: one course id per group, or a list.
-      choices[g] = limit === 1 ? sel.value : [].concat(choices[g] || []).concat(sel.value).slice(-limit);
+      choices[g] =
+        limit === 1
+          ? sel.value
+          : []
+              .concat(choices[g] || [])
+              .concat(sel.value)
+              .slice(-limit);
       try {
         localStorage.setItem(plan.choicesKey, JSON.stringify(choices));
       } catch (err) {}
@@ -547,13 +796,18 @@
   }
 
   document.addEventListener("change", function (e) {
-    if (e.target && (e.target.id === "progress-plan" || e.target.id === "plan")) {
+    if (
+      e.target &&
+      (e.target.id === "progress-plan" || e.target.id === "plan")
+    ) {
       try {
         localStorage.setItem(PLAN_KEY, e.target.value);
       } catch (err) {}
-      if (e.target.id === "progress-plan" && lastRecord) renderProgress(lastRecord);
+      if (e.target.id === "progress-plan" && lastRecord)
+        renderProgress(lastRecord);
       var gridLink = $("progress-grid-link");
-      if (gridLink && e.target.id === "progress-plan") gridLink.href = gridPlanUrl(e.target.value);
+      if (gridLink && e.target.id === "progress-plan")
+        gridLink.href = gridPlanUrl(e.target.value);
     }
   });
   var resizeTimer = null;
@@ -564,5 +818,9 @@
     }, 150);
   });
 
-  window.ShougTranscriptInsights = { render: render, historyRows: historyRows, progress: progress };
+  window.ShougTranscriptInsights = {
+    render: render,
+    historyRows: historyRows,
+    progress: progress,
+  };
 })();

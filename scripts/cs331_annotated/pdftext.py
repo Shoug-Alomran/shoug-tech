@@ -13,6 +13,7 @@ import pdfplumber
 from se423_annotated.pdftext import BULLETS, _lines, clean
 
 BULLET_GLYPHS = set(BULLETS) | {'■', '◼', '▪', '', '', '❑', '', '●', '⮚', '🡺'}
+GLYPHS = BULLET_GLYPHS  # the set read_deck is currently using
 
 
 def picture_boxes(page):
@@ -35,16 +36,55 @@ def _join(a, b):
 
 def _snap_bullets(words):
     """Bullet glyphs are set smaller than their text, so they sit on their own baseline; move them onto it."""
-    texts = [w for w in words if clean(w['text']).strip() not in BULLET_GLYPHS]
+    texts = [w for w in words if clean(w['text']).strip() not in GLYPHS]
     for b in words:
-        if clean(b['text']).strip() not in BULLET_GLYPHS:
+        if clean(b['text']).strip() not in GLYPHS:
             continue
         mid = (b['top'] + b['bottom']) / 2
         near = [w for w in texts if 0 <= w['x0'] - b['x0'] < 60 and abs((w['top'] + w['bottom']) / 2 - mid) < 14]
         if near:
-            w = min(near, key=lambda w: (w['x0'], abs((w['top'] + w['bottom']) / 2 - mid)))
+            # The glyph hangs a little below the top of its own line, never above it.
+            w = min(near, key=lambda w: (w['top'] > b['top'] + 2, abs((w['top'] + w['bottom']) / 2 - mid), w['x0']))
             b['top'], b['bottom'] = w['top'], w['bottom']
     return words
+
+
+def _columns(words):
+    """Text runs: words on one baseline closer than a normal word gap. Unlike _lines, two columns never merge."""
+    runs = []
+    for w in sorted(words, key=lambda w: (round(w['top']), w['x0'])):
+        last = runs[-1] if runs else None
+        if last and abs(last['top'] - w['top']) < 3.5 and 0 <= w['x0'] - last['x1'] < max(8, w['size'] * 0.9):
+            last['x1'] = w['x1']
+        else:
+            runs.append({'top': w['top'], 'x0': w['x0'], 'x1': w['x1']})
+    return runs
+
+
+def _complex(page, pictures, words):
+    """Whether the slide's layout is too rich to retype as a list: a big picture, a table, a drawn
+    diagram, or text set in two columns."""
+    w, h = float(page.width), float(page.height)
+    if sum((x1 - x0) * (y1 - y0) for x0, y0, x1, y1 in pictures) > w * h * 0.08:
+        return True
+    shapes = [r for r in page.rects + page.curves
+              if 4 < r['x1'] - r['x0'] < w * 0.9 and r['bottom'] - r['top'] > 4 and r['top'] > h * 0.12]
+    rules = [r for r in page.lines + page.rects
+             if r['top'] > h * 0.12 and max(r['x1'] - r['x0'], r['bottom'] - r['top']) > 25 and min(r['x1'] - r['x0'], r['bottom'] - r['top']) < 2]
+    upright = [r for r in rules if r['bottom'] - r['top'] > 12]  # tables have column rules; underlined text has none
+    if len(shapes) >= 6 or (len(rules) >= 8 and len(upright) >= 2):
+        return True
+    runs = _columns(words)
+    left = [r for r in runs if r['x0'] < w * 0.3]
+    # A right-column run starts its row: nothing on the same baseline to its left (a double space inside a sentence doesn't count).
+    right = [r for r in runs if w * 0.42 < r['x0'] < w * 0.9
+             and not any(abs(o['top'] - r['top']) < 3.5 and o['x1'] < r['x0'] and r['x0'] - o['x1'] < w * 0.12 for o in runs)]
+    if len(left) >= 2 and len(right) >= 2:
+        span = lambda ls: (min(l['top'] for l in ls), max(l['top'] for l in ls))
+        (a0, a1), (b0, b1) = span(left), span(right)
+        if min(a1, b1) - max(a0, b0) > h * 0.1 and len(right) >= 3:
+            return True
+    return False
 
 
 def _title_lines(lines):
@@ -64,7 +104,11 @@ def _title_lines(lines):
     return out
 
 
-def read_deck(pdf_path):
+def read_deck(pdf_path, glyphs=(), footer=None):
+    """Pages of a deck. Other courses reuse this reader: `glyphs` adds their bullet characters and
+    `footer` is a regex for a running footer to drop from the bottom of every slide."""
+    global GLYPHS
+    GLYPHS = BULLET_GLYPHS | set(glyphs)
     pages = []
     with pdfplumber.open(pdf_path) as doc:
         for number, page in enumerate(doc.pages, 1):
@@ -82,14 +126,18 @@ def read_deck(pdf_path):
                 title = title.strip()
             title_words = [w for l in title_lines for w in l['words']]
             body_words = [w for w in words if w not in title_words]
-            text_words = [w for w in body_words if clean(w['text']).strip() not in BULLET_GLYPHS]
+            text_words = [w for w in body_words if clean(w['text']).strip() not in GLYPHS]
             bold = sum(1 for w in text_words if 'Bold' in w['fontname'])
             bold_font = 'Bold' if text_words and bold / len(text_words) < 0.5 else None
             for w in body_words:
                 w['fontname'] = 'Bold' if 'Bold' in w['fontname'] else 'Regular'
             kind = 'title' if number == 1 else 'content'
-            pages.append({'n': number, 'kind': kind, 'title': title, 'body': _body(_lines(body_words), bold_font),
-                          'width': float(page.width), 'height': h, 'pictures': len(pictures)})
+            body_lines = _lines(body_words)
+            if footer:
+                body_lines = [l for l in body_lines if not (l['top'] > h * 0.75 and re.search(footer, ' '.join(w['text'] for w in l['words'])))]
+            pages.append({'n': number, 'kind': kind, 'title': title, 'body': _body(body_lines, bold_font),
+                          'width': float(page.width), 'height': h, 'pictures': len(pictures),
+                          'complex': _complex(page, pictures, body_words)})
     return pages
 
 
@@ -101,10 +149,10 @@ def _body(lines, bold_font):
         if not text:
             continue
         first = clean(line['words'][0]['text']).strip()
-        bullet = first in BULLET_GLYPHS
+        bullet = first in GLYPHS
         numbered = re.match(r'^(\d{1,2})[.)-]\s+(?!\d)(.*)$', text)
         if bullet:
-            text = re.sub(r'^(\*\*)?(%s)(\*\*)?\s*' % '|'.join(map(re.escape, BULLET_GLYPHS)), '', text).strip()
+            text = re.sub(r'^(\*\*)?(%s)(\*\*)?\s*' % '|'.join(map(re.escape, GLYPHS)), '', text).strip()
             items.append([line['x0'], text, False, True])
         elif numbered and numbered.group(2):
             items.append([line['x0'], numbered.group(2), True, True])
@@ -148,7 +196,7 @@ def _text(line, bold_font):
         t = clean(w['text']).strip()
         if not t:
             continue
-        if bold_font and w['fontname'] == bold_font and t not in BULLET_GLYPHS:
+        if bold_font and w['fontname'] == bold_font and t not in GLYPHS:
             run.append(t)
         else:
             flush()
