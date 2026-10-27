@@ -2415,7 +2415,7 @@
     return w ? w.percent : null;
   }
   // Everything still ahead: exams with the study left for them, and
-  // unsubmitted assignments and projects with their estimated hours.
+  // Unsubmitted assignments, projects and presentations with estimated hours.
   function remainingEntries() {
     var today = C.todayKey(),
       out = [];
@@ -2444,7 +2444,9 @@
     });
     C.items.forEach(function (i) {
       if (
-        (i.kind !== "assignment" && i.kind !== "project") ||
+        (i.kind !== "assignment" &&
+          i.kind !== "project" &&
+          i.kind !== "presentation") ||
         i.submitted ||
         !i.date ||
         i.date < today
@@ -2453,7 +2455,13 @@
       out.push({
         type: "due",
         course: C.courseLabel(i.course || "") || "",
-        name: i.title || (i.kind === "project" ? "Project" : "Assignment"),
+        name:
+          i.title ||
+          (i.kind === "project"
+            ? "Project"
+            : i.kind === "presentation"
+              ? "Presentation"
+              : "Assignment"),
         kind: i.kind,
         date: i.date,
         time: i.end || i.start || "",
