@@ -4836,7 +4836,8 @@
                 </div>
                 <div class="grid-2">
                   <div class="field">
-                    <label>Starts</label><input id="event-date" type="hidden" />
+                    <label><span id="event-date-label">Starts</span></label
+                    ><input id="event-date" type="hidden" />
                     <div class="mini-date compact-date" id="event-date-picker">
                       <button
                         class="mini-date-trigger is-empty"
@@ -4878,7 +4879,7 @@
                     </div>
                   </div>
                   <div class="field">
-                    <label>Ends</label
+                    <label><span id="event-end-date-label">Ends</span></label
                     ><input id="event-end-date" type="hidden" />
                     <div
                       class="mini-date compact-date"
@@ -4962,6 +4963,23 @@
                       >End <span class="optional-note">optional</span></label
                     ><input id="event-end" type="time" />
                   </div>
+                </div>
+                <div
+                  class="field"
+                  id="event-presentation-limit-field"
+                  style="display: none"
+                >
+                  <label
+                    >Presentation time limit
+                    <span class="optional-note">minutes · optional</span></label
+                  ><input
+                    id="event-presentation-limit"
+                    type="number"
+                    min="1"
+                    max="300"
+                    step="1"
+                    placeholder="e.g. 10"
+                  />
                 </div>
                 <div class="field">
                   <label>Location</label
@@ -5353,6 +5371,26 @@
           <div class="field">
             <label>Location</label
             ><input id="event-edit-location" placeholder="Optional" />
+          </div>
+          <div
+            class="field"
+            id="presentation-extra-fields"
+            style="display: none"
+          >
+            <label
+              >Presentation time limit
+              <span class="optional-note">minutes · optional</span></label
+            ><input
+              id="presentation-edit-limit"
+              type="number"
+              min="1"
+              max="300"
+              step="1"
+              placeholder="e.g. 10"
+            />
+            <div class="optional-note">
+              Enter the maximum speaking time allowed by your instructor.
+            </div>
           </div>
           <div id="assignment-extra-fields">
             <div class="grid-2">
@@ -6359,6 +6397,20 @@
         }
         function assignmentWindowMeta(i) {
           var due = i.endDate || i.date;
+          if (i.kind === "presentation") {
+            var presentationParts = ["Presentation · " + prettyDate(due)];
+            if (i.start || i.end)
+              presentationParts.push(timeRange(i.start, i.end));
+            if (i.presentationLimitMinutes)
+              presentationParts.push(i.presentationLimitMinutes + " min limit");
+            if (i.course) presentationParts.unshift(i.course);
+            if (i.location) presentationParts.push(i.location);
+            if (i.date && i.date !== due)
+              presentationParts.push(
+                "Prep window " + prettyDate(i.date) + "–" + prettyDate(due),
+              );
+            return presentationParts.join(" · ");
+          }
           var parts = [
             assignmentDuration(i) + "-day work window",
             "Due " + prettyDate(due) + (i.end ? " at " + timeLabel(i.end) : ""),
@@ -7311,6 +7363,7 @@
             })
             .forEach(function (i) {
               var assignment = isWork(i),
+                presentation = i.kind === "presentation",
                 due = i.endDate || i.date;
               out.push({
                 kind: i.kind || "personal",
@@ -7319,18 +7372,29 @@
                 title:
                   assignment && i.submitted
                     ? "DONE · " + (i.title || "Assignment")
-                    : assignment && k === due
-                      ? "DUE · " + (i.title || "Assignment")
-                      : i.title || "Event",
+                    : presentation && k === due
+                      ? "PRESENTS · " + (i.title || "Presentation")
+                      : assignment && k === due
+                        ? "DUE · " + (i.title || "Assignment")
+                        : i.title || "Event",
                 meta: eventMeta(i),
                 date: i.date,
                 endDate: due,
-                start: assignment ? "" : i.start || "",
-                end: assignment ? "" : i.end || "",
+                start:
+                  assignment && (!presentation || k !== due)
+                    ? ""
+                    : i.start || "",
+                end:
+                  assignment && (!presentation || k !== due)
+                    ? ""
+                    : i.end || "",
                 location: i.location || "",
                 submitted: Boolean(i.submitted || i.planDone),
                 urgency: assignment ? assignmentUrgencyClass(i) : "",
-                sort: assignment ? "00:01" : i.start || "99:99",
+                sort:
+                  assignment && (!presentation || k !== due)
+                    ? "00:01"
+                    : i.start || "99:99",
               });
             });
           officialEventsFor(k).forEach(function (e) {
@@ -10838,6 +10902,11 @@
             '<span class="meta-pill">' +
             esc(assignmentAvailableMeta(it)) +
             "</span>" +
+            (it.kind === "presentation" && it.presentationLimitMinutes
+              ? '<span class="meta-pill">' +
+                esc(it.presentationLimitMinutes) +
+                " min speaking limit</span>"
+              : "") +
             "</div>" +
             (it.notes
               ? '<div class="assignment-notes">' + esc(it.notes) + "</div>"
@@ -12327,6 +12396,10 @@
             toast("Add an event title and date");
             return Promise.resolve(false);
           }
+          if (data.kind === "presentation" && (!data.start || !data.end)) {
+            toast("Add the presentation start and end times");
+            return Promise.resolve(false);
+          }
           data.endDate = data.endDate || data.date;
           if (data.endDate < data.date) {
             toast("End date cannot be before start date");
@@ -12336,7 +12409,7 @@
             data.start &&
             data.end &&
             data.end <= data.start &&
-            data.date === data.endDate
+            (data.kind === "presentation" || data.date === data.endDate)
           ) {
             toast("End time must be after start time");
             return Promise.resolve(false);
@@ -12365,6 +12438,10 @@
             submitted: Boolean(data.submitted),
             remindersEnabled: isWork(data),
             course: data.course || "",
+            presentationLimitMinutes:
+              data.kind === "presentation"
+                ? Number(data.presentationLimitMinutes) || 0
+                : 0,
             priority: data.priority || "medium",
             difficulty: data.difficulty || "medium",
             estimatedHours: Number(data.estimatedHours) || 2,
@@ -12448,6 +12525,7 @@
             kind: $("event-kind").value,
             start: $("event-start").value,
             end: $("event-end").value,
+            presentationLimitMinutes: Number($("event-presentation-limit").value) || 0,
             location: $("event-location").value.trim(),
             course: $("event-course").value.trim().toUpperCase(),
           }).then(function (saved) {
@@ -12457,6 +12535,7 @@
                 "event-course",
                 "event-start",
                 "event-end",
+                "event-presentation-limit",
                 "event-location",
               ].forEach(function (id) {
                 $(id).value = "";
@@ -12481,6 +12560,10 @@
             .filter(Boolean);
           return {
             course: $("assignment-edit-course").value.trim().toUpperCase(),
+            presentationLimitMinutes:
+              $("event-edit-kind").value === "presentation"
+                ? Number($("presentation-edit-limit").value) || 0
+                : 0,
             priority: $("assignment-edit-priority").value,
             difficulty: $("assignment-edit-difficulty").value,
             estimatedHours: Number($("assignment-edit-hours").value) || 2,
@@ -12513,6 +12596,12 @@
           $("assignment-extra-fields").style.display = visible
             ? "block"
             : "none";
+          var presentation = visible && $("event-edit-kind").value === "presentation";
+          $("presentation-extra-fields").style.display = presentation
+            ? "block"
+            : "none";
+          $("presentation-edit-limit").value =
+            presentation && item ? item.presentationLimitMinutes || "" : "";
           if (!visible) return;
           item = item || {};
           $("assignment-edit-course").value = item.course || "";
@@ -12541,6 +12630,7 @@
           editingEventId = "";
           var k = date || activeDayKey || todayKey();
           var isAssignment = isWork(kind),
+            isPresentation = kind === "presentation",
             noun = workNoun(kind);
           $("event-edit-title").value = "";
           $("event-edit-title").placeholder = isAssignment
@@ -12552,15 +12642,18 @@
           $("event-edit-start-date-label").textContent = isAssignment
             ? "Available from"
             : "Starts";
-          $("event-edit-end-date-label").textContent = isAssignment
-            ? "Due date"
+          $("event-edit-end-date-label").textContent = isPresentation
+            ? "Presentation date"
+            : isAssignment
+              ? "Due date"
             : "Ends";
-          $("event-edit-start-time-field").style.display = isAssignment
-            ? "none"
-            : "";
-          $("event-edit-end-time-label").textContent = isAssignment
-            ? "Due time"
-            : "End";
+          $("event-edit-start-time-field").style.display =
+            isAssignment && !isPresentation ? "none" : "";
+          $("event-edit-end-time-label").textContent = isPresentation
+            ? "End time"
+            : isAssignment
+              ? "Due time"
+              : "End";
           $("event-edit-start").value = "";
           $("event-edit-end").value = "";
           $("event-edit-all-day").checked = false;
@@ -12571,8 +12664,10 @@
           $("event-editor-title").textContent = isAssignment
             ? "Add " + noun
             : "Add Event";
-          $("event-editor-sub").textContent = isAssignment
-            ? "Choose when work opens and the final due date. It will display as a compact work window."
+          $("event-editor-sub").textContent = isPresentation
+            ? "Set the presentation date and scheduled start/end times. Add a speaking time limit and prep checklist."
+            : isAssignment
+              ? "Choose when work opens and the final due date. It will display as a compact work window."
             : "Starts on " + k + ". Set an end date to make a connected range.";
           $("save-event-btn").textContent = isAssignment
             ? "Save " + noun
@@ -12601,6 +12696,7 @@
             item.endDate || item.date || todayKey(),
           );
           $("event-edit-end").value = item.end || "";
+          $("event-edit-start").value = item.start || "";
           $("event-edit-location").value = item.location || "";
           setAssignmentFields(item, true);
           $("event-editor-title").textContent = "Edit " + workNoun(item);
@@ -12679,6 +12775,10 @@
             toast("Add a title and date");
             return;
           }
+          if (data.kind === "presentation" && (!data.start || !data.end)) {
+            toast("Add the presentation start and end times");
+            return;
+          }
           if (data.endDate < data.date) {
             toast(
               isWork(data)
@@ -12688,11 +12788,11 @@
             return;
           }
           if (
-            !isWork(data) &&
+            (!isWork(data) || data.kind === "presentation") &&
             data.start &&
             data.end &&
             data.end <= data.start &&
-            data.date === data.endDate
+            (data.kind === "presentation" || data.date === data.endDate)
           ) {
             toast("End time must be after start time");
             return;
@@ -13039,6 +13139,7 @@
         $("save-event-btn").addEventListener("click", saveEventEditor);
         $("event-edit-kind").addEventListener("change", function () {
           var assignment = isWork(this.value),
+            presentation = this.value === "presentation",
             course = $("assignment-edit-course").value;
           setAssignmentFields({ course: course }, assignment);
           var noun = assignment ? workNoun(this.value) : "Event";
@@ -13046,22 +13147,42 @@
             (editingEventId ? "Edit " : "Add ") + noun;
           $("save-event-btn").textContent =
             (editingEventId ? "Update " : "Save ") + noun;
-          $("event-editor-sub").textContent = assignment
-            ? "Choose when work opens and the final due date. It will display as a compact work window."
+          $("event-editor-sub").textContent = presentation
+            ? "Set the presentation date and scheduled start/end times. Add a speaking time limit and prep checklist."
+            : assignment
+              ? "Choose when work opens and the final due date. It will display as a compact work window."
             : "Set an end date to make a connected range.";
           $("event-edit-start-time-field").style.display = assignment
-            ? "none"
+            ? presentation
+              ? ""
+              : "none"
             : "";
           $("event-edit-start-date-label").textContent = assignment
             ? "Available from"
             : "Starts";
-          $("event-edit-end-date-label").textContent = assignment
-            ? "Due date"
+          $("event-edit-end-date-label").textContent = presentation
+            ? "Presentation date"
+            : assignment
+              ? "Due date"
             : "Ends";
-          $("event-edit-end-time-label").textContent = assignment
-            ? "Due time"
+          $("event-edit-end-time-label").textContent = presentation
+            ? "End time"
+            : assignment
+              ? "Due time"
             : "End";
           syncAllDay("event-edit");
+        });
+        $("event-kind").addEventListener("change", function () {
+          var work = isWork(this.value),
+            presentation = this.value === "presentation";
+          $("event-presentation-limit-field").style.display =
+            presentation ? "block" : "none";
+          $("event-date-label").textContent = work ? "Available from" : "Starts";
+          $("event-end-date-label").textContent = presentation
+            ? "Presentation date"
+            : work
+              ? "Due date"
+              : "Ends";
         });
         // "All day" just clears and hides the times; an event with no
         // start or end time already renders as all day.
