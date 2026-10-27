@@ -574,7 +574,11 @@ Fix
   document.querySelectorAll('.note-toggle').forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.card');setCardNotes(c,c.classList.contains('notes-hidden'))})});
   // overview show/hide (control lives inside the overview)
   var ob=document.querySelector('.ov-toggle'), ovb=document.getElementById('ov-body');
-  function setOv(show){ovb.hidden=!show;ob.textContent=show?'Hide overview':'Show overview';ob.setAttribute('aria-expanded',show?'true':'false');store(K+'-ov',show?'1':'0')}
+  function setOv(show){ovb.hidden=!show;ob.textContent=show?'Hide overview':'Show overview';ob.setAttribute('aria-expanded',show?'true':'false');store(K+'-ov',show?'1':'0');
+    // Never leave flip mode parked on a collapsed overview card.
+    if(!show&&body.classList.contains('flip')&&document.getElementById('overview').classList.contains('current')){
+      var first=document.querySelector('main>.card[data-slide]');if(first)show(indexOf(first.id),true)
+    }}
   ob.addEventListener('click',function(){setOv(ovb.hidden)});
   if(read(K+'-ov')==='0')setOv(false);
   if(read(K+'-notes')==='0')bn.click();
@@ -597,12 +601,14 @@ Fix
     o.value=i;o.textContent=(c.dataset.slide?c.dataset.slide+' · ':'')+(c.dataset.slide?(h?h.textContent:''):'Overview');jump.appendChild(o)});
   function indexOf(id){for(var i=0;i<cards.length;i++){if(cards[i].id===id)return i}return -1}
   function show(i,noScroll){cur=Math.max(0,Math.min(cards.length-1,i));
+    if(cards[cur].id==='overview'&&ovb.hidden)setOv(true);
     cards.forEach(function(c,k){c.classList.toggle('current',k===cur)});
     jump.value=cur;fp.disabled=cur===0;fn.disabled=cur===cards.length-1;
     try{history.replaceState(null,'','#'+cards[cur].id)}catch(e){}
     if(!noScroll)window.scrollTo(0,0)}
   function setMode(flip){body.classList.toggle('flip',flip);bar.hidden=!flip;setPressed(mf,flip);setPressed(ms,!flip);store(K+'-mode',flip?'flip':'scroll');
-    if(flip){var top=0;for(var i=0;i<cards.length;i++){if(cards[i].getBoundingClientRect().bottom>90){top=i;break}}show(top)}
+    if(flip){var top=0;for(var i=0;i<cards.length;i++){if(cards[i].getBoundingClientRect().bottom>90){top=i;break}}
+      if(cards[top].id==='overview'&&ovb.hidden){var first=indexOf('slide-1');if(first>=0)top=first}show(top)}
     else{cards[cur].scrollIntoView()}}
   ms.addEventListener('click',function(){if(body.classList.contains('flip'))setMode(false)});
   mf.addEventListener('click',function(){if(!body.classList.contains('flip'))setMode(true)});
