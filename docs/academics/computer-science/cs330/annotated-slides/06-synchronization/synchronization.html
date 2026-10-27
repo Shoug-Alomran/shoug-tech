@@ -1,52 +1,615 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-sg-styled>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS330 · Annotated Slides · Chapter 6 — Process Synchronization</title>
-<meta name="description" content="CS330 Chapter 6 — Process Synchronization annotated slides: rebuilt slides with notes, memory tricks, cross-references and likely exam questions.">
+<title>CS330 · Chapter 6 · Annotated Slides</title>
+<meta name="description" content="CS330 Chapter 6 annotated slides: every original slide with numbered study notes linked to the highlighted words, past-exam links and practice questions.">
 <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs330/annotated-slides/06-synchronization/">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"))}catch(e){}</script>
+<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles/annotated-slides.css">
-</head>
-<body class="mode-scroll">
-<header class="as-top"><div class="as-wrap">
-<div class="as-brand"><small>CS330 · Annotated Slides</small><strong>Chapter 6 — Process Synchronization</strong></div>
-<div class="as-controls">
-<div class="seg" role="group" aria-label="View mode"><button type="button" data-group="mode" data-value="scroll" aria-pressed="true">Scroll</button><button type="button" data-group="mode" data-value="flip" aria-pressed="false">Flip</button></div>
-<div class="seg" role="group" aria-label="Which slides"><button type="button" data-group="filter" data-value="all" aria-pressed="true">All</button><button type="button" data-group="filter" data-value="past" aria-pressed="false">★ Exam slides</button></div>
-<button type="button" class="chip-btn" id="as-ann" aria-pressed="true">✎ Notes on</button>
-<button type="button" class="chip-btn" id="as-theme">☾ Dark</button>
-<select class="as-jump" id="as-jump" aria-label="Jump to slide"><option value="s-1">1 · </option><option value="s-2">2 · </option><option value="s-3">3 · Objectives</option><option value="s-4">4 · Background</option><option value="s-5">5 · Producer</option><option value="s-6">6 · Race condition example</option><option value="s-7">7 · Race Condition</option><option value="s-8">8 · </option><option value="s-9">9 · </option><option value="s-10">10 · Critical Section</option><option value="s-11">11 · Solution to Critical-Section Problem</option><option value="s-12">12 · </option><option value="s-13">13 · Peterson ’ s Solution</option><option value="s-14">14 · Algorithm for Process P</option><option value="s-15">15 · </option><option value="s-16">16 · Synchronization Hardware</option><option value="s-17">17 · test_and_set Instruction</option><option value="s-18">18 · Solution using test_and_set</option><option value="s-19">19 · swap Instruction</option><option value="s-20">20 · Solution using swap</option><option value="s-21">21 · Semaphore</option><option value="s-22">22 · Semaphore Usage</option><option value="s-23">23 · Semaphore Implementation</option><option value="s-24">24 · Semaphore Implementation with no Busy waiting</option><option value="s-25">25 · Semaphore Implementation with no Busy waiting (Cont.)</option><option value="s-26">26 · Deadlock and Starvation</option><option value="s-27">27 · </option><option value="s-28">28 · Bounded-Buffer Problem</option><option value="s-29">29 · Bounded Buffer Problem (Cont.)</option><option value="s-30">30 · Bounded Buffer Problem (Cont.)</option><option value="s-31">31 · Readers-Writers Problem</option><option value="s-32">32 · Readers-Writers Problem (Cont.)</option><option value="s-33">33 · Readers-Writers Problem (Cont.)</option><option value="s-34">34 · Dining-Philosophers Problem</option><option value="s-35">35 · Dining-Philosophers Problem (Cont.)</option><option value="s-36">36 · Problems with Semaphores</option><option value="s-37">37 · Operating System Solutions: Monitors</option><option value="s-38">38 · </option><option value="s-39">39 · Operating System Solutions: Monitors</option><option value="s-40">40 · Variables</option><option value="s-41">41 · Monitor with Condition Variables</option><option value="s-42">42 · Condition Variables choices</option><option value="s-43">43 · Solution to Dining Philosophers</option><option value="s-44">44 · Solution to Dining Philosophers (cont)</option><option value="s-45">45 · </option></select>
-</div></div></header>
-<div class="as-wrap">
-<section class="as-intro">
-<div class="kicker">Chapter 6 · Annotated slides</div>
-<h1>Process Synchronization</h1>
-<p>Race conditions, the critical-section problem and its three requirements, Peterson’s solution, hardware support (test_and_set, swap), semaphores and their implementation, deadlock and starvation, the bounded-buffer, readers–writers and dining-philosophers problems, and monitors.</p>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-<ul class="as-stats"><li><b>45</b> slides</li><li><b>0</b> asked in real exams</li><li><b>0</b> related to real exam questions</li><li><b>7</b> practice questions</li></ul>
-<div class="legend" aria-label="Ink key">
-<span><i class="lg-ink"></i>Slide text</span>
-<span><i class="lg-red"></i>Study notes</span>
-<span><i class="lg-hl"></i>Highlight: key words</span>
-<span><i class="lg-tip"></i>Tips, tricks &amp; traps</span>
-<span><i class="lg-seen"></i>Seen again elsewhere</span>
-<span><i class="lg-exam"></i>How it can come up</span>
-</div>
+<style>:root{--bg:#f6f5f2;--panel:#ffffff;--ink:#1d1d1f;--muted:#5b5b63;--line:#dedcd6;--accent:#2f5bb7;--accent-ink:#ffffff;
+--hl:rgba(255,206,0,.42);--hl-strong:rgba(255,170,0,.62);--hl-ring:#d99a00;--code:#f1f0ec;--past:#1d6b45;--past-bg:#e3f3ea;--pred:#6b5a1d;--pred-bg:#f6efd8;
+--trap:#a3361f;--trick:#5b3fa8;--radius:12px;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html[data-theme="dark"]{--bg:#121316;--panel:#1b1c20;--ink:#ecebe8;--muted:#a9a8b0;--line:#2e3036;--accent:#8fb0ff;--accent-ink:#0d1220;
+--code:#24262c;--past:#8fe0b4;--past-bg:#173326;--pred:#f0d58a;--pred-bg:#352d14;--trap:#ff9a85;--trick:#c6b2ff}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6}
+a{color:var(--accent)}
+code,pre{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code);padding:.08em .32em;border-radius:5px;overflow-wrap:anywhere}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px var(--gutter)}
+.brand{min-width:0}.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.brand strong{display:block;font-size:15px;line-height:1.3}
+.controls{display:flex;flex-wrap:wrap;gap:6px}
+button,.btn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none;line-height:1.3}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:hover,.btn:hover{border-color:var(--accent)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:root{--gutter:clamp(12px,3vw,40px)}
+main{padding:20px var(--gutter) 48px;display:grid;gap:22px;container-type:inline-size}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(14px,2vw,24px);scroll-margin-top:72px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+.card-head h3{margin:0;font-size:clamp(17px,1.6vw,21px);line-height:1.3;flex:1 1 240px;overflow-wrap:anywhere}
+.sn{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.sn span{color:var(--muted);font-weight:600}
+.row{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 26px;align-items:start}
+@container (min-width:1080px){.row{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}.row>.slide{position:sticky;top:76px}
+ .card.bare .row{grid-template-columns:minmax(0,1fr)}.card.bare .row>.slide{position:relative;top:auto;max-width:1100px;margin:0 auto}
+ .card.notes-hidden .row>.slide{position:relative;top:auto}}
+.slide{margin:0;position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;line-height:0}
+.slide img{display:block;width:100%;height:auto}
+.hl-layer{position:absolute;inset:0;width:100%;height:100%}
+.hl{fill:var(--hl);mix-blend-mode:multiply;cursor:pointer;transition:fill .15s}
+.hl.free{cursor:default}
+.hl.on{fill:var(--hl-strong);stroke:var(--hl-ring);stroke-width:.0015}
+body.no-hl .hl-layer{display:none}
+.notes{min-width:0}
+.notes h4,.exam h4{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.notes ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.notes li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;border-radius:10px;padding:6px;margin:-6px;transition:background .15s}
+.notes li.on,.notes li.flash{background:color-mix(in srgb,var(--hl) 45%,transparent)}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:700;background:var(--accent);color:var(--accent-ink);margin-top:1px}
+.kind{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-right:2px}
+.kind.trap{color:var(--trap)}.kind.trick{color:var(--trick)}.kind.tip,.kind.seen{color:var(--accent)}
+.body>p{margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.body>*+*{margin-top:8px}
+table.walk{width:100%;border-collapse:collapse;font-size:14px;line-height:1.45;table-layout:fixed}
+table.walk th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:4px 8px;border-bottom:1px solid var(--line)}
+table.walk th:first-child{width:46%}
+table.walk td{vertical-align:top;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.walk td.src code{display:block;background:none;padding:0;white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+table.walk tr:nth-child(odd) td.src{background:var(--code)}
+dl.reading{margin:0;display:grid;gap:8px;font-size:14.5px}
+dl.reading div{border-left:3px solid var(--line);padding:2px 0 2px 10px}
+dl.reading dt{font-weight:700;line-height:1.4}dl.reading dd{margin:2px 0 0;line-height:1.5}
+pre{margin:0;background:var(--code);border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.exam{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);display:grid;gap:10px}
+.notes>.exam:first-child{margin-top:0;padding-top:0;border-top:0}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.q header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.q p{margin:0;text-align:justify;hyphens:auto}
+.q.ptr p{text-align:left}
+.notes .q ol.opts{display:block;list-style:upper-alpha;margin:6px 0 0;padding-left:26px;font-size:15px}
+.notes .q ol.opts li{display:list-item;margin:0 0 2px;padding:0;border-radius:0}
+.qn{font-size:12px;font-weight:700;color:var(--muted)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;line-height:1.5}
+.tag a{color:inherit}
+.tag.past{background:var(--past-bg);color:var(--past)}.tag.predict{background:var(--pred-bg);color:var(--pred)}
+details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent);margin-top:8px}
+details[open] summary{margin-bottom:6px}
+.card.notes-hidden .notes{display:none}
+.card.notes-hidden .row{grid-template-columns:minmax(0,1fr)}
+.card.notes-hidden .slide{position:relative}
+.overview .lead{font-size:17px;margin:0 0 16px;text-align:justify;hyphens:auto}
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin-bottom:18px}
+.idea{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.idea h4{margin:0 0 4px;font-size:14.5px}.idea p{margin:0;font-size:14.5px}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px}
+.ov-grid h4{margin:6px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ov-grid p{margin:0 0 10px;text-align:justify;hyphens:auto}
+.secs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.secs li{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px}.secs a{white-space:nowrap}
+.secs a{font-weight:700;text-decoration:none}
+.key-hl{background:var(--hl);padding:0 .2em;border-radius:3px}
+.toc{margin-top:8px}.toc ol{columns:auto 260px;column-gap:28px;padding:0;list-style:none;margin:8px 0 0}
+.toc li{break-inside:avoid;padding:2px 0}.toc a{text-decoration:none;color:var(--ink)}.toc b{color:var(--accent);display:inline-block;min-width:2.2em}
+.ov-body[hidden]{display:none}
+footer.end{padding:0 var(--gutter) 40px;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;border-radius:0;margin:0}
+.seg button+button{border-left:1px solid var(--line)}
+body.flip main>.card{display:none}
+body.flip main>.card.current{display:block}
+body.flip main{padding-bottom:96px}
+body.flip footer.end{display:none}
+.flipbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;
+ background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;
+ padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.12);max-width:calc(100vw - 24px)}
+.flipbar[hidden]{display:none}
+.flipbar select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 10px;min-width:0;max-width:min(52vw,420px);text-overflow:ellipsis}
+.flipbar button:disabled{opacity:.45;cursor:default}
+@media (max-width:700px){.top{position:static}.brand small{display:none}.brand strong{font-size:14px}.top .wrap{padding:8px var(--gutter)}.controls{gap:5px}button,.btn{font-size:12px;padding:5px 10px}.slide{position:relative}.card{scroll-margin-top:8px}}
+@media (max-width:560px){body{font-size:15.5px}.overview .lead{text-align:left;font-size:16px}.secs li{grid-template-columns:1fr;gap:0}pre{white-space:pre-wrap;word-break:break-word;font-size:12px}
+table.walk thead{display:none}table.walk,table.walk tbody,table.walk tr,table.walk td{display:block;width:100%}table.walk td.src{border-bottom:0}}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ :root{--bg:#fff;--panel:#fff}
+ html,body{background:#fff;font-size:10.5pt;line-height:1.5}
+ .top,.note-toggle,.ov-toggle,.toc,.flipbar{display:none!important}
+ body.flip main>.card{display:block!important}
+ main{padding:0;gap:0;display:block}
+ .card{border:0;border-radius:0;padding:0 0 14pt;margin:0 0 14pt;border-bottom:1px solid var(--line)}
+ .card-head{break-after:avoid;margin-bottom:6pt}
+ .card.overview{break-after:page;border-bottom:0}
+ .exam{break-inside:avoid}
+ .exam h4,.notes>h4{break-after:avoid}
+ .notes li{margin:0;padding:0}
+ footer.end{padding:10pt 0 0}
+ .row{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+ .slide{position:relative!important;top:auto!important;break-inside:avoid}
+ .notes,.ov-body{display:block!important}
+ .notes li,.q,.idea,table.walk tr,pre,dl.reading dd{break-inside:avoid}
+ .hl-layer{display:block!important}
+ .hl,.key-hl,.num,.tag,code,pre,table.walk tr:nth-child(odd) td.src{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ details>*:not(summary){display:block}
+ details summary{display:none}
+ details>p::before{content:"Answer: ";font-weight:700}
+}
+</style>
+</head>
+<body data-key="cs330-06-synchronization">
+<header class="top"><div class="wrap">
+  <div class="brand"><small>CS330 · Chapter 6 · Annotated Slides</small><strong>Process Synchronization</strong></div>
+  <div class="controls" role="group" aria-label="Page controls">
+    <div class="seg" role="group" aria-label="View mode"><button type="button" id="m-scroll" aria-pressed="true" title="All slides on one scrolling page">Scroll</button><button type="button" id="m-flip" aria-pressed="false" title="One slide at a time (arrow keys or swipe to turn)">Flip</button></div>
+    <button type="button" id="t-notes" aria-pressed="true" title="Show or hide all notes">Notes</button>
+    <button type="button" id="t-hl" aria-pressed="true" title="Show or hide the highlights on the slides">Highlights</button>
+    <button type="button" id="t-ans" aria-pressed="false" title="Show or hide every exam answer">Answers</button>
+    <a class="btn" href="/academics/computer-science/cs330/slides/chapter-6-synchronization/" target="_top">Original</a>
+    <button type="button" id="t-theme" title="Switch light or dark theme">Dark</button>
+  </div>
+</div></header>
+<main>
+
+<section class="card overview" id="overview">
+  <header class="card-head"><span class="sn">Overview</span><h3>Process Synchronization</h3>
+    <button type="button" class="ov-toggle" aria-expanded="true" aria-controls="ov-body">Hide overview</button></header>
+  <div id="ov-body" class="ov-body">
+    <p class="lead">Race conditions, the critical-section problem and its three requirements, Peterson’s solution, hardware support (test_and_set, swap), semaphores and their implementation, deadlock and starvation, the bounded-buffer, readers–writers and dining-philosophers problems, and monitors.</p>
+    
+    <div class="ov-grid"><div><h4>How to read this page</h4><p>Every original slide is shown unchanged. <span class="key-hl">Yellow marks</span> on a slide point to a numbered note: hover or tap a mark to jump to its note, and hover a note to see its marks. Questions tagged <span class="tag past">Past exam</span> appeared on a real paper; <span class="tag predict">Prediction</span> questions are likely angles, not confirmed.</p></div></div>
+    <details class="toc"><summary>All 45 slides</summary><ol><li><a href="#slide-1"><b>1</b> Slide 1</a></li><li><a href="#slide-2"><b>2</b> Outline of this lecture</a></li><li><a href="#slide-3"><b>3</b> Objectives</a></li><li><a href="#slide-4"><b>4</b> Background</a></li><li><a href="#slide-5"><b>5</b> Producer</a></li><li><a href="#slide-6"><b>6</b> Race condition example</a></li><li><a href="#slide-7"><b>7</b> Race Condition</a></li><li><a href="#slide-8"><b>8</b> Race condition</a></li><li><a href="#slide-9"><b>9</b> The Critical Section (CS) Problem</a></li><li><a href="#slide-10"><b>10</b> Critical Section</a></li><li><a href="#slide-11"><b>11</b> Solution to Critical-Section Problem</a></li><li><a href="#slide-12"><b>12</b> Types of Solutions</a></li><li><a href="#slide-13"><b>13</b> Peterson ’ s Solution</a></li><li><a href="#slide-14"><b>14</b> Algorithm for Process P</a></li><li><a href="#slide-15"><b>15</b> Drawbacks of Software Solutions</a></li><li><a href="#slide-16"><b>16</b> Synchronization Hardware</a></li><li><a href="#slide-17"><b>17</b> test_and_set Instruction</a></li><li><a href="#slide-18"><b>18</b> Solution using test_and_set</a></li><li><a href="#slide-19"><b>19</b> swap Instruction</a></li><li><a href="#slide-20"><b>20</b> Solution using swap</a></li><li><a href="#slide-21"><b>21</b> Semaphore</a></li><li><a href="#slide-22"><b>22</b> Semaphore Usage</a></li><li><a href="#slide-23"><b>23</b> Semaphore Implementation</a></li><li><a href="#slide-24"><b>24</b> Semaphore Implementation with no Busy waiting</a></li><li><a href="#slide-25"><b>25</b> Semaphore Implementation with no Busy waiting (Cont.)</a></li><li><a href="#slide-26"><b>26</b> Deadlock and Starvation</a></li><li><a href="#slide-27"><b>27</b> Classical Problems of Synchronization</a></li><li><a href="#slide-28"><b>28</b> Bounded-Buffer Problem</a></li><li><a href="#slide-29"><b>29</b> Bounded Buffer Problem (Cont.)</a></li><li><a href="#slide-30"><b>30</b> Bounded Buffer Problem (Cont.)</a></li><li><a href="#slide-31"><b>31</b> Readers-Writers Problem</a></li><li><a href="#slide-32"><b>32</b> Readers-Writers Problem (Cont.)</a></li><li><a href="#slide-33"><b>33</b> Readers-Writers Problem (Cont.)</a></li><li><a href="#slide-34"><b>34</b> Dining-Philosophers Problem</a></li><li><a href="#slide-35"><b>35</b> Dining-Philosophers Problem (Cont.)</a></li><li><a href="#slide-36"><b>36</b> Problems with Semaphores</a></li><li><a href="#slide-37"><b>37</b> Operating System Solutions: Monitors</a></li><li><a href="#slide-38"><b>38</b> Operating System Solutions: Monitors</a></li><li><a href="#slide-39"><b>39</b> Operating System Solutions: Monitors</a></li><li><a href="#slide-40"><b>40</b> Variables</a></li><li><a href="#slide-41"><b>41</b> Monitor with Condition Variables</a></li><li><a href="#slide-42"><b>42</b> Condition Variables choices</a></li><li><a href="#slide-43"><b>43</b> Solution to Dining Philosophers</a></li><li><a href="#slide-44"><b>44</b> Solution to Dining Philosophers (cont)</a></li><li><a href="#slide-45"><b>45</b> Process Synchronization Conclusion</a></li></ol></details>
+  </div>
 </section>
-<main class="as-deck" id="main">
-<article class="sheet" id="s-1" data-n="1" data-past="0" aria-label="Slide 1: "><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-01.jpg" alt="Slide 1: Slide 1" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 1"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-2" data-n="2" data-past="0" aria-label="Slide 2: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Outline of this lecture</strong></p><p>In this lecture, we will discuss the following:</p><ul><li>Background</li><li>The Critical-Section Problem</li><li>Solutions to the Critical-Section Problem</li><li>Classical Problems of Synchronization</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">2</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 2"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-3" data-n="3" data-past="0" aria-label="Slide 3: Objectives"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Objectives</h2></div><div class="slide-body"><div class="slide-text"><ul><li>To introduce the critical-section problem, whose solutions can be used to ensure the consistency of shared data</li><li>To present both software and hardware solutions of the critical-section problem</li><li>To examine several classical process-synchronization problems</li><li>To explore several tools that are used to solve process synchronization problems</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">3</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 3"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-4" data-n="4" data-past="0" aria-label="Slide 4: Background"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-04.jpg" alt="Slide 4: Background" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 4"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-5" data-n="5" data-past="0" aria-label="Slide 5: Producer"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-05.jpg" alt="Slide 5: Producer" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 5"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-6" data-n="6" data-past="0" aria-label="Slide 6: Race condition example"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-06.jpg" alt="Slide 6: Race condition example" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 6"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">count++ is load–increment–store; interleaving these steps from two processes can lose an update.</li></ol></div></div></article><article class="sheet" id="s-7" data-n="7" data-past="0" aria-label="Slide 7: Race Condition"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-07.jpg" alt="Slide 7: Race Condition" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 7"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Race condition: the result depends on the order in which processes access shared data.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>A situation where the outcome depends on the order of access to shared data is a:</p><div class="opts"><button type="button" class="opt" data-right="0">Deadlock</button><button type="button" class="opt" data-right="0">Starvation</button><button type="button" class="opt" data-right="1">Race condition</button><button type="button" class="opt" data-right="0">Context switch</button></div><p class="why" hidden>Correct: Race condition.</p></div></div></details></div></article><article class="sheet" id="s-8" data-n="8" data-past="0" aria-label="Slide 8: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Race condition</strong></p><ul><li>Shared-memory solution to bounded-buffer problem (see lecture 4) has a <strong>race condition</strong> on the class data <strong>count.</strong></li><li>A situation where several processes access and manipulate the same data concurrently, and the outcome of the execution depends on the particular order in which access takes place.</li><li>Two or more processes reading and writing some shared data and final result depends on who runs precisely when.</li><li>To prevent race conditions, concurrent processes must be <strong>synchronized</strong></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">8</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 8"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-9" data-n="9" data-past="0" aria-label="Slide 9: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>The Critical Section (CS) Problem</strong></p><ul><li>CS is the part of process code that manipulates shared data or resources.</li><li>Execution of the CS should be mutually exclusive - If a process is in its CS, then no other process can be in the same CS.</li><li>Each process must request permission to enter the CS in <strong>entry section</strong>, may follow critical section with <strong>exit section</strong>, then <strong>remainder section</strong>.</li><li>The Critical section problem is to design a protocol that the processes can use to cooperate.</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">9</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 9"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-10" data-n="10" data-past="0" aria-label="Slide 10: Critical Section"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-10.jpg" alt="Slide 10: Critical Section" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 10"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Critical section: the code that touches shared data. Structure: entry section, critical section, exit section, remainder section.</li></ol></div></div></article><article class="sheet" id="s-11" data-n="11" data-past="0" aria-label="Slide 11: Solution to Critical-Section Problem"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solution to Critical-Section Problem</h2></div><div class="slide-body"><div class="slide-text"><p><strong>Solution to the Critical Section Problem must meet three</strong></p><p><strong>conditions...</strong></p><p><strong>1. Mutual Exclusion</strong>. If process Pi is executing in its critical section,</p><p>then no other processes can be executing in their critical sections.</p><p><strong>2.</strong></p><p><strong>Progress</strong>. If no process is executing in its critical section and there exist some processes that wish to enter their critical sections, then only those processes that are not executing in their RS can participate in the decision on which will enter its CS next, &amp; this selection cannot be postponed indefinitely.</p><ol><li><strong>Bounded Waiting</strong>. A bound must exist on the number of times that other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted. This bound prevents <strong>Starvation</strong></li></ol></div></div><div class="slide-foot"><span class="bar"></span><span class="num">11</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 11"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Requirements: Mutual exclusion (one at a time), Progress (no needless waiting when the CS is free), Bounded waiting (no starvation).</li></ol></div></div><div class="extras"><div class="stickies"><div class="sticky trick"><b>Memory trick</b>M-P-B: Mutual exclusion, Progress, Bounded waiting.</div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Which is NOT a requirement of a critical-section solution?</p><div class="opts"><button type="button" class="opt" data-right="0">Bounded waiting</button><button type="button" class="opt" data-right="0">Mutual exclusion</button><button type="button" class="opt" data-right="1">Preemption</button><button type="button" class="opt" data-right="0">Progress</button></div><p class="why" hidden>Correct: Preemption.</p></div></div></details></div></article><article class="sheet" id="s-12" data-n="12" data-past="0" aria-label="Slide 12: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Types of Solutions</strong></p><ul><li>Software solutions<ul><li>algorithms who ’ s correctness does not rely on any other assumptions (OS or hardware)</li></ul></li><li>Hardware solutions<ul><li>rely on special machine instructions</li></ul></li><li>Operating System solutions<ul><li>provide special functions and data structures to the programmer</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">12</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 12"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-13" data-n="13" data-past="0" aria-label="Slide 13: Peterson ’ s Solution"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Peterson ’ s Solution</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Good algorithmic description of solving the problem</li><li>Two process solution</li><li>Assume that the <strong>load</strong> and <strong>store</strong> instructions are atomic; that is, cannot be interrupted</li><li>The two processes share two variables:<ul><li><strong>int turn;</strong></li><li><strong>Boolean flag[2]</strong></li></ul></li><li>The variable <strong>turn</strong> indicates whose turn it is to enter the critical section</li><li>The <strong>flag</strong> array is used to indicate if a process is ready to enter the critical section. <strong>flag[i] = true</strong> implies that process is <strong>P i</strong> ready!</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">13</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 13"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Peterson’s solution (2 processes): shared turn and flag[2]. Pᵢ sets flag[i] = true, turn = j, then waits while flag[j] &amp;&amp; turn == j.</li></ol></div></div></article><article class="sheet" id="s-14" data-n="14" data-past="0" aria-label="Slide 14: Algorithm for Process P"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Algorithm for Process P</h2></div><div class="slide-body"><div class="slide-text"><p>i</p><p><strong>do {</strong></p><p><strong>flag[i] = true</strong> //process Pi is ready to enter its CS</p><p>;</p><p><strong>turn = j;</strong> //process Pj is allowed to execute in its CS <strong>while (flag[j] &amp;&amp; turn == j);</strong></p><p><strong>critical section</strong></p><p><strong>flag[i] = false;</strong></p><p><strong>remainder section</strong></p><p><strong>} while (true);</strong></p><p></p><p>Provable that</p><p>1.</p><p>Mutual exclusion is preserved (</p><p>the value of turn can be either i or j but cannot be both)</p><p>2.</p><p>Progress requirement is satisfied (A process cannot immediately re-enter the critical section if the other process has set its flag to true)</p><p>3.</p><p>Bounded-waiting requirement is met (a process will not wait longer than one turn</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">14</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 14"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-15" data-n="15" data-past="0" aria-label="Slide 15: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Drawbacks of Software Solutions</strong></p><ul><li><strong>Complicated</strong> to program</li><li>Processes that are requesting to enter in their critical section are <strong>busy waiting</strong> (consuming processor time needlessly)</li><li>If CS are long, it would be more efficient to block processes that are waiting (just as if they had requested I/O).</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">15</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 15"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-16" data-n="16" data-past="0" aria-label="Slide 16: Synchronization Hardware"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Synchronization Hardware</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Many systems provide hardware support for critical section code</li><li>All solutions below based on idea of <strong>locking</strong><ul><li>Protecting critical regions via locks</li><li>Design of locks can be sophisticated</li></ul></li><li>Uniprocessors – could disable interrupts<ul><li>Currently running code would execute without preemption</li><li>Generally too inefficient on multiprocessor systems (must tell all CPUs)<ul><li>Operating systems using this not broadly scalable</li></ul></li></ul></li><li>Modern machines provide special atomic hardware instructions: Atomic = non-interruptable<ul><li>Two types:<ul><li>test memory word and set value</li><li>swap contents of two memory words</li></ul></li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">16</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 16"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Hardware support: atomic (uninterruptible) instructions such as test_and_set and compare_and_swap.</li></ol></div></div></article><article class="sheet" id="s-17" data-n="17" data-past="0" aria-label="Slide 17: test_and_set Instruction"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>test_and_set Instruction</h2></div><div class="slide-body"><div class="slide-text"><p>Definition:</p><p><strong>boolean test_and_set (boolean *target) { boolean rv = *target; *target = TRUE; return rv: }</strong></p><p>Executed atomically</p><p>1.</p><p>2.</p><p>Returns the original value of passed parameter</p><p>3.</p><p>Set the new value of passed parameter to “ TRUE ”</p><p>.</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">17</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 17"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">test_and_set returns the old value and sets the lock to true, in one atomic step.</li></ol></div></div></article><article class="sheet" id="s-18" data-n="18" data-past="0" aria-label="Slide 18: Solution using test_and_set"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solution using test_and_set</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Shared boolean variable lock, initialized to FALSE</li><li>Solution: do { while (test_and_set(&amp;lock))</li></ul><p>; /* do nothing */ /* critical section */ lock = false; /* remainder section */ } while (true);</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">18</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 18"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-19" data-n="19" data-past="0" aria-label="Slide 19: swap Instruction"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>swap Instruction</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Definition: void Swap (boolean *a, boolean *b)</li></ul><p>{ boolean temp = *a; *a = *b; *b = temp:</p><p>}</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">19</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 19"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-20" data-n="20" data-past="0" aria-label="Slide 20: Solution using swap"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solution using swap</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Shared Boolean variable lock initialized to FALSE; Each process has a local Boolean variable key</li><li>Solution: do { key = TRUE; while (key == TRUE)</li></ul><p>Swap (&amp;lock, &amp;key ); // critical section lock = FALSE; // remainder section } while (TRUE);</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">20</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 20"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-21" data-n="21" data-past="0" aria-label="Slide 21: Semaphore"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Semaphore</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Synchronization tool that does not require busy waiting.</li><li>Semaphore S – integer variable</li><li>can only be accessed via two indivisible (atomic) operations</li><li>Two standard operations modify S: wait and signal<ul><li>Originally called and V P</li></ul></li><li>Less complicated wait (S) { while (S &lt;= 0) ; // busy wait S--; } signal (S) { S++; }</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">21</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 21"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Semaphore S: integer accessed only by wait() (P: decrement, block if &lt; 0) and signal() (V: increment, wake one).</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>wait(S) on a semaphore:</p><div class="opts"><button type="button" class="opt" data-right="0">Always blocks</button><button type="button" class="opt" data-right="1">Decrements S and may block</button><button type="button" class="opt" data-right="0">Increments S</button><button type="button" class="opt" data-right="0">Resets S to 0</button></div><p class="why" hidden>Correct: Decrements S and may block.</p></div></div></details></div></article><article class="sheet" id="s-22" data-n="22" data-past="0" aria-label="Slide 22: Semaphore Usage"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-22.jpg" alt="Slide 22: Semaphore Usage" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 22"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Binary semaphore (0/1) = mutex lock. Counting semaphore controls access to N instances; initialize it to N.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>A counting semaphore guarding 5 identical printers should be initialized to:</p><div class="opts"><button type="button" class="opt" data-right="0">−5</button><button type="button" class="opt" data-right="1">5</button><button type="button" class="opt" data-right="0">0</button><button type="button" class="opt" data-right="0">1</button></div><p class="why" hidden>Correct: 5.</p></div></div></details></div></article><article class="sheet" id="s-23" data-n="23" data-past="0" aria-label="Slide 23: Semaphore Implementation"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Semaphore Implementation</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Must guarantee that no two processes can execute <strong>wait</strong> and <strong>signal</strong> on the same semaphore at the same time</li><li>Thus, implementation becomes the critical section problem where the wait and signal code are placed in the critical section<ul><li>Could now have <strong>busy waiting</strong> in critical section implementation<ul><li>But implementation code is short</li><li>Little busy waiting if critical section rarely occupied</li></ul></li></ul></li><li>Note that applications may spend lots of time in critical sections and therefore this is not a good solution</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">23</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 23"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Busy waiting (spinlock) wastes CPU; better implementation blocks the process on the semaphore’s waiting list.</li></ol></div></div></article><article class="sheet" id="s-24" data-n="24" data-past="0" aria-label="Slide 24: Semaphore Implementation with no Busy waiting"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Semaphore Implementation with no Busy waiting</h2></div><div class="slide-body"><div class="slide-text"><ul><li>With each semaphore there is an associated waiting queue</li><li>Each entry in a waiting queue has two data items:<ul><li>value (of type integer)</li><li>pointer to next record in the list</li></ul></li><li>Two operations:<ul><li><strong>block</strong> – place the process invoking the operation on the appropriate waiting queue</li><li><strong>wakeup</strong> – remove one of processes in the waiting queue and place it in the ready queue</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">24</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 24"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-25" data-n="25" data-past="0" aria-label="Slide 25: Semaphore Implementation with no Busy waiting (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Semaphore Implementation with no Busy waiting (Cont.)</h2></div><div class="slide-body"><div class="slide-text"><p>typedef struct{ int value; struct process *list; } semaphore; wait(semaphore *S) { S-&gt;value--; if (S-&gt;value &lt; 0) { add this process to S-&gt;list; block; } } signal(semaphore *S) { S-&gt;value++; if (S-&gt;value &lt;= 0) { remove a process P from S-&gt;list; wakeup(P); }</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">25</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 25"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-26" data-n="26" data-past="0" aria-label="Slide 26: Deadlock and Starvation"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Deadlock and Starvation</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Deadlock – two or more processes are waiting indefinitely for an event that can be caused by only one of the waiting processes</li><li>Let and be two semaphores initialized to 1 S Q P P 0 1 wait (S); wait (Q); wait (Q); wait (S); . . . . signal (S); signal (Q); signal (Q); signal (S);</li><li>Starvation – indefinite blocking. A process may never be removed from the semaphore queue in which it is suspended.</li><li>When P0 executes Wait(Q), it must wait until P1 executes Signal (Q) and when P1 executes Wait(S) ), it must wait until P0 executes Signal(S) .</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">26</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 26"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Deadlock: each process waits for an event only another waiting process can cause. Starvation: indefinite blocking.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type short">Written</span><p>P0 runs wait(S); wait(Q); and P1 runs wait(Q); wait(S); with S = Q = 1. What can happen?</p><button type="button" class="reveal" aria-expanded="false">Show model answer</button><p class="why" hidden>Deadlock: P0 gets S, P1 gets Q, then each waits forever for the semaphore the other holds.</p></div></div></details></div></article><article class="sheet" id="s-27" data-n="27" data-past="0" aria-label="Slide 27: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Classical Problems of Synchronization</strong></p><ul><li>Bounded-Buffer Problem</li><li>Readers and Writers Problem</li><li>Dining-Philosophers Problem</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">27</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 27"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-28" data-n="28" data-past="0" aria-label="Slide 28: Bounded-Buffer Problem"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Bounded-Buffer Problem</h2></div><div class="slide-body"><div class="slide-text"><ul><li><strong>n</strong> buffers, each can hold one item</li><li>Semaphore <strong>mutex</strong> initialized to the value 1</li><li>Semaphore <strong>full</strong> initialized to the value 0</li><li>Semaphore <strong>empty</strong> initialized to the value n <strong>BUFFER</strong></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">28</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 28"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Bounded buffer: mutex = 1, full = 0, empty = n. Producer: wait(empty); wait(mutex); … signal(mutex); signal(full).</li></ol></div></div><div class="extras"><div class="stickies"><div class="sticky trap"><b>Exam trap</b>Swapping the order to wait(mutex); wait(empty) can deadlock when the buffer is full.</div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>In the bounded-buffer solution with n slots, empty starts at:</p><div class="opts"><button type="button" class="opt" data-right="1">n</button><button type="button" class="opt" data-right="0">n − 1</button><button type="button" class="opt" data-right="0">1</button><button type="button" class="opt" data-right="0">0</button></div><p class="why" hidden>Correct: n.</p></div></div></details></div></article><article class="sheet" id="s-29" data-n="29" data-past="0" aria-label="Slide 29: Bounded Buffer Problem (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Bounded Buffer Problem (Cont.)</h2></div><div class="slide-body"><div class="slide-text"><ul><li>The structure of the producer process do {</li></ul><p>...</p><p>/* produce an item in next_produced */</p><p>...</p><p>wait(empty); //</p><p>synchronize the use of the bounded buffer</p><p>wait(mutex); //</p><p>protect the CS for a shared value</p><p>...</p><p>/* add next produced to the buffer */</p><p>...</p><p>signal(mutex); signal(full); } while (true);</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">29</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 29"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-30" data-n="30" data-past="0" aria-label="Slide 30: Bounded Buffer Problem (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Bounded Buffer Problem (Cont.)</h2></div><div class="slide-body"><div class="slide-text"><p> The structure of the consumer process do { wait(full); wait(mutex); ...</p><p>/* remove an item from buffer to next_consumed */</p><p>...</p><p>signal(mutex); signal(empty); ...</p><p>/* consume the item in next consumed */</p><p>...</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">30</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 30"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-31" data-n="31" data-past="0" aria-label="Slide 31: Readers-Writers Problem"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-31.jpg" alt="Slide 31: Readers-Writers Problem" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 31"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Readers–writers: many readers may read together; a writer needs exclusive access. rw_mutex = 1, mutex = 1, read_count = 0.</li></ol></div></div></article><article class="sheet" id="s-32" data-n="32" data-past="0" aria-label="Slide 32: Readers-Writers Problem (Cont.)"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-32.jpg" alt="Slide 32: Readers-Writers Problem (Cont.)" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 32"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-33" data-n="33" data-past="0" aria-label="Slide 33: Readers-Writers Problem (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Readers-Writers Problem (Cont.)</h2></div><div class="slide-body"><div class="slide-text"><ul><li>The structure of a reader process do { wait(mutex); // Mutex protects READCOUNT from all the READERS read count++; if (read count == 1) // 1 st reader captures rw mutex for all readers wait(rw mutex); signal(mutex);</li></ul><p>...</p><p>/* reading is performed */</p><p>... wait(mutex);</p><p>read count--; if (read count == 0)</p><p>signal(rw mutex); signal(mutex); } while (true);</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">33</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 33"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-34" data-n="34" data-past="0" aria-label="Slide 34: Dining-Philosophers Problem"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-34.jpg" alt="Slide 34: Dining-Philosophers Problem" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 34"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-35" data-n="35" data-past="0" aria-label="Slide 35: Dining-Philosophers Problem (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Dining-Philosophers Problem (Cont.)</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Each philosopher is a process</li><li>One semaphore per chopstick:<ul><li>chopstick: array[0..4] of semaphores initialized to 1 do { wait (chopstick[i] ); wait (chopStick[ (i + 1) % 5] ); // eat signal (chopstick[i] ); signal (chopstick[ (i + 1) % 5] ); // think } while (TRUE);</li></ul></li><li>Deadlock if each philosopher start by picking his left chopstick</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">35</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 35"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Dining philosophers: one semaphore per chopstick can deadlock if all pick up the left one at once.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Which avoids deadlock in dining philosophers?</p><div class="opts"><button type="button" class="opt" data-right="1">Allow at most 4 philosophers at the table</button><button type="button" class="opt" data-right="0">Every philosopher picks up the left chopstick first</button><button type="button" class="opt" data-right="0">Use one more semaphore per chopstick</button><button type="button" class="opt" data-right="0">Let philosophers eat in any order</button></div><p class="why" hidden>Also: pick up both only if both are free, or odd/even asymmetric ordering.</p></div></div></details></div></article><article class="sheet" id="s-36" data-n="36" data-past="0" aria-label="Slide 36: Problems with Semaphores"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Problems with Semaphores</h2></div><div class="slide-body"><div class="slide-text"><ul><li>semaphores provide a powerful tool for enforcing mutual exclusion and coordinate processes</li><li>But wait(S) and signal(S) are scattered among several processes. Hence, difficult to understand their effects</li><li>Usage must be correct in all the processes</li><li>Incorrect use of semaphore operations:<ul><li>signal (mutex) ... . wait (mutex)</li><li>wait (mutex) ... wait (mutex)</li><li>Omitting of wait (mutex) or signal (mutex) (or both)</li></ul></li><li>Deadlock and starvation</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">36</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 36"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Semaphore misuse: signal before wait, wait twice, or forgetting one → broken mutual exclusion or deadlock.</li></ol></div></div></article><article class="sheet" id="s-37" data-n="37" data-past="0" aria-label="Slide 37: Operating System Solutions: Monitors"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Operating System Solutions: Monitors</h2></div><div class="slide-body"><div class="slide-text"><ul><li>Are high-level language constructs that provide equivalent functionality to that of semaphores but are easier to control.</li><li>But not powerful enough to model some synchronization schemes monitor monitor-name { // shared variable declarations procedure P1 (... ) { ... . } ... Procedure defined within the monitor procedure Pn (... ) { ...... } can access only those variables declared locally within the monitor Initialization code (... .) { ... } ... } } Syntax of a monitor</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">37</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 37"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Monitor: high-level construct; only one process active inside at a time.</li></ol></div></div></article><article class="sheet" id="s-38" data-n="38" data-past="0" aria-label="Slide 38: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Operating System Solutions: Monitors</strong></p><ul><li><strong>Is a software module containing:</strong><ul><li>one or more procedures</li><li>an initialization sequence</li><li>local data variables</li></ul></li><li><strong>Characteristics:</strong><ul><li>local variables accessible only by monitor ’ s procedures</li><li>a process enters the monitor by invoking one of its procedures</li><li>only <strong>one process</strong> can be in <strong>the monitor</strong> at any given time</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">38</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 38"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-39" data-n="39" data-past="0" aria-label="Slide 39: Operating System Solutions: Monitors"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-39.jpg" alt="Slide 39: Operating System Solutions: Monitors" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 39"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-40" data-n="40" data-past="0" aria-label="Slide 40: Variables"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Variables</h2></div><div class="slide-body"><div class="slide-text"><p>Condition</p><ul><li>The monitor construct is not sufficiently powerful for modeling some synchronization schemes-→ need to define additional mechanisms.</li><li>These mechanisms are provided by the condition construct.</li><li>A programmer who needs to write a tailor-made synchronization scheme can define one or more variable of type condition:</li><li>condition x, y;</li><li>Two operations on a condition variable:<ul><li>x.wait – a process that invokes the operation is suspended.</li><li>x.signal – resumes one suspended processes (if any) that invoked x.wait<ul><li>If no x.wait on the variable, then it has no effect on the variable</li></ul></li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">40</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 40"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Condition variables: x.wait() suspends the caller; x.signal() resumes one waiting process (no effect if none).</li></ol></div></div></article><article class="sheet" id="s-41" data-n="41" data-past="0" aria-label="Slide 41: Monitor with Condition Variables"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-41.jpg" alt="Slide 41: Monitor with Condition Variables" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 41"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-42" data-n="42" data-past="0" aria-label="Slide 42: Condition Variables choices"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Condition Variables choices</h2></div><div class="slide-body"><div class="slide-text"><ul><li>If process P invokes x.signal, with Q in x.wait state, what should happen next?<ul><li>If Q is resumed, then P (signaling process) must wait</li></ul></li><li>Options include<ul><li><strong>Signal and wait</strong><ul><li>P waits until Q leaves monitor or waits for another condition</li></ul></li><li><strong>Signal and continue</strong> – Q waits until P leaves the monitor or waits for another condition</li><li>Both have pros and cons – language implementer can decide</li><li>Implemented in other languages including Mesa, C#, Java</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">42</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 42"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-43" data-n="43" data-past="0" aria-label="Slide 43: Solution to Dining Philosophers"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-43.jpg" alt="Slide 43: Solution to Dining Philosophers" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 43"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-44" data-n="44" data-past="0" aria-label="Slide 44: Solution to Dining Philosophers (cont)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solution to Dining Philosophers (cont)</h2></div><div class="slide-body"><div class="slide-text"><p>void test (int i) { if ((state[(i + 4) % 5] != EATING) &amp;&amp; (state[i] == HUNGRY) &amp;&amp; (state[(i + 1) % 5] != EATING) ) { state[i] = EATING;</p><p>self[i].signal;</p><p>} }</p><p>initialization_code {</p><p>for (int i = 0; i &lt; 5; i++) state[i] = THINKING; }</p><p>}</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">44</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 44"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-45" data-n="45" data-past="0" aria-label="Slide 45: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Process Synchronization Conclusion</strong></p><ul><li>A variety of methods exist, and each method has different variations.</li><li>The most commonly used are semaphores and monitors.</li><li>Monitors are the easiest to use, closest to programmer ’ s needs.</li><li>The simpler mechanisms can be used to implement more sophisticated ones.</li><li>No mechanism prevents in principle deadlocks, starvation, or busy waiting but more sophisticated mechanisms make it easier to avoid them.</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">45</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 45"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article>
-<p class="empty-filter" id="as-empty" hidden>No slides match this filter.</p>
+
+<section class="card bare" id="slide-1" data-slide="1">
+  <header class="card-head"><span class="sn">Slide 1 <span>/ 45</span></span><h3>Slide 1</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-01.jpg" width="1440" height="1080" alt="Slide 1: Slide 1" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-2" data-slide="2">
+  <header class="card-head"><span class="sn">Slide 2 <span>/ 45</span></span><h3>Outline of this lecture</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-02.jpg" width="1440" height="1080" alt="Slide 2: Outline of this lecture" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-3" data-slide="3">
+  <header class="card-head"><span class="sn">Slide 3 <span>/ 45</span></span><h3>Objectives</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-03.jpg" width="1440" height="1080" alt="Slide 3: Objectives" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-4" data-slide="4">
+  <header class="card-head"><span class="sn">Slide 4 <span>/ 45</span></span><h3>Background</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-04.jpg" width="1440" height="1080" alt="Slide 4: Background" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-5" data-slide="5">
+  <header class="card-head"><span class="sn">Slide 5 <span>/ 45</span></span><h3>Producer</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-05.jpg" width="1440" height="1080" alt="Slide 5: Producer" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-6" data-slide="6">
+  <header class="card-head"><span class="sn">Slide 6 <span>/ 45</span></span><h3>Race condition example</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-6">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-06.jpg" width="1440" height="1080" alt="Slide 6: Race condition example" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-6"><h4>Notes</h4><ol><li id="n6-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>count++ is load–increment–store; interleaving these steps from two processes can lose an update.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-7" data-slide="7">
+  <header class="card-head"><span class="sn">Slide 7 <span>/ 45</span></span><h3>Race Condition</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-7">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-07.jpg" width="1440" height="1080" alt="Slide 7: Race Condition" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-7"><h4>Notes</h4><ol><li id="n7-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Race condition: the result depends on the order in which processes access shared data.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 7"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>A situation where the outcome depends on the order of access to shared data is a:</p><ol class="opts" type="A"><li>Deadlock</li><li>Starvation</li><li>Race condition</li><li>Context switch</li></ol><details><summary>Show answer</summary><p><strong>C. Race condition</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-8" data-slide="8">
+  <header class="card-head"><span class="sn">Slide 8 <span>/ 45</span></span><h3>Race condition</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-08.jpg" width="1440" height="1080" alt="Slide 8: Race condition" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-9" data-slide="9">
+  <header class="card-head"><span class="sn">Slide 9 <span>/ 45</span></span><h3>The Critical Section (CS) Problem</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-09.jpg" width="1440" height="1080" alt="Slide 9: The Critical Section (CS) Problem" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-10" data-slide="10">
+  <header class="card-head"><span class="sn">Slide 10 <span>/ 45</span></span><h3>Critical Section</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-10">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-10.jpg" width="1440" height="1080" alt="Slide 10: Critical Section" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-10"><h4>Notes</h4><ol><li id="n10-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Critical section: the code that touches shared data. Structure: entry section, critical section, exit section, remainder section.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-11" data-slide="11">
+  <header class="card-head"><span class="sn">Slide 11 <span>/ 45</span></span><h3>Solution to Critical-Section Problem</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-11">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-11.jpg" width="1440" height="1080" alt="Slide 11: Solution to Critical-Section Problem" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-11"><h4>Notes</h4><ol><li id="n11-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Requirements: Mutual exclusion (one at a time), Progress (no needless waiting when the CS is free), Bounded waiting (no starvation).</p></div></li><li id="n11-2" data-n="2"><span class="num" aria-hidden="true">2</span><div class="body"><p><span class="kind trick">Memory trick</span> M-P-B: Mutual exclusion, Progress, Bounded waiting.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 11"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Which is NOT a requirement of a critical-section solution?</p><ol class="opts" type="A"><li>Bounded waiting</li><li>Mutual exclusion</li><li>Preemption</li><li>Progress</li></ol><details><summary>Show answer</summary><p><strong>C. Preemption</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-12" data-slide="12">
+  <header class="card-head"><span class="sn">Slide 12 <span>/ 45</span></span><h3>Types of Solutions</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-12.jpg" width="1440" height="1080" alt="Slide 12: Types of Solutions" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-13" data-slide="13">
+  <header class="card-head"><span class="sn">Slide 13 <span>/ 45</span></span><h3>Peterson ’ s Solution</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-13">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-13.jpg" width="1440" height="1080" alt="Slide 13: Peterson ’ s Solution" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-13"><h4>Notes</h4><ol><li id="n13-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Peterson’s solution (2 processes): shared turn and flag[2]. Pᵢ sets flag[i] = true, turn = j, then waits while flag[j] &amp;&amp; turn == j.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-14" data-slide="14">
+  <header class="card-head"><span class="sn">Slide 14 <span>/ 45</span></span><h3>Algorithm for Process P</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-14.jpg" width="1440" height="1080" alt="Slide 14: Algorithm for Process P" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-15" data-slide="15">
+  <header class="card-head"><span class="sn">Slide 15 <span>/ 45</span></span><h3>Drawbacks of Software Solutions</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-15.jpg" width="1440" height="1080" alt="Slide 15: Drawbacks of Software Solutions" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-16" data-slide="16">
+  <header class="card-head"><span class="sn">Slide 16 <span>/ 45</span></span><h3>Synchronization Hardware</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-16">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-16.jpg" width="1440" height="1080" alt="Slide 16: Synchronization Hardware" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-16"><h4>Notes</h4><ol><li id="n16-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Hardware support: atomic (uninterruptible) instructions such as test_and_set and compare_and_swap.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-17" data-slide="17">
+  <header class="card-head"><span class="sn">Slide 17 <span>/ 45</span></span><h3>test_and_set Instruction</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-17">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-17.jpg" width="1440" height="1080" alt="Slide 17: test_and_set Instruction" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-17"><h4>Notes</h4><ol><li id="n17-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>test_and_set returns the old value and sets the lock to true, in one atomic step.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-18" data-slide="18">
+  <header class="card-head"><span class="sn">Slide 18 <span>/ 45</span></span><h3>Solution using test_and_set</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-18.jpg" width="1440" height="1080" alt="Slide 18: Solution using test_and_set" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-19" data-slide="19">
+  <header class="card-head"><span class="sn">Slide 19 <span>/ 45</span></span><h3>swap Instruction</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-19.jpg" width="1440" height="1080" alt="Slide 19: swap Instruction" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-20" data-slide="20">
+  <header class="card-head"><span class="sn">Slide 20 <span>/ 45</span></span><h3>Solution using swap</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-20.jpg" width="1440" height="1080" alt="Slide 20: Solution using swap" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-21" data-slide="21">
+  <header class="card-head"><span class="sn">Slide 21 <span>/ 45</span></span><h3>Semaphore</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-21">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-21.jpg" width="1440" height="1080" alt="Slide 21: Semaphore" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-21"><h4>Notes</h4><ol><li id="n21-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Semaphore S: integer accessed only by wait() (P: decrement, block if &lt; 0) and signal() (V: increment, wake one).</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 21"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>wait(S) on a semaphore:</p><ol class="opts" type="A"><li>Always blocks</li><li>Decrements S and may block</li><li>Increments S</li><li>Resets S to 0</li></ol><details><summary>Show answer</summary><p><strong>B. Decrements S and may block</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card" id="slide-22" data-slide="22">
+  <header class="card-head"><span class="sn">Slide 22 <span>/ 45</span></span><h3>Semaphore Usage</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-22">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-22.jpg" width="1440" height="1080" alt="Slide 22: Semaphore Usage" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-22"><h4>Notes</h4><ol><li id="n22-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Binary semaphore (0/1) = mutex lock. Counting semaphore controls access to N instances; initialize it to N.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 22"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>A counting semaphore guarding 5 identical printers should be initialized to:</p><ol class="opts" type="A"><li>−5</li><li>5</li><li>0</li><li>1</li></ol><details><summary>Show answer</summary><p><strong>B. 5</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card" id="slide-23" data-slide="23">
+  <header class="card-head"><span class="sn">Slide 23 <span>/ 45</span></span><h3>Semaphore Implementation</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-23">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-23.jpg" width="1440" height="1080" alt="Slide 23: Semaphore Implementation" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-23"><h4>Notes</h4><ol><li id="n23-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Busy waiting (spinlock) wastes CPU; better implementation blocks the process on the semaphore’s waiting list.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-24" data-slide="24">
+  <header class="card-head"><span class="sn">Slide 24 <span>/ 45</span></span><h3>Semaphore Implementation with no Busy waiting</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-24.jpg" width="1440" height="1080" alt="Slide 24: Semaphore Implementation with no Busy waiting" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-25" data-slide="25">
+  <header class="card-head"><span class="sn">Slide 25 <span>/ 45</span></span><h3>Semaphore Implementation with no Busy waiting (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-25.jpg" width="1440" height="1080" alt="Slide 25: Semaphore Implementation with no Busy waiting (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-26" data-slide="26">
+  <header class="card-head"><span class="sn">Slide 26 <span>/ 45</span></span><h3>Deadlock and Starvation</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-26">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-26.jpg" width="1440" height="1080" alt="Slide 26: Deadlock and Starvation" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-26"><h4>Notes</h4><ol><li id="n26-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Deadlock: each process waits for an event only another waiting process can cause. Starvation: indefinite blocking.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 26"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>P0 runs wait(S); wait(Q); and P1 runs wait(Q); wait(S); with S = Q = 1. What can happen?</p><details><summary>Show answer</summary><p>Deadlock: P0 gets S, P1 gets Q, then each waits forever for the semaphore the other holds.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-27" data-slide="27">
+  <header class="card-head"><span class="sn">Slide 27 <span>/ 45</span></span><h3>Classical Problems of Synchronization</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-27.jpg" width="1440" height="1080" alt="Slide 27: Classical Problems of Synchronization" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-28" data-slide="28">
+  <header class="card-head"><span class="sn">Slide 28 <span>/ 45</span></span><h3>Bounded-Buffer Problem</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-28">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-28.jpg" width="1440" height="1080" alt="Slide 28: Bounded-Buffer Problem" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-28"><h4>Notes</h4><ol><li id="n28-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Bounded buffer: mutex = 1, full = 0, empty = n. Producer: wait(empty); wait(mutex); … signal(mutex); signal(full).</p></div></li><li id="n28-2" data-n="2"><span class="num" aria-hidden="true">2</span><div class="body"><p><span class="kind trap">Trap</span> Swapping the order to wait(mutex); wait(empty) can deadlock when the buffer is full.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 28"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>In the bounded-buffer solution with n slots, empty starts at:</p><ol class="opts" type="A"><li>n</li><li>n − 1</li><li>1</li><li>0</li></ol><details><summary>Show answer</summary><p><strong>A. n</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-29" data-slide="29">
+  <header class="card-head"><span class="sn">Slide 29 <span>/ 45</span></span><h3>Bounded Buffer Problem (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-29.jpg" width="1440" height="1080" alt="Slide 29: Bounded Buffer Problem (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-30" data-slide="30">
+  <header class="card-head"><span class="sn">Slide 30 <span>/ 45</span></span><h3>Bounded Buffer Problem (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-30.jpg" width="1440" height="1080" alt="Slide 30: Bounded Buffer Problem (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-31" data-slide="31">
+  <header class="card-head"><span class="sn">Slide 31 <span>/ 45</span></span><h3>Readers-Writers Problem</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-31">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-31.jpg" width="1440" height="1080" alt="Slide 31: Readers-Writers Problem" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-31"><h4>Notes</h4><ol><li id="n31-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Readers–writers: many readers may read together; a writer needs exclusive access. rw_mutex = 1, mutex = 1, read_count = 0.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-32" data-slide="32">
+  <header class="card-head"><span class="sn">Slide 32 <span>/ 45</span></span><h3>Readers-Writers Problem (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-32.jpg" width="1440" height="1080" alt="Slide 32: Readers-Writers Problem (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-33" data-slide="33">
+  <header class="card-head"><span class="sn">Slide 33 <span>/ 45</span></span><h3>Readers-Writers Problem (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-33.jpg" width="1440" height="1080" alt="Slide 33: Readers-Writers Problem (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-34" data-slide="34">
+  <header class="card-head"><span class="sn">Slide 34 <span>/ 45</span></span><h3>Dining-Philosophers Problem</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-34.jpg" width="1440" height="1080" alt="Slide 34: Dining-Philosophers Problem" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-35" data-slide="35">
+  <header class="card-head"><span class="sn">Slide 35 <span>/ 45</span></span><h3>Dining-Philosophers Problem (Cont.)</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-35">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-35.jpg" width="1440" height="1080" alt="Slide 35: Dining-Philosophers Problem (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-35"><h4>Notes</h4><ol><li id="n35-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Dining philosophers: one semaphore per chopstick can deadlock if all pick up the left one at once.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 35"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Which avoids deadlock in dining philosophers?</p><ol class="opts" type="A"><li>Allow at most 4 philosophers at the table</li><li>Every philosopher picks up the left chopstick first</li><li>Use one more semaphore per chopstick</li><li>Let philosophers eat in any order</li></ol><details><summary>Show answer</summary><p><strong>A. Allow at most 4 philosophers at the table</strong> — Also: pick up both only if both are free, or odd/even asymmetric ordering.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card" id="slide-36" data-slide="36">
+  <header class="card-head"><span class="sn">Slide 36 <span>/ 45</span></span><h3>Problems with Semaphores</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-36">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-36.jpg" width="1440" height="1080" alt="Slide 36: Problems with Semaphores" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-36"><h4>Notes</h4><ol><li id="n36-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Semaphore misuse: signal before wait, wait twice, or forgetting one → broken mutual exclusion or deadlock.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-37" data-slide="37">
+  <header class="card-head"><span class="sn">Slide 37 <span>/ 45</span></span><h3>Operating System Solutions: Monitors</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-37">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-37.jpg" width="1440" height="1080" alt="Slide 37: Operating System Solutions: Monitors" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-37"><h4>Notes</h4><ol><li id="n37-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Monitor: high-level construct; only one process active inside at a time.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-38" data-slide="38">
+  <header class="card-head"><span class="sn">Slide 38 <span>/ 45</span></span><h3>Operating System Solutions: Monitors</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-38.jpg" width="1440" height="1080" alt="Slide 38: Operating System Solutions: Monitors" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-39" data-slide="39">
+  <header class="card-head"><span class="sn">Slide 39 <span>/ 45</span></span><h3>Operating System Solutions: Monitors</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-39.jpg" width="1440" height="1080" alt="Slide 39: Operating System Solutions: Monitors" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-40" data-slide="40">
+  <header class="card-head"><span class="sn">Slide 40 <span>/ 45</span></span><h3>Variables</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-40">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-40.jpg" width="1440" height="1080" alt="Slide 40: Variables" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-40"><h4>Notes</h4><ol><li id="n40-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Condition variables: x.wait() suspends the caller; x.signal() resumes one waiting process (no effect if none).</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-41" data-slide="41">
+  <header class="card-head"><span class="sn">Slide 41 <span>/ 45</span></span><h3>Monitor with Condition Variables</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-41.jpg" width="1440" height="1080" alt="Slide 41: Monitor with Condition Variables" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-42" data-slide="42">
+  <header class="card-head"><span class="sn">Slide 42 <span>/ 45</span></span><h3>Condition Variables choices</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-42.jpg" width="1440" height="1080" alt="Slide 42: Condition Variables choices" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-43" data-slide="43">
+  <header class="card-head"><span class="sn">Slide 43 <span>/ 45</span></span><h3>Solution to Dining Philosophers</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-43.jpg" width="1440" height="1080" alt="Slide 43: Solution to Dining Philosophers" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-44" data-slide="44">
+  <header class="card-head"><span class="sn">Slide 44 <span>/ 45</span></span><h3>Solution to Dining Philosophers (cont)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-44.jpg" width="1440" height="1080" alt="Slide 44: Solution to Dining Philosophers (cont)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-45" data-slide="45">
+  <header class="card-head"><span class="sn">Slide 45 <span>/ 45</span></span><h3>Process Synchronization Conclusion</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-45.jpg" width="1440" height="1080" alt="Slide 45: Process Synchronization Conclusion" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
 </main>
-<footer class="as-foot">Rebuilt slides from the CS330 lecture slides, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-6-synchronization/" target="_top">original deck</a>. Made by Shoug Alomran.</footer>
-</div>
-<nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
-<script src="/javascripts/annotated-slides.js"></script>
+<nav class="flipbar" aria-label="Slide navigation" hidden>
+  <button type="button" id="f-prev" aria-label="Previous slide">Previous</button>
+  <select id="f-jump" aria-label="Go to slide"></select>
+  <button type="button" id="f-next" aria-label="Next slide">Next</button>
+</nav>
+<footer class="end">Original slides from the CS330 lecture deck, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-6-synchronization/" target="_top">original deck</a>. Notes and questions are study aids. Made by Shoug Alomran.</footer>
+<script>(function(){
+  var root=document.documentElement, body=document.body, K=body.getAttribute('data-key')||'annotated';
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function read(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  // theme toggle (shared key with the rest of the site)
+  var tbtn=document.getElementById('t-theme');
+  function paintTheme(){tbtn.textContent=root.getAttribute('data-theme')==='dark'?'Light':'Dark'}
+  tbtn.addEventListener('click',function(){var t=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',t);store('shoug-theme',t);paintTheme()});
+  window.addEventListener('storage',function(ev){if(ev.key==='shoug-theme'&&ev.newValue){root.setAttribute('data-theme',ev.newValue);paintTheme()}});
+  paintTheme();
+  // global toggles
+  function setPressed(b,on){b.setAttribute('aria-pressed',on?'true':'false')}
+  var bn=document.getElementById('t-notes'), bh=document.getElementById('t-hl'), ba=document.getElementById('t-ans');
+  function setCardNotes(card,show){var b=card.querySelector('.note-toggle');if(!b)return;card.classList.toggle('notes-hidden',!show);b.textContent=show?'Hide notes':'Show notes';b.setAttribute('aria-expanded',show?'true':'false')}
+  bn.addEventListener('click',function(){var on=bn.getAttribute('aria-pressed')!=='true';setPressed(bn,on);
+    document.querySelectorAll('.card[data-slide]').forEach(function(c){setCardNotes(c,on)});store(K+'-notes',on?'1':'0')});
+  bh.addEventListener('click',function(){var on=bh.getAttribute('aria-pressed')!=='true';setPressed(bh,on);body.classList.toggle('no-hl',!on);store(K+'-hl',on?'1':'0')});
+  ba.addEventListener('click',function(){var on=ba.getAttribute('aria-pressed')!=='true';setPressed(ba,on);
+    document.querySelectorAll('.exam details').forEach(function(d){d.open=on})});
+  document.querySelectorAll('.note-toggle').forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.card');setCardNotes(c,c.classList.contains('notes-hidden'))})});
+  // overview show/hide (control lives inside the overview)
+  var ob=document.querySelector('.ov-toggle'), ovb=document.getElementById('ov-body');
+  function setOv(show){ovb.hidden=!show;ob.textContent=show?'Hide overview':'Show overview';ob.setAttribute('aria-expanded',show?'true':'false');store(K+'-ov',show?'1':'0')}
+  ob.addEventListener('click',function(){setOv(ovb.hidden)});
+  if(read(K+'-ov')==='0')setOv(false);
+  if(read(K+'-notes')==='0')bn.click();
+  if(read(K+'-hl')==='0')bh.click();
+  // highlight <-> note linking
+  function link(card,n,on){card.querySelectorAll('[data-n="'+n+'"]').forEach(function(el){el.classList.toggle('on',on)})}
+  document.querySelectorAll('.card[data-slide]').forEach(function(card){
+    card.querySelectorAll('.notes li[data-n]').forEach(function(li){var n=li.getAttribute('data-n');
+      li.addEventListener('mouseenter',function(){link(card,n,true)});li.addEventListener('mouseleave',function(){link(card,n,false)})});
+    card.querySelectorAll('rect.hl:not(.free)').forEach(function(r){var n=r.getAttribute('data-n');
+      r.addEventListener('mouseenter',function(){link(card,n,true)});r.addEventListener('mouseleave',function(){link(card,n,false)});
+      r.addEventListener('click',function(){if(card.classList.contains('notes-hidden'))setCardNotes(card,true);var li=card.querySelector('.notes li[data-n="'+n+'"]');
+        if(li){li.scrollIntoView({behavior:'smooth',block:'center'});li.classList.add('flash');setTimeout(function(){li.classList.remove('flash')},1600)}})});
+  });
+  // scroll / flip view: flip shows one card (overview or slide) at a time
+  var cards=[].slice.call(document.querySelectorAll('main>.card')), bar=document.querySelector('.flipbar'),
+      ms=document.getElementById('m-scroll'), mf=document.getElementById('m-flip'), jump=document.getElementById('f-jump'),
+      fp=document.getElementById('f-prev'), fn=document.getElementById('f-next'), cur=0;
+  cards.forEach(function(c,i){var o=document.createElement('option');var h=c.querySelector('h3');
+    o.value=i;o.textContent=(c.dataset.slide?c.dataset.slide+' · ':'')+(c.dataset.slide?(h?h.textContent:''):'Overview');jump.appendChild(o)});
+  function indexOf(id){for(var i=0;i<cards.length;i++){if(cards[i].id===id)return i}return -1}
+  function show(i,noScroll){cur=Math.max(0,Math.min(cards.length-1,i));
+    cards.forEach(function(c,k){c.classList.toggle('current',k===cur)});
+    jump.value=cur;fp.disabled=cur===0;fn.disabled=cur===cards.length-1;
+    try{history.replaceState(null,'','#'+cards[cur].id)}catch(e){}
+    if(!noScroll)window.scrollTo(0,0)}
+  function setMode(flip){body.classList.toggle('flip',flip);bar.hidden=!flip;setPressed(mf,flip);setPressed(ms,!flip);store(K+'-mode',flip?'flip':'scroll');
+    if(flip){var top=0;for(var i=0;i<cards.length;i++){if(cards[i].getBoundingClientRect().bottom>90){top=i;break}}show(top)}
+    else{cards[cur].scrollIntoView()}}
+  ms.addEventListener('click',function(){if(body.classList.contains('flip'))setMode(false)});
+  mf.addEventListener('click',function(){if(!body.classList.contains('flip'))setMode(true)});
+  fp.addEventListener('click',function(){show(cur-1)});fn.addEventListener('click',function(){show(cur+1)});
+  jump.addEventListener('change',function(){show(+jump.value)});
+  document.addEventListener('keydown',function(ev){if(!body.classList.contains('flip')||ev.altKey||ev.ctrlKey||ev.metaKey)return;
+    var t=ev.target.tagName;if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA')return;
+    if(ev.key==='ArrowRight'||ev.key==='PageDown'){show(cur+1);ev.preventDefault()}
+    else if(ev.key==='ArrowLeft'||ev.key==='PageUp'){show(cur-1);ev.preventDefault()}});
+  var sx=null,sy=null;
+  document.addEventListener('touchstart',function(ev){if(ev.touches.length===1){sx=ev.touches[0].clientX;sy=ev.touches[0].clientY}},{passive:true});
+  document.addEventListener('touchend',function(ev){if(sx===null||!body.classList.contains('flip'))return;
+    var dx=ev.changedTouches[0].clientX-sx,dy=ev.changedTouches[0].clientY-sy;sx=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>2*Math.abs(dy))show(cur+(dx<0?1:-1))},{passive:true});
+  // in-page links (contents list, "seen again") go to the right card in flip mode
+  document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href^="#"]');
+    if(!a||!body.classList.contains('flip'))return;var i=indexOf(a.getAttribute('href').slice(1));if(i>=0){ev.preventDefault();show(i)}});
+  var start=indexOf(location.hash.slice(1));
+  if(read(K+'-mode')==='flip'){body.classList.add('flip');bar.hidden=false;setPressed(mf,true);setPressed(ms,false);show(start>=0?start:0)}
+})();
+</script>
+
 </body>
 </html>

@@ -75,6 +75,14 @@ def render(src, out_dir, width=WIDTH):
         fh.write(stamp)
 
 
+CID = re.compile(r'\(cid:(\d+)\)')
+
+
+def uncid(t):
+    """Fonts without a ToUnicode map come out as (cid:N); in these decks N is the Unicode code point."""
+    return CID.sub(lambda m: chr(int(m.group(1))), t)
+
+
 def pdf_words(pdf):
     out = []
     for pg in pdf.pages:
@@ -83,8 +91,17 @@ def pdf_words(pdf):
         for w in pg.extract_words(keep_blank_chars=False, use_text_flow=True, return_chars=True):
             if w['top'] / H > 0.92:  # footer
                 continue
-            ws.append(dict(t=w['text'], x0=w['x0'] / W, x1=w['x1'] / W, y0=w['top'] / H, y1=w['bottom'] / H,
-                           chars=[(c['text'], c['x0'] / W, c['x1'] / W) for c in w['chars']]))
+            chars = [(uncid(c['text']), c['x0'] / W, c['x1'] / W) for c in w['chars']]
+            # a decoded (cid:32) is a space the word splitter could not see: split there
+            run = []
+            for c in chars + [(' ', 0, 0)]:
+                if c[0].isspace():
+                    if run:
+                        ws.append(dict(t=''.join(x[0] for x in run), x0=run[0][1], x1=run[-1][2],
+                                       y0=w['top'] / H, y1=w['bottom'] / H, chars=run))
+                    run = []
+                else:
+                    run.append(c)
         out.append(ws)
     return out
 
@@ -296,6 +313,8 @@ THEME_BOOT = ('<script>try{var t=localStorage.getItem("shoug-theme");document.do
 def page_html(spec, cards, titles, has_pdf):
     pdf_btn = ('<a class="btn" href="%s.pdf" download>PDF</a>' % e(spec['file'])) if has_pdf else (
         ('<a class="btn" href="%s" target="_top">Original</a>' % e(spec['original'])) if spec.get('original') else '')
+    se322_mcq_css = '<link rel="stylesheet" href="/styles/se322-mcq-practice.css">' if spec.get('key', '').startswith('se322-') else ''
+    se322_mcq_js = '<script src="/javascripts/se322-mcq-practice.js"></script>' if spec.get('key', '').startswith('se322-') else ''
     return '''<!doctype html>
 <html lang="en" data-theme="light" data-sg-styled>
 <head>
@@ -310,6 +329,7 @@ def page_html(spec, cards, titles, has_pdf):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+%(se322_mcq_css)s
 <style>%(css)s</style>
 </head>
 <body data-key="%(key)s">
@@ -335,12 +355,13 @@ def page_html(spec, cards, titles, has_pdf):
 </nav>
 <footer class="end">%(footer)s</footer>
 <script>%(js)s</script>
+%(se322_mcq_js)s
 </body>
 </html>
 ''' % dict(head=e(spec['head_title']), desc=e(spec['description']), url=e(spec['url']), boot=THEME_BOOT,
            css=open(CSS_PATH, encoding='utf-8').read(), key=e(spec['key']), chapter=e(spec['chapter']), title=e(spec['title']),
            pdf=pdf_btn, overview=overview_html(spec, titles), cards=''.join(cards), footer=rich(spec['footer']),
-           js=open(JS_PATH, encoding='utf-8').read())
+           js=open(JS_PATH, encoding='utf-8').read(), se322_mcq_css=se322_mcq_css, se322_mcq_js=se322_mcq_js)
 
 
 def export_pdf(html_path, pdf_path):

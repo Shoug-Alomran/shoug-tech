@@ -72,3 +72,32 @@ def trick(text):
 
 def trap(text):
     return ('trap', text)
+
+
+# Exam questions for decks written in the page schema (see se322_annotated/ch05_2_page.py): `asked` only for a
+# question that is really on a past paper (worded as on the paper), `likely` for everything else.
+# 'm261' is the instructor's own 2026 midterm, kept in the midterm cheat sheet rather than in exams/.
+ASKED_ON = dict({k: (t, '/academics/software-engineering/se423/exams/%s/' % f) for k, (t, f) in PAPERS.items()},
+                m261=('Midterm 261', '/academics/software-engineering/se423/extra-resources/midterm-cheat-sheet/'))
+
+
+def _question(kind, q, a, opts, tf, why):
+    d = {'kind': kind, 'q': q, 'why': why}
+    if opts is not None:
+        d.update(opts=opts, a=a)
+    elif tf is not None:
+        d['tf'] = tf
+    else:
+        d['a'] = a
+    return d
+
+
+def asked(paper, where, q, a=None, opts=None, tf=None, why=''):
+    title, href = ASKED_ON[paper]
+    d = _question('past', q, a, opts, tf, why)
+    d.update(ref='%s · %s' % (title, where), href=href)
+    return d
+
+
+def likely(q, a=None, opts=None, tf=None, why=''):
+    return _question('predict', q, a, opts, tf, why)

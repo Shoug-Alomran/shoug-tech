@@ -8,6 +8,7 @@ DECK = {
     'file': 'tailoring',
     'title': 'Tailoring, Models, Methods, and Artifacts',
     'chapter': 'Chapter 1.3',
+    'page': 'ch01_3_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-1.3/',
     'lede': ('Two halves. Tailoring: adapting the approach to the project (why, what, and the 4-step process). '
              'Then a catalogue of models, methods and artifacts. The instructor wrote “don’t memorize, '
