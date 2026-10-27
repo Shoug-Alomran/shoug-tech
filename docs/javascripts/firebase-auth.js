@@ -1261,7 +1261,7 @@
       '    <div class="shoug-exam-toast-title">' +
         escHtml(
           reminderKind === "assignment"
-            ? exam.title || "Assignment"
+            ? exam.title || exam.workType || "Due work"
             : (exam.course || "Exam") + " " + examTypeLabel(exam.type),
         ) +
         "</div>",
@@ -1315,11 +1315,11 @@
     } catch (e) {}
     var title =
       reminderKind === "assignment"
-        ? exam.title || "Assignment"
+        ? exam.title || exam.workType || "Due work"
         : exam.course || "Exam";
     new Notification(
       (reminderKind === "assignment"
-        ? "Assignment Due - "
+        ? (exam.workType || "Assignment") + " Due - "
         : "Exam Reminder - ") + title,
       {
         body:
@@ -1368,7 +1368,9 @@
           function (item) {
             if (
               !item ||
-              (item.kind !== "assignment" && item.kind !== "project") ||
+              (item.kind !== "assignment" &&
+                item.kind !== "project" &&
+                item.kind !== "presentation") ||
               item.submitted ||
               item.remindersEnabled === false
             )
@@ -1380,6 +1382,12 @@
               date: dueDate,
               days: daysUntilExam(dueDate),
               reminderKind: "assignment",
+              workType:
+                item.kind === "presentation"
+                  ? "Presentation"
+                  : item.kind === "project"
+                    ? "Project"
+                    : "Assignment",
               reminderDays: Array.isArray(item.reminderDays)
                 ? item.reminderDays
                 : [7, 3, 1, 0],
