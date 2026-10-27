@@ -1391,7 +1391,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/computer-science/cs331/annotated-slides/07-local-area-networks/",
-    title: "CS331 | Chapter 04 — Local Area Networks (Ethernet) (Annotated Slides)",
+    title:
+      "CS331 | Chapter 04 — Local Area Networks (Ethernet) (Annotated Slides)",
     track: "computer-science",
     course: "cs331",
     section: "annotated-slides",
@@ -1400,7 +1401,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/computer-science/cs331/annotated-slides/08-connecting-devices-and-vlans/",
-    title: "CS331 | Chapter 06 — Connecting Devices & Virtual LANs (Annotated Slides)",
+    title:
+      "CS331 | Chapter 06 — Connecting Devices & Virtual LANs (Annotated Slides)",
     track: "computer-science",
     course: "cs331",
     section: "annotated-slides",
@@ -1409,7 +1411,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/computer-science/cs331/annotated-slides/09-network-layer-data-transfer/",
-    title: "CS331 | Chapter 07 — Network Layer Data Transfer (Annotated Slides)",
+    title:
+      "CS331 | Chapter 07 — Network Layer Data Transfer (Annotated Slides)",
     track: "computer-science",
     course: "cs331",
     section: "annotated-slides",
@@ -1418,7 +1421,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/computer-science/cs331/annotated-slides/10-network-layer-routing/",
-    title: "CS331 | Chapter 08 — Network Layer: Routing of Packets (Annotated Slides)",
+    title:
+      "CS331 | Chapter 08 — Network Layer: Routing of Packets (Annotated Slides)",
     track: "computer-science",
     course: "cs331",
     section: "annotated-slides",
@@ -1508,7 +1512,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/computer-science/cs331/extra-resources/project/unsolved/project-1-switch-and-router-network-cisco-packet-tracer/",
-    title: "CS331 // Project 1: Switch and Router Network (Cisco Packet Tracer)",
+    title:
+      "CS331 // Project 1: Switch and Router Network (Cisco Packet Tracer)",
     track: "computer-science",
     course: "cs331",
     section: "extra-resources",
@@ -10739,7 +10744,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/annotated-slides/02-performance-domains/",
-    title: "SE423 | Project Performance Domains - Chapter 1.2 (Annotated Slides)",
+    title:
+      "SE423 | Project Performance Domains - Chapter 1.2 (Annotated Slides)",
     track: "software-engineering",
     course: "se423",
     section: "annotated-slides",
@@ -10748,7 +10754,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/annotated-slides/03-tailoring/",
-    title: "SE423 | Tailoring, Models, Methods, and Artifacts - Chapter 1.3 (Annotated Slides)",
+    title:
+      "SE423 | Tailoring, Models, Methods, and Artifacts - Chapter 1.3 (Annotated Slides)",
     track: "software-engineering",
     course: "se423",
     section: "annotated-slides",
@@ -10757,7 +10764,8 @@ var COURSE_PAGES = [
   },
   {
     url: "/academics/software-engineering/se423/annotated-slides/04-organizational-context/",
-    title: "SE423 | The Organizational Context: Strategy, Structure, and Culture - Chapter 2 (Annotated Slides)",
+    title:
+      "SE423 | The Organizational Context: Strategy, Structure, and Culture - Chapter 2 (Annotated Slides)",
     track: "software-engineering",
     course: "se423",
     section: "annotated-slides",

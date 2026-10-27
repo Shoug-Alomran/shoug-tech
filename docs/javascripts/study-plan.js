@@ -35,7 +35,12 @@
     };
   var BASE = "/account/calendar/exam-analysis/";
   var SEASONS = [
-    { id: "quiz", label: "Quizzes", noun: "Quiz", types: ["quiz", "bonus-quiz"] },
+    {
+      id: "quiz",
+      label: "Quizzes",
+      noun: "Quiz",
+      types: ["quiz", "bonus-quiz"],
+    },
     { id: "midterm", label: "Midterms", noun: "Midterm", types: ["midterm"] },
     { id: "final", label: "Finals", noun: "Final", types: ["final"] },
     {
@@ -61,7 +66,15 @@
     START_CAP = 240,
     MAX_CAP = 600,
     REVIEW_GAP = 3;
-  var KIND_ORDER = ["calc", "formula", "number", "list", "process", "compare", "concept"];
+  var KIND_ORDER = [
+    "calc",
+    "formula",
+    "number",
+    "list",
+    "process",
+    "compare",
+    "concept",
+  ];
   var KIND_ONE = {
     calc: "Problem",
     formula: "Formula",
@@ -75,10 +88,12 @@
   // Question formats an instructor might announce. `re` picks them out of
   // what the student types; `kinds` and `match` choose the slide topics
   // that suit practising that way; `ask` turns a topic into a prompt.
-  var CODE_RE = /code|coding|class|implement|program|method|interface|algorithm|function|query|sql|pseudo|singleton|factory|adapter|observer|iterator|composite|facade|builder|principle|responsib|substitution|segregation|inversion|open-closed/i;
+  var CODE_RE =
+    /code|coding|class|implement|program|method|interface|algorithm|function|query|sql|pseudo|singleton|factory|adapter|observer|iterator|composite|facade|builder|principle|responsib|substitution|segregation|inversion|open-closed/i;
   // Topics already phrased as a task ("Write a quality attribute
   // scenario") are used as they are.
-  var TASK_RE = /^(pick|write|match|name|draw|spot|fill|list|explain|apply|find|calculate|compute|solve|identify|choose|compare|design|convert|trace)\b/i;
+  var TASK_RE =
+    /^(pick|write|match|name|draw|spot|fill|list|explain|apply|find|calculate|compute|solve|identify|choose|compare|design|convert|trace)\b/i;
   function task(i, fallback) {
     return TASK_RE.test(i.name) ? i.name + "." : fallback;
   }
@@ -92,7 +107,10 @@
       match: /calculat|compute|solve|apply|find|spot|scenario/i,
       tip: "Practise on paper with a timer. Write every step; reading a worked answer doesn't count as practice.",
       ask: function (i) {
-        return task(i, "Work a full problem on " + i.name + ".") + " Write every step on paper, then check it.";
+        return (
+          task(i, "Work a full problem on " + i.name + ".") +
+          " Write every step on paper, then check it."
+        );
       },
       session: "solve problems on paper, timed",
     },
@@ -105,7 +123,11 @@
       match: CODE_RE,
       tip: "Write code by hand from a blank page: classes, methods and how they're called. Then compare with the slides and fix what you missed.",
       ask: function (i) {
-        return "From a blank page, write the code for " + i.name + ": the classes, methods and how they're used.";
+        return (
+          "From a blank page, write the code for " +
+          i.name +
+          ": the classes, methods and how they're used."
+        );
       },
       session: "write the code by hand from a blank page",
     },
@@ -118,7 +140,9 @@
       match: /diagram|uml|draw|flow|model|pattern|architecture/i,
       tip: "Draw each one from memory, label every part, then check it.",
       ask: function (i) {
-        return task(i, "Draw " + i.name + " from memory.") + " Label every part.";
+        return (
+          task(i, "Draw " + i.name + " from memory.") + " Label every part."
+        );
       },
       session: "draw the diagrams from memory",
     },
@@ -131,8 +155,12 @@
       tip: "Wrong options are usually look-alike terms. Know exactly how each topic differs from its neighbours.",
       ask: function (i) {
         return i.kind === "compare"
-          ? "Name the difference: " + i.name + ". Which detail would a wrong option swap?"
-          : "Pick " + i.name + " out of a one-line description, and say what it's often confused with.";
+          ? "Name the difference: " +
+              i.name +
+              ". Which detail would a wrong option swap?"
+          : "Pick " +
+              i.name +
+              " out of a one-line description, and say what it's often confused with.";
       },
       session: "quiz yourself on look-alike terms",
     },
@@ -144,7 +172,11 @@
       kinds: ["concept", "compare", "number", "list"],
       tip: "Statements are usually one word off. For each topic, say one true statement and change one word to make it false.",
       ask: function (i) {
-        return "Say one true statement about " + i.name + ", then change one word to make it false.";
+        return (
+          "Say one true statement about " +
+          i.name +
+          ", then change one word to make it false."
+        );
       },
       session: "turn each topic into true and false statements",
     },
@@ -170,7 +202,11 @@
       kinds: ["concept", "compare", "process"],
       tip: "Practise full answers: the definition, why it matters, and an example.",
       ask: function (i) {
-        return "Explain " + i.name + " in a paragraph: what it is, why it matters, and an example.";
+        return (
+          "Explain " +
+          i.name +
+          " in a paragraph: what it is, why it matters, and an example."
+        );
       },
       session: "write full explanations with an example",
     },
@@ -194,19 +230,37 @@
       kinds: ["calc", "compare", "concept"],
       tip: "Practise spotting which topic a scenario is about, then justify the choice.",
       ask: function (i) {
-        return task(i, "Make up a short scenario where " + i.name + " is the answer.") + " Say why the alternatives don't fit.";
+        return (
+          task(
+            i,
+            "Make up a short scenario where " + i.name + " is the answer.",
+          ) + " Say why the alternatives don't fit."
+        );
       },
       session: "apply topics to scenarios",
     },
   ];
-  var BOOK = { "": "Not said", closed: "Closed book", open: "Open book", sheet: "Cheat sheet allowed" };
+  var BOOK = {
+    "": "Not said",
+    closed: "Closed book",
+    open: "Open book",
+    sheet: "Cheat sheet allowed",
+  };
 
   var index = null,
     files = {},
     pending = {},
     localPlan = null,
     saveTimer = null,
-    ui = { course: "", preview: null, drill: true, revealed: {}, open: {}, fmtEdit: {}, fmtAll: {} };
+    ui = {
+      course: "",
+      preview: null,
+      drill: true,
+      revealed: {},
+      open: {},
+      fmtEdit: {},
+      fmtAll: {},
+    };
 
   // ── Data ──────────────────────────────────────────────────────────────
   function fetchJson(url) {
@@ -391,9 +445,7 @@
       .filter(function (id) {
         return f.chapters.indexOf(id) > -1;
       });
-    return ids.length
-      ? { ids: ids, label: base.label, custom: true }
-      : base;
+    return ids.length ? { ids: ids, label: base.label, custom: true } : base;
   }
   function overviewScope(a, exam) {
     var all = a.chapters.map(function (c) {
@@ -472,7 +524,9 @@
       }),
       fits = inScope.filter(function (i) {
         var text = i.name + " " + (i.memorize || "");
-        return x.match ? x.kinds.indexOf(i.kind) > -1 || x.match.test(text) : x.kinds.indexOf(i.kind) > -1;
+        return x.match
+          ? x.kinds.indexOf(i.kind) > -1 || x.match.test(text)
+          : x.kinds.indexOf(i.kind) > -1;
       });
     if (x.id === "code")
       fits = inScope.filter(function (i) {
@@ -540,7 +594,9 @@
       fTypes = ((fmt && fmt.types) || []).map(formatInfo).filter(Boolean),
       fitIds = {},
       fmtLine = fTypes.length
-        ? "Exam format: " + formatSummary(fmt) + ". Practise as it'll be asked: " +
+        ? "Exam format: " +
+          formatSummary(fmt) +
+          ". Practise as it'll be asked: " +
           fTypes
             .map(function (x) {
               return x.session;
@@ -566,7 +622,10 @@
           })
           .sort(function (x, y) {
             // Topics that suit the announced format come first.
-            return (fitIds[y.id] ? 1 : 0) - (fitIds[x.id] ? 1 : 0) || y.score - x.score;
+            return (
+              (fitIds[y.id] ? 1 : 0) - (fitIds[x.id] ? 1 : 0) ||
+              y.score - x.score
+            );
           })
           .slice(0, 5)
           .map(function (i) {
@@ -588,7 +647,8 @@
         notBefore: null,
         title: course + " " + noun + " · Review " + chapterName(ch),
         notes: fTypes.length
-          ? fmtLine + "Close the slides and do one question of each type from this chapter, then check."
+          ? fmtLine +
+            "Close the slides and do one question of each type from this chapter, then check."
           : "Active recall: close the slides, write what you remember, then check.",
       };
     });
@@ -603,11 +663,17 @@
             notes: fTypes.length
               ? fmtLine +
                 "Do a timed mock in that format" +
-                (fmt.minutes ? " (" + fmt.minutes + " min" + (fmt.questions ? ", " + fmt.questions + " questions" : "") + ")" : "") +
+                (fmt.minutes
+                  ? " (" +
+                    fmt.minutes +
+                    " min" +
+                    (fmt.questions ? ", " + fmt.questions + " questions" : "") +
+                    ")"
+                  : "") +
                 ", then redo anything you got wrong."
               : a.curated
-              ? "Formulas, key numbers and lists from the memorize sheet, then one timed problem of each type."
-              : "Skim every chapter's slides and redo anything marked Shaky.",
+                ? "Formulas, key numbers and lists from the memorize sheet, then one timed problem of each type."
+                : "Skim every chapter's slides and redo anything marked Shaky.",
           }
         : null,
     };
@@ -622,7 +688,8 @@
   function campusSpan(day) {
     var span = null;
     C.eventsFor(day, true).forEach(function (e) {
-      if (!e.start || !((e.kind === "class" && !e.online) || e.kind === "exam")) return;
+      if (!e.start || !((e.kind === "class" && !e.online) || e.kind === "exam"))
+        return;
       var s = C.minutes(e.start),
         en = e.end ? C.minutes(e.end) : s + (e.kind === "exam" ? 120 : 60);
       if (s === null) return;
@@ -630,10 +697,18 @@
     });
     return span;
   }
-  var UNI_DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  var UNI_DAYS = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
   // Your usual times for a weekday (plan.uni[weekday] = {leave, back}).
   function uniTimes(day) {
-    return ((plan().uni || {})[UNI_DAYS[C.fromKey(day).getDay()]]) || {};
+    return (plan().uni || {})[UNI_DAYS[C.fromKey(day).getDay()]] || {};
   }
   // The two drives on a uni day. Times you've set for the weekday win; the
   // rest come from your first and last campus class or exam. Your times
@@ -651,9 +726,17 @@
       });
       if (!anyClass || leave === null || back === null) return null;
     }
-    if (leave === null || (span && leave + drive > span[0])) leave = span[0] - drive;
+    if (leave === null || (span && leave + drive > span[0]))
+      leave = span[0] - drive;
     if (back === null || (span && back < span[1])) back = span[1];
-    return { leave: leave, arrive: leave + drive, back: back, home: back + drive, drive: drive, set: Boolean(t.leave || t.back) };
+    return {
+      leave: leave,
+      arrive: leave + drive,
+      back: back,
+      home: back + drive,
+      drive: drive,
+      set: Boolean(t.leave || t.back),
+    };
   }
   function busyFor(day, sid) {
     var all = false,
@@ -665,7 +748,11 @@
           return i.id === e.itemId;
         });
       // The plan being rebuilt doesn't block itself.
-      if (raw && raw.planSource === "study-plan" && (raw.planSeason === sid || sid === "remaining"))
+      if (
+        raw &&
+        raw.planSource === "study-plan" &&
+        (raw.planSeason === sid || sid === "remaining")
+      )
         return;
       if (!e.start) {
         if (e.kind === "busy" || e.kind === "travel") all = true;
@@ -768,7 +855,10 @@
           minutes: len,
           kind: sess.kind,
           title:
-            sess.title + (sess.cont && !/\(continued\)$/.test(sess.title) ? " (continued)" : ""),
+            sess.title +
+            (sess.cont && !/\(continued\)$/.test(sess.title)
+              ? " (continued)"
+              : ""),
           notes: sess.notes,
         });
         return true;
@@ -789,7 +879,11 @@
         j.limit =
           left <= 3
             ? Infinity
-            : Math.max(60, Math.ceil(((pendingMin(j) / Math.max(1, left)) * spread) / 15) * 15);
+            : Math.max(
+                60,
+                Math.ceil(((pendingMin(j) / Math.max(1, left)) * spread) / 15) *
+                  15,
+              );
       });
       for (var guard = 0; guard < 60; guard++) {
         var best = null,
@@ -888,7 +982,12 @@
         return;
       }
       if (exam.date <= first) return;
-      jobs.push({ course: course, exam: exam, a: a, s: sessionsFor(course, a, exam, sid) });
+      jobs.push({
+        course: course,
+        exam: exam,
+        a: a,
+        s: sessionsFor(course, a, exam, sid),
+      });
     });
     if (!jobs.length) return { jobs: [], placed: [], skipped: skipped };
     var lastDay = jobs.reduce(function (m, j) {
@@ -972,7 +1071,9 @@
     ui.preview = null;
     C.persist().then(function () {
       C.renderAll();
-      C.toast(n + " study session" + (n === 1 ? "" : "s") + " added to your calendar");
+      C.toast(
+        n + " study session" + (n === 1 ? "" : "s") + " added to your calendar",
+      );
     });
   }
   function clearPlanned() {
@@ -1109,7 +1210,9 @@
           "<div><b>" +
           hours(prog.left) +
           "</b> of study left<br><span>" +
-          (planned ? planned + " sessions on your calendar" : "No sessions planned yet") +
+          (planned
+            ? planned + " sessions on your calendar"
+            : "No sessions planned yet") +
           "</span></div>"
         : "<div><span>No slide analysis for this course yet</span></div>") +
       "</div></div>" +
@@ -1184,7 +1287,9 @@
               (function () {
                 var f = formatFor(course, exam, sid);
                 return f && (f.types || []).length
-                  ? '<div class="sp-card-format">' + esc(formatSummary(f, true)) + "</div>"
+                  ? '<div class="sp-card-format">' +
+                      esc(formatSummary(f, true)) +
+                      "</div>"
                   : '<div class="sp-card-format unset">Format not set</div>';
               })();
           }
@@ -1218,7 +1323,9 @@
     var ex = seasonExams(sid),
       out = [];
     for (var i = 1; i < ex.length; i++) {
-      var gap = Math.round((C.fromKey(ex[i].date) - C.fromKey(ex[i - 1].date)) / 86400000);
+      var gap = Math.round(
+        (C.fromKey(ex[i].date) - C.fromKey(ex[i - 1].date)) / 86400000,
+      );
       if (gap <= 1)
         out.push(
           esc(C.courseLabel(ex[i - 1].course)) +
@@ -1228,7 +1335,9 @@
         );
     }
     return out.length
-      ? '<div class="sp-note warn">' + out.join(". ") + ". The day before the first one goes to its final review, so the second one's final review comes after the first exam ends.</div>"
+      ? '<div class="sp-note warn">' +
+          out.join(". ") +
+          ". The day before the first one goes to its final review, so the second one's final review comes after the first exam ends.</div>"
       : "";
   }
   function uniTimesHtml() {
@@ -1263,7 +1372,9 @@
             d +
             ' leave uni" />' +
             (t.leave || t.back
-              ? '<button type="button" class="sp-link-btn" data-sp-uni-clear="' + d + '">Clear</button>'
+              ? '<button type="button" class="sp-link-btn" data-sp-uni-clear="' +
+                d +
+                '">Clear</button>'
               : "<span></span>")
           );
         })
@@ -1293,7 +1404,8 @@
       noun = seasonInfo(sid).noun.toLowerCase(),
       planned = plannedItems(sid),
       pv = ui.preview,
-      out = '<div class="sp-box sp-planner"><div class="sp-box-head"><h3>Schedule</h3>';
+      out =
+        '<div class="sp-box sp-planner"><div class="sp-box-head"><h3>Schedule</h3>';
     if (!ex.length)
       return (
         out +
@@ -1352,7 +1464,9 @@
               esc(examLabel(j.exam)) +
               "</span>" +
               (j.left > 0
-                ? '<span class="sp-warn">' + hours(j.left) + " doesn't fit</span>"
+                ? '<span class="sp-warn">' +
+                  hours(j.left) +
+                  " doesn't fit</span>"
                 : '<span class="sp-ok">fits</span>') +
               "</div>"
             );
@@ -1378,7 +1492,9 @@
               }, 0),
             ) +
             " of study" +
-            (pv.cap > START_CAP ? " (the plan had to go above 4 h a day to fit everything)" : "") +
+            (pv.cap > START_CAP
+              ? " (the plan had to go above 4 h a day to fit everything)"
+              : "") +
             ".") +
         "</div>";
       var byDay = {};
@@ -1406,7 +1522,9 @@
                       esc(C.timeLabel(C.toTime(trip.leave))) +
                       " · leave uni " +
                       esc(C.timeLabel(C.toTime(trip.back))) +
-                      (trip.drive ? " · home " + esc(C.timeLabel(C.toTime(trip.home))) : "") +
+                      (trip.drive
+                        ? " · home " + esc(C.timeLabel(C.toTime(trip.home)))
+                        : "") +
                       "</div>"
                   : "";
               })() +
@@ -1438,7 +1556,11 @@
         " to calendar</button>" +
         '<button class="btn muted" type="button" data-sp-discard>Discard</button>' +
         (planned.length
-          ? '<span class="sp-muted">Replaces the ' + planned.length + " planned session" + (planned.length === 1 ? "" : "s") + " from today on.</span>"
+          ? '<span class="sp-muted">Replaces the ' +
+            planned.length +
+            " planned session" +
+            (planned.length === 1 ? "" : "s") +
+            " from today on.</span>"
           : "") +
         "</div></div>";
     }
@@ -1460,7 +1582,17 @@
       return String(Math.ceil(v * 10) / 10);
     }
     function cls(v) {
-      return v === null ? "" : v <= 0 ? "secured" : v > 100 ? "gone" : v >= 85 ? "hard" : v >= 70 ? "stretch" : "ok";
+      return v === null
+        ? ""
+        : v <= 0
+          ? "secured"
+          : v > 100
+            ? "gone"
+            : v >= 85
+              ? "hard"
+              : v >= 70
+                ? "stretch"
+                : "ok";
     }
     if (n.remaining <= 0.05)
       return (
@@ -1489,11 +1621,25 @@
         if (x.avg > 100) cwCell = finalCell = "Out of reach";
         else if (x.avg <= 0) cwCell = finalCell = "Secured";
         else {
-          cwCell =
-            n.cwComplete
-              ? mark(n.cw) + " / " + n.cwMax
-              : "<b>" + mark(cwTarget) + " / " + n.cwMax + "</b><span>" + mark(r * cwLeft) + " more of the " + mark(cwLeft) + " left</span>";
-          finalCell = "<b>" + mark(finalTarget) + " / " + n.fw + "</b><span>" + pct((finalTarget / n.fw) * 100) + "</span>";
+          cwCell = n.cwComplete
+            ? mark(n.cw) + " / " + n.cwMax
+            : "<b>" +
+              mark(cwTarget) +
+              " / " +
+              n.cwMax +
+              "</b><span>" +
+              mark(r * cwLeft) +
+              " more of the " +
+              mark(cwLeft) +
+              " left</span>";
+          finalCell =
+            "<b>" +
+            mark(finalTarget) +
+            " / " +
+            n.fw +
+            "</b><span>" +
+            pct((finalTarget / n.fw) * 100) +
+            "</span>";
         }
         return (
           '<tr class="' +
@@ -1517,7 +1663,9 @@
       (best
         ? "Best grade still possible: <b>" + esc(best.letter) + "</b>."
         : "Even full marks on everything left won't reach a D.") +
-      (secured ? " <b>" + esc(secured.letter) + "</b> or better is already secured." : "");
+      (secured
+        ? " <b>" + esc(secured.letter) + "</b> or better is already secured."
+        : "");
     return (
       '<div class="sp-box"><h3>Finishing the course safely</h3><p class="sp-muted">' +
       "Coursework is <b>" +
@@ -1531,7 +1679,11 @@
       "</b> from the " +
       mark(n.cwUsed) +
       " coursework points graded" +
-      (n.cwComplete ? " (coursework complete" + (n.cw !== n.projected ? ", rounds to " + n.projected : "") + ")" : ", with " + mark(cwLeft) + " still to come") +
+      (n.cwComplete
+        ? " (coursework complete" +
+          (n.cw !== n.projected ? ", rounds to " + n.projected : "") +
+          ")"
+        : ", with " + mark(cwLeft) + " still to come") +
       ". " +
       summary +
       '</p><table class="sp-need-table"><thead><tr><th scope="col">Grade</th><th scope="col">Coursework total needed (out of ' +
@@ -1548,7 +1700,12 @@
       noun = seasonInfo(sid).noun,
       types = (f && f.types) || [],
       base = a ? overviewScope(a, exam) : null,
-      chosen = f && f.chapters && f.chapters.length ? f.chapters : base ? base.ids : [];
+      chosen =
+        f && f.chapters && f.chapters.length
+          ? f.chapters
+          : base
+            ? base.ids
+            : [];
     return (
       '<form class="sp-fmt-form" data-sp-format-form="' +
       esc(key) +
@@ -1574,13 +1731,23 @@
       '"></label><label class="sp-fmt-field"><span>Book</span><select name="book">' +
       Object.keys(BOOK)
         .map(function (k) {
-          return '<option value="' + k + '"' + (((f && f.book) || "") === k ? " selected" : "") + ">" + BOOK[k] + "</option>";
+          return (
+            '<option value="' +
+            k +
+            '"' +
+            (((f && f.book) || "") === k ? " selected" : "") +
+            ">" +
+            BOOK[k] +
+            "</option>"
+          );
         })
         .join("") +
       "</select></label></div>" +
       (a
         ? '<fieldset class="sp-fmt-field wide"><legend>What it covers</legend><p class="sp-muted">' +
-          (base && base.label ? "Set from the course overview (" + esc(base.label) + "). " : "") +
+          (base && base.label
+            ? "Set from the course overview (" + esc(base.label) + "). "
+            : "") +
           "Change it only if your instructor changed what's on the " +
           noun.toLowerCase() +
           '.</p><div class="sp-fmt-chips">' +
@@ -1602,9 +1769,15 @@
       '<label class="sp-fmt-field wide"><span>Topics to focus on or skip (optional)</span><input name="topics" placeholder="e.g. Focus on Liskov and DIP; no Observer" value="' +
       esc((f && f.topics) || "") +
       '"></label><div class="sp-fmt-actions"><button class="btn solid" type="submit">Save format</button>' +
-      (f ? '<button class="btn" type="button" data-sp-fmt-cancel="' + esc(key) + '">Cancel</button>' : "") +
       (f
-        ? '<button class="sp-link-btn" type="button" data-sp-fmt-remove="' + esc(key) + '">Remove format</button>'
+        ? '<button class="btn" type="button" data-sp-fmt-cancel="' +
+          esc(key) +
+          '">Cancel</button>'
+        : "") +
+      (f
+        ? '<button class="sp-link-btn" type="button" data-sp-fmt-remove="' +
+          esc(key) +
+          '">Remove format</button>'
         : "") +
       "</div></form>"
     );
@@ -1629,7 +1802,9 @@
         : '<p class="sp-muted">Tell it what your instructor said. Practice and study sessions switch to that format.</p>') +
       "</div>" +
       (f && !editing
-        ? '<button class="sp-chip-btn" type="button" data-sp-fmt-edit="' + esc(key) + '">Update format</button>'
+        ? '<button class="sp-chip-btn" type="button" data-sp-fmt-edit="' +
+          esc(key) +
+          '">Update format</button>'
         : "") +
       "</div>";
     if (editing)
@@ -1642,8 +1817,12 @@
         "</section>"
       );
     var said =
-      (f.notes ? '<blockquote class="sp-fmt-quote">' + esc(f.notes) + "</blockquote>" : "") +
-      (f.topics ? '<p class="sp-fmt-topics"><b>Focus:</b> ' + esc(f.topics) + "</p>" : "") +
+      (f.notes
+        ? '<blockquote class="sp-fmt-quote">' + esc(f.notes) + "</blockquote>"
+        : "") +
+      (f.topics
+        ? '<p class="sp-fmt-topics"><b>Focus:</b> ' + esc(f.topics) + "</p>"
+        : "") +
       (sc && sc.custom
         ? '<p class="sp-fmt-topics"><b>Covers:</b> ' +
           esc(
@@ -1668,7 +1847,13 @@
         ")</summary><ul>" +
         f.history
           .map(function (h) {
-            return "<li><b>" + esc(shortDate(h.at)) + "</b> " + esc(h.summary) + "</li>";
+            return (
+              "<li><b>" +
+              esc(shortDate(h.at)) +
+              "</b> " +
+              esc(h.summary) +
+              "</li>"
+            );
           })
           .join("") +
         "</ul></details>"
@@ -1735,8 +1920,16 @@
                       "</div>" +
                       (open
                         ? '<div class="sp-item-mem">' +
-                          (i.memorize ? esc(i.memorize) : "Check it against the slides.") +
-                          (link ? ' <a href="' + esc(link.url) + '">Open ' + esc(link.label) + "</a>" : "") +
+                          (i.memorize
+                            ? esc(i.memorize)
+                            : "Check it against the slides.") +
+                          (link
+                            ? ' <a href="' +
+                              esc(link.url) +
+                              '">Open ' +
+                              esc(link.label) +
+                              "</a>"
+                            : "") +
                           "</div>"
                         : "") +
                       "</div>" +
@@ -1825,7 +2018,8 @@
         ["Comparisons", k.compare],
         ["Processes", k.process],
       ]);
-    if (w) tiles.push([sid === "final" ? "Final weight" : w.label, w.percent + "%"]);
+    if (w)
+      tiles.push([sid === "final" ? "Final weight" : w.label, w.percent + "%"]);
     else if (sid === "final" && a.syllabus && a.syllabus.final_weight)
       tiles.push(["Final weight", a.syllabus.final_weight + "%"]);
     return (
@@ -1857,7 +2051,11 @@
         })
         .map(function (x) {
           return (
-            '<div class="sp-stat"><b>' + esc(x[1]) + "</b><span>" + esc(x[0]) + "</span></div>"
+            '<div class="sp-stat"><b>' +
+            esc(x[1]) +
+            "</b><span>" +
+            esc(x[0]) +
+            "</span></div>"
           );
         })
         .join("") +
@@ -1967,14 +2165,18 @@
             " of " +
             a.chapters.length +
             " chapters</b>, as you updated it in Exam format" +
-            (sc.label ? " (the course overview says " + esc(sc.label) + ")" : "") +
+            (sc.label
+              ? " (the course overview says " + esc(sc.label) + ")"
+              : "") +
             ".</p>"
           );
         return sc.label
           ? '<p class="sp-scope"><b>' +
               esc(sc.label) +
               "</b> covers " +
-              (outN ? sc.ids.length + " of " + a.chapters.length + " chapters" : "every chapter") +
+              (outN
+                ? sc.ids.length + " of " + a.chapters.length + " chapters"
+                : "every chapter") +
               ', from the <a href="' +
               esc(a.course_page) +
               '#section-page-count-by-exam">course overview</a>.</p>'
@@ -1999,7 +2201,6 @@
             (inScope ? "" : " out") +
             (open ? " open" : "") +
             '">' +
-
             ring(ready, undefined, "sm") +
             '<div class="sp-ch-text">' +
             (num ? '<span class="sp-ch-num">' + esc(num) + "</span>" : "") +
@@ -2029,7 +2230,9 @@
             ? '<div class="sp-links">' +
               ch.links
                 .map(function (l) {
-                  return '<a href="' + esc(l.url) + '">' + esc(l.label) + "</a>";
+                  return (
+                    '<a href="' + esc(l.url) + '">' + esc(l.label) + "</a>"
+                  );
                 })
                 .join("") +
               "</div>"
@@ -2042,7 +2245,10 @@
             its
               .slice()
               .sort(function (x, y) {
-                return KIND_ORDER.indexOf(x.kind) - KIND_ORDER.indexOf(y.kind) || y.score - x.score;
+                return (
+                  KIND_ORDER.indexOf(x.kind) - KIND_ORDER.indexOf(y.kind) ||
+                  y.score - x.score
+                );
               })
               .map(function (i) {
                 var lv = level(course, a, i.id);
@@ -2064,7 +2270,9 @@
                   '</span></div><div class="sp-item-name">' +
                   esc(i.name) +
                   "</div>" +
-                  (i.memorize ? '<div class="sp-item-mem">' + esc(i.memorize) + "</div>" : "") +
+                  (i.memorize
+                    ? '<div class="sp-item-mem">' + esc(i.memorize) + "</div>"
+                    : "") +
                   "</div>" +
                   levelButtons(i.id, lv) +
                   "</div>"
@@ -2117,7 +2325,9 @@
             ? '<div class="sp-links">' +
               a.resources
                 .map(function (r) {
-                  return '<a href="' + esc(r.url) + '">' + esc(r.label) + "</a>";
+                  return (
+                    '<a href="' + esc(r.url) + '">' + esc(r.label) + "</a>"
+                  );
                 })
                 .join("") +
               "</div>"
@@ -2130,7 +2340,11 @@
     var a = analysis(course, sid),
       exam = examFor(course, sid);
     if (a === undefined)
-      return '<div class="sp-empty">Loading the ' + esc(course) + " analysis...</div>";
+      return (
+        '<div class="sp-empty">Loading the ' +
+        esc(course) +
+        " analysis...</div>"
+      );
     if (a === null)
       return (
         '<div class="sp-course"' +
@@ -2158,7 +2372,9 @@
       ring(prog.ready, undefined, "lg") +
       '<div class="sp-course-title"><div class="sp-eyebrow">' +
       esc(course) +
-      (exam ? " · " + esc(seasonInfo(sid).noun) + " " + esc(examLabel(exam)) : "") +
+      (exam
+        ? " · " + esc(seasonInfo(sid).noun) + " " + esc(examLabel(exam))
+        : "") +
       "</div><h3>" +
       esc(a.title || course) +
       '</h3><p class="sp-muted">' +
@@ -2168,7 +2384,9 @@
       (syl.scope_note && a.curated ? " " + esc(syl.scope_note) : "") +
       "</p></div>" +
       (a.course_page
-        ? '<a class="sp-chip-btn" href="' + esc(a.course_page) + '">Course page</a>'
+        ? '<a class="sp-chip-btn" href="' +
+          esc(a.course_page) +
+          '">Course page</a>'
         : "") +
       "</div>" +
       seasonNote +
@@ -2208,7 +2426,8 @@
         a = analysis(course, sid),
         prog = a ? courseProgress(course, a, e) : null,
         sc = a ? examScope(a, e) : null,
-        name = sc && sc.label ? sc.label.split(/ [—–-] /)[0] : seasonInfo(sid).noun;
+        name =
+          sc && sc.label ? sc.label.split(/ [—–-] /)[0] : seasonInfo(sid).noun;
       if (/^(Final Exam|Final)$/i.test(name)) name = "Final";
       out.push({
         type: "exam",
@@ -2224,7 +2443,13 @@
       });
     });
     C.items.forEach(function (i) {
-      if ((i.kind !== "assignment" && i.kind !== "project") || i.submitted || !i.date || i.date < today) return;
+      if (
+        (i.kind !== "assignment" && i.kind !== "project") ||
+        i.submitted ||
+        !i.date ||
+        i.date < today
+      )
+        return;
       out.push({
         type: "due",
         course: C.courseLabel(i.course || "") || "",
@@ -2251,7 +2476,8 @@
     var today = C.todayKey(),
       now = new Date(),
       start = DAY_START;
-    if (day === today) start = Math.max(DAY_START, now.getHours() * 60 + now.getMinutes());
+    if (day === today)
+      start = Math.max(DAY_START, now.getHours() * 60 + now.getMinutes());
     return freeSlots(day, "remaining", start).reduce(function (m, sl) {
       return m + (sl[1] - sl[0]);
     }, 0);
@@ -2320,7 +2546,9 @@
       '<section class="sp-box sp-rem-focus"><div class="sp-eyebrow">Focus now</div>' +
       (focus.length
         ? "<h3>" +
-          (focus.length === 1 ? "One thing needs your time" : focus.length + " things need your time") +
+          (focus.length === 1
+            ? "One thing needs your time"
+            : focus.length + " things need your time") +
           ' right now</h3><ol class="sp-rem-focus-list">' +
           focus
             .slice(0, 4)
@@ -2329,7 +2557,9 @@
                 "<li><b>" +
                 esc(entryLabel(x)) +
                 "</b><span>" +
-                (x.type === "exam" ? "in " + x.daysLeft + " day" + (x.daysLeft === 1 ? "" : "s") : "due " + esc(shortDate(x.date))) +
+                (x.type === "exam"
+                  ? "in " + x.daysLeft + " day" + (x.daysLeft === 1 ? "" : "s")
+                  : "due " + esc(shortDate(x.date))) +
                 " · about " +
                 esc(aboutHours(x.perDay)) +
                 " a day</span></li>"
@@ -2337,8 +2567,12 @@
             })
             .join("") +
           "</ol>" +
-          (focus.length > 4 ? '<p class="sp-muted">And ' + (focus.length - 4) + " more below.</p>" : "")
-        : "<h3>Nothing urgent</h3><p class=\"sp-muted\">Nothing needs starting in the next couple of days. Get ahead on the next one, or take the time off.</p>") +
+          (focus.length > 4
+            ? '<p class="sp-muted">And ' +
+              (focus.length - 4) +
+              " more below.</p>"
+            : "")
+        : '<h3>Nothing urgent</h3><p class="sp-muted">Nothing needs starting in the next couple of days. Get ahead on the next one, or take the time off.</p>') +
       "</section>";
 
     // Priorities, in the order to start them.
@@ -2352,16 +2586,27 @@
           state = x.type === "exam" ? "No slide analysis" : "";
           cls = "";
         } else if (x.startBy <= today) {
-          state = x.perDay > 180 ? "Behind · " + aboutHours(x.perDay) + " a day" : "Start now";
+          state =
+            x.perDay > 180
+              ? "Behind · " + aboutHours(x.perDay) + " a day"
+              : "Start now";
           cls = x.perDay > 180 ? " late" : " now";
         } else {
           state = "Start by " + shortDate(x.startBy);
           cls = x.startBy <= C.addDays(today, 7) ? " soon" : "";
         }
-        var meta = [x.type === "exam" ? shortDate(x.date) + (x.time ? " · " + C.timeLabel(x.time) : "") : "Due " + shortDate(x.date)];
-        if (x.minutes) meta.push(hours(x.minutes) + (x.type === "exam" ? " to study" : " of work"));
+        var meta = [
+          x.type === "exam"
+            ? shortDate(x.date) + (x.time ? " · " + C.timeLabel(x.time) : "")
+            : "Due " + shortDate(x.date),
+        ];
+        if (x.minutes)
+          meta.push(
+            hours(x.minutes) + (x.type === "exam" ? " to study" : " of work"),
+          );
         if (x.weight) meta.push(x.weight + "% of the grade");
-        if (x.format && (x.format.types || []).length) meta.push(formatSummary(x.format, true));
+        if (x.format && (x.format.types || []).length)
+          meta.push(formatSummary(x.format, true));
         return (
           '<li class="sp-rem-row' +
           cls +
@@ -2373,11 +2618,15 @@
           (x.daysLeft === 1 ? "" : "s") +
           '</span><span class="sp-rem-main"><span class="sp-rem-name">' +
           esc(entryLabel(x)) +
-          (x.type === "due" ? '<span class="sp-rem-kind">' + esc(x.kind) + "</span>" : "") +
+          (x.type === "due"
+            ? '<span class="sp-rem-kind">' + esc(x.kind) + "</span>"
+            : "") +
           '</span><span class="sp-rem-meta">' +
           esc(meta.join(" · ")) +
           "</span></span>" +
-          (state ? '<span class="sp-rem-state">' + esc(state) + "</span>" : "<span></span>") +
+          (state
+            ? '<span class="sp-rem-state">' + esc(state) + "</span>"
+            : "<span></span>") +
           (x.type === "exam"
             ? '<button type="button" class="sp-link-btn" data-sp-goto="' +
               esc(x.sid + "|" + x.course) +
@@ -2390,7 +2639,7 @@
     var prio =
       '<section class="sp-box"><h3>What to start first</h3><p class="sp-muted">In the order to begin them, at about ' +
       EASY_DAY / 60 +
-      " h a day for each, with a day spare before each exam.</p><ol class=\"sp-rem-list\">" +
+      ' h a day for each, with a day spare before each exam.</p><ol class="sp-rem-list">' +
       rows +
       "</ol></section>";
 
@@ -2409,7 +2658,8 @@
       }
     });
     var weeks = [];
-    for (var w = weekStart(today); w <= last; w = C.addDays(w, 7)) weeks.push(w);
+    for (var w = weekStart(today); w <= last; w = C.addDays(w, 7))
+      weeks.push(w);
     var weekHtml =
       '<section class="sp-box"><h3>Week by week</h3><p class="sp-muted">Study each week asks for if you start on time, next to your free time (9 AM to 10 PM, after classes, work, events and the drive). A week is tight when it needs close to 3 h of study a day.</p><div class="sp-rem-weeks">' +
       weeks
@@ -2427,8 +2677,20 @@
           // not every free minute.
           var need = load[w] || 0,
             ratio = budget ? need / budget : need ? 2 : 0,
-            label = !need ? "Free" : ratio < 0.5 ? "Comfortable" : ratio < 0.85 ? "Busy" : "Tight",
-            cls = !need ? "free" : ratio < 0.5 ? "ok" : ratio < 0.85 ? "busy" : "tight",
+            label = !need
+              ? "Free"
+              : ratio < 0.5
+                ? "Comfortable"
+                : ratio < 0.85
+                  ? "Busy"
+                  : "Tight",
+            cls = !need
+              ? "free"
+              : ratio < 0.5
+                ? "ok"
+                : ratio < 0.85
+                  ? "busy"
+                  : "tight",
             here = list.filter(function (x) {
               return weekStart(x.date) === w;
             });
@@ -2448,7 +2710,9 @@
             " · " +
             hours(free) +
             " free" +
-            (cls === "tight" ? ". Starting the next exam a few days early would spread this out." : "") +
+            (cls === "tight"
+              ? ". Starting the next exam a few days early would spread this out."
+              : "") +
             "</div>" +
             (here.length
               ? '<div class="sp-rem-chips">' +
@@ -2474,7 +2738,14 @@
         })
         .join("") +
       "</div></section>";
-    return summary + focusHtml + '<div class="sp-rem-grid">' + prio + weekHtml + "</div>";
+    return (
+      summary +
+      focusHtml +
+      '<div class="sp-rem-grid">' +
+      prio +
+      weekHtml +
+      "</div>"
+    );
   }
   function render() {
     var root = $("study-plan-root");
@@ -2483,12 +2754,14 @@
     var sid = season();
     if (sid === "remaining") {
       var y = window.scrollY;
-      root.innerHTML = headHtml(sid) + '<div class="sp-body">' + remainingHtml() + "</div>";
+      root.innerHTML =
+        headHtml(sid) + '<div class="sp-body">' + remainingHtml() + "</div>";
       if (Math.abs(window.scrollY - y) > 2) window.scrollTo(0, y);
       return;
     }
     var courses = courseList(sid);
-    if (!ui.course || courses.indexOf(ui.course) < 0) ui.course = courses[0] || "";
+    if (!ui.course || courses.indexOf(ui.course) < 0)
+      ui.course = courses[0] || "";
     var scrollY = window.scrollY;
     root.innerHTML =
       headHtml(sid) +
@@ -2516,7 +2789,10 @@
       ui.course = d.spCourse;
       render();
     } else if (d.spAddExam !== undefined) {
-      C.openExamEditor("", "", { course: d.spAddExam, type: season() === "quiz" ? "quiz" : season() });
+      C.openExamEditor("", "", {
+        course: d.spAddExam,
+        type: season() === "quiz" ? "quiz" : season(),
+      });
     } else if (d.spDone !== undefined || d.spUndone !== undefined) {
       var dc = d.spDone !== undefined ? d.spDone : d.spUndone,
         on = d.spDone !== undefined,
@@ -2557,15 +2833,22 @@
       delete ui.fmtEdit[d.spFmtCancel];
       render();
     } else if (d.spFmtRemove) {
-      if (!window.confirm("Remove this exam format? Practice goes back to the general view.")) return;
+      if (
+        !window.confirm(
+          "Remove this exam format? Practice goes back to the general view.",
+        )
+      )
+        return;
       var rk = d.spFmtRemove;
       delete ui.fmtEdit[rk];
       ui.preview = null;
       updatePlan(function (p) {
         p.formats = p.formats || {};
-        formatKeys(ui.course, examFor(ui.course, season()), season()).forEach(function (k) {
-          delete p.formats[k];
-        });
+        formatKeys(ui.course, examFor(ui.course, season()), season()).forEach(
+          function (k) {
+            delete p.formats[k];
+          },
+        );
       }, true);
     } else if (d.spGoto) {
       var g = d.spGoto.split("|");
@@ -2574,7 +2857,10 @@
       updatePlan(function (p) {
         p.season = g[0];
       }, true);
-      window.scrollTo(0, $("study-plan-root").getBoundingClientRect().top + window.scrollY - 20);
+      window.scrollTo(
+        0,
+        $("study-plan-root").getBoundingClientRect().top + window.scrollY - 20,
+      );
     } else if (d.spUniClear) {
       saveUni(d.spUniClear, { leave: "", back: "" });
     } else if (d.spFmtAll) {
@@ -2612,12 +2898,17 @@
         topics: String(fd.get("topics") || "").trim(),
         // Only a change from the overview's chapters is stored.
         chapters:
-          chapters.length && chapters.sort().join() !== base.slice().sort().join() ? chapters : null,
+          chapters.length &&
+          chapters.sort().join() !== base.slice().sort().join()
+            ? chapters
+            : null,
         updated: C.todayKey(),
       };
     if (!next.types.length) next.types = detectFormats(next.notes);
     if (!next.types.length && !next.notes) {
-      C.toast("Pick at least one question type, or type what your instructor said");
+      C.toast(
+        "Pick at least one question type, or type what your instructor said",
+      );
       return;
     }
     var history = (prev && prev.history) || [];
@@ -2625,9 +2916,17 @@
       var was =
         formatSummary(prev) +
         (prev.notes ? ' ("' + prev.notes + '")' : "") +
-        (prev.chapters ? " · covered " + prev.chapters.join(", ").replace(/ch/g, "Ch ") : "");
-      if (was !== formatSummary(next) + (next.notes ? ' ("' + next.notes + '")' : "") || String(prev.chapters) !== String(next.chapters))
-        history = [{ at: prev.updated || C.todayKey(), summary: was }].concat(history).slice(0, 5);
+        (prev.chapters
+          ? " · covered " + prev.chapters.join(", ").replace(/ch/g, "Ch ")
+          : "");
+      if (
+        was !==
+          formatSummary(next) + (next.notes ? ' ("' + next.notes + '")' : "") ||
+        String(prev.chapters) !== String(next.chapters)
+      )
+        history = [{ at: prev.updated || C.todayKey(), summary: was }]
+          .concat(history)
+          .slice(0, 5);
     }
     next.history = history;
     delete ui.fmtEdit[key];
@@ -2642,7 +2941,9 @@
     }, true);
     C.toast(
       (prev ? "Exam format updated" : "Exam format saved") +
-        (plannedItems(sid).length ? ". Build the plan again to update planned sessions." : ""),
+        (plannedItems(sid).length
+          ? ". Build the plan again to update planned sessions."
+          : ""),
     );
   }
   function boot() {
@@ -2654,7 +2955,8 @@
     $("study-plan-root").addEventListener(
       "toggle",
       function (ev) {
-        if (ev.target.classList && ev.target.classList.contains("sp-uni")) ui.uniOpen = ev.target.open;
+        if (ev.target.classList && ev.target.classList.contains("sp-uni"))
+          ui.uniOpen = ev.target.open;
       },
       true,
     );
@@ -2709,7 +3011,11 @@
     });
     $("study-plan-root").addEventListener("keydown", function (ev) {
       var card = ev.target.closest && ev.target.closest("[data-sp-course]");
-      if (card && ev.target === card && (ev.key === "Enter" || ev.key === " ")) {
+      if (
+        card &&
+        ev.target === card &&
+        (ev.key === "Enter" || ev.key === " ")
+      ) {
         ev.preventDefault();
         card.click();
       }

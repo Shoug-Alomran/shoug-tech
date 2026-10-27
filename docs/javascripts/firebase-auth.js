@@ -47,7 +47,12 @@
   ];
   var privateReady = {};
   function privateRef(uid) {
-    return firebase.firestore().collection("users").doc(uid).collection("private").doc("data");
+    return firebase
+      .firestore()
+      .collection("users")
+      .doc(uid)
+      .collection("private")
+      .doc("data");
   }
   function hasData(v) {
     if (v === undefined || v === null || v === "") return false;
@@ -83,13 +88,21 @@
           if (!hasData(mine[k]) && hasData(shared[k])) move[k] = shared[k];
           // Only clear the profile copy once the private record holds it (or
           // the profile copy is empty). Anything else stays as a backup.
-          if (move[k] !== undefined || !hasData(shared[k]) || JSON.stringify(mine[k]) === JSON.stringify(shared[k]))
+          if (
+            move[k] !== undefined ||
+            !hasData(shared[k]) ||
+            JSON.stringify(mine[k]) === JSON.stringify(shared[k])
+          )
             drop[k] = firebase.firestore.FieldValue.delete();
         });
         if (!Object.keys(move).length && !Object.keys(drop).length) return priv;
         // Copy first, then clear the profile, so nothing is lost if the second
         // write fails (the next visit simply finishes the move).
-        return (Object.keys(move).length ? priv.set(move, { merge: true }) : Promise.resolve())
+        return (
+          Object.keys(move).length
+            ? priv.set(move, { merge: true })
+            : Promise.resolve()
+        )
           .then(function () {
             return Object.keys(drop).length ? main.update(drop) : null;
           })
@@ -110,8 +123,15 @@
   // for pages that read both.
   function loadPrivateRecord(uid) {
     return privateRecordReady(uid).then(function (priv) {
-      return Promise.all([firebase.firestore().collection("users").doc(uid).get(), priv.get()]).then(function (snaps) {
-        var data = Object.assign({}, snaps[0].exists ? snaps[0].data() : {}, snaps[1].exists ? snaps[1].data() : {});
+      return Promise.all([
+        firebase.firestore().collection("users").doc(uid).get(),
+        priv.get(),
+      ]).then(function (snaps) {
+        var data = Object.assign(
+          {},
+          snaps[0].exists ? snaps[0].data() : {},
+          snaps[1].exists ? snaps[1].data() : {},
+        );
         return {
           exists: snaps[0].exists || snaps[1].exists,
           data: function () {
@@ -775,15 +795,19 @@
   function handleProviderError(err, btn, buttonHtml) {
     if (err.code === "auth/account-exists-with-different-credential") {
       pendingCredential = firebase.auth.AuthCredential.fromError(err);
-      pendingProviderName = err.credential && err.credential.providerId
-        ? providerLabel(err.credential.providerId)
-        : "the selected provider";
+      pendingProviderName =
+        err.credential && err.credential.providerId
+          ? providerLabel(err.credential.providerId)
+          : "the selected provider";
       var email = err.email || "";
       if (email) emailInput.value = email;
       errorEl.textContent =
         "This email already uses another sign-in method. Sign in with " +
-        "your existing method" + (email ? " for " + email : "") +
-        ", then we’ll link " + pendingProviderName + " automatically.";
+        "your existing method" +
+        (email ? " for " + email : "") +
+        ", then we’ll link " +
+        pendingProviderName +
+        " automatically.";
       passInput.focus();
       if (btn) {
         btn.disabled = false;
@@ -1315,7 +1339,12 @@
   }
 
   function startExamReminder(user) {
-    if (!user || !calendarRemindersEnabled(user) || _examReminderUid === user.uid) return;
+    if (
+      !user ||
+      !calendarRemindersEnabled(user) ||
+      _examReminderUid === user.uid
+    )
+      return;
     _examReminderUid = user.uid;
 
     loadPrivateRecord(user.uid)
@@ -4069,7 +4098,8 @@
           var email = err.email || "";
           if (email) emailInput.value = email;
           errorEl.textContent =
-            "This email already uses " + pendingProviderName +
+            "This email already uses " +
+            pendingProviderName +
             ". Sign in with that method to finish linking your account.";
           openModal();
         } else if (err && err.code && err.code !== "auth/no-auth-event") {

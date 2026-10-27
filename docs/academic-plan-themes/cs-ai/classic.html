@@ -1974,24 +1974,46 @@
 
       function syncTranscriptPlan() {
         try {
-          const user = window.__shoug_fb && window.__shoug_fb.auth().currentUser;
+          const user =
+            window.__shoug_fb && window.__shoug_fb.auth().currentUser;
           if (!user || !window.ShougAcademicRecord) return;
           let ref = null;
           const current = window.__shougPlanSync || Promise.resolve();
           // The transcript is private: users/{uid}/private/data.
-          window.__shougPlanSync = current.then(() => window.ShougPrivate.ready(user.uid)).then((privateRef) => { ref = privateRef; return ref.get(); }).then((snap) => {
-            const record = (snap.exists && snap.data().academicRecord) || {};
-            const courses = Object.assign({}, record.courses || {});
-            let changed = false;
-            COURSES_RAW.forEach((course) => {
-              const code = window.ShougAcademicRecord.courseCode(course.id);
-              if (!completed.has(course.id) || courses[code]) return;
-              courses[code] = { letter: "", hours: course.hours, term: window.ShougAcademicRecord.termForDate(), finished: true, needsGrade: true };
-              changed = true;
-            });
-            if (changed) return ref.set({ academicRecord: { courses: courses } }, { merge: true });
-          }).catch((error) => console.warn("Transcript sync unavailable", error));
-        } catch (error) { console.warn("Transcript sync unavailable", error); }
+          window.__shougPlanSync = current
+            .then(() => window.ShougPrivate.ready(user.uid))
+            .then((privateRef) => {
+              ref = privateRef;
+              return ref.get();
+            })
+            .then((snap) => {
+              const record = (snap.exists && snap.data().academicRecord) || {};
+              const courses = Object.assign({}, record.courses || {});
+              let changed = false;
+              COURSES_RAW.forEach((course) => {
+                const code = window.ShougAcademicRecord.courseCode(course.id);
+                if (!completed.has(course.id) || courses[code]) return;
+                courses[code] = {
+                  letter: "",
+                  hours: course.hours,
+                  term: window.ShougAcademicRecord.termForDate(),
+                  finished: true,
+                  needsGrade: true,
+                };
+                changed = true;
+              });
+              if (changed)
+                return ref.set(
+                  { academicRecord: { courses: courses } },
+                  { merge: true },
+                );
+            })
+            .catch((error) =>
+              console.warn("Transcript sync unavailable", error),
+            );
+        } catch (error) {
+          console.warn("Transcript sync unavailable", error);
+        }
       }
       function load() {
         try {

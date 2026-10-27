@@ -20,9 +20,34 @@
   if (window.ShougAcademicRecord) return;
 
   // PSU 4.0 scale (Undergraduate Study and Examinations By-Law, Appendix 1).
-  var POINTS = { "A+": 4, A: 3.75, "B+": 3.5, B: 3, "C+": 2.5, C: 2, "D+": 1.5, D: 1, F: 0, DN: 0 };
+  var POINTS = {
+    "A+": 4,
+    A: 3.75,
+    "B+": 3.5,
+    B: 3,
+    "C+": 2.5,
+    C: 2,
+    "D+": 1.5,
+    D: 1,
+    F: 0,
+    DN: 0,
+  };
   var NO_GPA = ["W", "NP", "NF"];
-  var LETTERS = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "DN", "W", "NP", "NF"];
+  var LETTERS = [
+    "A+",
+    "A",
+    "B+",
+    "B",
+    "C+",
+    "C",
+    "D+",
+    "D",
+    "F",
+    "DN",
+    "W",
+    "NP",
+    "NF",
+  ];
 
   // Term codes are YY + 1 (First, from August), 2 (Second, from December)
   // or 3 (Summer of the next year): 252 Second Semester 2025, 253 Summer
@@ -88,12 +113,25 @@
     );
   }
   function transcriptCourses(record) {
-    return Object.keys((record && record.courses) || {}).map(function (code) {
-      var course = record.courses[code];
-      return { code: code, letter: course.letter, hours: Number(course.hours), term: String(course.term || ""), finished: course.finished !== false };
-    }).filter(function (course) {
-      return course.finished && LETTERS.indexOf(course.letter) > -1 && course.hours > 0 && /^\d{3}$/.test(course.term);
-    });
+    return Object.keys((record && record.courses) || {})
+      .map(function (code) {
+        var course = record.courses[code];
+        return {
+          code: code,
+          letter: course.letter,
+          hours: Number(course.hours),
+          term: String(course.term || ""),
+          finished: course.finished !== false,
+        };
+      })
+      .filter(function (course) {
+        return (
+          course.finished &&
+          LETTERS.indexOf(course.letter) > -1 &&
+          course.hours > 0 &&
+          /^\d{3}$/.test(course.term)
+        );
+      });
   }
   function counts(c, code) {
     return (
@@ -119,7 +157,13 @@
       covered = [];
     Object.keys(record.courses || {}).forEach(function (code) {
       var c = record.courses[code];
-      if (!counts(c, code) || !c.term || c.term >= current || (skip || []).indexOf(code) > -1) return;
+      if (
+        !counts(c, code) ||
+        !c.term ||
+        c.term >= current ||
+        (skip || []).indexOf(code) > -1
+      )
+        return;
       if (t && c.term <= t.term) {
         covered.push(code);
         return;
@@ -163,11 +207,16 @@
 
   // ── Course overview: private "MY GRADE" row in the info panel ────────────
 
-  var TRACKS = "computer-science|software-engineering|cybersecurity|math|other-courses";
-  var COURSE_PATH = new RegExp("^/academics/(?:" + TRACKS + ")/(?:english/)?([a-z]+\\d{3})/$");
+  var TRACKS =
+    "computer-science|software-engineering|cybersecurity|math|other-courses";
+  var COURSE_PATH = new RegExp(
+    "^/academics/(?:" + TRACKS + ")/(?:english/)?([a-z]+\\d{3})/$",
+  );
   var path = location.pathname.replace(/index\.html$/, "");
   var match = path.match(COURSE_PATH);
-  var TRACK_PATH = new RegExp("^/academics/(?:(?:" + TRACKS + ")|other-courses/english)/$");
+  var TRACK_PATH = new RegExp(
+    "^/academics/(?:(?:" + TRACKS + ")|other-courses/english)/$",
+  );
   var trackPage = !match && TRACK_PATH.test(path);
   if (!match && !trackPage) return;
 
@@ -179,7 +228,13 @@
   }
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[ch];
     });
   }
 
@@ -230,7 +285,10 @@
     var row = document.createElement("div");
     row.className = "meta-row agr-row";
     row.hidden = true;
-    row.innerHTML = '<span class="meta-key"><label class="agr-finished"><input type="checkbox" data-agr-finished> ' + L("FINISHED", "أنهيت المقرر") + '</label></span><button type="button" class="meta-val agr-val" aria-expanded="false"></button>';
+    row.innerHTML =
+      '<span class="meta-key"><label class="agr-finished"><input type="checkbox" data-agr-finished> ' +
+      L("FINISHED", "أنهيت المقرر") +
+      '</label></span><button type="button" class="meta-val agr-val" aria-expanded="false"></button>';
     var form = document.createElement("div");
     form.className = "agr-form";
     form.hidden = true;
@@ -246,50 +304,105 @@
     }
     function renderValue() {
       var c = mine();
-      var checkbox = row.querySelector('[data-agr-finished]');
+      var checkbox = row.querySelector("[data-agr-finished]");
       if (checkbox) checkbox.checked = !!c;
       val.innerHTML = c
-        ? "<b>" + esc(c.letter) + "</b><small>" + esc(c.hours) + " " + L("hrs", "ساعات") + " · " + esc(termName(c.term)) + "</small>"
-        : '<span class="agr-add">' + L("Add final grade", "أضف التقدير النهائي") + "</span>";
+        ? "<b>" +
+          esc(c.letter) +
+          "</b><small>" +
+          esc(c.hours) +
+          " " +
+          L("hrs", "ساعات") +
+          " · " +
+          esc(termName(c.term)) +
+          "</small>"
+        : '<span class="agr-add">' +
+          L("Add final grade", "أضف التقدير النهائي") +
+          "</span>";
     }
     function renderForm() {
       var c = mine() || {},
         terms = recentTerms(current, 24),
         term = c.term || current,
-        t = validTranscript(state.record.transcript) ? state.record.transcript : null;
+        t = validTranscript(state.record.transcript)
+          ? state.record.transcript
+          : null;
       if (terms.indexOf(term) < 0) terms.push(term);
       form.innerHTML =
-        '<p class="agr-note">' + L("Mark this course finished, choose the term, and enter the final PSU letter grade to include it in your transcript GPA.", "حدد اكتمال المقرر واختر الفصل والتقدير النهائي لإضافته إلى المعدل التراكمي.") + '</p><div class="agr-grid"><label>' + L("Grade", "التقدير") + '<select data-agr="letter">' +
+        '<p class="agr-note">' +
+        L(
+          "Mark this course finished, choose the term, and enter the final PSU letter grade to include it in your transcript GPA.",
+          "حدد اكتمال المقرر واختر الفصل والتقدير النهائي لإضافته إلى المعدل التراكمي.",
+        ) +
+        '</p><div class="agr-grid"><label>' +
+        L("Grade", "التقدير") +
+        '<select data-agr="letter">' +
         LETTERS.map(function (l) {
-          return '<option value="' + l + '"' + (c.letter === l ? " selected" : "") + ">" + l + "</option>";
+          return (
+            '<option value="' +
+            l +
+            '"' +
+            (c.letter === l ? " selected" : "") +
+            ">" +
+            l +
+            "</option>"
+          );
         }).join("") +
-        "</select></label><label>" + L("Credit hours", "الساعات") + '<input data-agr="hours" type="number" min="1" max="12" step="1" value="' +
+        "</select></label><label>" +
+        L("Credit hours", "الساعات") +
+        '<input data-agr="hours" type="number" min="1" max="12" step="1" value="' +
         esc(c.hours || defaultHours) +
-        '"></label></div><label>' + L("Semester taken", "الفصل") + '<select data-agr="term">' +
-        terms.map(function (x) {
-          return '<option value="' + x + '"' + (x === term ? " selected" : "") + ">" + esc(termName(x)) + "</option>";
-        }).join("") +
+        '"></label></div><label>' +
+        L("Semester taken", "الفصل") +
+        '<select data-agr="term">' +
+        terms
+          .map(function (x) {
+            return (
+              '<option value="' +
+              x +
+              '"' +
+              (x === term ? " selected" : "") +
+              ">" +
+              esc(termName(x)) +
+              "</option>"
+            );
+          })
+          .join("") +
         '</select></label><p class="agr-note" data-agr="note"></p><div class="agr-actions"><button type="button" class="agr-btn" data-agr="save">' +
-        L("Save", "حفظ") + "</button>" +
-        (mine() ? '<button type="button" class="agr-btn agr-ghost" data-agr="remove">' + L("Remove", "حذف") + "</button>" : "") +
-        '<button type="button" class="agr-btn agr-ghost" data-agr="cancel">' + L("Cancel", "إلغاء") + "</button></div>";
+        L("Save", "حفظ") +
+        "</button>" +
+        (mine()
+          ? '<button type="button" class="agr-btn agr-ghost" data-agr="remove">' +
+            L("Remove", "حذف") +
+            "</button>"
+          : "") +
+        '<button type="button" class="agr-btn agr-ghost" data-agr="cancel">' +
+        L("Cancel", "إلغاء") +
+        "</button></div>";
       var note = form.querySelector('[data-agr="note"]'),
         termSel = form.querySelector('[data-agr="term"]');
       function updateNote() {
         note.textContent =
           t && termSel.value <= t.term
             ? L(
-                "Already part of the transcript totals in your calendar (through " + termName(t.term) + "), so it won't be counted twice.",
+                "Already part of the transcript totals in your calendar (through " +
+                  termName(t.term) +
+                  "), so it won't be counted twice.",
                 "هذا الفصل مشمول في إجمالي السجل الأكاديمي في التقويم، فلن يُحتسب مرتين.",
               )
-            : L("Only you can see this. Your calendar uses it for your cumulative GPA.", "لا يراه أحد غيرك، ويُستخدم لحساب معدلك التراكمي في التقويم.");
+            : L(
+                "Only you can see this. Your calendar uses it for your cumulative GPA.",
+                "لا يراه أحد غيرك، ويُستخدم لحساب معدلك التراكمي في التقويم.",
+              );
       }
       termSel.addEventListener("change", updateNote);
       updateNote();
       form.querySelector('[data-agr="save"]').addEventListener("click", save);
-      form.querySelector('[data-agr="cancel"]').addEventListener("click", function () {
-        toggle(false);
-      });
+      form
+        .querySelector('[data-agr="cancel"]')
+        .addEventListener("click", function () {
+          toggle(false);
+        });
       var rm = form.querySelector('[data-agr="remove"]');
       if (rm) rm.addEventListener("click", remove);
     }
@@ -317,13 +430,21 @@
           form.querySelectorAll("button").forEach(function (b) {
             b.disabled = false;
           });
-          form.querySelector('[data-agr="note"]').textContent = L("Could not save. Check your connection and try again.", "تعذّر الحفظ. تحقق من اتصالك وحاول مرة أخرى.");
+          form.querySelector('[data-agr="note"]').textContent = L(
+            "Could not save. Check your connection and try again.",
+            "تعذّر الحفظ. تحقق من اتصالك وحاول مرة أخرى.",
+          );
         });
     }
     function save() {
-      var hours = Math.round(Number(form.querySelector('[data-agr="hours"]').value));
+      var hours = Math.round(
+        Number(form.querySelector('[data-agr="hours"]').value),
+      );
       if (!(hours >= 1 && hours <= 12)) {
-        form.querySelector('[data-agr="note"]').textContent = L("Credit hours must be between 1 and 12.", "يجب أن تكون الساعات بين 1 و12.");
+        form.querySelector('[data-agr="note"]').textContent = L(
+          "Credit hours must be between 1 and 12.",
+          "يجب أن تكون الساعات بين 1 و12.",
+        );
         return;
       }
       write({
@@ -339,16 +460,17 @@
     val.addEventListener("click", function () {
       toggle(form.hidden);
     });
-    row.querySelector('[data-agr-finished]').addEventListener("change", function (event) {
-      if (event.target.checked) {
-        if (mine()) {
-          write(Object.assign({}, mine(), { finished: true }));
-          return;
-        }
-        toggle(true);
-      }
-      else if (mine()) remove();
-    });
+    row
+      .querySelector("[data-agr-finished]")
+      .addEventListener("change", function (event) {
+        if (event.target.checked) {
+          if (mine()) {
+            write(Object.assign({}, mine(), { finished: true }));
+            return;
+          }
+          toggle(true);
+        } else if (mine()) remove();
+      });
 
     var unsub = null;
     function withFirebase(cb) {
@@ -360,7 +482,8 @@
         },
         { once: true },
       );
-      if (typeof window.__shougLoadFirebaseAuth === "function") window.__shougLoadFirebaseAuth(false);
+      if (typeof window.__shougLoadFirebaseAuth === "function")
+        window.__shougLoadFirebaseAuth(false);
     }
     withFirebase(function (fb) {
       fb.auth().onAuthStateChanged(function (user) {
@@ -377,11 +500,14 @@
           if (fb.auth().currentUser !== user) return;
           state.ref = ref;
           unsub = state.ref.onSnapshot(function (snap) {
-          var data = (snap && snap.exists && snap.data()) || {};
-          state.record = data.academicRecord && typeof data.academicRecord === "object" ? data.academicRecord : {};
-          row.hidden = false;
-          renderValue();
-        });
+            var data = (snap && snap.exists && snap.data()) || {};
+            state.record =
+              data.academicRecord && typeof data.academicRecord === "object"
+                ? data.academicRecord
+                : {};
+            row.hidden = false;
+            renderValue();
+          });
         });
       });
     });
@@ -390,9 +516,12 @@
   // ── Track pages: a private grade badge on each course row ───────────────
 
   function initTrack() {
-    var rows = Array.prototype.filter.call(document.querySelectorAll("a.course-row[href], a.english-card[href]"), function (a) {
-      return /\/([a-z]+\d{3})\/?$/.test(a.getAttribute("href"));
-    });
+    var rows = Array.prototype.filter.call(
+      document.querySelectorAll("a.course-row[href], a.english-card[href]"),
+      function (a) {
+        return /\/([a-z]+\d{3})\/?$/.test(a.getAttribute("href"));
+      },
+    );
     if (!rows.length) return;
     var s = document.createElement("style");
     s.textContent =
@@ -407,14 +536,19 @@
       rows.forEach(function (a) {
         var old = a.querySelector(".agr-badge");
         if (old) old.remove();
-        var code = courseCode(a.getAttribute("href").match(/\/([a-z]+\d{3})\/?$/)[1]),
+        var code = courseCode(
+            a.getAttribute("href").match(/\/([a-z]+\d{3})\/?$/)[1],
+          ),
           c = courses[code];
         if (!c) return;
         var badge = document.createElement("span");
         if (c.letter && c.finished !== false) {
           badge.className = "agr-badge";
           badge.textContent = c.letter;
-          badge.title = L("Your grade (only you can see this)", "تقديرك (لا يراه غيرك)");
+          badge.title = L(
+            "Your grade (only you can see this)",
+            "تقديرك (لا يراه غيرك)",
+          );
         } else if (!c.letter && String(c.term) === current) {
           badge.className = "agr-badge agr-now";
           badge.textContent = L("TAKING", "أدرسه");
@@ -453,6 +587,7 @@
   }
 
   var start = match ? init : initTrack;
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

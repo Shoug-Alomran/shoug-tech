@@ -18,7 +18,9 @@ async function googleKeys() {
   if (cached.keys && Date.now() < cached.expires) return cached.keys;
   const response = await fetch(JWKS_URL);
   if (!response.ok) throw new Error(`Google keys ${response.status}`);
-  const maxAge = /max-age=(\d+)/.exec(response.headers.get("cache-control") || "");
+  const maxAge = /max-age=(\d+)/.exec(
+    response.headers.get("cache-control") || "",
+  );
   const { keys } = await response.json();
   cached = {
     keys,
@@ -50,10 +52,20 @@ export async function verifyIdToken(token, options = {}) {
     const now = options.now ?? Date.now() / 1000;
     const project = options.projectId || PROJECT_ID;
     if (header.alg !== "RS256" || !header.kid) return null;
-    if (claims.iss !== `https://securetoken.google.com/${project}` || claims.aud !== project) return null;
-    if (typeof claims.sub !== "string" || !claims.sub || claims.sub.length > 128) return null;
+    if (
+      claims.iss !== `https://securetoken.google.com/${project}` ||
+      claims.aud !== project
+    )
+      return null;
+    if (
+      typeof claims.sub !== "string" ||
+      !claims.sub ||
+      claims.sub.length > 128
+    )
+      return null;
     if (!(claims.exp > now) || !(claims.iat <= now + SKEW)) return null;
-    if (claims.auth_time !== undefined && !(claims.auth_time <= now + SKEW)) return null;
+    if (claims.auth_time !== undefined && !(claims.auth_time <= now + SKEW))
+      return null;
     const keys = options.keys || (await googleKeys());
     const jwk = keys.find((k) => k.kid === header.kid);
     if (!jwk) return null;

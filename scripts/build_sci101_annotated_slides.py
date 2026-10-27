@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Build SCI101 "Annotated Slides": the lecture decks rebuilt as HTML with study notes on top.
+
+Content lives in scripts/sci101_annotated/ (one module per deck); the page engine and the
+site wiring are in scripts/annotated_slides.py. It is safe to re-run.
+
+Usage: python3 scripts/build_sci101_annotated_slides.py
+"""
+import annotated_slides
+from sci101_annotated import pdftext
+
+COURSE = annotated_slides.Course(
+    code='SCI101',
+    name='Introduction to Physical Science',
+    track='math',
+    package='sci101_annotated',
+    # Decks with annotation content, in course order.
+    built=['decks:motion', 'decks:newton', 'decks:momentum', 'decks:gravity', 'decks:fluids', 'decks:thermal', 'decks:heat_transfer', 'decks:sound', 'decks:atoms'],
+    read_deck=pdftext.read_deck,
+    template=('computer-science/cs331', '01-data-communications-and-networking', 'data-communications-and-networking'),
+    after=('slides/', 'Slides'),
+    page_name=lambda deck: annotated_slides.C.decks[deck['key']][3],
+    item_label=lambda label: label,
+    papers=annotated_slides.PAPER_WORDS,
+    prof_legend=False,
+)
+
+if __name__ == '__main__':
+    annotated_slides.build(COURSE)

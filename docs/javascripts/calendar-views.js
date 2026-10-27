@@ -375,7 +375,8 @@
                 var top = ((t.s - startHour * 60) / 60) * px,
                   h = Math.max(18, ((t.e - t.s) / 60) * px - 2),
                   w = 100 / t.cols,
-                  mine = (t.ev.itemId && !C.isWork(t.ev)) || Boolean(t.ev.examId);
+                  mine =
+                    (t.ev.itemId && !C.isWork(t.ev)) || Boolean(t.ev.examId);
                 return (
                   '<div class="timeline-event tv-ev ' +
                   C.eventClasses(t.ev) +
@@ -574,7 +575,13 @@
             return;
           }
           if (el.dataset.examId)
-            moveExam(el.dataset.examId, targetCol.dataset.colDay, C.toTime(ns), C.toTime(ne), resizing);
+            moveExam(
+              el.dataset.examId,
+              targetCol.dataset.colDay,
+              C.toTime(ns),
+              C.toTime(ne),
+              resizing,
+            );
           else
             moveItem(
               el.dataset.itemId,
@@ -627,7 +634,8 @@
     });
     var label = e ? (e.course || "Exam") + " " + (e.type || "") : "Exam";
     C.moveExam(id, day, start, end).then(function (ok) {
-      if (ok && resized) C.toast(label.trim() + " now ends at " + C.timeLabel(end));
+      if (ok && resized)
+        C.toast(label.trim() + " now ends at " + C.timeLabel(end));
       else if (ok)
         C.toast(
           label.trim() +
@@ -665,7 +673,8 @@
   function cellAt(x, y) {
     var els = document.elementsFromPoint(x, y);
     for (var i = 0; i < els.length; i++)
-      if (els[i].matches && els[i].matches("#month-grid .day[data-date]")) return els[i];
+      if (els[i].matches && els[i].matches("#month-grid .day[data-date]"))
+        return els[i];
     return null;
   }
   function setupMonthDrag() {
@@ -677,19 +686,25 @@
 
     // Your own multi-day bars sit in a layer that otherwise ignores the
     // pointer; a plain click on one still opens the day underneath.
-    grid.addEventListener("click", function (ev) {
-      if (suppressClick) {
-        suppressClick = false;
-        ev.stopPropagation();
-        ev.preventDefault();
-        return;
-      }
-      var bar = ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
-      if (!bar) return;
-      var cell = cellAt(ev.clientX, ev.clientY);
-      if (!cell) return;
-      if (!window.__shougCalViews.dayClick(cell.dataset.date, ev)) C.openDay(cell.dataset.date);
-    }, true);
+    grid.addEventListener(
+      "click",
+      function (ev) {
+        if (suppressClick) {
+          suppressClick = false;
+          ev.stopPropagation();
+          ev.preventDefault();
+          return;
+        }
+        var bar =
+          ev.target.closest && ev.target.closest(".range-bar[data-item-id]");
+        if (!bar) return;
+        var cell = cellAt(ev.clientX, ev.clientY);
+        if (!cell) return;
+        if (!window.__shougCalViews.dayClick(cell.dataset.date, ev))
+          C.openDay(cell.dataset.date);
+      },
+      true,
+    );
 
     function clearDrop() {
       grid.querySelectorAll(".cv-drop").forEach(function (c) {
@@ -729,7 +744,9 @@
       document.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerup", onUp);
       document.removeEventListener("pointercancel", onCancel);
-      document.removeEventListener("touchmove", blockScroll, { passive: false });
+      document.removeEventListener("touchmove", blockScroll, {
+        passive: false,
+      });
       document.removeEventListener("keydown", onKey);
       if (!d.active) return;
       suppressClick = true;
@@ -740,8 +757,11 @@
       d.el.classList.remove("cv-dragging");
       document.body.classList.remove("cv-drag-on");
       clearDrop();
-      if (!commit || !d.cell || !d.from || d.cell.dataset.date === d.from) return;
-      var delta = Math.round((C.fromKey(d.cell.dataset.date) - C.fromKey(d.from)) / 86400000);
+      if (!commit || !d.cell || !d.from || d.cell.dataset.date === d.from)
+        return;
+      var delta = Math.round(
+        (C.fromKey(d.cell.dataset.date) - C.fromKey(d.from)) / 86400000,
+      );
       if (d.examId) {
         var e = C.exams.find(function (x) {
           return x.id === d.examId;
@@ -806,7 +826,8 @@
     });
     // Long-press on touch would otherwise open the context menu / callout.
     grid.addEventListener("contextmenu", function (ev) {
-      if (ev.target.closest && ev.target.closest(MONTH_DRAG)) ev.preventDefault();
+      if (ev.target.closest && ev.target.closest(MONTH_DRAG))
+        ev.preventDefault();
     });
   }
 
@@ -1448,7 +1469,11 @@
     if (!fn) return;
     e.preventDefault();
     // Calendar shortcuts bring the Calendar tab forward first.
-    if (window.__shougCalTab && /^(t|m|w|d|q|\/|ArrowLeft|ArrowRight)$/i.test(k)) window.__shougCalTab("calendar");
+    if (
+      window.__shougCalTab &&
+      /^(t|m|w|d|q|\/|ArrowLeft|ArrowRight)$/i.test(k)
+    )
+      window.__shougCalTab("calendar");
     fn();
   });
 

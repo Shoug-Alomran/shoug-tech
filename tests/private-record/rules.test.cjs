@@ -23,10 +23,14 @@ let env;
 const as = (uid) => env.authenticatedContext(uid).firestore();
 const record = {
   academicRecord: {
-    courses: { "CS 331": { letter: "A", hours: 3, term: "252", finished: true } },
+    courses: {
+      "CS 331": { letter: "A", hours: 3, term: "252", finished: true },
+    },
     transcript: { gpa: 3, hours: 76, term: "253" },
   },
-  calendarGrades: [{ id: "g1", course: "SE 322", earned: 9, possible: 10, weight: 10 }],
+  calendarGrades: [
+    { id: "g1", course: "SE 322", earned: 9, possible: 10, weight: 10 },
+  ],
   exams: { e1: { course: "SE423", date: "2026-11-01" } },
 };
 
@@ -34,7 +38,10 @@ before(async () => {
   env = await initializeTestEnvironment({
     projectId: "demo-shoug-private",
     firestore: {
-      rules: fs.readFileSync(path.join(__dirname, "../../firebase/firestore.rules"), "utf8"),
+      rules: fs.readFileSync(
+        path.join(__dirname, "../../firebase/firestore.rules"),
+        "utf8",
+      ),
     },
   });
 });
@@ -53,7 +60,13 @@ beforeEach(async () => {
 test("only the owner can read the private record", async () => {
   await assertSucceeds(as("shoug").doc("users/shoug/private/data").get());
   await assertFails(as("someone").doc("users/shoug/private/data").get());
-  await assertFails(env.unauthenticatedContext().firestore().doc("users/shoug/private/data").get());
+  await assertFails(
+    env
+      .unauthenticatedContext()
+      .firestore()
+      .doc("users/shoug/private/data")
+      .get(),
+  );
 });
 
 test("public profiles stay readable to signed-in students", async () => {
@@ -61,26 +74,55 @@ test("public profiles stay readable to signed-in students", async () => {
 });
 
 test("only the owner can write the private record, and only the data doc", async () => {
-  await assertSucceeds(as("shoug").doc("users/shoug/private/data").set({ calendarEvents: [] }, { merge: true }));
-  await assertFails(as("someone").doc("users/shoug/private/data").set({ calendarEvents: [] }, { merge: true }));
+  await assertSucceeds(
+    as("shoug")
+      .doc("users/shoug/private/data")
+      .set({ calendarEvents: [] }, { merge: true }),
+  );
+  await assertFails(
+    as("someone")
+      .doc("users/shoug/private/data")
+      .set({ calendarEvents: [] }, { merge: true }),
+  );
   await assertFails(as("shoug").doc("users/shoug/private/other").set({ x: 1 }));
 });
 
 test("the private record still validates transcript totals", async () => {
   const db = as("shoug");
   await assertFails(
-    db.doc("users/shoug/private/data").set({ academicRecord: { transcript: { gpa: 9, hours: 76, term: "253" } } }, { merge: true }),
+    db
+      .doc("users/shoug/private/data")
+      .set(
+        { academicRecord: { transcript: { gpa: 9, hours: 76, term: "253" } } },
+        { merge: true },
+      ),
   );
-  await assertFails(db.doc("users/shoug/private/data").set({ academicRecord: { other: 1 } }, { merge: true }));
+  await assertFails(
+    db
+      .doc("users/shoug/private/data")
+      .set({ academicRecord: { other: 1 } }, { merge: true }),
+  );
 });
 
 test("private fields can no longer be written to the public profile", async () => {
   const db = as("shoug");
-  await assertFails(db.doc("users/shoug").set({ academicRecord: record.academicRecord }, { merge: true }));
+  await assertFails(
+    db
+      .doc("users/shoug")
+      .set({ academicRecord: record.academicRecord }, { merge: true }),
+  );
   await assertFails(db.doc("users/shoug").set({ exams: {} }, { merge: true }));
-  await assertSucceeds(db.doc("users/shoug").set({ bio: "hi" }, { merge: true }));
-  await assertFails(as("newbie").doc("users/newbie").set({ username: "newbie", calendarEvents: [] }));
-  await assertSucceeds(as("newbie").doc("users/newbie").set({ username: "newbie" }));
+  await assertSucceeds(
+    db.doc("users/shoug").set({ bio: "hi" }, { merge: true }),
+  );
+  await assertFails(
+    as("newbie")
+      .doc("users/newbie")
+      .set({ username: "newbie", calendarEvents: [] }),
+  );
+  await assertSucceeds(
+    as("newbie").doc("users/newbie").set({ username: "newbie" }),
+  );
 });
 
 test("an older profile can still be edited, and the one-time move is allowed", async () => {
@@ -88,10 +130,16 @@ test("an older profile can still be edited, and the one-time move is allowed", a
   // Editing the profile without touching private fields works before the move.
   await assertSucceeds(db.doc("users/legacy").update({ bio: "still works" }));
   // Changing a private field on the profile does not.
-  await assertFails(db.doc("users/legacy").update({ "academicRecord.transcript.gpa": 4 }));
+  await assertFails(
+    db.doc("users/legacy").update({ "academicRecord.transcript.gpa": 4 }),
+  );
   // The move: copy to the private record, then delete every private field at once.
-  await assertSucceeds(db.doc("users/legacy/private/data").set(record, { merge: true }));
+  await assertSucceeds(
+    db.doc("users/legacy/private/data").set(record, { merge: true }),
+  );
   const drop = {};
-  ["academicRecord", "calendarGrades", "exams"].forEach((k) => (drop[k] = del()));
+  ["academicRecord", "calendarGrades", "exams"].forEach(
+    (k) => (drop[k] = del()),
+  );
   await assertSucceeds(db.doc("users/legacy").update(drop));
 });

@@ -1703,7 +1703,9 @@
 
       // State
       let completed = new Set();
-      const TRANSCRIPT_COURSE_HOURS = Object.fromEntries(COURSES_RAW.map((c) => [c.id, c.hours]));
+      const TRANSCRIPT_COURSE_HOURS = Object.fromEntries(
+        COURSES_RAW.map((c) => [c.id, c.hours]),
+      );
       let choices = {
         A: ["HPE101", "PE101"],
         B: "SE423",
@@ -1804,37 +1806,72 @@
 
       function syncTranscriptPlan() {
         try {
-          const user = window.__shoug_fb && window.__shoug_fb.auth().currentUser;
+          const user =
+            window.__shoug_fb && window.__shoug_fb.auth().currentUser;
           if (!user) return;
           let ref = null;
           const current = window.__shougPlanSync || Promise.resolve();
           // The transcript is private: users/{uid}/private/data.
-          window.__shougPlanSync = current.then(() => window.ShougPrivate.ready(user.uid)).then((privateRef) => { ref = privateRef; return ref.get(); }).then((snap) => {
-            const record = (snap.exists && snap.data().academicRecord) || {};
-            const courses = Object.assign({}, record.courses || {});
-            let changed = false;
-            COURSES_RAW.forEach((course) => {
-              if (!completed.has(course.id) || courses[course.id]) return;
-              courses[course.id] = { letter: "", hours: course.hours, term: window.ShougAcademicRecord.termForDate(), finished: true, needsGrade: true };
-              changed = true;
-            });
-            Object.keys(courses).forEach((code) => {
-              if (TRANSCRIPT_COURSE_HOURS[code] && !completed.has(code) && courses[code].needsGrade) {
-                delete courses[code];
+          window.__shougPlanSync = current
+            .then(() => window.ShougPrivate.ready(user.uid))
+            .then((privateRef) => {
+              ref = privateRef;
+              return ref.get();
+            })
+            .then((snap) => {
+              const record = (snap.exists && snap.data().academicRecord) || {};
+              const courses = Object.assign({}, record.courses || {});
+              let changed = false;
+              COURSES_RAW.forEach((course) => {
+                if (!completed.has(course.id) || courses[course.id]) return;
+                courses[course.id] = {
+                  letter: "",
+                  hours: course.hours,
+                  term: window.ShougAcademicRecord.termForDate(),
+                  finished: true,
+                  needsGrade: true,
+                };
                 changed = true;
-              }
-            });
-            if (changed) return ref.set({ academicRecord: { courses: courses } }, { merge: true });
-          }).catch((error) => console.warn("Transcript sync unavailable", error));
-        } catch (error) { console.warn("Transcript sync unavailable", error); }
+              });
+              Object.keys(courses).forEach((code) => {
+                if (
+                  TRANSCRIPT_COURSE_HOURS[code] &&
+                  !completed.has(code) &&
+                  courses[code].needsGrade
+                ) {
+                  delete courses[code];
+                  changed = true;
+                }
+              });
+              if (changed)
+                return ref.set(
+                  { academicRecord: { courses: courses } },
+                  { merge: true },
+                );
+            })
+            .catch((error) =>
+              console.warn("Transcript sync unavailable", error),
+            );
+        } catch (error) {
+          console.warn("Transcript sync unavailable", error);
+        }
       }
       if (window.__shougLoadFirebaseAuth) window.__shougLoadFirebaseAuth(false);
       if (window.__shoug_fb && window.__shoug_fb.auth) {
-        window.__shoug_fb.auth().onAuthStateChanged(function () { syncTranscriptPlan(); });
+        window.__shoug_fb.auth().onAuthStateChanged(function () {
+          syncTranscriptPlan();
+        });
       } else {
-        window.addEventListener("shoug:fb", function () {
-          if (window.__shoug_fb && window.__shoug_fb.auth) window.__shoug_fb.auth().onAuthStateChanged(function () { syncTranscriptPlan(); });
-        }, { once: true });
+        window.addEventListener(
+          "shoug:fb",
+          function () {
+            if (window.__shoug_fb && window.__shoug_fb.auth)
+              window.__shoug_fb.auth().onAuthStateChanged(function () {
+                syncTranscriptPlan();
+              });
+          },
+          { once: true },
+        );
       }
 
       function load() {
@@ -2099,7 +2136,7 @@
             const status = getStatus(course);
             const card = document.createElement("div");
             card.className = `course-card ${status}${highlighted === course.id ? " highlighted" : ""}`;
-      card.dataset.id = course.id;
+            card.dataset.id = course.id;
 
             const prereqsHtml = course.prereqs
               .map((p) => {

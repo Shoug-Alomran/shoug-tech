@@ -11,23 +11,33 @@ const MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024;
 const FALLBACK_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
 async function verifyFirebaseBearer(request) {
-  const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
+  const token = (request.headers.get("authorization") || "").match(
+    /^Bearer\s+(.+)$/i,
+  );
   return token ? verifyIdToken(token[1]) : null;
 }
 
 // Signed-in uploads read by AI: the transcript and the EduGate class schedule.
 async function handleUpload(request, env, origin, json, extract) {
   const user = await verifyFirebaseBearer(request);
-  if (!user) return json({ error: "Sign in again to import your file." }, 401, origin);
+  if (!user)
+    return json({ error: "Sign in again to import your file." }, 401, origin);
   const limit = env.AI_RATE_LIMIT;
   if (limit) {
     const result = await limit.limit({ key: `upload:${user.uid}` });
-    if (!result.success) return json({ error: "Import limit reached. Try again in a minute." }, 429, origin);
+    if (!result.success)
+      return json(
+        { error: "Import limit reached. Try again in a minute." },
+        429,
+        origin,
+      );
   }
   const length = Number(request.headers.get("content-length") || 0);
-  if (length > MAX_TRANSCRIPT_BYTES + 64 * 1024) return json({ error: "File must be 5 MB or smaller." }, 413, origin);
+  if (length > MAX_TRANSCRIPT_BYTES + 64 * 1024)
+    return json({ error: "File must be 5 MB or smaller." }, 413, origin);
   // Enforce the cap even when the caller omits Content-Length.
-  if (!request.body) return json({ error: "Choose a file to import." }, 400, origin);
+  if (!request.body)
+    return json({ error: "Choose a file to import." }, 400, origin);
   const reader = request.body.getReader();
   const chunks = [];
   let total = 0;
@@ -43,15 +53,38 @@ async function handleUpload(request, env, origin, json, extract) {
   }
   const body = new Uint8Array(total);
   let offset = 0;
-  chunks.forEach((chunk) => { body.set(chunk, offset); offset += chunk.byteLength; });
+  chunks.forEach((chunk) => {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  });
   let form;
-  try { form = await new Request(request.url, { method: "POST", headers: request.headers, body }).formData(); } catch { return json({ error: "Invalid upload request." }, 400, origin); }
+  try {
+    form = await new Request(request.url, {
+      method: "POST",
+      headers: request.headers,
+      body,
+    }).formData();
+  } catch {
+    return json({ error: "Invalid upload request." }, 400, origin);
+  }
   const file = form.get("file");
-  if (!(file instanceof File) || !file.size || file.size > MAX_TRANSCRIPT_BYTES) return json({ error: "Choose a PDF or image up to 5 MB." }, 400, origin);
-  const allowedType = ["application/pdf", "image/jpeg", "image/png", "image/webp"].includes(file.type);
-  if (!allowedType) return json({ error: "Supported types are PDF, JPG, PNG, and WebP." }, 415, origin);
+  if (!(file instanceof File) || !file.size || file.size > MAX_TRANSCRIPT_BYTES)
+    return json({ error: "Choose a PDF or image up to 5 MB." }, 400, origin);
+  const allowedType = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ].includes(file.type);
+  if (!allowedType)
+    return json(
+      { error: "Supported types are PDF, JPG, PNG, and WebP." },
+      415,
+      origin,
+    );
   const result = await extract(env, file);
-  if (result.error) return json({ error: result.error }, result.status || 422, origin);
+  if (result.error)
+    return json({ error: result.error }, result.status || 422, origin);
   return json({ ...result, reviewRequired: true }, 200, origin);
 }
 
@@ -856,7 +889,9 @@ export default {
     const isCalendar = url.pathname === "/v1/calendar-assistant";
     const isTranslation = url.pathname === "/v1/breakdown-translation";
     const isAbout = url.pathname === "/v1/about-assistant";
-    const isTranscript = url.pathname === "/v1/transcript-import" || url.pathname === "/v1/schedule-import";
+    const isTranscript =
+      url.pathname === "/v1/transcript-import" ||
+      url.pathname === "/v1/schedule-import";
     if (
       url.pathname !== "/v1/slide-assistant" &&
       !isCalendar &&
@@ -866,7 +901,16 @@ export default {
     )
       return json({ error: "Not found." }, 404, origin);
     const length = Number(request.headers.get("content-length") || 0);
-    if (length > (isTranscript ? MAX_TRANSCRIPT_BYTES + 64 * 1024 : isCalendar ? 60000 : isTranslation ? 18000 : 12000))
+    if (
+      length >
+      (isTranscript
+        ? MAX_TRANSCRIPT_BYTES + 64 * 1024
+        : isCalendar
+          ? 60000
+          : isTranslation
+            ? 18000
+            : 12000)
+    )
       return json({ error: "Request is too large." }, 413, origin);
     try {
       if (isTranslation)
@@ -883,7 +927,15 @@ export default {
       if (isAbout)
         return await handleAbout(request, env, origin, json, runTextGeneration);
       if (isTranscript)
-        return await handleUpload(request, env, origin, json, url.pathname === "/v1/schedule-import" ? extractSchedule : extractTranscript);
+        return await handleUpload(
+          request,
+          env,
+          origin,
+          json,
+          url.pathname === "/v1/schedule-import"
+            ? extractSchedule
+            : extractTranscript,
+        );
       return isCalendar
         ? await handleCalendar(request, env, origin)
         : await handle(request, env, origin);

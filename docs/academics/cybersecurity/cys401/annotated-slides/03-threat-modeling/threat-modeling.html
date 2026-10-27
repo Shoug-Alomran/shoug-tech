@@ -1,0 +1,1983 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CYS401 · Annotated Slides · Chapter 3 — Threat Modeling</title>
+    <meta
+      name="description"
+      content="CYS401 Chapter 3 — Threat Modeling annotated slides: rebuilt slides with notes, memory tricks, cross-references and likely exam questions."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/cybersecurity/cys401/annotated-slides/03-threat-modeling/"
+    />
+    <meta name="robots" content="noindex, follow" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <script>
+      try {
+        var t = localStorage.getItem("shoug-theme");
+        document.documentElement.setAttribute(
+          "data-theme",
+          t === "dark" || t === "light"
+            ? t
+            : matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark",
+        );
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/annotated-slides.css" />
+  </head>
+  <body class="mode-scroll">
+    <header class="as-top">
+      <div class="as-wrap">
+        <div class="as-brand">
+          <small>CYS401 · Annotated Slides</small
+          ><strong>Chapter 3 — Threat Modeling</strong>
+        </div>
+        <div class="as-controls">
+          <div class="seg" role="group" aria-label="View mode">
+            <button
+              type="button"
+              data-group="mode"
+              data-value="scroll"
+              aria-pressed="true"
+            >
+              Scroll</button
+            ><button
+              type="button"
+              data-group="mode"
+              data-value="flip"
+              aria-pressed="false"
+            >
+              Flip
+            </button>
+          </div>
+          <div class="seg" role="group" aria-label="Which slides">
+            <button
+              type="button"
+              data-group="filter"
+              data-value="all"
+              aria-pressed="true"
+            >
+              All</button
+            ><button
+              type="button"
+              data-group="filter"
+              data-value="past"
+              aria-pressed="false"
+            >
+              ★ Exam slides
+            </button>
+          </div>
+          <button
+            type="button"
+            class="chip-btn"
+            id="as-ann"
+            aria-pressed="true"
+          >
+            ✎ Notes on
+          </button>
+          <button type="button" class="chip-btn" id="as-theme">☾ Dark</button>
+          <select class="as-jump" id="as-jump" aria-label="Jump to slide">
+            <option value="s-1">
+              1 · Understand and Apply Threat Modeling
+            </option>
+            <option value="s-2">2 · Learning Outcomes</option>
+            <option value="s-3">3 · What Is Threat Modeling?</option>
+            <option value="s-4">4 · DICTIONARY</option>
+            <option value="s-5">5 ·</option>
+            <option value="s-6">6 ·</option>
+            <option value="s-7">7 ·</option>
+            <option value="s-8">8 · DICTIONARY</option>
+            <option value="s-9">9 · RISK ELEMENTS</option>
+            <option value="s-10">
+              10 · When Is Threat Modeling Performed?
+            </option>
+            <option value="s-11">
+              11 · When Is Threat Modeling Performed?
+            </option>
+            <option value="s-12">
+              12 · IDENTIFYING THREATS Key Approaches
+            </option>
+            <option value="s-13">13 ·</option>
+            <option value="s-14">
+              14 · IDENTIFYING THREATS Key Approaches
+            </option>
+            <option value="s-15">
+              15 · Other Approaches in Modern Threat Modeling
+            </option>
+            <option value="s-16">
+              16 · Other Approaches in Modern Threat Modeling
+            </option>
+            <option value="s-17">
+              17 · Other Approaches in Modern Threat Modeling
+            </option>
+            <option value="s-18">
+              18 · Other Approaches in Modern Threat Modeling
+            </option>
+            <option value="s-19">19 · Example:</option>
+            <option value="s-20">20 · IDENTIFYING THREATS</option>
+            <option value="s-21">21 · Threat Models</option>
+            <option value="s-22">22 · STRIDE THREAT MODEL</option>
+            <option value="s-23">23 · STRIDE THREAT MODEL – CONT.</option>
+            <option value="s-24">24 · STRIDE</option>
+            <option value="s-25">
+              25 · STRIDE Example 1: a Web Application
+            </option>
+            <option value="s-26">26 · STRIDE Example 2: a mobile app</option>
+            <option value="s-27">27 · STRIDE THREAT MODEL EXAMPLE 3</option>
+            <option value="s-28">
+              28 · Threat Modeling in the Supply Chain
+            </option>
+            <option value="s-29">
+              29 · APPLY CYS CONCEPTS TO THE SUPPLY CHAIN
+            </option>
+            <option value="s-30">
+              30 · APPLY CYS CONCEPTS TO THE SUPPLY CHAIN
+            </option>
+            <option value="s-31">
+              31 · APPLY CYS CONCEPTS TO THE SUPPLY CHAIN
+            </option>
+            <option value="s-32">
+              32 · APPLY CYS CONCEPTS TO THE SUPPLY CHAIN
+            </option>
+            <option value="s-33">33 · Thank you</option>
+          </select>
+        </div>
+      </div>
+    </header>
+    <div class="as-wrap">
+      <section class="as-intro">
+        <div class="kicker">Chapter 3 · Annotated slides</div>
+        <h1>Threat Modeling</h1>
+        <p>
+          Threat-modelling vocabulary (asset, threat, vulnerability, exposure,
+          risk, control), proactive vs. reactive modelling, the ways to identify
+          threats, the threat models (STRIDE, PASTA…), STRIDE with worked
+          examples, and supply-chain security. A STRIDE table was a full
+          question on Majors A, B and C.
+        </p>
+
+        <ul class="as-stats">
+          <li><b>33</b> slides</li>
+          <li><b>3</b> asked in real exams</li>
+          <li><b>0</b> related to real exam questions</li>
+          <li><b>8</b> practice questions</li>
+        </ul>
+        <div class="legend" aria-label="Ink key">
+          <span><i class="lg-ink"></i>Slide text</span>
+          <span><i class="lg-red"></i>Study notes</span>
+          <span><i class="lg-hl"></i>Highlight: key words</span>
+          <span><i class="lg-tip"></i>Tips, tricks &amp; traps</span>
+          <span><i class="lg-seen"></i>Seen again elsewhere</span>
+          <span><i class="lg-exam"></i>How it can come up</span>
+        </div>
+      </section>
+      <main class="as-deck" id="main">
+        <article
+          class="sheet no-margin"
+          id="s-1"
+          data-n="1"
+          data-past="0"
+          aria-label="Slide 1: Understand and Apply Threat Modeling"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide title">
+                <div class="slide-inner">
+                  <h2>Understand and Apply Threat Modeling</h2>
+                  <div class="tsub">CYS401 · Lecture 3</div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="stickies">
+              <div class="sticky tip">
+                <b>Tip</b>STRIDE → property violated: Spoofing → authentication
+                · Tampering → integrity · Repudiation → non-repudiation ·
+                Information disclosure → confidentiality · Denial of service →
+                availability · Elevation of privilege → authorization.
+              </div>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-2"
+          data-n="2"
+          data-past="0"
+          aria-label="Slide 2: Learning Outcomes"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2>Learning Outcomes</h2></div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ul>
+                        <li>
+                          By the end of this chapter, students will be able to:
+                          <ul>
+                            <li>Define core threat modeling terminology</li>
+                            <li>
+                              Explain proactive vs reactive threat modeling
+                            </li>
+                            <li>Apply STRIDE to identify threats</li>
+                            <li>
+                              Understand threat modeling in modern systems
+                              (cloud, AI, supply chain)
+                            </li>
+                            <li>
+                              Relate threat modeling to risk management and
+                              governance
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 2">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Terminology → proactive vs. reactive → identifying threats →
+                  STRIDE → supply chain.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-3"
+          data-n="3"
+          data-past="0"
+          aria-label="Slide 3: What Is Threat Modeling?"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-03.jpg"
+                  alt="Slide 3: What Is Threat Modeling?"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 3">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Threat modelling: a structured process to identify assets,
+                  find threats, analyse how they could be exploited, and decide
+                  mitigations.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-4"
+          data-n="4"
+          data-past="0"
+          aria-label="Slide 4: DICTIONARY"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-04.jpg"
+                  alt="Slide 4: DICTIONARY"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 4">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>Asset</strong>: anything of value to the organization.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-5"
+          data-n="5"
+          data-past="0"
+          aria-label="Slide 5: "
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2></h2></div>
+                  <div class="slide-body"></div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">5</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 5">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>Threat</strong>: a potential occurrence that may cause
+                  harm.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-6"
+          data-n="6"
+          data-past="0"
+          aria-label="Slide 6: "
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2></h2></div>
+                  <div class="slide-body"></div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">6</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 6">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>Vulnerability</strong>: a weakness.
+                  <strong>Exposure</strong>: being open to asset loss through a
+                  threat.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-7"
+          data-n="7"
+          data-past="0"
+          aria-label="Slide 7: "
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2></h2></div>
+                  <div class="slide-body"></div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">7</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 7">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>Risk</strong>: likelihood that a threat exploits a
+                  vulnerability.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-8"
+          data-n="8"
+          data-past="1"
+          aria-label="Slide 8: DICTIONARY"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <div class="stamp">★ Past exam</div>
+                <img
+                  src="figures/slide-08.jpg"
+                  alt="Slide 8: DICTIONARY"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 8">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●○</span> Medium
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>Control/countermeasure/safeguard</strong>: any action
+                  that prevents the exploit or minimizes its damage.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="past">
+              <p class="row-label">Asked in a real exam</p>
+              <div class="links">
+                <a
+                  class="dir"
+                  href="/academics/cybersecurity/cys401/exams/14-major-exam-a-term-unknown/"
+                  target="_top"
+                  >★ Major A · identify assets, threats, vulnerabilities,
+                  controls</a
+                >
+              </div>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-9"
+          data-n="9"
+          data-past="0"
+          aria-label="Slide 9: RISK ELEMENTS"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2>RISK ELEMENTS</h2></div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ul>
+                        <li>
+                          A risk is the possibility or likelihood that a threat
+                          will exploit a vulnerability resulting in a loss such
+                          as harm to an asset.
+                        </li>
+                        <li>
+                          <strong>Risk management</strong> attempts to reduce or
+                          eliminate vulnerabilities or reduce the impact of
+                          potential threats by implementing controls or
+                          countermeasures.
+                        </li>
+                        <li>
+                          Risk elements are:
+                          <ul>
+                            <li>Threat</li>
+                            <li>Vulnerability</li>
+                            <li>Asset</li>
+                            <li>Damage</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">9</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 9">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">
+                  Risk management reduces vulnerabilities or threat impact with
+                  controls. Risk elements: assets, threats, vulnerabilities,
+                  exposure, risk, safeguards, attack, breach.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 1 question</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>
+                    The likelihood that a threat will exploit a vulnerability
+                    and cause loss is:
+                  </p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="0">
+                      Asset value</button
+                    ><button type="button" class="opt" data-right="0">
+                      Exposure</button
+                    ><button type="button" class="opt" data-right="0">
+                      Control</button
+                    ><button type="button" class="opt" data-right="1">
+                      Risk
+                    </button>
+                  </div>
+                  <p class="why" hidden>Correct: Risk.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-10"
+          data-n="10"
+          data-past="0"
+          aria-label="Slide 10: When Is Threat Modeling Performed?"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>When Is Threat Modeling Performed?</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ul>
+                        <li>
+                          Threat modeling can be performed as:
+                          <ul>
+                            <li>
+                              Proactively
+                              <ul>
+                                <li>During system design and development</li>
+                                <li>So, Security is built in from the start</li>
+                              </ul>
+                            </li>
+                            <li>
+                              Reactively
+                              <ul>
+                                <li>After deployment or after incidents</li>
+                                <li>Based on observed attacks or failures</li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">10</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 10">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Threat modelling can be proactive (during design and
+                  development) or reactive (after deployment).
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-11"
+          data-n="11"
+          data-past="0"
+          aria-label="Slide 11: When Is Threat Modeling Performed?"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-11.jpg"
+                  alt="Slide 11: When Is Threat Modeling Performed?"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 11">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">
+                  Proactive = defensive approach: predict threats and design
+                  defences in. Reactive = adversarial approach: after
+                  deployment, e.g., penetration testing, fuzzing.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="stickies">
+              <div class="sticky trick">
+                <b>Memory trick</b>Proactive = Prevent in design. Reactive =
+                React after release.
+              </div>
+            </div>
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 1 question</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type tf">True / False</span>
+                  <p>
+                    Penetration testing an already deployed system is a
+                    proactive threat modelling approach.
+                  </p>
+                  <div class="opts tf-opts">
+                    <button type="button" class="opt" data-right="0">
+                      True</button
+                    ><button type="button" class="opt" data-right="1">
+                      False
+                    </button>
+                  </div>
+                  <p class="why" hidden>False. It is reactive (adversarial).</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-12"
+          data-n="12"
+          data-past="0"
+          aria-label="Slide 12: IDENTIFYING THREATS Key Approaches"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-12.jpg"
+                  alt="Slide 12: IDENTIFYING THREATS Key Approaches"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 12">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●○</span> Medium
+              </div>
+              <ol>
+                <li data-n="1">
+                  Identify threats by focusing on assets, on attackers, or on
+                  software.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 1 question</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>
+                    An organization that lists likely attackers and their goals
+                    is using which threat identification focus?
+                  </p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="0">
+                      Data-focused</button
+                    ><button type="button" class="opt" data-right="1">
+                      Attacker-focused</button
+                    ><button type="button" class="opt" data-right="0">
+                      Software-focused</button
+                    ><button type="button" class="opt" data-right="0">
+                      Asset-focused
+                    </button>
+                  </div>
+                  <p class="why" hidden>Correct: Attacker-focused.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-13"
+          data-n="13"
+          data-past="0"
+          aria-label="Slide 13: "
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head"><h2></h2></div>
+                  <div class="slide-body"></div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">13</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 13">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">Approaches, continued.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-14"
+          data-n="14"
+          data-past="0"
+          aria-label="Slide 14: IDENTIFYING THREATS Key Approaches"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-14.jpg"
+                  alt="Slide 14: IDENTIFYING THREATS Key Approaches"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 14">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">Approaches illustrated.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-15"
+          data-n="15"
+          data-past="0"
+          aria-label="Slide 15: Other Approaches in Modern Threat Modeling"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>Other Approaches in Modern Threat Modeling</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ol>
+                        <li>
+                          System / Architecture-Focused
+                          <ul>
+                            <li>
+                              Focuses on system components, their interactions,
+                              and trust boundaries.
+                            </li>
+                            <li>
+                              Looks at how threats exploit structural
+                              weaknesses, not just assets or software bugs.
+                            </li>
+                            <li>
+                              Why it matters:
+                              <ul>
+                                <li>
+                                  Modern systems are distributed (microservices,
+                                  APIs, cloud services).
+                                </li>
+                                <li>
+                                  An attack on a weakly protected service can
+                                  compromise the entire system.
+                                </li>
+                              </ul>
+                            </li>
+                            <li>
+                              Examples:
+                              <ul>
+                                <li>
+                                  Exposed internal APIs in a cloud app allow
+                                  data exfiltration.
+                                </li>
+                                <li>
+                                  Misconfigured firewall rules between
+                                  containers lead to lateral movement.
+                                </li>
+                                <li>
+                                  IoT network segmentation not enforced,
+                                  allowing attacker access to critical devices.
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">15</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 15">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Modern: system/architecture-focused (components, interactions,
+                  trust boundaries).
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-16"
+          data-n="16"
+          data-past="0"
+          aria-label="Slide 16: Other Approaches in Modern Threat Modeling"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>Other Approaches in Modern Threat Modeling</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ol>
+                        <li>
+                          Data-Focused
+                          <ul>
+                            <li>
+                              Focuses on <strong>sensitive data</strong>, how it
+                              is stored, transmitted, or processed.
+                            </li>
+                            <li>
+                              Data breaches are the
+                              <strong>most common impact</strong> of modern
+                              cyber incidents.
+                            </li>
+                            <li>
+                              Protecting assets alone doesn t guarantee data
+                              security. ’
+                            </li>
+                            <li>
+                              Examples:
+                              <ul>
+                                <li>
+                                  Customer personal data stored unencrypted in a
+                                  cloud database.
+                                </li>
+                                <li>
+                                  Logs containing PII sent over unsecured
+                                  channels.
+                                </li>
+                                <li>
+                                  GDPR-regulated data processed by third-party
+                                  SaaS without proper consent.
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">16</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 16">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Data-focused: sensitive data at rest, in transit, in use.
+                  Breaches are the most common impact.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-17"
+          data-n="17"
+          data-past="0"
+          aria-label="Slide 17: Other Approaches in Modern Threat Modeling"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>Other Approaches in Modern Threat Modeling</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ol>
+                        <li>
+                          Supply Chain / Third-Party Focused
+                          <ul>
+                            <li>
+                              Focuses on vendors, libraries, APIs, and other
+                              external dependencies.
+                            </li>
+                            <li>
+                              Attackers increasingly exploit
+                              <strong
+                                >weak links outside the organization</strong
+                              >.
+                            </li>
+                            <li>
+                              Modern software relies on third-party packages or
+                              services.
+                            </li>
+                            <li>
+                              Examples:
+                              <ul>
+                                <li>
+                                  Compromised third-party software update used
+                                  in corporate software.
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">17</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 17">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Supply chain / third-party focused: vendors, libraries, APIs.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-18"
+          data-n="18"
+          data-past="0"
+          aria-label="Slide 18: Other Approaches in Modern Threat Modeling"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>Other Approaches in Modern Threat Modeling</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <ol>
+                        <li>
+                          Environment / Deployment-Focused
+                          <ul>
+                            <li>
+                              Looks at the environment where the system runs:
+                              cloud, on-prem, hybrid, containerized.
+                            </li>
+                            <li>
+                              Includes configuration management, patching, and
+                              deployment pipelines.
+                            </li>
+                            <li>
+                              Misconfigurations are a top attack vector in
+                              modern systems.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          Emerging Technology Focus
+                          <ul>
+                            <li>
+                              <strong>AI-Powered Systems:</strong> Automated
+                              decision-making (Agentic-AI) can be exploited.
+                            </li>
+                            <li>
+                              <strong>IoT / OT Systems:</strong> Sensors,
+                              actuators, or industrial control systems can be
+                              attacked physically or digitally.
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">18</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 18">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Environment/deployment-focused: cloud, on-prem, configuration,
+                  patching, CI/CD pipelines.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-19"
+          data-n="19"
+          data-past="0"
+          aria-label="Slide 19: Example:"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-19.jpg"
+                  alt="Slide 19: Example:"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 19">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Example: a university learning platform: assignments, quizzes,
+                  grades.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-20"
+          data-n="20"
+          data-past="0"
+          aria-label="Slide 20: IDENTIFYING THREATS"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-20.jpg"
+                  alt="Slide 20: IDENTIFYING THREATS"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 20">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Three steps: identify technologies (diagram the system),
+                  identify attacks against each element, determine reduction
+                  (mitigation) analysis.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-21"
+          data-n="21"
+          data-past="1"
+          aria-label="Slide 21: Threat Models"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <div class="stamp">★ Past exam</div>
+                <img
+                  src="figures/slide-21.jpg"
+                  alt="Slide 21: Threat Models"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 21">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">
+                  Threat models: STRIDE, PASTA, VAST, Trike, DREAD…
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="past">
+              <p class="row-label">Asked in a real exam</p>
+              <div class="links">
+                <a
+                  class="dir"
+                  href="/academics/cybersecurity/cys401/exams/11-final-exam-221-version-b/"
+                  target="_top"
+                  >★ Final 221 · B · MCQ · PASTA is a risk-centric
+                  methodology</a
+                >
+              </div>
+            </div>
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 1 question</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>
+                    PASTA aims at selecting countermeasures in relation to the
+                    value of the assets. It is a ___ methodology.
+                  </p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="1">
+                      Risk-centric</button
+                    ><button type="button" class="opt" data-right="0">
+                      Hardware-centric</button
+                    ><button type="button" class="opt" data-right="0">
+                      Attacker-centric only</button
+                    ><button type="button" class="opt" data-right="0">
+                      Application-centric
+                    </button>
+                  </div>
+                  <p class="why" hidden>Final 221 B.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-22"
+          data-n="22"
+          data-past="0"
+          aria-label="Slide 22: STRIDE THREAT MODEL"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-22.jpg"
+                  alt="Slide 22: STRIDE THREAT MODEL"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 22">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">
+                  <strong>STRIDE</strong> (Microsoft) classifies threats into
+                  six categories.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="stickies">
+              <div class="sticky tip">
+                <b>Tip</b>STRIDE → property violated: Spoofing → authentication
+                · Tampering → integrity · Repudiation → non-repudiation ·
+                Information disclosure → confidentiality · Denial of service →
+                availability · Elevation of privilege → authorization.
+              </div>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-23"
+          data-n="23"
+          data-past="1"
+          aria-label="Slide 23: STRIDE THREAT MODEL – CONT."
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="stamp">★ Past exam</div>
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>STRIDE THREAT MODEL – CONT.</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <p>
+                        <strong>Spoofing</strong>: gaining access through
+                        falsified identity
+                      </p>
+                      <p><strong>1.</strong></p>
+                      <p>
+                        <strong>Tampering</strong>: unauthorized changes or
+                        manipulation of data
+                      </p>
+                      <p><strong>2. 3.</strong></p>
+                      <p>
+                        <strong>Repudiation</strong>: Ability to deny having
+                        performed an action/activity
+                      </p>
+                      <p><strong>4.</strong></p>
+                      <p>
+                        <strong>Information disclosure</strong>: Revelation or
+                        distribution of private, confidential, or controlled
+                        information to unauthorized entities
+                        <strong>Denial of service (DoS):</strong> Prevent
+                        authorized use of a resource.
+                      </p>
+                      <p><strong>5.</strong></p>
+                      <p>
+                        This can be done through connection overloading or
+                        traffic flooding
+                      </p>
+                      <p><strong>6.</strong></p>
+                      <p>
+                        <strong>Elevation of privilege:</strong> A limited user
+                        account is transformed into an account with greater
+                        privileges, powers, and access.
+                      </p>
+                      <p>
+                        Although STRIDE is typically used to focus on
+                        application threats, it is applicable to other
+                        situations, such as network threats Other attacks may be
+                        more specific to network, such as sniffing.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">23</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 23">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">
+                  Spoofing (falsified identity), Tampering (unauthorised
+                  change), Repudiation (denying an action), Information
+                  disclosure, Denial of service, Elevation of privilege.
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="past">
+              <p class="row-label">Asked in a real exam</p>
+              <div class="links">
+                <a
+                  class="dir"
+                  href="/academics/cybersecurity/cys401/exams/14-major-exam-a-term-unknown/"
+                  target="_top"
+                  >★ Major A · STRIDE table · threats, examples, categories</a
+                ><a
+                  class="dir"
+                  href="/academics/cybersecurity/cys401/exams/15-major-exam-b-term-unknown/"
+                  target="_top"
+                  >★ Major B · STRIDE table · properties and categories</a
+                ><a
+                  class="dir"
+                  href="/academics/cybersecurity/cys401/exams/16-major-exam-c-term-unknown/"
+                  target="_top"
+                  >★ Major C · STRIDE table · threats, properties, controls</a
+                >
+              </div>
+            </div>
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 3 questions</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>
+                    A customer denies making a transfer and there are no logs to
+                    prove otherwise. STRIDE category?
+                  </p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="0">
+                      Tampering</button
+                    ><button type="button" class="opt" data-right="1">
+                      Repudiation</button
+                    ><button type="button" class="opt" data-right="0">
+                      Spoofing</button
+                    ><button type="button" class="opt" data-right="0">
+                      Information disclosure
+                    </button>
+                  </div>
+                  <p class="why" hidden>Major A.</p>
+                </div>
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>Which property does Spoofing violate?</p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="0">
+                      Integrity</button
+                    ><button type="button" class="opt" data-right="1">
+                      Authentication</button
+                    ><button type="button" class="opt" data-right="0">
+                      Availability</button
+                    ><button type="button" class="opt" data-right="0">
+                      Authorization
+                    </button>
+                  </div>
+                  <p class="why" hidden>Major C.</p>
+                </div>
+                <div class="q">
+                  <span class="q-type mcq">MCQ</span>
+                  <p>Elevation of privilege violates:</p>
+                  <div class="opts">
+                    <button type="button" class="opt" data-right="0">
+                      Availability</button
+                    ><button type="button" class="opt" data-right="0">
+                      Non-repudiation</button
+                    ><button type="button" class="opt" data-right="1">
+                      Authorization</button
+                    ><button type="button" class="opt" data-right="0">
+                      Confidentiality
+                    </button>
+                  </div>
+                  <p class="why" hidden>Correct: Authorization.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-24"
+          data-n="24"
+          data-past="0"
+          aria-label="Slide 24: STRIDE"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-24.jpg"
+                  alt="Slide 24: STRIDE"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 24">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight
+                <span class="dots" aria-hidden="true">●●●</span> High
+              </div>
+              <ol>
+                <li data-n="1">Table: threat, property, example.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="extras">
+            <div class="stickies">
+              <div class="sticky tip">
+                <b>Tip</b>STRIDE → property violated: Spoofing → authentication
+                · Tampering → integrity · Repudiation → non-repudiation ·
+                Information disclosure → confidentiality · Denial of service →
+                availability · Elevation of privilege → authorization.
+              </div>
+            </div>
+            <details class="radar" open>
+              <summary>🎯 How this can come up · 1 question</summary>
+              <div class="radar-items">
+                <div class="q">
+                  <span class="q-type short">Written</span>
+                  <p>
+                    For a mobile banking app, give one STRIDE threat example,
+                    its violated property and a mitigation for Spoofing,
+                    Tampering and Denial of service. (Major C)
+                  </p>
+                  <button type="button" class="reveal" aria-expanded="false">
+                    Show model answer
+                  </button>
+                  <p class="why" hidden>
+                    Spoofing: an attacker logs in with stolen credentials →
+                    authentication → enforce MFA, strong passwords, account
+                    lockout. Tampering: a man in the middle changes the amount
+                    of a transfer → integrity → TLS for all API traffic,
+                    sign/HMAC requests. Denial of service: flooding the
+                    transaction API → availability → rate limiting, WAF rules,
+                    DDoS protection, load balancing.
+                  </p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-25"
+          data-n="25"
+          data-past="0"
+          aria-label="Slide 25: STRIDE Example 1: a Web Application"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-25.jpg"
+                  alt="Slide 25: STRIDE Example 1: a Web Application"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 25">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">STRIDE example 1: a web application.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-26"
+          data-n="26"
+          data-past="0"
+          aria-label="Slide 26: STRIDE Example 2: a mobile app"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-26.jpg"
+                  alt="Slide 26: STRIDE Example 2: a mobile app"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 26">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  STRIDE example 2: an online banking app (transfers, balances,
+                  account updates).
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-27"
+          data-n="27"
+          data-past="0"
+          aria-label="Slide 27: STRIDE THREAT MODEL EXAMPLE 3"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-27.jpg"
+                  alt="Slide 27: STRIDE THREAT MODEL EXAMPLE 3"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 27">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">STRIDE example 3.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-28"
+          data-n="28"
+          data-past="0"
+          aria-label="Slide 28: Threat Modeling in the Supply Chain"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-28.jpg"
+                  alt="Slide 28: Threat Modeling in the Supply Chain"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 28">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">Threat modelling in the supply chain.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-29"
+          data-n="29"
+          data-past="0"
+          aria-label="Slide 29: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-29.jpg"
+                  alt="Slide 29: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 29">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  A supply chain is the network between a company and its
+                  suppliers that produces and distributes a product.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-30"
+          data-n="30"
+          data-past="0"
+          aria-label="Slide 30: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>APPLY CYS CONCEPTS TO THE SUPPLY CHAIN</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <p><strong>A</strong></p>
+                      <ul>
+                        <li>
+                          <strong>SECURE SUPPLY CHAIN</strong> is one in which
+                          all of the vendors or links in the chain are reliable,
+                          trustworthy, reputable organizations that disclose
+                          their practices and security requirements to their
+                          business partners.
+                        </li>
+                        <li>
+                          The goal of a secure supply chain is:
+                          <ul>
+                            <li>
+                              to ensure that the finished product is of
+                              sufficient quality, meets performance and
+                              operational goals, and provides stated security
+                              mechanisms, and
+                            </li>
+                            <li>
+                              that at no point in the process was any element
+                              counterfeited or subjected to unauthorized or
+                              malicious manipulation or sabotage.
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 30">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  A secure supply chain: reliable, trustworthy, transparent
+                  vendors.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-31"
+          data-n="31"
+          data-past="0"
+          aria-label="Slide 31: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-31.jpg"
+                  alt="Slide 31: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 31">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Security assessments must cover external entities too.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-32"
+          data-n="32"
+          data-past="0"
+          aria-label="Slide 32: APPLY CYS CONCEPTS TO THE SUPPLY CHAIN"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide content">
+                <div class="slide-inner">
+                  <div class="slide-head">
+                    <h2>APPLY CYS CONCEPTS TO THE SUPPLY CHAIN</h2>
+                  </div>
+                  <div class="slide-body">
+                    <div class="slide-text">
+                      <p>
+                        <strong
+                          >CYS team should inspect the connected systems
+                          throughout:</strong
+                        >
+                      </p>
+                      <ul>
+                        <li>
+                          <strong>On-Site Assessment</strong> Visit the site of
+                          the organization to interview personnel and observe
+                          their operating habits.
+                        </li>
+                        <li>
+                          <strong>Document Exchange and Review</strong>
+                          Investigate the means by which datasets and
+                          documentation are exchanged as well as the formal
+                          processes by which they perform assessments and
+                          reviews.
+                        </li>
+                        <li>
+                          <strong>Process/Policy Review</strong> Request copies
+                          of their security policies, processes/procedures, and
+                          documentation of incidents and responses for review.
+                        </li>
+                        <li>
+                          <strong>Third-Party Audit</strong> Having an
+                          independent third-party auditor
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="slide-foot">
+                    <span class="bar"></span><span class="num">32</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 32">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">
+                  Inspect connected systems: on-site assessment, document
+                  exchange and review, process/policy review, third-party audit.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <article
+          class="sheet"
+          id="s-33"
+          data-n="33"
+          data-past="0"
+          aria-label="Slide 33: Thank you"
+        >
+          <div class="sheet-grid">
+            <div>
+              <div class="slide image">
+                <img
+                  src="figures/slide-33.jpg"
+                  alt="Slide 33: Thank you"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="margin" role="note" aria-label="Notes for slide 33">
+              <div
+                class="weight"
+                title="How likely this slide is to be examined"
+              >
+                Exam weight <span class="dots" aria-hidden="true">●○○</span> Low
+              </div>
+              <ol>
+                <li data-n="1">End of chapter.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+        <p class="empty-filter" id="as-empty" hidden>
+          No slides match this filter.
+        </p>
+      </main>
+      <footer class="as-foot">
+        Rebuilt slides from the CYS401 lecture slides, with study notes. Check
+        exact wording against the
+        <a
+          href="/academics/cybersecurity/cys401/slides/chapter-3-threat-modeling/"
+          target="_top"
+          >original deck</a
+        >. Made by Shoug Alomran.
+      </footer>
+    </div>
+    <nav class="flipbar" aria-label="Slide navigation">
+      <button type="button" id="flip-prev" aria-label="Previous slide">
+        ◀ Prev
+      </button>
+      <div class="flip-pos">
+        <span id="flip-text">Slide 1</span
+        ><span class="track"><span class="fill" id="flip-fill"></span></span>
+      </div>
+      <button type="button" id="flip-next" aria-label="Next slide">
+        Next ▶
+      </button>
+    </nav>
+    <script src="/javascripts/annotated-slides.js"></script>
+  </body>
+</html>
