@@ -170,6 +170,22 @@
         margin: 7px 0 13px;
         overflow-wrap: anywhere;
       }
+      .code-sample {
+        max-width: 100%;
+        overflow-x: auto;
+        margin: 12px 0;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--code);
+        font: 400 0.9rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: pre;
+      }
+      .code-sample code {
+        padding: 0;
+        background: transparent;
+        font: inherit;
+      }
       label {
         display: block;
         overflow-wrap: anywhere;
@@ -322,7 +338,7 @@
           <div class="eyebrow">SE322 · CHAPTER 5</div>
           <strong>Principles of Detailed Design — Chapter Quiz</strong>
         </div>
-        <div class="timer" id="timer">50:00</div>
+        <div class="timer" id="timer">60:00</div>
         <button class="theme" id="theme" aria-label="Toggle theme">☀</button>
       </div>
     </div>
@@ -336,14 +352,19 @@
           explanation or model answer.
         </p>
         <div class="meta">
-          <b>36 questions</b><span>30 MCQ + 6 short answer</span
-          ><span>42 points</span><span>50 minutes</span>
+          <b>48 questions</b><span>42 MCQ + 6 short answer</span
+          ><span>54 points</span><span>60 minutes</span>
         </div>
         <div class="progress"><i id="bar"></i></div>
       </header>
       <section>
         <h2>Multiple Choice — Concept Application</h2>
         <div id="mcq"></div>
+      </section>
+      <section>
+        <h2>Problem Solving &amp; Code — Multiple Choice</h2>
+        <p>Trace the code or diagnose the design before choosing. These are practice questions based on Chapter 5 topics, not predictions of the exact quiz questions.</p>
+        <div id="code-mcq"></div>
       </section>
       <section>
         <h2>Short Answer — Explain and Connect</h2>
@@ -683,6 +704,106 @@
             why: "Smells point at specific refactorings: long method \u2192 extract method, large class \u2192 extract class, feature envy \u2192 move method.",
           },
         ],
+        CODE_MCQ = [
+          {
+            q: `Trace the call. What value is printed?<pre class="code-sample"><code>interface Shape { int area(); }
+class Square implements Shape {
+  public int area() { return 5 * 5; }
+}
+Shape s = new Square();
+System.out.println(s.area());</code></pre>`,
+            options: ["5", "10", "25", "The interface method is called and has no result"],
+            correct: 2,
+            why: "The variable is typed as Shape, but it refers to a Square object. Dynamic dispatch calls Square.area(), which returns 25.",
+          },
+          {
+            q: `A client relies on width and height being independent. What is wrong with this result, and what is the soundest design fix?<pre class="code-sample"><code>Rectangle r = new Square();
+r.setWidth(5);
+r.setHeight(4);
+System.out.println(r.area()); // prints 16</code></pre>`,
+            options: ["No issue: 16 is the expected rectangle area", "Square breaks the Rectangle contract; use a common Shape abstraction instead of making Square a Rectangle", "The code violates SRP because it has two setters", "Add another setter to Rectangle"],
+            correct: 1,
+            why: "A caller expects independent dimensions and area 20. Square changes that behavior, so it is not safely substitutable for Rectangle (LSP). Model both as shapes with their own area behavior.",
+          },
+          {
+            q: `A single class changes whenever Finance changes pay rules, Operations changes hour reports, or a DBA changes persistence. Which refactoring best applies SRP?`,
+            options: ["Rename the class EmployeeManager", "Split pay calculation, hour reporting, and persistence into cohesive classes aligned with those change sources", "Move every method into a separate one-method class", "Make all methods static"],
+            correct: 1,
+            why: "SRP asks for one reason or actor to drive a module’s change. Keep related behavior together while separating the three independent change sources.",
+          },
+          {
+            q: `The next version must support a new shipping carrier without editing tested checkout logic. Which design is the best OCP fit?<pre class="code-sample"><code>if (carrier.equals("FAST")) ...
+else if (carrier.equals("POST")) ...</code></pre>`,
+            options: ["Add another else-if for every carrier", "Create a CarrierRate interface, implement it per carrier, and have checkout call the interface", "Put every carrier’s rules in a global utility class", "Use inheritance but keep the same growing type switch"],
+            correct: 1,
+            why: "A stable abstraction lets a new carrier be added as a new implementation while checkout remains closed to modification.",
+          },
+          {
+            q: `OrderService directly creates MySqlOrderRepository inside its constructor. Which change most directly applies DIP?`,
+            options: ["Make MySqlOrderRepository public", "Have OrderService depend on an OrderRepository abstraction and receive an implementation from outside", "Move the SQL into OrderService", "Add a second concrete repository field"],
+            correct: 1,
+            why: "High-level order policy should depend on an abstraction it owns; the database adapter implements that abstraction and can be injected for tests or production.",
+          },
+          {
+            q: `A BasicPrinter implements this interface but throws UnsupportedOperationException from scan(). What is the best fix?<pre class="code-sample"><code>interface Machine {
+  void print();
+  void scan();
+}</code></pre>`,
+            options: ["Keep the exception; every machine must implement every method", "Split the interface into capabilities such as Printable and Scannable, and implement only the needed one", "Make scan() return null", "Make BasicPrinter abstract"],
+            correct: 1,
+            why: "ISP keeps interfaces focused. A basic printer should not be forced to promise scanning behavior that it cannot provide.",
+          },
+          {
+            q: `What is printed by this loop?<pre class="code-sample"><code>Shape[] shapes = { new Circle(2), new Rectangle(3, 4) };
+int total = 0;
+for (Shape shape : shapes) {
+  total += shape.area();
+}
+System.out.println(total);</code></pre><small>Assume Circle.area() returns 3 × radius × radius.</small>`,
+            options: ["12", "20", "24", "The loop cannot call area() through Shape"],
+            correct: 2,
+            why: "Circle.area() is 12 and Rectangle.area() is 12. Each call dispatches to the object’s implementation, so the total is 24.",
+          },
+          {
+            q: `This getter lets callers clear the order’s internal items and bypass total recalculation. Which fix protects the object’s invariant?<pre class="code-sample"><code>List&lt;Item&gt; getItems() {
+  return items;
+}</code></pre>`,
+            options: ["Return the internal list and document that callers should not change it", "Return an unmodifiable copy or read-only view, and mutate items only through invariant-preserving methods", "Make items public final", "Recalculate the total only when the object is constructed"],
+            correct: 1,
+            why: "Encapsulation protects rules as well as fields. A defensive unmodifiable copy prevents external mutation from silently breaking the order total.",
+          },
+          {
+            q: `A NotificationService uses new EmailSender() directly. Later, tests need a fake sender and production may use SMS. What change makes this easier while following the design principles?`,
+            options: ["Add an if statement for test mode", "Define a MessageSender abstraction, depend on it, and inject EmailSender, SmsSender, or a fake", "Make EmailSender a superclass of NotificationService", "Copy NotificationService into a test-only class"],
+            correct: 1,
+            why: "Depending on an abstraction (DIP) and injecting the collaborator makes the implementation replaceable and the service testable.",
+          },
+          {
+            q: `The base method accepts any non-negative amount, but an override rejects zero. Which LSP rule does that violate?<pre class="code-sample"><code>// Base contract: amount &gt;= 0 is allowed
+void transfer(int amount) { ... }
+
+// Subtype override rejects amount == 0</code></pre>`,
+            options: ["A subtype strengthened the precondition", "A subtype weakened the postcondition", "The base class has too many methods", "The subtype added a harmless overload"],
+            correct: 0,
+            why: "The subtype accepts fewer inputs than the base contract promises. LSP says an override must not strengthen preconditions.",
+          },
+          {
+            q: `A class formats invoices, validates passwords, and parses CSV files. Which response best improves cohesion without over-splitting unrelated tiny methods?`,
+            options: ["Keep the class because each method is useful", "Group related behaviors into focused invoice, authentication, and CSV components", "Put all three methods in an interface", "Move all methods into the application’s main class"],
+            correct: 1,
+            why: "These responsibilities serve different purposes and change for different reasons. Focused components give each area stronger functional cohesion.",
+          },
+          {
+            q: `Which design lets a developer add a new payment type with the smallest change to stable code?<pre class="code-sample"><code>double pay(String type, double amount) {
+  if (type.equals("CARD")) ...
+  if (type.equals("WALLET")) ...
+  // new types require another branch
+}</code></pre>`,
+            options: ["Add more conditionals to pay()", "Define a PaymentMethod contract and add a class for each payment method", "Put the conditions in a static utility", "Use a boolean flag to select the payment type"],
+            correct: 1,
+            why: "A PaymentMethod abstraction moves variation into implementations; adding a payment method no longer requires changing the stable checkout algorithm (OCP).",
+          },
+        ],
         SHORT = [
           {
             q: "Distinguish aggregation from composition with an example.",
@@ -751,15 +872,19 @@
               "Composition can be reconfigured at run time and avoids the fragile base class problem; inheritance binds to the superclass implementation at compile time.",
           },
         ];
+      const ALL_MCQ = MCQ.concat(CODE_MCQ);
       const mc = document.getElementById("mcq"),
+        cm = document.getElementById("code-mcq"),
         sa = document.getElementById("short");
-      MCQ.forEach((x, i) =>
-        mc.insertAdjacentHTML(
+      function renderMCQ(items, target, offset) {
+        items.forEach((x, i) => {
+          const n = offset + i;
+          target.insertAdjacentHTML(
           "beforeend",
           '<article class="q" data-i="' +
-            i +
+            n +
             '"><span class="qnum">Q' +
-            (i + 1) +
+            (n + 1) +
             '</span><div class="prompt">' +
             x.q +
             "</div>" +
@@ -767,7 +892,7 @@
               .map(
                 (o, j) =>
                   '<label><input type="radio" name="m' +
-                  i +
+                  n +
                   '" value="' +
                   j +
                   '"> ' +
@@ -778,15 +903,18 @@
               )
               .join("") +
             '<div class="feedback" id="fm' +
-            i +
+            n +
             '"></div></article>',
-        ),
-      );
+          );
+        });
+      }
+      renderMCQ(MCQ, mc, 0);
+      renderMCQ(CODE_MCQ, cm, MCQ.length);
       SHORT.forEach((x, i) =>
         sa.insertAdjacentHTML(
           "beforeend",
           '<article class="q"><span class="qnum">Q' +
-            (MCQ.length + i + 1) +
+            (ALL_MCQ.length + i + 1) +
             '</span><div class="prompt">' +
             x.q +
             '</div><textarea id="s' +
@@ -803,10 +931,10 @@
             x.value.trim(),
           ).length;
         document.getElementById("bar").style.width =
-          (done / (MCQ.length + SHORT.length)) * 100 + "%";
+          (done / (ALL_MCQ.length + SHORT.length)) * 100 + "%";
       }
       document.addEventListener("input", update);
-      let left = 3000,
+      let left = 3600,
         t = setInterval(() => {
           left--;
           document.getElementById("timer").textContent =
@@ -821,7 +949,7 @@
       function grade() {
         clearInterval(t);
         let points = 0;
-        MCQ.forEach((x, i) => {
+        ALL_MCQ.forEach((x, i) => {
           const inputs = [
               ...document.querySelectorAll("input[name=m" + i + "]"),
             ],
@@ -867,7 +995,7 @@
             x.answer;
           area.disabled = true;
         });
-        const maxPoints = MCQ.length + SHORT.length * 2,
+        const maxPoints = ALL_MCQ.length + SHORT.length * 2,
           passed = points / maxPoints >= 0.6,
           score = document.getElementById("score");
         score.className = "score show " + (passed ? "pass" : "fail");
