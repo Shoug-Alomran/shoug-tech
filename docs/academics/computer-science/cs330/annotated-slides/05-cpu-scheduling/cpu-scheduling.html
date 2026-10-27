@@ -1,52 +1,615 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-sg-styled>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS330 · Annotated Slides · Chapter 5 — CPU Scheduling</title>
-<meta name="description" content="CS330 Chapter 5 — CPU Scheduling annotated slides: rebuilt slides with notes, memory tricks, cross-references and likely exam questions.">
+<title>CS330 · Chapter 5 · Annotated Slides</title>
+<meta name="description" content="CS330 Chapter 5 annotated slides: every original slide with numbered study notes linked to the highlighted words, past-exam links and practice questions.">
 <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs330/annotated-slides/05-cpu-scheduling/">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"))}catch(e){}</script>
+<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles/annotated-slides.css">
-</head>
-<body class="mode-scroll">
-<header class="as-top"><div class="as-wrap">
-<div class="as-brand"><small>CS330 · Annotated Slides</small><strong>Chapter 5 — CPU Scheduling</strong></div>
-<div class="as-controls">
-<div class="seg" role="group" aria-label="View mode"><button type="button" data-group="mode" data-value="scroll" aria-pressed="true">Scroll</button><button type="button" data-group="mode" data-value="flip" aria-pressed="false">Flip</button></div>
-<div class="seg" role="group" aria-label="Which slides"><button type="button" data-group="filter" data-value="all" aria-pressed="true">All</button><button type="button" data-group="filter" data-value="past" aria-pressed="false">★ Exam slides</button></div>
-<button type="button" class="chip-btn" id="as-ann" aria-pressed="true">✎ Notes on</button>
-<button type="button" class="chip-btn" id="as-theme">☾ Dark</button>
-<select class="as-jump" id="as-jump" aria-label="Jump to slide"><option value="s-1">1 · </option><option value="s-2">2 · Outline</option><option value="s-3">3 · Objectives</option><option value="s-4">4 · Basic Concepts</option><option value="s-5">5 · Histogram of CPU-burst Times</option><option value="s-6">6 · CPU Scheduler</option><option value="s-7">7 · Preemptive and Nonpreemptive Scheduling</option><option value="s-8">8 · Preemptive Scheduling and Race Conditions</option><option value="s-9">9 · Dispatcher</option><option value="s-10">10 · Scheduling Criteria</option><option value="s-11">11 · Scheduling Algorithm Optimization Criteria</option><option value="s-12">12 · First- Come, First-Served (FCFS) Scheduling</option><option value="s-13">13 · FCFS Scheduling (Cont.)</option><option value="s-14">14 · Shortest-Job-First (SJF) Scheduling</option><option value="s-15">15 · Example of SJF</option><option value="s-16">16 · Determining Length of Next CPU Burst</option><option value="s-17">17 · Prediction of the Length of the Next CPU Burst</option><option value="s-18">18 · Examples of Exponential Averaging</option><option value="s-19">19 · Shortest Remaining Time First Scheduling</option><option value="s-20">20 · Example of Shortest-remaining-time-first</option><option value="s-21">21 · Round Robin (RR)</option><option value="s-22">22 · Example of RR with Time Quantum = 4</option><option value="s-23">23 · Time Quantum and Context Switch Time</option><option value="s-24">24 · Turnaround Time Varies With The Time Quantum</option><option value="s-25">25 · Priority Scheduling</option><option value="s-26">26 · Example of Priority Scheduling</option><option value="s-27">27 · Priority Scheduling w/ Round-Robin</option><option value="s-28">28 · Multilevel Queue</option><option value="s-29">29 · Multilevel Queue</option><option value="s-30">30 · Multilevel Queue</option><option value="s-31">31 · Multilevel Feedback Queue</option><option value="s-32">32 · Example of Multilevel Feedback Queue</option><option value="s-33">33 · Thread Scheduling</option><option value="s-34">34 · Dispatch Latency</option><option value="s-35">35 · Priority-based Scheduling</option><option value="s-36">36 · Rate Monotonic Scheduling</option><option value="s-37">37 · Operating System Examples</option><option value="s-38">38 · Windows Priorities</option><option value="s-39">39 · Solaris</option><option value="s-40">40 · Solaris Scheduling</option><option value="s-41">41 · Solaris Scheduling (Cont.)</option><option value="s-42">42 · Algorithm Evaluation</option><option value="s-43">43 · Deterministic Evaluation</option><option value="s-44">44 · Queueing Models</option><option value="s-45">45 · </option></select>
-</div></div></header>
-<div class="as-wrap">
-<section class="as-intro">
-<div class="kicker">Chapter 5 · Annotated slides</div>
-<h1>CPU Scheduling</h1>
-<p>CPU–I/O burst cycle, preemptive vs. nonpreemptive scheduling, the dispatcher, scheduling criteria, FCFS, SJF and SRTF (with exponential averaging), Round Robin, priority, multilevel and multilevel feedback queues, thread and real-time scheduling, and algorithm evaluation.</p>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-<ul class="as-stats"><li><b>45</b> slides</li><li><b>0</b> asked in real exams</li><li><b>0</b> related to real exam questions</li><li><b>9</b> practice questions</li></ul>
-<div class="legend" aria-label="Ink key">
-<span><i class="lg-ink"></i>Slide text</span>
-<span><i class="lg-red"></i>Study notes</span>
-<span><i class="lg-hl"></i>Highlight: key words</span>
-<span><i class="lg-tip"></i>Tips, tricks &amp; traps</span>
-<span><i class="lg-seen"></i>Seen again elsewhere</span>
-<span><i class="lg-exam"></i>How it can come up</span>
-</div>
+<style>:root{--bg:#f6f5f2;--panel:#ffffff;--ink:#1d1d1f;--muted:#5b5b63;--line:#dedcd6;--accent:#2f5bb7;--accent-ink:#ffffff;
+--hl:rgba(255,206,0,.42);--hl-strong:rgba(255,170,0,.62);--hl-ring:#d99a00;--code:#f1f0ec;--past:#1d6b45;--past-bg:#e3f3ea;--pred:#6b5a1d;--pred-bg:#f6efd8;
+--trap:#a3361f;--trick:#5b3fa8;--radius:12px;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html[data-theme="dark"]{--bg:#121316;--panel:#1b1c20;--ink:#ecebe8;--muted:#a9a8b0;--line:#2e3036;--accent:#8fb0ff;--accent-ink:#0d1220;
+--code:#24262c;--past:#8fe0b4;--past-bg:#173326;--pred:#f0d58a;--pred-bg:#352d14;--trap:#ff9a85;--trick:#c6b2ff}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6}
+a{color:var(--accent)}
+code,pre{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code);padding:.08em .32em;border-radius:5px;overflow-wrap:anywhere}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px var(--gutter)}
+.brand{min-width:0}.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.brand strong{display:block;font-size:15px;line-height:1.3}
+.controls{display:flex;flex-wrap:wrap;gap:6px}
+button,.btn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none;line-height:1.3}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:hover,.btn:hover{border-color:var(--accent)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:root{--gutter:clamp(12px,3vw,40px)}
+main{padding:20px var(--gutter) 48px;display:grid;gap:22px;container-type:inline-size}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(14px,2vw,24px);scroll-margin-top:72px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+.card-head h3{margin:0;font-size:clamp(17px,1.6vw,21px);line-height:1.3;flex:1 1 240px;overflow-wrap:anywhere}
+.sn{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.sn span{color:var(--muted);font-weight:600}
+.row{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 26px;align-items:start}
+@container (min-width:1080px){.row{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}.row>.slide{position:sticky;top:76px}
+ .card.bare .row{grid-template-columns:minmax(0,1fr)}.card.bare .row>.slide{position:relative;top:auto;max-width:1100px;margin:0 auto}
+ .card.notes-hidden .row>.slide{position:relative;top:auto}}
+.slide{margin:0;position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;line-height:0}
+.slide img{display:block;width:100%;height:auto}
+.hl-layer{position:absolute;inset:0;width:100%;height:100%}
+.hl{fill:var(--hl);mix-blend-mode:multiply;cursor:pointer;transition:fill .15s}
+.hl.free{cursor:default}
+.hl.on{fill:var(--hl-strong);stroke:var(--hl-ring);stroke-width:.0015}
+body.no-hl .hl-layer{display:none}
+.notes{min-width:0}
+.notes h4,.exam h4{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.notes ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.notes li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;border-radius:10px;padding:6px;margin:-6px;transition:background .15s}
+.notes li.on,.notes li.flash{background:color-mix(in srgb,var(--hl) 45%,transparent)}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:700;background:var(--accent);color:var(--accent-ink);margin-top:1px}
+.kind{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-right:2px}
+.kind.trap{color:var(--trap)}.kind.trick{color:var(--trick)}.kind.tip,.kind.seen{color:var(--accent)}
+.body>p{margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.body>*+*{margin-top:8px}
+table.walk{width:100%;border-collapse:collapse;font-size:14px;line-height:1.45;table-layout:fixed}
+table.walk th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:4px 8px;border-bottom:1px solid var(--line)}
+table.walk th:first-child{width:46%}
+table.walk td{vertical-align:top;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.walk td.src code{display:block;background:none;padding:0;white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+table.walk tr:nth-child(odd) td.src{background:var(--code)}
+dl.reading{margin:0;display:grid;gap:8px;font-size:14.5px}
+dl.reading div{border-left:3px solid var(--line);padding:2px 0 2px 10px}
+dl.reading dt{font-weight:700;line-height:1.4}dl.reading dd{margin:2px 0 0;line-height:1.5}
+pre{margin:0;background:var(--code);border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.exam{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);display:grid;gap:10px}
+.notes>.exam:first-child{margin-top:0;padding-top:0;border-top:0}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.q header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.q p{margin:0;text-align:justify;hyphens:auto}
+.q.ptr p{text-align:left}
+.notes .q ol.opts{display:block;list-style:upper-alpha;margin:6px 0 0;padding-left:26px;font-size:15px}
+.notes .q ol.opts li{display:list-item;margin:0 0 2px;padding:0;border-radius:0}
+.qn{font-size:12px;font-weight:700;color:var(--muted)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;line-height:1.5}
+.tag a{color:inherit}
+.tag.past{background:var(--past-bg);color:var(--past)}.tag.predict{background:var(--pred-bg);color:var(--pred)}
+details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent);margin-top:8px}
+details[open] summary{margin-bottom:6px}
+.card.notes-hidden .notes{display:none}
+.card.notes-hidden .row{grid-template-columns:minmax(0,1fr)}
+.card.notes-hidden .slide{position:relative}
+.overview .lead{font-size:17px;margin:0 0 16px;text-align:justify;hyphens:auto}
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin-bottom:18px}
+.idea{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.idea h4{margin:0 0 4px;font-size:14.5px}.idea p{margin:0;font-size:14.5px}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px}
+.ov-grid h4{margin:6px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ov-grid p{margin:0 0 10px;text-align:justify;hyphens:auto}
+.secs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.secs li{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px}.secs a{white-space:nowrap}
+.secs a{font-weight:700;text-decoration:none}
+.key-hl{background:var(--hl);padding:0 .2em;border-radius:3px}
+.toc{margin-top:8px}.toc ol{columns:auto 260px;column-gap:28px;padding:0;list-style:none;margin:8px 0 0}
+.toc li{break-inside:avoid;padding:2px 0}.toc a{text-decoration:none;color:var(--ink)}.toc b{color:var(--accent);display:inline-block;min-width:2.2em}
+.ov-body[hidden]{display:none}
+footer.end{padding:0 var(--gutter) 40px;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;border-radius:0;margin:0}
+.seg button+button{border-left:1px solid var(--line)}
+body.flip main>.card{display:none}
+body.flip main>.card.current{display:block}
+body.flip main{padding-bottom:96px}
+body.flip footer.end{display:none}
+.flipbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;
+ background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;
+ padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.12);max-width:calc(100vw - 24px)}
+.flipbar[hidden]{display:none}
+.flipbar select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 10px;min-width:0;max-width:min(52vw,420px);text-overflow:ellipsis}
+.flipbar button:disabled{opacity:.45;cursor:default}
+@media (max-width:700px){.top{position:static}.brand small{display:none}.brand strong{font-size:14px}.top .wrap{padding:8px var(--gutter)}.controls{gap:5px}button,.btn{font-size:12px;padding:5px 10px}.slide{position:relative}.card{scroll-margin-top:8px}}
+@media (max-width:560px){body{font-size:15.5px}.overview .lead{text-align:left;font-size:16px}.secs li{grid-template-columns:1fr;gap:0}pre{white-space:pre-wrap;word-break:break-word;font-size:12px}
+table.walk thead{display:none}table.walk,table.walk tbody,table.walk tr,table.walk td{display:block;width:100%}table.walk td.src{border-bottom:0}}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ :root{--bg:#fff;--panel:#fff}
+ html,body{background:#fff;font-size:10.5pt;line-height:1.5}
+ .top,.note-toggle,.ov-toggle,.toc,.flipbar{display:none!important}
+ body.flip main>.card{display:block!important}
+ main{padding:0;gap:0;display:block}
+ .card{border:0;border-radius:0;padding:0 0 14pt;margin:0 0 14pt;border-bottom:1px solid var(--line)}
+ .card-head{break-after:avoid;margin-bottom:6pt}
+ .card.overview{break-after:page;border-bottom:0}
+ .exam{break-inside:avoid}
+ .exam h4,.notes>h4{break-after:avoid}
+ .notes li{margin:0;padding:0}
+ footer.end{padding:10pt 0 0}
+ .row{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+ .slide{position:relative!important;top:auto!important;break-inside:avoid}
+ .notes,.ov-body{display:block!important}
+ .notes li,.q,.idea,table.walk tr,pre,dl.reading dd{break-inside:avoid}
+ .hl-layer{display:block!important}
+ .hl,.key-hl,.num,.tag,code,pre,table.walk tr:nth-child(odd) td.src{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ details>*:not(summary){display:block}
+ details summary{display:none}
+ details>p::before{content:"Answer: ";font-weight:700}
+}
+</style>
+</head>
+<body data-key="cs330-05-cpu-scheduling">
+<header class="top"><div class="wrap">
+  <div class="brand"><small>CS330 · Chapter 5 · Annotated Slides</small><strong>CPU Scheduling</strong></div>
+  <div class="controls" role="group" aria-label="Page controls">
+    <div class="seg" role="group" aria-label="View mode"><button type="button" id="m-scroll" aria-pressed="true" title="All slides on one scrolling page">Scroll</button><button type="button" id="m-flip" aria-pressed="false" title="One slide at a time (arrow keys or swipe to turn)">Flip</button></div>
+    <button type="button" id="t-notes" aria-pressed="true" title="Show or hide all notes">Notes</button>
+    <button type="button" id="t-hl" aria-pressed="true" title="Show or hide the highlights on the slides">Highlights</button>
+    <button type="button" id="t-ans" aria-pressed="false" title="Show or hide every exam answer">Answers</button>
+    <a class="btn" href="/academics/computer-science/cs330/slides/chapter-5-cpu-scheduling/" target="_top">Original</a>
+    <button type="button" id="t-theme" title="Switch light or dark theme">Dark</button>
+  </div>
+</div></header>
+<main>
+
+<section class="card overview" id="overview">
+  <header class="card-head"><span class="sn">Overview</span><h3>CPU Scheduling</h3>
+    <button type="button" class="ov-toggle" aria-expanded="true" aria-controls="ov-body">Hide overview</button></header>
+  <div id="ov-body" class="ov-body">
+    <p class="lead">CPU–I/O burst cycle, preemptive vs. nonpreemptive scheduling, the dispatcher, scheduling criteria, FCFS, SJF and SRTF (with exponential averaging), Round Robin, priority, multilevel and multilevel feedback queues, thread and real-time scheduling, and algorithm evaluation.</p>
+    
+    <div class="ov-grid"><div><h4>How to read this page</h4><p>Every original slide is shown unchanged. <span class="key-hl">Yellow marks</span> on a slide point to a numbered note: hover or tap a mark to jump to its note, and hover a note to see its marks. Questions tagged <span class="tag past">Past exam</span> appeared on a real paper; <span class="tag predict">Prediction</span> questions are likely angles, not confirmed.</p></div></div>
+    <details class="toc"><summary>All 45 slides</summary><ol><li><a href="#slide-1"><b>1</b> Slide 1</a></li><li><a href="#slide-2"><b>2</b> Outline</a></li><li><a href="#slide-3"><b>3</b> Objectives</a></li><li><a href="#slide-4"><b>4</b> Basic Concepts</a></li><li><a href="#slide-5"><b>5</b> Histogram of CPU-burst Times</a></li><li><a href="#slide-6"><b>6</b> CPU Scheduler</a></li><li><a href="#slide-7"><b>7</b> Preemptive and Nonpreemptive Scheduling</a></li><li><a href="#slide-8"><b>8</b> Preemptive Scheduling and Race Conditions</a></li><li><a href="#slide-9"><b>9</b> Dispatcher</a></li><li><a href="#slide-10"><b>10</b> Scheduling Criteria</a></li><li><a href="#slide-11"><b>11</b> Scheduling Algorithm Optimization Criteria</a></li><li><a href="#slide-12"><b>12</b> First- Come, First-Served (FCFS) Scheduling</a></li><li><a href="#slide-13"><b>13</b> FCFS Scheduling (Cont.)</a></li><li><a href="#slide-14"><b>14</b> Shortest-Job-First (SJF) Scheduling</a></li><li><a href="#slide-15"><b>15</b> Example of SJF</a></li><li><a href="#slide-16"><b>16</b> Determining Length of Next CPU Burst</a></li><li><a href="#slide-17"><b>17</b> Prediction of the Length of the Next CPU Burst</a></li><li><a href="#slide-18"><b>18</b> Examples of Exponential Averaging</a></li><li><a href="#slide-19"><b>19</b> Shortest Remaining Time First Scheduling</a></li><li><a href="#slide-20"><b>20</b> Example of Shortest-remaining-time-first</a></li><li><a href="#slide-21"><b>21</b> Round Robin (RR)</a></li><li><a href="#slide-22"><b>22</b> Example of RR with Time Quantum = 4</a></li><li><a href="#slide-23"><b>23</b> Time Quantum and Context Switch Time</a></li><li><a href="#slide-24"><b>24</b> Turnaround Time Varies With The Time Quantum</a></li><li><a href="#slide-25"><b>25</b> Priority Scheduling</a></li><li><a href="#slide-26"><b>26</b> Example of Priority Scheduling</a></li><li><a href="#slide-27"><b>27</b> Priority Scheduling w/ Round-Robin</a></li><li><a href="#slide-28"><b>28</b> Multilevel Queue</a></li><li><a href="#slide-29"><b>29</b> Multilevel Queue</a></li><li><a href="#slide-30"><b>30</b> Multilevel Queue</a></li><li><a href="#slide-31"><b>31</b> Multilevel Feedback Queue</a></li><li><a href="#slide-32"><b>32</b> Example of Multilevel Feedback Queue</a></li><li><a href="#slide-33"><b>33</b> Thread Scheduling</a></li><li><a href="#slide-34"><b>34</b> Dispatch Latency</a></li><li><a href="#slide-35"><b>35</b> Priority-based Scheduling</a></li><li><a href="#slide-36"><b>36</b> Rate Monotonic Scheduling</a></li><li><a href="#slide-37"><b>37</b> Operating System Examples</a></li><li><a href="#slide-38"><b>38</b> Windows Priorities</a></li><li><a href="#slide-39"><b>39</b> Solaris</a></li><li><a href="#slide-40"><b>40</b> Solaris Scheduling</a></li><li><a href="#slide-41"><b>41</b> Solaris Scheduling (Cont.)</a></li><li><a href="#slide-42"><b>42</b> Algorithm Evaluation</a></li><li><a href="#slide-43"><b>43</b> Deterministic Evaluation</a></li><li><a href="#slide-44"><b>44</b> Queueing Models</a></li><li><a href="#slide-45"><b>45</b> Slide 45</a></li></ol></details>
+  </div>
 </section>
-<main class="as-deck" id="main">
-<article class="sheet" id="s-1" data-n="1" data-past="0" aria-label="Slide 1: "><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-01.jpg" alt="Slide 1: Slide 1" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 1"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-2" data-n="2" data-past="0" aria-label="Slide 2: Outline"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Outline</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Basic Concepts</li><li>Scheduling Criteria</li><li>Scheduling Algorithms</li><li>Thread Scheduling</li><li>Multi-Processor Scheduling</li><li>Real-Time CPU Scheduling</li><li>Operating Systems Examples</li><li>Algorithm Evaluation</li></ul></div><figure class="slide-fig"><img src="figures/picture-02.jpg" alt="Outline" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">2</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 2"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-3" data-n="3" data-past="0" aria-label="Slide 3: Objectives"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Objectives</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Describe various CPU scheduling algorithms</li><li>Assess CPU scheduling algorithms based on scheduling criteria</li><li>Explain the issues related to multiprocessor and multicore scheduling</li><li>Describe various real-time scheduling algorithms</li><li>Describe the scheduling algorithms used in the Windows, Linux, and Solaris operating systems</li><li>Apply modeling and simulations to evaluate CPU scheduling algorithms</li></ul></div><figure class="slide-fig"><img src="figures/picture-03.jpg" alt="Objectives" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">3</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 3"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-4" data-n="4" data-past="0" aria-label="Slide 4: Basic Concepts"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-04.jpg" alt="Slide 4: Basic Concepts" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 4"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Processes alternate CPU bursts and I/O bursts; most CPU bursts are short.</li></ol></div></div></article><article class="sheet" id="s-5" data-n="5" data-past="0" aria-label="Slide 5: Histogram of CPU-burst Times"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-05.jpg" alt="Slide 5: Histogram of CPU-burst Times" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 5"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-6" data-n="6" data-past="0" aria-label="Slide 6: CPU Scheduler"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>CPU Scheduler</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>The <strong>CPU scheduler</strong> selects from among the processes in ready queue, and allocates a CPU core to one of them<ul><li>Queue may be ordered in various ways</li></ul></li><li>CPU scheduling decisions may take place when a process:</li></ul><ol><li>Switches from running to waiting state</li><li>Switches from running to ready state</li><li>Switches from waiting to ready</li><li>Terminates</li></ol><ul><li>For situations 1 and 4, there is no choice in terms of scheduling. A new process (if one exists in the ready queue) must be selected for execution.</li><li>For situations 2 and 3, however, there is a choice.</li></ul></div><figure class="slide-fig"><img src="figures/picture-06.jpg" alt="CPU Scheduler" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">6</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 6"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-7" data-n="7" data-past="0" aria-label="Slide 7: Preemptive and Nonpreemptive Scheduling"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Preemptive and Nonpreemptive Scheduling</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>When scheduling takes place only under circumstances 1 and 4, the scheduling scheme is <strong>nonpreemptive</strong>.</li><li>Otherwise, it is <strong>preemptive</strong>.</li><li>Under Nonpreemptive scheduling, once the CPU has been allocated to a process, the process keeps the CPU until it releases it either by terminating or by switching to the waiting state.</li><li>Virtually all modern operating systems including Windows, MacOS, Linux, and UNIX use preemptive scheduling algorithms.</li></ul></div><figure class="slide-fig"><img src="figures/picture-07.jpg" alt="Preemptive and Nonpreemptive Scheduling" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">7</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 7"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Scheduling decisions when a process: 1) running → waiting, 2) running → ready, 3) waiting → ready, 4) terminates. Only 1 and 4 → nonpreemptive; otherwise preemptive.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Under nonpreemptive scheduling, the CPU is taken from a process only when it:</p><div class="opts"><button type="button" class="opt" data-right="1">Terminates or switches to waiting</button><button type="button" class="opt" data-right="0">An interrupt occurs</button><button type="button" class="opt" data-right="0">Uses up its time quantum</button><button type="button" class="opt" data-right="0">A higher-priority process arrives</button></div><p class="why" hidden>Correct: Terminates or switches to waiting.</p></div></div></details></div></article><article class="sheet" id="s-8" data-n="8" data-past="0" aria-label="Slide 8: Preemptive Scheduling and Race Conditions"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Preemptive Scheduling and Race Conditions</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Preemptive scheduling can result in race conditions when data are shared among several processes.</li><li>Consider the case of two processes that share data. While one process is updating the data, it is preempted so that the second process can run. The second process then tries to read the data, which are in an inconsistent state.</li><li>This issue will be explored in detail in Chapter 6.</li></ul></div><figure class="slide-fig"><img src="figures/picture-08.jpg" alt="Preemptive Scheduling and Race Conditions" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">8</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 8"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-9" data-n="9" data-past="0" aria-label="Slide 9: Dispatcher"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Dispatcher</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Dispatcher module gives control of the CPU to the process selected by the CPU scheduler; this involves:<ul><li>Switching context</li><li>Switching to user mode</li><li>Jumping to the proper location in the user program to restart that program</li></ul></li><li><strong>Dispatch latency</strong><ul><li>time it takes for the dispatcher to stop one process and start another running</li></ul></li></ul></div><figure class="slide-fig tall"><img src="figures/picture-09.jpg" alt="Dispatcher" width="767" height="1303" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">9</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 9"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Dispatcher gives the CPU to the chosen process: context switch, switch to user mode, jump to the right instruction. Dispatch latency = time to do this.</li></ol></div></div></article><article class="sheet" id="s-10" data-n="10" data-past="0" aria-label="Slide 10: Scheduling Criteria"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Scheduling Criteria</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li><strong>CPU utilization</strong> – keep the CPU as busy as possible</li><li><strong>Throughput</strong> – # of processes that complete their execution per time unit</li><li><strong>Turnaround time</strong> – amount of time to execute a particular process</li><li><strong>Waiting time</strong> – amount of time a process has been waiting in the ready queue</li><li><strong>Response time</strong><ul><li>amount of time it takes from when a request was submitted until the first response is produced.</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-10.jpg" alt="Scheduling Criteria" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">10</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 10"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Maximize CPU utilization and throughput; minimize turnaround, waiting and response time.</li></ol></div></div><div class="extras"><div class="stickies"><div class="sticky tip"><b>Tip</b>Waiting time = turnaround − burst. Turnaround = completion − arrival. Response = first run − arrival. Draw the Gantt chart first.</div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Which criterion should be MINIMIZED?</p><div class="opts"><button type="button" class="opt" data-right="1">Waiting time</button><button type="button" class="opt" data-right="0">Throughput</button><button type="button" class="opt" data-right="0">CPU utilization</button><button type="button" class="opt" data-right="0">All of these</button></div><p class="why" hidden>Correct: Waiting time.</p></div></div></details></div></article><article class="sheet" id="s-11" data-n="11" data-past="0" aria-label="Slide 11: Scheduling Algorithm Optimization Criteria"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Scheduling Algorithm Optimization Criteria</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Max CPU utilization</li><li>Max throughput</li><li>Min turnaround time</li><li>Min waiting time</li><li>Min response time</li></ul></div><figure class="slide-fig"><img src="figures/picture-11.jpg" alt="Scheduling Algorithm Optimization Criteria" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">11</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 11"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-12" data-n="12" data-past="0" aria-label="Slide 12: First- Come, First-Served (FCFS) Scheduling"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-12.jpg" alt="Slide 12: First- Come, First-Served (FCFS) Scheduling" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 12"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">FCFS: run in arrival order; nonpreemptive. Convoy effect: short processes wait behind a long one.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>P1 = 24, P2 = 3, P3 = 3 arrive in that order at time 0. FCFS average waiting time:</p><div class="opts"><button type="button" class="opt" data-right="0">10</button><button type="button" class="opt" data-right="0">27</button><button type="button" class="opt" data-right="0">3</button><button type="button" class="opt" data-right="1">17</button></div><p class="why" hidden>(0 + 24 + 27) / 3.</p></div></div></details></div></article><article class="sheet" id="s-13" data-n="13" data-past="0" aria-label="Slide 13: FCFS Scheduling (Cont.)"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-13.jpg" alt="Slide 13: FCFS Scheduling (Cont.)" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 13"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Order P2, P3, P1 gives average wait (6 + 0 + 3) / 3 = 3: order matters a lot.</li></ol></div></div></article><article class="sheet" id="s-14" data-n="14" data-past="0" aria-label="Slide 14: Shortest-Job-First (SJF) Scheduling"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Shortest-Job-First (SJF) Scheduling</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Associate with each process the length of its next CPU burst<ul><li>Use these lengths to schedule the process with the shortest time</li></ul></li><li>SJF is optimal – gives minimum average waiting time for a given set of processes</li><li>Preemptive version called <strong>shortest-remaining-time-first</strong></li><li>How do we determine the length of the next CPU burst?<ul><li>Could ask the user</li><li>Estimate</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-14.jpg" alt="Shortest-Job-First (SJF) Scheduling" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">14</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 14"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">SJF: run the shortest next CPU burst. Optimal: minimum average waiting time for a given set. Problem: you can’t know the next burst length.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type tf">True / False</span><p>SJF gives the minimum average waiting time for a given set of processes.</p><div class="opts tf-opts"><button type="button" class="opt" data-right="1">True</button><button type="button" class="opt" data-right="0">False</button></div><p class="why" hidden>True.</p></div></div></details></div></article><article class="sheet" id="s-15" data-n="15" data-past="0" aria-label="Slide 15: Example of SJF"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-15.jpg" alt="Slide 15: Example of SJF" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 15"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-16" data-n="16" data-past="0" aria-label="Slide 16: Determining Length of Next CPU Burst"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-16.jpg" alt="Slide 16: Determining Length of Next CPU Burst" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 16"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Predict the next burst: τₙ₊₁ = α·tₙ + (1 − α)·τₙ (exponential averaging), usually α = ½.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>τ₀ = 10, α = 0.5, the actual burst t₀ = 6. τ₁ =</p><div class="opts"><button type="button" class="opt" data-right="0">10</button><button type="button" class="opt" data-right="0">6</button><button type="button" class="opt" data-right="1">8</button><button type="button" class="opt" data-right="0">16</button></div><p class="why" hidden>0.5·6 + 0.5·10.</p></div></div></details></div></article><article class="sheet" id="s-17" data-n="17" data-past="0" aria-label="Slide 17: Prediction of the Length of the Next CPU Burst"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-17.jpg" alt="Slide 17: Prediction of the Length of the Next CPU Burst" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 17"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-18" data-n="18" data-past="0" aria-label="Slide 18: Examples of Exponential Averaging"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Examples of Exponential Averaging</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li> =0<ul><li> =  n+1 n</li><li>Recent history does not count</li></ul></li><li> =1<ul><li> = t n+1 n</li><li>Only the actual last CPU burst counts</li></ul></li><li>If we expand the formula, we get:  =  t +(1 -  )  t + ... n +1 n n -1 +(1 -  ) j  t + ... n - j +(1 -  ) n +1  0</li><li>Since both  and (1 -  ) are less than or equal to 1, each successor predecessor term has less weight than its predecessor</li></ul></div><figure class="slide-fig"><img src="figures/picture-18.jpg" alt="Examples of Exponential Averaging" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">18</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 18"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-19" data-n="19" data-past="0" aria-label="Slide 19: Shortest Remaining Time First Scheduling"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Shortest Remaining Time First Scheduling</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Preemptive version of SJN</li><li>Whenever a new process arrives in the ready queue, the decision on which process to schedule next is redone using the SJN algorithm.</li><li>Is SRT more “optimal” than SJN in terms of the minimum average waiting time for a given set of processes?</li></ul></div><figure class="slide-fig"><img src="figures/picture-19.jpg" alt="Shortest Remaining Time First Scheduling" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">19</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 19"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">SRTF = preemptive SJF: a new arrival with a shorter burst than the remaining time preempts the running process.</li></ol></div></div><div class="extras"><div class="stickies"><div class="sticky trap"><b>Exam trap</b>In SRTF compare the newcomer with the REMAINING time of the running process, not its original burst.</div></div></div></article><article class="sheet" id="s-20" data-n="20" data-past="0" aria-label="Slide 20: Example of Shortest-remaining-time-first"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-20.jpg" alt="Slide 20: Example of Shortest-remaining-time-first" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 20"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-21" data-n="21" data-past="0" aria-label="Slide 21: Round Robin (RR)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Round Robin (RR)</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Each process gets a small unit of CPU time (<strong>time quantum</strong> q ), usually 10-100 milliseconds. After this time has elapsed, the process is preempted and added to the end of the ready queue.</li><li>If there are n processes in the ready queue and the time quantum is q, then each process gets 1/ n of the CPU time in chunks of at most q time units at once. No process waits more than (n -1) q time units.</li><li>Timer interrupts every quantum to schedule next process</li><li>Performance<ul><li>q large  FIFO (FCFS)</li><li>q small  RR</li></ul></li><li>Note that q must be large with respect to context switch, otherwise overhead is too high</li></ul></div><figure class="slide-fig"><img src="figures/picture-21.jpg" alt="Round Robin (RR)" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">21</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 21"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Round Robin: each process gets a time quantum q, then goes to the back of the ready queue. No process waits more than (n − 1)q.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>P1 = 24, P2 = 3, P3 = 3, RR with q = 4. P1 completes at time:</p><div class="opts"><button type="button" class="opt" data-right="0">26</button><button type="button" class="opt" data-right="0">24</button><button type="button" class="opt" data-right="0">28</button><button type="button" class="opt" data-right="1">30</button></div><p class="why" hidden>P1 runs 0–4, P2 4–7, P3 7–10, then P1 alone until 30.</p></div></div></details></div></article><article class="sheet" id="s-22" data-n="22" data-past="0" aria-label="Slide 22: Example of RR with Time Quantum = 4"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-22.jpg" alt="Slide 22: Example of RR with Time Quantum = 4" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 22"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-23" data-n="23" data-past="0" aria-label="Slide 23: Time Quantum and Context Switch Time"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-23.jpg" alt="Slide 23: Time Quantum and Context Switch Time" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 23"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Large q → behaves like FCFS. Small q → too many context switches. q should be large compared with the context-switch time (80% of bursts &lt; q).</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>If the RR time quantum is very large, RR behaves like:</p><div class="opts"><button type="button" class="opt" data-right="0">Priority</button><button type="button" class="opt" data-right="0">SJF</button><button type="button" class="opt" data-right="1">FCFS</button><button type="button" class="opt" data-right="0">SRTF</button></div><p class="why" hidden>Correct: FCFS.</p></div></div></details></div></article><article class="sheet" id="s-24" data-n="24" data-past="0" aria-label="Slide 24: Turnaround Time Varies With The Time Quantum"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-24.jpg" alt="Slide 24: Turnaround Time Varies With The Time Quantum" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 24"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-25" data-n="25" data-past="0" aria-label="Slide 25: Priority Scheduling"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Priority Scheduling</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>A priority number (integer) is associated with each process</li><li>The CPU is allocated to the process with the highest priority (smallest integer  highest priority)<ul><li>Preemptive</li><li>Nonpreemptive</li></ul></li><li>SJF is priority scheduling where priority is the inverse of predicted next CPU burst time</li><li>Problem  <strong>Starvation</strong> – low priority processes may never execute</li><li>Solution  <strong>Aging</strong> – as time progresses increase the priority of the process</li></ul></div><figure class="slide-fig"><img src="figures/picture-25.jpg" alt="Priority Scheduling" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">25</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 25"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Priority scheduling (smaller number = higher priority here). Problem: starvation. Solution: aging (raise priority over time).</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>The solution to starvation in priority scheduling is:</p><div class="opts"><button type="button" class="opt" data-right="1">Aging</button><button type="button" class="opt" data-right="0">Thrashing</button><button type="button" class="opt" data-right="0">Swapping</button><button type="button" class="opt" data-right="0">Paging</button></div><p class="why" hidden>Correct: Aging.</p></div></div></details></div></article><article class="sheet" id="s-26" data-n="26" data-past="0" aria-label="Slide 26: Example of Priority Scheduling"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-26.jpg" alt="Slide 26: Example of Priority Scheduling" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 26"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-27" data-n="27" data-past="0" aria-label="Slide 27: Priority Scheduling w/ Round-Robin"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-27.jpg" alt="Slide 27: Priority Scheduling w/ Round-Robin" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 27"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-28" data-n="28" data-past="0" aria-label="Slide 28: Multilevel Queue"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Multilevel Queue</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>The ready queue consists of multiple queues</li><li>Multilevel queue scheduler defined by the following parameters:<ul><li>Number of queues</li><li>Scheduling algorithms for each queue</li><li>Method used to determine which queue a process will enter when that process needs service</li><li>Scheduling among the queues</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-28.jpg" alt="Multilevel Queue" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">28</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 28"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Multilevel queue: separate queues (e.g. foreground RR, background FCFS), each with its own algorithm; scheduling between queues by fixed priority or time slices.</li></ol></div></div></article><article class="sheet" id="s-29" data-n="29" data-past="0" aria-label="Slide 29: Multilevel Queue"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-29.jpg" alt="Slide 29: Multilevel Queue" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 29"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-30" data-n="30" data-past="0" aria-label="Slide 30: Multilevel Queue"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-30.jpg" alt="Slide 30: Multilevel Queue" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 30"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-31" data-n="31" data-past="0" aria-label="Slide 31: Multilevel Feedback Queue"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Multilevel Feedback Queue</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>A process can move between the various queues.</li><li>Multilevel-feedback-queue scheduler defined by the following parameters:<ul><li>Number of queues</li><li>Scheduling algorithms for each queue</li><li>Method used to determine when to upgrade a process</li><li>Method used to determine when to demote a process</li><li>Method used to determine which queue a process will enter when that process needs service</li></ul></li><li>Aging can be implemented using multilevel feedback queue</li></ul></div><figure class="slide-fig"><img src="figures/picture-31.jpg" alt="Multilevel Feedback Queue" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">31</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 31"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Multilevel feedback queue: processes MOVE between queues (demote CPU-hogs, age old ones up).</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>What distinguishes a multilevel FEEDBACK queue from a multilevel queue?</p><div class="opts"><button type="button" class="opt" data-right="0">It never preempts</button><button type="button" class="opt" data-right="0">It uses only FCFS</button><button type="button" class="opt" data-right="1">Processes can move between queues</button><button type="button" class="opt" data-right="0">It has more queues</button></div><p class="why" hidden>Correct: Processes can move between queues.</p></div></div></details></div></article><article class="sheet" id="s-32" data-n="32" data-past="0" aria-label="Slide 32: Example of Multilevel Feedback Queue"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-32.jpg" alt="Slide 32: Example of Multilevel Feedback Queue" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 32"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-33" data-n="33" data-past="0" aria-label="Slide 33: Thread Scheduling"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Thread Scheduling</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Distinction between user-level and kernel-level threads</li><li>When threads supported, threads scheduled, not processes</li><li>Many-to-one and many-to-many models, thread library schedules user-level threads to run on LWP<ul><li>Known as <strong>process-contention scope (PCS</strong>) since scheduling competition is within the process</li><li>Typically done via priority set by programmer</li></ul></li><li>Kernel thread scheduled onto available CPU is <strong>system-contention scope (SCS</strong>) – competition among all threads in system</li></ul></div><figure class="slide-fig"><img src="figures/picture-33.jpg" alt="Thread Scheduling" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">33</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 33"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Process-contention scope (user threads on LWPs) vs. system-contention scope (kernel threads competing system-wide).</li></ol></div></div></article><article class="sheet" id="s-34" data-n="34" data-past="0" aria-label="Slide 34: Dispatch Latency"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-34.jpg" alt="Slide 34: Dispatch Latency" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 34"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-35" data-n="35" data-past="0" aria-label="Slide 35: Priority-based Scheduling"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-35.jpg" alt="Slide 35: Priority-based Scheduling" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 35"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-36" data-n="36" data-past="0" aria-label="Slide 36: Rate Monotonic Scheduling"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-36.jpg" alt="Slide 36: Rate Monotonic Scheduling" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 36"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Rate-monotonic: static priority = shorter period gets higher priority.</li></ol></div></div></article><article class="sheet" id="s-37" data-n="37" data-past="0" aria-label="Slide 37: Operating System Examples"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Operating System Examples</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Linux scheduling</li><li>Windows scheduling</li><li>Solaris scheduling</li></ul></div><figure class="slide-fig"><img src="figures/picture-37.jpg" alt="Operating System Examples" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">37</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 37"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-38" data-n="38" data-past="0" aria-label="Slide 38: Windows Priorities"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-38.jpg" alt="Slide 38: Windows Priorities" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 38"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-39" data-n="39" data-past="0" aria-label="Slide 39: Solaris"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solaris</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Priority-based scheduling</li><li>Six classes available<ul><li>Time sharing (default) (TS)</li><li>Interactive (IA)</li><li>Real time (RT)</li><li>System (SYS)</li><li>Fair Share (FSS)</li><li>Fixed priority (FP)</li></ul></li><li>Given thread can be in one class at a time</li><li>Each class has its own scheduling algorithm</li><li>Time sharing is multi-level feedback queue<ul><li>Loadable table configurable by sysadmin</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-39.jpg" alt="Solaris" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">39</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 39"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-40" data-n="40" data-past="0" aria-label="Slide 40: Solaris Scheduling"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-40.jpg" alt="Slide 40: Solaris Scheduling" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 40"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-41" data-n="41" data-past="0" aria-label="Slide 41: Solaris Scheduling (Cont.)"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Solaris Scheduling (Cont.)</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Scheduler converts class-specific priorities into a per-thread global priority<ul><li>Thread with highest priority runs next</li><li>Runs until (1) blocks, (2) uses time slice, (3) preempted by higher-priority thread</li><li>Multiple threads at same priority selected via RR</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-41.jpg" alt="Solaris Scheduling (Cont.)" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">41</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 41"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-42" data-n="42" data-past="0" aria-label="Slide 42: Algorithm Evaluation"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-42.jpg" alt="Slide 42: Algorithm Evaluation" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 42"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-43" data-n="43" data-past="0" aria-label="Slide 43: Deterministic Evaluation"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-43.jpg" alt="Slide 43: Deterministic Evaluation" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 43"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Deterministic modelling: compute each algorithm’s numbers for a given workload.</li></ol></div></div></article><article class="sheet" id="s-44" data-n="44" data-past="0" aria-label="Slide 44: Queueing Models"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Queueing Models</h2></div><div class="slide-body has-fig"><div class="slide-text"><ul><li>Describes the arrival of processes, and CPU and I/O bursts probabilistically<ul><li>Commonly exponential, and described by mean</li><li>Computes average throughput, utilization, waiting time, etc.</li></ul></li><li>Computer system described as network of servers, each with queue of waiting processes<ul><li>Knowing arrival rates and service rates</li><li>Computes utilization, average queue length, average wait time, etc.</li></ul></li></ul></div><figure class="slide-fig"><img src="figures/picture-44.jpg" alt="Queueing Models" width="309" height="180" loading="lazy" decoding="async"><figcaption></figcaption></figure></div><div class="slide-foot"><span class="bar"></span><span class="num">44</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 44"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-45" data-n="45" data-past="0" aria-label="Slide 45: "><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-45.jpg" alt="Slide 45: Slide 45" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 45"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article>
-<p class="empty-filter" id="as-empty" hidden>No slides match this filter.</p>
+
+<section class="card bare" id="slide-1" data-slide="1">
+  <header class="card-head"><span class="sn">Slide 1 <span>/ 45</span></span><h3>Slide 1</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-01.jpg" width="1440" height="1080" alt="Slide 1: Slide 1" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-2" data-slide="2">
+  <header class="card-head"><span class="sn">Slide 2 <span>/ 45</span></span><h3>Outline</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-02.jpg" width="1440" height="1080" alt="Slide 2: Outline" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-3" data-slide="3">
+  <header class="card-head"><span class="sn">Slide 3 <span>/ 45</span></span><h3>Objectives</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-03.jpg" width="1440" height="1080" alt="Slide 3: Objectives" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-4" data-slide="4">
+  <header class="card-head"><span class="sn">Slide 4 <span>/ 45</span></span><h3>Basic Concepts</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-4">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-04.jpg" width="1440" height="1080" alt="Slide 4: Basic Concepts" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-4"><h4>Notes</h4><ol><li id="n4-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Processes alternate CPU bursts and I/O bursts; most CPU bursts are short.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-5" data-slide="5">
+  <header class="card-head"><span class="sn">Slide 5 <span>/ 45</span></span><h3>Histogram of CPU-burst Times</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-05.jpg" width="1440" height="1080" alt="Slide 5: Histogram of CPU-burst Times" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-6" data-slide="6">
+  <header class="card-head"><span class="sn">Slide 6 <span>/ 45</span></span><h3>CPU Scheduler</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-06.jpg" width="1440" height="1080" alt="Slide 6: CPU Scheduler" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-7" data-slide="7">
+  <header class="card-head"><span class="sn">Slide 7 <span>/ 45</span></span><h3>Preemptive and Nonpreemptive Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-7">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-07.jpg" width="1440" height="1080" alt="Slide 7: Preemptive and Nonpreemptive Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-7"><h4>Notes</h4><ol><li id="n7-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Scheduling decisions when a process: 1) running → waiting, 2) running → ready, 3) waiting → ready, 4) terminates. Only 1 and 4 → nonpreemptive; otherwise preemptive.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 7"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Under nonpreemptive scheduling, the CPU is taken from a process only when it:</p><ol class="opts" type="A"><li>Terminates or switches to waiting</li><li>An interrupt occurs</li><li>Uses up its time quantum</li><li>A higher-priority process arrives</li></ol><details><summary>Show answer</summary><p><strong>A. Terminates or switches to waiting</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-8" data-slide="8">
+  <header class="card-head"><span class="sn">Slide 8 <span>/ 45</span></span><h3>Preemptive Scheduling and Race Conditions</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-08.jpg" width="1440" height="1080" alt="Slide 8: Preemptive Scheduling and Race Conditions" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-9" data-slide="9">
+  <header class="card-head"><span class="sn">Slide 9 <span>/ 45</span></span><h3>Dispatcher</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-9">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-09.jpg" width="1440" height="1080" alt="Slide 9: Dispatcher" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-9"><h4>Notes</h4><ol><li id="n9-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Dispatcher gives the CPU to the chosen process: context switch, switch to user mode, jump to the right instruction. Dispatch latency = time to do this.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-10" data-slide="10">
+  <header class="card-head"><span class="sn">Slide 10 <span>/ 45</span></span><h3>Scheduling Criteria</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-10">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-10.jpg" width="1440" height="1080" alt="Slide 10: Scheduling Criteria" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-10"><h4>Notes</h4><ol><li id="n10-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Maximize CPU utilization and throughput; minimize turnaround, waiting and response time.</p></div></li><li id="n10-2" data-n="2"><span class="num" aria-hidden="true">2</span><div class="body"><p><span class="kind tip">Tip</span> Waiting time = turnaround − burst. Turnaround = completion − arrival. Response = first run − arrival. Draw the Gantt chart first.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 10"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Which criterion should be MINIMIZED?</p><ol class="opts" type="A"><li>Waiting time</li><li>Throughput</li><li>CPU utilization</li><li>All of these</li></ol><details><summary>Show answer</summary><p><strong>A. Waiting time</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-11" data-slide="11">
+  <header class="card-head"><span class="sn">Slide 11 <span>/ 45</span></span><h3>Scheduling Algorithm Optimization Criteria</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-11.jpg" width="1440" height="1080" alt="Slide 11: Scheduling Algorithm Optimization Criteria" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-12" data-slide="12">
+  <header class="card-head"><span class="sn">Slide 12 <span>/ 45</span></span><h3>First- Come, First-Served (FCFS) Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-12">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-12.jpg" width="1440" height="1080" alt="Slide 12: First- Come, First-Served (FCFS) Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-12"><h4>Notes</h4><ol><li id="n12-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>FCFS: run in arrival order; nonpreemptive. Convoy effect: short processes wait behind a long one.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 12"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>P1 = 24, P2 = 3, P3 = 3 arrive in that order at time 0. FCFS average waiting time:</p><ol class="opts" type="A"><li>10</li><li>27</li><li>3</li><li>17</li></ol><details><summary>Show answer</summary><p><strong>D. 17</strong> — (0 + 24 + 27) / 3.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card" id="slide-13" data-slide="13">
+  <header class="card-head"><span class="sn">Slide 13 <span>/ 45</span></span><h3>FCFS Scheduling (Cont.)</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-13">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-13.jpg" width="1440" height="1080" alt="Slide 13: FCFS Scheduling (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-13"><h4>Notes</h4><ol><li id="n13-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Order P2, P3, P1 gives average wait (6 + 0 + 3) / 3 = 3: order matters a lot.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-14" data-slide="14">
+  <header class="card-head"><span class="sn">Slide 14 <span>/ 45</span></span><h3>Shortest-Job-First (SJF) Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-14">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-14.jpg" width="1440" height="1080" alt="Slide 14: Shortest-Job-First (SJF) Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-14"><h4>Notes</h4><ol><li id="n14-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>SJF: run the shortest next CPU burst. Optimal: minimum average waiting time for a given set. Problem: you can’t know the next burst length.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 14"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>SJF gives the minimum average waiting time for a given set of processes.</p><details><summary>Show answer</summary><p><strong>True</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-15" data-slide="15">
+  <header class="card-head"><span class="sn">Slide 15 <span>/ 45</span></span><h3>Example of SJF</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-15.jpg" width="1440" height="1080" alt="Slide 15: Example of SJF" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-16" data-slide="16">
+  <header class="card-head"><span class="sn">Slide 16 <span>/ 45</span></span><h3>Determining Length of Next CPU Burst</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-16">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-16.jpg" width="1440" height="1080" alt="Slide 16: Determining Length of Next CPU Burst" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-16"><h4>Notes</h4><ol><li id="n16-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Predict the next burst: τₙ₊₁ = α·tₙ + (1 − α)·τₙ (exponential averaging), usually α = ½.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 16"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>τ₀ = 10, α = 0.5, the actual burst t₀ = 6. τ₁ =</p><ol class="opts" type="A"><li>10</li><li>6</li><li>8</li><li>16</li></ol><details><summary>Show answer</summary><p><strong>C. 8</strong> — 0.5·6 + 0.5·10.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-17" data-slide="17">
+  <header class="card-head"><span class="sn">Slide 17 <span>/ 45</span></span><h3>Prediction of the Length of the Next CPU Burst</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-17.jpg" width="1440" height="1080" alt="Slide 17: Prediction of the Length of the Next CPU Burst" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-18" data-slide="18">
+  <header class="card-head"><span class="sn">Slide 18 <span>/ 45</span></span><h3>Examples of Exponential Averaging</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-18.jpg" width="1440" height="1080" alt="Slide 18: Examples of Exponential Averaging" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-19" data-slide="19">
+  <header class="card-head"><span class="sn">Slide 19 <span>/ 45</span></span><h3>Shortest Remaining Time First Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-19">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-19.jpg" width="1440" height="1080" alt="Slide 19: Shortest Remaining Time First Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-19"><h4>Notes</h4><ol><li id="n19-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>SRTF = preemptive SJF: a new arrival with a shorter burst than the remaining time preempts the running process.</p></div></li><li id="n19-2" data-n="2"><span class="num" aria-hidden="true">2</span><div class="body"><p><span class="kind trap">Trap</span> In SRTF compare the newcomer with the REMAINING time of the running process, not its original burst.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-20" data-slide="20">
+  <header class="card-head"><span class="sn">Slide 20 <span>/ 45</span></span><h3>Example of Shortest-remaining-time-first</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-20.jpg" width="1440" height="1080" alt="Slide 20: Example of Shortest-remaining-time-first" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-21" data-slide="21">
+  <header class="card-head"><span class="sn">Slide 21 <span>/ 45</span></span><h3>Round Robin (RR)</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-21">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-21.jpg" width="1440" height="1080" alt="Slide 21: Round Robin (RR)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-21"><h4>Notes</h4><ol><li id="n21-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Round Robin: each process gets a time quantum q, then goes to the back of the ready queue. No process waits more than (n − 1)q.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 21"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>P1 = 24, P2 = 3, P3 = 3, RR with q = 4. P1 completes at time:</p><ol class="opts" type="A"><li>26</li><li>24</li><li>28</li><li>30</li></ol><details><summary>Show answer</summary><p><strong>D. 30</strong> — P1 runs 0–4, P2 4–7, P3 7–10, then P1 alone until 30.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-22" data-slide="22">
+  <header class="card-head"><span class="sn">Slide 22 <span>/ 45</span></span><h3>Example of RR with Time Quantum = 4</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-22.jpg" width="1440" height="1080" alt="Slide 22: Example of RR with Time Quantum = 4" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-23" data-slide="23">
+  <header class="card-head"><span class="sn">Slide 23 <span>/ 45</span></span><h3>Time Quantum and Context Switch Time</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-23">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-23.jpg" width="1440" height="1080" alt="Slide 23: Time Quantum and Context Switch Time" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-23"><h4>Notes</h4><ol><li id="n23-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Large q → behaves like FCFS. Small q → too many context switches. q should be large compared with the context-switch time (80% of bursts &lt; q).</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 23"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>If the RR time quantum is very large, RR behaves like:</p><ol class="opts" type="A"><li>Priority</li><li>SJF</li><li>FCFS</li><li>SRTF</li></ol><details><summary>Show answer</summary><p><strong>C. FCFS</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-24" data-slide="24">
+  <header class="card-head"><span class="sn">Slide 24 <span>/ 45</span></span><h3>Turnaround Time Varies With The Time Quantum</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-24.jpg" width="1440" height="1080" alt="Slide 24: Turnaround Time Varies With The Time Quantum" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-25" data-slide="25">
+  <header class="card-head"><span class="sn">Slide 25 <span>/ 45</span></span><h3>Priority Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-25">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-25.jpg" width="1440" height="1080" alt="Slide 25: Priority Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-25"><h4>Notes</h4><ol><li id="n25-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Priority scheduling (smaller number = higher priority here). Problem: starvation. Solution: aging (raise priority over time).</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 25"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>The solution to starvation in priority scheduling is:</p><ol class="opts" type="A"><li>Aging</li><li>Thrashing</li><li>Swapping</li><li>Paging</li></ol><details><summary>Show answer</summary><p><strong>A. Aging</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-26" data-slide="26">
+  <header class="card-head"><span class="sn">Slide 26 <span>/ 45</span></span><h3>Example of Priority Scheduling</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-26.jpg" width="1440" height="1080" alt="Slide 26: Example of Priority Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-27" data-slide="27">
+  <header class="card-head"><span class="sn">Slide 27 <span>/ 45</span></span><h3>Priority Scheduling w/ Round-Robin</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-27.jpg" width="1440" height="1080" alt="Slide 27: Priority Scheduling w/ Round-Robin" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-28" data-slide="28">
+  <header class="card-head"><span class="sn">Slide 28 <span>/ 45</span></span><h3>Multilevel Queue</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-28">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-28.jpg" width="1440" height="1080" alt="Slide 28: Multilevel Queue" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-28"><h4>Notes</h4><ol><li id="n28-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Multilevel queue: separate queues (e.g. foreground RR, background FCFS), each with its own algorithm; scheduling between queues by fixed priority or time slices.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-29" data-slide="29">
+  <header class="card-head"><span class="sn">Slide 29 <span>/ 45</span></span><h3>Multilevel Queue</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-29.jpg" width="1440" height="1080" alt="Slide 29: Multilevel Queue" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-30" data-slide="30">
+  <header class="card-head"><span class="sn">Slide 30 <span>/ 45</span></span><h3>Multilevel Queue</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-30.jpg" width="1440" height="1080" alt="Slide 30: Multilevel Queue" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-31" data-slide="31">
+  <header class="card-head"><span class="sn">Slide 31 <span>/ 45</span></span><h3>Multilevel Feedback Queue</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-31">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-31.jpg" width="1440" height="1080" alt="Slide 31: Multilevel Feedback Queue" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-31"><h4>Notes</h4><ol><li id="n31-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Multilevel feedback queue: processes MOVE between queues (demote CPU-hogs, age old ones up).</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 31"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>What distinguishes a multilevel FEEDBACK queue from a multilevel queue?</p><ol class="opts" type="A"><li>It never preempts</li><li>It uses only FCFS</li><li>Processes can move between queues</li><li>It has more queues</li></ol><details><summary>Show answer</summary><p><strong>C. Processes can move between queues</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-32" data-slide="32">
+  <header class="card-head"><span class="sn">Slide 32 <span>/ 45</span></span><h3>Example of Multilevel Feedback Queue</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-32.jpg" width="1440" height="1080" alt="Slide 32: Example of Multilevel Feedback Queue" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-33" data-slide="33">
+  <header class="card-head"><span class="sn">Slide 33 <span>/ 45</span></span><h3>Thread Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-33">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-33.jpg" width="1440" height="1080" alt="Slide 33: Thread Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-33"><h4>Notes</h4><ol><li id="n33-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Process-contention scope (user threads on LWPs) vs. system-contention scope (kernel threads competing system-wide).</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-34" data-slide="34">
+  <header class="card-head"><span class="sn">Slide 34 <span>/ 45</span></span><h3>Dispatch Latency</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-34.jpg" width="1440" height="1080" alt="Slide 34: Dispatch Latency" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-35" data-slide="35">
+  <header class="card-head"><span class="sn">Slide 35 <span>/ 45</span></span><h3>Priority-based Scheduling</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-35.jpg" width="1440" height="1080" alt="Slide 35: Priority-based Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-36" data-slide="36">
+  <header class="card-head"><span class="sn">Slide 36 <span>/ 45</span></span><h3>Rate Monotonic Scheduling</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-36">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-36.jpg" width="1440" height="1080" alt="Slide 36: Rate Monotonic Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-36"><h4>Notes</h4><ol><li id="n36-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Rate-monotonic: static priority = shorter period gets higher priority.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-37" data-slide="37">
+  <header class="card-head"><span class="sn">Slide 37 <span>/ 45</span></span><h3>Operating System Examples</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-37.jpg" width="1440" height="1080" alt="Slide 37: Operating System Examples" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-38" data-slide="38">
+  <header class="card-head"><span class="sn">Slide 38 <span>/ 45</span></span><h3>Windows Priorities</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-38.jpg" width="1440" height="1080" alt="Slide 38: Windows Priorities" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-39" data-slide="39">
+  <header class="card-head"><span class="sn">Slide 39 <span>/ 45</span></span><h3>Solaris</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-39.jpg" width="1440" height="1080" alt="Slide 39: Solaris" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-40" data-slide="40">
+  <header class="card-head"><span class="sn">Slide 40 <span>/ 45</span></span><h3>Solaris Scheduling</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-40.jpg" width="1440" height="1080" alt="Slide 40: Solaris Scheduling" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-41" data-slide="41">
+  <header class="card-head"><span class="sn">Slide 41 <span>/ 45</span></span><h3>Solaris Scheduling (Cont.)</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-41.jpg" width="1440" height="1080" alt="Slide 41: Solaris Scheduling (Cont.)" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-42" data-slide="42">
+  <header class="card-head"><span class="sn">Slide 42 <span>/ 45</span></span><h3>Algorithm Evaluation</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-42.jpg" width="1440" height="1080" alt="Slide 42: Algorithm Evaluation" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-43" data-slide="43">
+  <header class="card-head"><span class="sn">Slide 43 <span>/ 45</span></span><h3>Deterministic Evaluation</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-43">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-43.jpg" width="1440" height="1080" alt="Slide 43: Deterministic Evaluation" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-43"><h4>Notes</h4><ol><li id="n43-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Deterministic modelling: compute each algorithm’s numbers for a given workload.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-44" data-slide="44">
+  <header class="card-head"><span class="sn">Slide 44 <span>/ 45</span></span><h3>Queueing Models</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-44.jpg" width="1440" height="1080" alt="Slide 44: Queueing Models" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-45" data-slide="45">
+  <header class="card-head"><span class="sn">Slide 45 <span>/ 45</span></span><h3>Slide 45</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-45.jpg" width="1440" height="1080" alt="Slide 45: Slide 45" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
 </main>
-<footer class="as-foot">Rebuilt slides from the CS330 lecture slides, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-5-cpu-scheduling/" target="_top">original deck</a>. Made by Shoug Alomran.</footer>
-</div>
-<nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
-<script src="/javascripts/annotated-slides.js"></script>
+<nav class="flipbar" aria-label="Slide navigation" hidden>
+  <button type="button" id="f-prev" aria-label="Previous slide">Previous</button>
+  <select id="f-jump" aria-label="Go to slide"></select>
+  <button type="button" id="f-next" aria-label="Next slide">Next</button>
+</nav>
+<footer class="end">Original slides from the CS330 lecture deck, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-5-cpu-scheduling/" target="_top">original deck</a>. Notes and questions are study aids. Made by Shoug Alomran.</footer>
+<script>(function(){
+  var root=document.documentElement, body=document.body, K=body.getAttribute('data-key')||'annotated';
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function read(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  // theme toggle (shared key with the rest of the site)
+  var tbtn=document.getElementById('t-theme');
+  function paintTheme(){tbtn.textContent=root.getAttribute('data-theme')==='dark'?'Light':'Dark'}
+  tbtn.addEventListener('click',function(){var t=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',t);store('shoug-theme',t);paintTheme()});
+  window.addEventListener('storage',function(ev){if(ev.key==='shoug-theme'&&ev.newValue){root.setAttribute('data-theme',ev.newValue);paintTheme()}});
+  paintTheme();
+  // global toggles
+  function setPressed(b,on){b.setAttribute('aria-pressed',on?'true':'false')}
+  var bn=document.getElementById('t-notes'), bh=document.getElementById('t-hl'), ba=document.getElementById('t-ans');
+  function setCardNotes(card,show){var b=card.querySelector('.note-toggle');if(!b)return;card.classList.toggle('notes-hidden',!show);b.textContent=show?'Hide notes':'Show notes';b.setAttribute('aria-expanded',show?'true':'false')}
+  bn.addEventListener('click',function(){var on=bn.getAttribute('aria-pressed')!=='true';setPressed(bn,on);
+    document.querySelectorAll('.card[data-slide]').forEach(function(c){setCardNotes(c,on)});store(K+'-notes',on?'1':'0')});
+  bh.addEventListener('click',function(){var on=bh.getAttribute('aria-pressed')!=='true';setPressed(bh,on);body.classList.toggle('no-hl',!on);store(K+'-hl',on?'1':'0')});
+  ba.addEventListener('click',function(){var on=ba.getAttribute('aria-pressed')!=='true';setPressed(ba,on);
+    document.querySelectorAll('.exam details').forEach(function(d){d.open=on})});
+  document.querySelectorAll('.note-toggle').forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.card');setCardNotes(c,c.classList.contains('notes-hidden'))})});
+  // overview show/hide (control lives inside the overview)
+  var ob=document.querySelector('.ov-toggle'), ovb=document.getElementById('ov-body');
+  function setOv(show){ovb.hidden=!show;ob.textContent=show?'Hide overview':'Show overview';ob.setAttribute('aria-expanded',show?'true':'false');store(K+'-ov',show?'1':'0')}
+  ob.addEventListener('click',function(){setOv(ovb.hidden)});
+  if(read(K+'-ov')==='0')setOv(false);
+  if(read(K+'-notes')==='0')bn.click();
+  if(read(K+'-hl')==='0')bh.click();
+  // highlight <-> note linking
+  function link(card,n,on){card.querySelectorAll('[data-n="'+n+'"]').forEach(function(el){el.classList.toggle('on',on)})}
+  document.querySelectorAll('.card[data-slide]').forEach(function(card){
+    card.querySelectorAll('.notes li[data-n]').forEach(function(li){var n=li.getAttribute('data-n');
+      li.addEventListener('mouseenter',function(){link(card,n,true)});li.addEventListener('mouseleave',function(){link(card,n,false)})});
+    card.querySelectorAll('rect.hl:not(.free)').forEach(function(r){var n=r.getAttribute('data-n');
+      r.addEventListener('mouseenter',function(){link(card,n,true)});r.addEventListener('mouseleave',function(){link(card,n,false)});
+      r.addEventListener('click',function(){if(card.classList.contains('notes-hidden'))setCardNotes(card,true);var li=card.querySelector('.notes li[data-n="'+n+'"]');
+        if(li){li.scrollIntoView({behavior:'smooth',block:'center'});li.classList.add('flash');setTimeout(function(){li.classList.remove('flash')},1600)}})});
+  });
+  // scroll / flip view: flip shows one card (overview or slide) at a time
+  var cards=[].slice.call(document.querySelectorAll('main>.card')), bar=document.querySelector('.flipbar'),
+      ms=document.getElementById('m-scroll'), mf=document.getElementById('m-flip'), jump=document.getElementById('f-jump'),
+      fp=document.getElementById('f-prev'), fn=document.getElementById('f-next'), cur=0;
+  cards.forEach(function(c,i){var o=document.createElement('option');var h=c.querySelector('h3');
+    o.value=i;o.textContent=(c.dataset.slide?c.dataset.slide+' · ':'')+(c.dataset.slide?(h?h.textContent:''):'Overview');jump.appendChild(o)});
+  function indexOf(id){for(var i=0;i<cards.length;i++){if(cards[i].id===id)return i}return -1}
+  function show(i,noScroll){cur=Math.max(0,Math.min(cards.length-1,i));
+    cards.forEach(function(c,k){c.classList.toggle('current',k===cur)});
+    jump.value=cur;fp.disabled=cur===0;fn.disabled=cur===cards.length-1;
+    try{history.replaceState(null,'','#'+cards[cur].id)}catch(e){}
+    if(!noScroll)window.scrollTo(0,0)}
+  function setMode(flip){body.classList.toggle('flip',flip);bar.hidden=!flip;setPressed(mf,flip);setPressed(ms,!flip);store(K+'-mode',flip?'flip':'scroll');
+    if(flip){var top=0;for(var i=0;i<cards.length;i++){if(cards[i].getBoundingClientRect().bottom>90){top=i;break}}show(top)}
+    else{cards[cur].scrollIntoView()}}
+  ms.addEventListener('click',function(){if(body.classList.contains('flip'))setMode(false)});
+  mf.addEventListener('click',function(){if(!body.classList.contains('flip'))setMode(true)});
+  fp.addEventListener('click',function(){show(cur-1)});fn.addEventListener('click',function(){show(cur+1)});
+  jump.addEventListener('change',function(){show(+jump.value)});
+  document.addEventListener('keydown',function(ev){if(!body.classList.contains('flip')||ev.altKey||ev.ctrlKey||ev.metaKey)return;
+    var t=ev.target.tagName;if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA')return;
+    if(ev.key==='ArrowRight'||ev.key==='PageDown'){show(cur+1);ev.preventDefault()}
+    else if(ev.key==='ArrowLeft'||ev.key==='PageUp'){show(cur-1);ev.preventDefault()}});
+  var sx=null,sy=null;
+  document.addEventListener('touchstart',function(ev){if(ev.touches.length===1){sx=ev.touches[0].clientX;sy=ev.touches[0].clientY}},{passive:true});
+  document.addEventListener('touchend',function(ev){if(sx===null||!body.classList.contains('flip'))return;
+    var dx=ev.changedTouches[0].clientX-sx,dy=ev.changedTouches[0].clientY-sy;sx=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>2*Math.abs(dy))show(cur+(dx<0?1:-1))},{passive:true});
+  // in-page links (contents list, "seen again") go to the right card in flip mode
+  document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href^="#"]');
+    if(!a||!body.classList.contains('flip'))return;var i=indexOf(a.getAttribute('href').slice(1));if(i>=0){ev.preventDefault();show(i)}});
+  var start=indexOf(location.hash.slice(1));
+  if(read(K+'-mode')==='flip'){body.classList.add('flip');bar.hidden=false;setPressed(mf,true);setPressed(ms,false);show(start>=0?start:0)}
+})();
+</script>
+
 </body>
 </html>

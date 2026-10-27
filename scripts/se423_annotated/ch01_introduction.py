@@ -20,6 +20,7 @@ DECK = {
     'file': 'introduction',
     'title': 'Introduction',
     'chapter': 'Chapter 1',
+    'page': 'ch01_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-1/',
     'lede': ('The vocabulary chapter. Almost every definition here (program, portfolio, system for '
              'value delivery, centralized vs. decentralized coordination, stewardship, performance '

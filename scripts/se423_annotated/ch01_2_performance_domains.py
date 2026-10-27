@@ -14,6 +14,7 @@ DECK = {
     'file': 'performance-domains',
     'title': 'Project Performance Domains',
     'chapter': 'Chapter 1.2',
+    'page': 'ch01_2_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-1.2/',
     'lede': ('The 8 areas a project manager has to keep an eye on at the same time: stakeholders, team, '
              'development approach, planning, project work, delivery, measurement and uncertainty. '

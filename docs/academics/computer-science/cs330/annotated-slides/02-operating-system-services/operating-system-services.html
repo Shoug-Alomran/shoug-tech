@@ -1,52 +1,471 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-sg-styled>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS330 · Annotated Slides · Chapter 2 — Operating System Services and Structures</title>
-<meta name="description" content="CS330 Chapter 2 — Operating System Services and Structures annotated slides: rebuilt slides with notes, memory tricks, cross-references and likely exam questions.">
+<title>CS330 · Chapter 2 · Annotated Slides</title>
+<meta name="description" content="CS330 Chapter 2 annotated slides: every original slide with numbered study notes linked to the highlighted words, past-exam links and practice questions.">
 <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs330/annotated-slides/02-operating-system-services/">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"))}catch(e){}</script>
+<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles/annotated-slides.css">
-</head>
-<body class="mode-scroll">
-<header class="as-top"><div class="as-wrap">
-<div class="as-brand"><small>CS330 · Annotated Slides</small><strong>Chapter 2 — Operating System Services and Structures</strong></div>
-<div class="as-controls">
-<div class="seg" role="group" aria-label="View mode"><button type="button" data-group="mode" data-value="scroll" aria-pressed="true">Scroll</button><button type="button" data-group="mode" data-value="flip" aria-pressed="false">Flip</button></div>
-<div class="seg" role="group" aria-label="Which slides"><button type="button" data-group="filter" data-value="all" aria-pressed="true">All</button><button type="button" data-group="filter" data-value="past" aria-pressed="false">★ Exam slides</button></div>
-<button type="button" class="chip-btn" id="as-ann" aria-pressed="true">✎ Notes on</button>
-<button type="button" class="chip-btn" id="as-theme">☾ Dark</button>
-<select class="as-jump" id="as-jump" aria-label="Jump to slide"><option value="s-1">1 · </option><option value="s-2">2 · </option><option value="s-3">3 · Objectives</option><option value="s-4">4 · Operating System Services</option><option value="s-5">5 · Additional Operating System Functions</option><option value="s-6">6 · A View of Operating System Services</option><option value="s-7">7 · User Operating System Interface - CLI</option><option value="s-8">8 · Bourne Shell Command Interpreter-</option><option value="s-9">9 · User Operating System Interface - GUI</option><option value="s-10">10 · Touchscreen Interfaces</option><option value="s-11">11 · The Mac OS X GUI</option><option value="s-12">12 · System Calls</option><option value="s-13">13 · System Call Implementation</option><option value="s-14">14 · API – System Call – OS Relationship</option><option value="s-15">15 · System Call Parameter Passing</option><option value="s-16">16 · </option><option value="s-17">17 · Types of System Calls</option><option value="s-18">18 · Examples of Windows and Unix System Calls</option><option value="s-19">19 · Standard C Library Example</option><option value="s-20">20 · Operating System Structure</option><option value="s-21">21 · Linux System Structure</option><option value="s-22">22 · 2. Layered Approach</option><option value="s-23">23 · </option><option value="s-24">24 · Microkernel System Structure</option><option value="s-25">25 · Modules</option><option value="s-26">26 · Hybrid Systems</option><option value="s-27">27 · Operating-System Debugging</option></select>
-</div></div></header>
-<div class="as-wrap">
-<section class="as-intro">
-<div class="kicker">Chapter 2 · Annotated slides</div>
-<h1>Operating System Services and Structures</h1>
-<p>OS services, command-line, GUI and touch interfaces, system calls and APIs (POSIX, Win32, Java), parameter passing, types of system calls, and OS structures: monolithic, layered, microkernel, modules and hybrid systems.</p>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-<ul class="as-stats"><li><b>27</b> slides</li><li><b>5</b> asked in real exams</li><li><b>0</b> related to real exam questions</li><li><b>8</b> practice questions</li></ul>
-<div class="legend" aria-label="Ink key">
-<span><i class="lg-ink"></i>Slide text</span>
-<span><i class="lg-red"></i>Study notes</span>
-<span><i class="lg-hl"></i>Highlight: key words</span>
-<span><i class="lg-tip"></i>Tips, tricks &amp; traps</span>
-<span><i class="lg-seen"></i>Seen again elsewhere</span>
-<span><i class="lg-exam"></i>How it can come up</span>
-</div>
+<style>:root{--bg:#f6f5f2;--panel:#ffffff;--ink:#1d1d1f;--muted:#5b5b63;--line:#dedcd6;--accent:#2f5bb7;--accent-ink:#ffffff;
+--hl:rgba(255,206,0,.42);--hl-strong:rgba(255,170,0,.62);--hl-ring:#d99a00;--code:#f1f0ec;--past:#1d6b45;--past-bg:#e3f3ea;--pred:#6b5a1d;--pred-bg:#f6efd8;
+--trap:#a3361f;--trick:#5b3fa8;--radius:12px;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html[data-theme="dark"]{--bg:#121316;--panel:#1b1c20;--ink:#ecebe8;--muted:#a9a8b0;--line:#2e3036;--accent:#8fb0ff;--accent-ink:#0d1220;
+--code:#24262c;--past:#8fe0b4;--past-bg:#173326;--pred:#f0d58a;--pred-bg:#352d14;--trap:#ff9a85;--trick:#c6b2ff}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6}
+a{color:var(--accent)}
+code,pre{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code);padding:.08em .32em;border-radius:5px;overflow-wrap:anywhere}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px var(--gutter)}
+.brand{min-width:0}.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.brand strong{display:block;font-size:15px;line-height:1.3}
+.controls{display:flex;flex-wrap:wrap;gap:6px}
+button,.btn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none;line-height:1.3}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:hover,.btn:hover{border-color:var(--accent)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:root{--gutter:clamp(12px,3vw,40px)}
+main{padding:20px var(--gutter) 48px;display:grid;gap:22px;container-type:inline-size}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(14px,2vw,24px);scroll-margin-top:72px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+.card-head h3{margin:0;font-size:clamp(17px,1.6vw,21px);line-height:1.3;flex:1 1 240px;overflow-wrap:anywhere}
+.sn{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.sn span{color:var(--muted);font-weight:600}
+.row{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 26px;align-items:start}
+@container (min-width:1080px){.row{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}.row>.slide{position:sticky;top:76px}
+ .card.bare .row{grid-template-columns:minmax(0,1fr)}.card.bare .row>.slide{position:relative;top:auto;max-width:1100px;margin:0 auto}
+ .card.notes-hidden .row>.slide{position:relative;top:auto}}
+.slide{margin:0;position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;line-height:0}
+.slide img{display:block;width:100%;height:auto}
+.hl-layer{position:absolute;inset:0;width:100%;height:100%}
+.hl{fill:var(--hl);mix-blend-mode:multiply;cursor:pointer;transition:fill .15s}
+.hl.free{cursor:default}
+.hl.on{fill:var(--hl-strong);stroke:var(--hl-ring);stroke-width:.0015}
+body.no-hl .hl-layer{display:none}
+.notes{min-width:0}
+.notes h4,.exam h4{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.notes ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.notes li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;border-radius:10px;padding:6px;margin:-6px;transition:background .15s}
+.notes li.on,.notes li.flash{background:color-mix(in srgb,var(--hl) 45%,transparent)}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:700;background:var(--accent);color:var(--accent-ink);margin-top:1px}
+.kind{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-right:2px}
+.kind.trap{color:var(--trap)}.kind.trick{color:var(--trick)}.kind.tip,.kind.seen{color:var(--accent)}
+.body>p{margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.body>*+*{margin-top:8px}
+table.walk{width:100%;border-collapse:collapse;font-size:14px;line-height:1.45;table-layout:fixed}
+table.walk th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:4px 8px;border-bottom:1px solid var(--line)}
+table.walk th:first-child{width:46%}
+table.walk td{vertical-align:top;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.walk td.src code{display:block;background:none;padding:0;white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+table.walk tr:nth-child(odd) td.src{background:var(--code)}
+dl.reading{margin:0;display:grid;gap:8px;font-size:14.5px}
+dl.reading div{border-left:3px solid var(--line);padding:2px 0 2px 10px}
+dl.reading dt{font-weight:700;line-height:1.4}dl.reading dd{margin:2px 0 0;line-height:1.5}
+pre{margin:0;background:var(--code);border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.exam{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);display:grid;gap:10px}
+.notes>.exam:first-child{margin-top:0;padding-top:0;border-top:0}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.q header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.q p{margin:0;text-align:justify;hyphens:auto}
+.q.ptr p{text-align:left}
+.notes .q ol.opts{display:block;list-style:upper-alpha;margin:6px 0 0;padding-left:26px;font-size:15px}
+.notes .q ol.opts li{display:list-item;margin:0 0 2px;padding:0;border-radius:0}
+.qn{font-size:12px;font-weight:700;color:var(--muted)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;line-height:1.5}
+.tag a{color:inherit}
+.tag.past{background:var(--past-bg);color:var(--past)}.tag.predict{background:var(--pred-bg);color:var(--pred)}
+details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent);margin-top:8px}
+details[open] summary{margin-bottom:6px}
+.card.notes-hidden .notes{display:none}
+.card.notes-hidden .row{grid-template-columns:minmax(0,1fr)}
+.card.notes-hidden .slide{position:relative}
+.overview .lead{font-size:17px;margin:0 0 16px;text-align:justify;hyphens:auto}
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin-bottom:18px}
+.idea{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.idea h4{margin:0 0 4px;font-size:14.5px}.idea p{margin:0;font-size:14.5px}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px}
+.ov-grid h4{margin:6px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ov-grid p{margin:0 0 10px;text-align:justify;hyphens:auto}
+.secs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.secs li{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px}.secs a{white-space:nowrap}
+.secs a{font-weight:700;text-decoration:none}
+.key-hl{background:var(--hl);padding:0 .2em;border-radius:3px}
+.toc{margin-top:8px}.toc ol{columns:auto 260px;column-gap:28px;padding:0;list-style:none;margin:8px 0 0}
+.toc li{break-inside:avoid;padding:2px 0}.toc a{text-decoration:none;color:var(--ink)}.toc b{color:var(--accent);display:inline-block;min-width:2.2em}
+.ov-body[hidden]{display:none}
+footer.end{padding:0 var(--gutter) 40px;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;border-radius:0;margin:0}
+.seg button+button{border-left:1px solid var(--line)}
+body.flip main>.card{display:none}
+body.flip main>.card.current{display:block}
+body.flip main{padding-bottom:96px}
+body.flip footer.end{display:none}
+.flipbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;
+ background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;
+ padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.12);max-width:calc(100vw - 24px)}
+.flipbar[hidden]{display:none}
+.flipbar select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 10px;min-width:0;max-width:min(52vw,420px);text-overflow:ellipsis}
+.flipbar button:disabled{opacity:.45;cursor:default}
+@media (max-width:700px){.top{position:static}.brand small{display:none}.brand strong{font-size:14px}.top .wrap{padding:8px var(--gutter)}.controls{gap:5px}button,.btn{font-size:12px;padding:5px 10px}.slide{position:relative}.card{scroll-margin-top:8px}}
+@media (max-width:560px){body{font-size:15.5px}.overview .lead{text-align:left;font-size:16px}.secs li{grid-template-columns:1fr;gap:0}pre{white-space:pre-wrap;word-break:break-word;font-size:12px}
+table.walk thead{display:none}table.walk,table.walk tbody,table.walk tr,table.walk td{display:block;width:100%}table.walk td.src{border-bottom:0}}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ :root{--bg:#fff;--panel:#fff}
+ html,body{background:#fff;font-size:10.5pt;line-height:1.5}
+ .top,.note-toggle,.ov-toggle,.toc,.flipbar{display:none!important}
+ body.flip main>.card{display:block!important}
+ main{padding:0;gap:0;display:block}
+ .card{border:0;border-radius:0;padding:0 0 14pt;margin:0 0 14pt;border-bottom:1px solid var(--line)}
+ .card-head{break-after:avoid;margin-bottom:6pt}
+ .card.overview{break-after:page;border-bottom:0}
+ .exam{break-inside:avoid}
+ .exam h4,.notes>h4{break-after:avoid}
+ .notes li{margin:0;padding:0}
+ footer.end{padding:10pt 0 0}
+ .row{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+ .slide{position:relative!important;top:auto!important;break-inside:avoid}
+ .notes,.ov-body{display:block!important}
+ .notes li,.q,.idea,table.walk tr,pre,dl.reading dd{break-inside:avoid}
+ .hl-layer{display:block!important}
+ .hl,.key-hl,.num,.tag,code,pre,table.walk tr:nth-child(odd) td.src{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ details>*:not(summary){display:block}
+ details summary{display:none}
+ details>p::before{content:"Answer: ";font-weight:700}
+}
+</style>
+</head>
+<body data-key="cs330-02-operating-system-services">
+<header class="top"><div class="wrap">
+  <div class="brand"><small>CS330 · Chapter 2 · Annotated Slides</small><strong>Operating System Services and Structures</strong></div>
+  <div class="controls" role="group" aria-label="Page controls">
+    <div class="seg" role="group" aria-label="View mode"><button type="button" id="m-scroll" aria-pressed="true" title="All slides on one scrolling page">Scroll</button><button type="button" id="m-flip" aria-pressed="false" title="One slide at a time (arrow keys or swipe to turn)">Flip</button></div>
+    <button type="button" id="t-notes" aria-pressed="true" title="Show or hide all notes">Notes</button>
+    <button type="button" id="t-hl" aria-pressed="true" title="Show or hide the highlights on the slides">Highlights</button>
+    <button type="button" id="t-ans" aria-pressed="false" title="Show or hide every exam answer">Answers</button>
+    <a class="btn" href="/academics/computer-science/cs330/slides/chapter-2-operating-system-services/" target="_top">Original</a>
+    <button type="button" id="t-theme" title="Switch light or dark theme">Dark</button>
+  </div>
+</div></header>
+<main>
+
+<section class="card overview" id="overview">
+  <header class="card-head"><span class="sn">Overview</span><h3>Operating System Services and Structures</h3>
+    <button type="button" class="ov-toggle" aria-expanded="true" aria-controls="ov-body">Hide overview</button></header>
+  <div id="ov-body" class="ov-body">
+    <p class="lead">OS services, command-line, GUI and touch interfaces, system calls and APIs (POSIX, Win32, Java), parameter passing, types of system calls, and OS structures: monolithic, layered, microkernel, modules and hybrid systems.</p>
+    
+    <div class="ov-grid"><div><h4>How to read this page</h4><p>Every original slide is shown unchanged. <span class="key-hl">Yellow marks</span> on a slide point to a numbered note: hover or tap a mark to jump to its note, and hover a note to see its marks. Questions tagged <span class="tag past">Past exam</span> appeared on a real paper; <span class="tag predict">Prediction</span> questions are likely angles, not confirmed.</p></div></div>
+    <details class="toc"><summary>All 27 slides</summary><ol><li><a href="#slide-1"><b>1</b> Chapter 2</a></li><li><a href="#slide-2"><b>2</b> Outline of this lecture</a></li><li><a href="#slide-3"><b>3</b> Objectives</a></li><li><a href="#slide-4"><b>4</b> Operating System Services</a></li><li><a href="#slide-5"><b>5</b> Additional Operating System Functions</a></li><li><a href="#slide-6"><b>6</b> A View of Operating System Services</a></li><li><a href="#slide-7"><b>7</b> User Operating System Interface - CLI</a></li><li><a href="#slide-8"><b>8</b> Bourne Shell Command Interpreter-</a></li><li><a href="#slide-9"><b>9</b> User Operating System Interface - GUI</a></li><li><a href="#slide-10"><b>10</b> Touchscreen Interfaces</a></li><li><a href="#slide-11"><b>11</b> The Mac OS X GUI</a></li><li><a href="#slide-12"><b>12</b> System Calls</a></li><li><a href="#slide-13"><b>13</b> System Call Implementation</a></li><li><a href="#slide-14"><b>14</b> API – System Call – OS Relationship</a></li><li><a href="#slide-15"><b>15</b> System Call Parameter Passing</a></li><li><a href="#slide-16"><b>16</b> Passing of Parameters As A Table</a></li><li><a href="#slide-17"><b>17</b> Types of System Calls</a></li><li><a href="#slide-18"><b>18</b> Examples of Windows and Unix System Calls</a></li><li><a href="#slide-19"><b>19</b> Standard C Library Example</a></li><li><a href="#slide-20"><b>20</b> Operating System Structure</a></li><li><a href="#slide-21"><b>21</b> Linux System Structure</a></li><li><a href="#slide-22"><b>22</b> 2. Layered Approach</a></li><li><a href="#slide-23"><b>23</b> 3. Microkernel System Structure</a></li><li><a href="#slide-24"><b>24</b> Microkernel System Structure</a></li><li><a href="#slide-25"><b>25</b> Modules</a></li><li><a href="#slide-26"><b>26</b> Hybrid Systems</a></li><li><a href="#slide-27"><b>27</b> Operating-System Debugging</a></li></ol></details>
+  </div>
 </section>
-<main class="as-deck" id="main">
-<article class="sheet" id="s-1" data-n="1" data-past="0" aria-label="Slide 1: "><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-01.jpg" alt="Slide 1: Slide 1" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 1"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-2" data-n="2" data-past="0" aria-label="Slide 2: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>Outline of this lecture</strong></p><p>In this lecture, we will cover the following:</p><ul><li>Operating System Services</li><li>User Operating System Interface</li><li>System Calls</li><li>Types of System Calls</li><li>System Programs</li><li>Operating System Design and Implementation</li><li>Operating System Structure</li><li>Operating System Debugging</li><li>Operating System Generation</li><li>System Boot</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">2</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 2"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-3" data-n="3" data-past="0" aria-label="Slide 3: Objectives"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Objectives</h2></div><div class="slide-body"><div class="slide-text"><p></p><p>To describe the services an operating system provides to users, processes, and other systems</p><p></p><p>To discuss the various ways of structuring an operating system</p><p> To explain how operating systems are installed and customized</p><p>and how they boot</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">3</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 3"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-4" data-n="4" data-past="0" aria-label="Slide 4: Operating System Services"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Operating System Services</h2></div><div class="slide-body"><div class="slide-text"><p>OS provides an environment for execution of programs and services to programs and users. One set of OS services provides functions that are helpful to the user:</p><ul><li><strong>User Interface-</strong> - Almost all operating systems have a user interface (). Varies <strong>UI</strong> between <strong>Command-Line (CLI) , Graphics User Interface (GUI)</strong></li><li><strong>Program execution</strong> – system capability to load a program into memory and to run it. OS able to end a program ’ s execution either normally or abnormally.</li><li><strong>I/O operations</strong> – since user programs cannot execute I/O operations directly, the operating system must provide some means to perform I/O.</li><li><strong>File-system manipulation</strong> – The OS gives the ability to read, write, create, open, close and delete files / directories.</li><li><strong>Error detection</strong> – ensure correct computing by detecting errors in the CPU and memory hardware, in I/O devices, or in user programs.</li><li><strong>Communications</strong> – exchange of information between processes executing either on the same computer or on different systems tied together by a network. Implemented via <strong>shared memory</strong> or <strong>message passing</strong> (packets moved by the OS, see chapter 3).</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">4</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 4"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Services for the user: UI, program execution, I/O, file-system manipulation, communication, error detection.</li></ol></div></div></article><article class="sheet" id="s-5" data-n="5" data-past="0" aria-label="Slide 5: Additional Operating System Functions"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Additional Operating System Functions</h2></div><div class="slide-body"><div class="slide-text"><p>Additional functions exist not for helping the user, but rather for ensuring efficient system operations of the system itself via resource sharing.</p><ul><li><strong>Resource allocation</strong> – allocating resources to multiple users or multiple jobs running concurrently, resources must be allocated to each of them.</li><li><strong>Accounting</strong> – keep track of and record which users use how much and what kinds of computer resources for account billing or for accumulating usage statistics.</li><li><strong>Protection &amp; Security</strong> – The owners of information stored in a multiuser or networked computer system may want to control use of that information, concurrent processes should not interfere with each other <strong>Protection</strong> involves ensuring that all access to system resources is controlled  <strong>Security</strong> of the system from outsiders requires user authentication, extends to  defending external I/O devices from invalid access attempts If a system is to be protected and secure, precautions must be instituted  throughout it. A chain is only as strong as its weakest link.</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">5</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 5"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Services for the system itself: resource allocation, accounting (logging), protection and security.</li></ol></div></div></article><article class="sheet" id="s-6" data-n="6" data-past="0" aria-label="Slide 6: A View of Operating System Services"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-06.jpg" alt="Slide 6: A View of Operating System Services" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 6"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-7" data-n="7" data-past="0" aria-label="Slide 7: User Operating System Interface - CLI"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>User Operating System Interface - CLI</h2></div><div class="slide-body"><div class="slide-text"><p> CLI or <strong>command interpreter</strong> allows direct</p><p>command entry</p><p>Sometimes implemented in kernel, sometimes by systems</p><p></p><p>program On systems with multiple CLI to choose from, the</p><p></p><p>interpreters are known – <strong>shells</strong> Primarily fetches a command from user and executes it</p><p></p><p>Sometimes commands built-in, sometimes just names of</p><p></p><p>programs</p><p>If the latter, adding new features doesn ’ t require shell</p><p></p><p>modification</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">7</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 7"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">CLI (command interpreter / shell) reads and runs commands; GUI uses windows and a mouse; touch interfaces use gestures.</li></ol></div></div></article><article class="sheet" id="s-8" data-n="8" data-past="0" aria-label="Slide 8: Bourne Shell Command Interpreter-"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-08.jpg" alt="Slide 8: Bourne Shell Command Interpreter-" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 8"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-9" data-n="9" data-past="0" aria-label="Slide 9: User Operating System Interface - GUI"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>User Operating System Interface - GUI</h2></div><div class="slide-body"><div class="slide-text"><p></p><p>User-friendly <strong>desktop</strong> metaphor interface</p><p></p><p>Usually mouse, keyboard, and monitor <strong>Icons</strong> represent files, programs, actions, etc</p><p></p><p>Various mouse buttons over objects in the interface cause various actions</p><p></p><p>(provide information, options, execute function, open directory (known as a <strong>folder</strong>)</p><p></p><p>Invented at Xerox PARC in the early 1970s</p><p></p><p>Many systems now include both CLI and GUI interfaces</p><p>Microsoft Windows is GUI with CLI</p><p>“ command shell</p><p>”</p><p></p><p>Apple Mac OS X is</p><p>“ Aqua GUI interface with UNIX kernel underneath</p><p>”</p><p></p><p>and shells available Unix and Linux have CLI with optional GUI interfaces (CDE, KDE,</p><p></p><p>GNOME)</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">9</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 9"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-10" data-n="10" data-past="0" aria-label="Slide 10: Touchscreen Interfaces"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-10.jpg" alt="Slide 10: Touchscreen Interfaces" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 10"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-11" data-n="11" data-past="0" aria-label="Slide 11: The Mac OS X GUI"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-11.jpg" alt="Slide 11: The Mac OS X GUI" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 11"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-12" data-n="12" data-past="1" aria-label="Slide 12: System Calls"><div class="sheet-grid"><div><div class="slide content"><div class="stamp">★ Past exam</div><div class="slide-inner"><div class="slide-head"><h2>System Calls</h2></div><div class="slide-body"><div class="slide-text"><ul><li>System calls provide the interface between a running program and O/S.</li><li>Typically written in a high-level language (C or C++)</li><li>Mostly accessed by programs via a high-level <strong>Application Program Interface (API)</strong> rather than direct system call use</li><li>Three most common APIs are Win32 API for Windows, POSIX API for POSIX-based systems (including virtually all versions of UNIX, Linux, and Mac OS X), and Java API for the Java virtual machine (JVM) (Note that the system-call names used throughout this text are generic)</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">12</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 12"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">System calls are the programming interface to OS services; programs usually reach them through an API (Win32, POSIX, Java API).</li></ol></div></div><div class="extras"><div class="stickies"><div class="sticky trap"><b>Exam trap</b>The JVM is not a system-call API; the Java API is.</div></div><div class="past"><p class="row-label">Asked in a real exam</p><div class="links"><a class="dir" href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">★ Quiz 1 (Ch. 1 &amp; 2) · Q25, Q26, Q31: system-call interface and APIs</a></div></div><details class="radar" open><summary>🎯 How this can come up · 2 questions</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>The API that Unix-like systems give programmers is:</p><div class="opts"><button type="button" class="opt" data-right="1">POSIX</button><button type="button" class="opt" data-right="0">JVM</button><button type="button" class="opt" data-right="0">Win32</button><button type="button" class="opt" data-right="0">DirectX</button></div><p class="why" hidden>Correct: POSIX.</p></div><div class="q"><span class="q-type mcq">MCQ</span><p>The three most common APIs for system calls include all EXCEPT:</p><div class="opts"><button type="button" class="opt" data-right="0">Java API</button><button type="button" class="opt" data-right="0">POSIX</button><button type="button" class="opt" data-right="1">Java Virtual Machine</button><button type="button" class="opt" data-right="0">Win32</button></div><p class="why" hidden>Correct: Java Virtual Machine.</p></div></div></details></div></article><article class="sheet" id="s-13" data-n="13" data-past="0" aria-label="Slide 13: System Call Implementation"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>System Call Implementation</h2></div><div class="slide-body"><div class="slide-text"><p> Typically, a number associated with each system call</p><p></p><p><strong>System-call interface</strong> maintains a table indexed according to these numbers</p><p> The system call interface invokes intended system call in OS kernel and</p><p>returns status of the system call and any return values</p><p> The caller needs know nothing about how the system call is implemented</p><p></p><p>Just needs to obey API and understand what OS will do as a result call</p><p></p><p>Most details of OS interface hidden from programmer by API</p><p>Managed by run-time support library (set of functions built into</p><p></p><p>libraries included with</p><p>compiler)</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">13</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 13"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-14" data-n="14" data-past="0" aria-label="Slide 14: API – System Call – OS Relationship"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-14.jpg" alt="Slide 14: API – System Call – OS Relationship" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 14"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">The system-call interface uses a table indexed by system-call number; the caller doesn’t need to know how it is implemented.</li></ol></div></div></article><article class="sheet" id="s-15" data-n="15" data-past="0" aria-label="Slide 15: System Call Parameter Passing"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>System Call Parameter Passing</h2></div><div class="slide-body"><div class="slide-text"><p></p><p>Often, more information is required than simply identity of desired system call</p><p></p><p>Exact type and amount of information vary according to OS and call</p><p> Three general methods used to pass parameters to the OS</p><p>Simplest: pass the parameters in registers</p><p></p><p>In some cases, may be more parameters than registers</p><p></p><p></p><p>Parameters stored in a block, or table, in memory, and address of block passed as a parameter in a register</p><p>This approach taken by Linux and Solaris</p><p> Parameters placed, or <strong>pushed</strong>, onto the <strong>stack</strong> by the program and <strong>popped</strong></p><p></p><p>off the stack by the operating system Block and stack methods do not limit the number or length of parameters</p><p></p><p>being passed</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">15</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 15"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●○</span> Medium</div><ol><li data-n="1">Passing parameters: in registers, in a block/table in memory (address in a register), or pushed on the stack.</li></ol></div></div><div class="extras"><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Which is NOT a way to pass parameters to a system call?</p><div class="opts"><button type="button" class="opt" data-right="0">Registers</button><button type="button" class="opt" data-right="0">A block in memory whose address is in a register</button><button type="button" class="opt" data-right="1">Through the file system</button><button type="button" class="opt" data-right="0">The stack</button></div><p class="why" hidden>Correct: Through the file system.</p></div></div></details></div></article><article class="sheet" id="s-16" data-n="16" data-past="0" aria-label="Slide 16: "><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-16.jpg" alt="Slide 16: Slide 16" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 16"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-17" data-n="17" data-past="1" aria-label="Slide 17: Types of System Calls"><div class="sheet-grid"><div><div class="slide content"><div class="stamp">★ Past exam</div><div class="slide-inner"><div class="slide-head"><h2>Types of System Calls</h2></div><div class="slide-body"><div class="slide-text"><p>System Calls can be grouped into 6 categories</p><ul><li><strong>Process control</strong> – create/terminate process, load/execute, end/abort, etc.</li><li><strong>File management-</strong> create/delete file, open/close, read/write, get/set file attributes</li><li><strong>Device management</strong> - read/write, get/set device attributes, request/release device.</li><li><strong>Information maintenance-</strong> get/set time or date, get/set file attributes, get/set process/device attributes.</li><li><strong>Protection</strong> – Control access to resources, Get and set permissions, Allow and deny user access</li><li><strong>Communications</strong> - create, delete communication connection send, receive messages if <strong>message passing model</strong> to <strong>host name</strong> or  <strong>process name</strong> From <strong>client</strong> to <strong>server</strong>   <strong>Shared-memory model</strong> create and gain access to memory regions transfer status information   attach and detach remote devices</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">17</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 17"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Types: process control, file management, device management, information maintenance, communications, protection.</li></ol></div></div><div class="extras"><div class="past"><p class="row-label">Asked in a real exam</p><div class="links"><a class="dir" href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">★ Quiz 1 (Ch. 1 &amp; 2) · Q24, Q27: fork() and system-call categories</a></div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>Which system call creates a process in UNIX?</p><div class="opts"><button type="button" class="opt" data-right="0">read()</button><button type="button" class="opt" data-right="0">open()</button><button type="button" class="opt" data-right="0">exec()</button><button type="button" class="opt" data-right="1">fork()</button></div><p class="why" hidden>exec() replaces the program in an existing process.</p></div></div></details></div></article><article class="sheet" id="s-18" data-n="18" data-past="0" aria-label="Slide 18: Examples of Windows and Unix System Calls"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-18.jpg" alt="Slide 18: Examples of Windows and Unix System Calls" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 18"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-19" data-n="19" data-past="1" aria-label="Slide 19: Standard C Library Example"><div class="sheet-grid"><div><div class="slide image"><div class="stamp">★ Past exam</div><img src="figures/slide-19.jpg" alt="Slide 19: Standard C Library Example" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 19"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">printf() is a C library function that eventually calls the write() system call; it is not itself a system call.</li></ol></div></div><div class="extras"><div class="past"><p class="row-label">Asked in a real exam</p><div class="links"><a class="dir" href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">★ Quiz 1 (Ch. 1 &amp; 2) · Q29, Q30: printf and calling system calls directly</a></div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type tf">True / False</span><p>printf() in C is a system call.</p><div class="opts tf-opts"><button type="button" class="opt" data-right="0">True</button><button type="button" class="opt" data-right="1">False</button></div><p class="why" hidden>False. It is a library function that invokes write().</p></div></div></details></div></article><article class="sheet" id="s-20" data-n="20" data-past="0" aria-label="Slide 20: Operating System Structure"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Operating System Structure</h2></div><div class="slide-body"><div class="slide-text"><ul><li>General-purpose OS is very large program</li><li>Various ways to structure ones<ul><li>Simple structure – MS-DOS</li><li>More complex – UNIX</li><li>Layered – an abstraction</li><li>Microkernel – Mach</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">20</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 20"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-21" data-n="21" data-past="0" aria-label="Slide 21: Linux System Structure"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-21.jpg" alt="Slide 21: Linux System Structure" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 21"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-22" data-n="22" data-past="1" aria-label="Slide 22: 2. Layered Approach"><div class="sheet-grid"><div><div class="slide content"><div class="stamp">★ Past exam</div><div class="slide-inner"><div class="slide-head"><h2>2. Layered Approach</h2></div><div class="slide-body"><div class="slide-text"><ul><li>The operating system is divided into a number of layers (levels), each built on top of lower layers. The bottom layer (layer 0), is the hardware; the highest (layer N) is the user interface.</li></ul><p>The system is divided into separate, smaller components that have specific and limited functionality.</p><ul><li>With modularity, layers are selected such that each uses functions (operations) and services of only lower-level layers</li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">22</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 22"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Layered: layer 0 = hardware … layer N = UI; each uses only the layers below. Advantage: easy debugging and maintenance. Disadvantage: hard to define layers, overhead.</li></ol></div></div><div class="extras"><div class="past"><p class="row-label">Asked in a real exam</p><div class="links"><a class="dir" href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">★ Quiz 1 (Ch. 1 &amp; 2) · Q33: advantage of layering</a></div></div><details class="radar" open><summary>🎯 How this can come up · 1 question</summary><div class="radar-items"><div class="q"><span class="q-type short">Written</span><p>Give one advantage of the layered approach.</p><button type="button" class="reveal" aria-expanded="false">Show model answer</button><p class="why" hidden>Simple construction and debugging: each layer is debugged on top of already-verified lower layers, so an error is found in the layer being tested; layers can also be changed independently.</p></div></div></details></div></article><article class="sheet" id="s-23" data-n="23" data-past="0" aria-label="Slide 23: "><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2></h2></div><div class="slide-body"><div class="slide-text"><p><strong>3. Microkernel System Structure</strong></p><ul><li>Removes all nonessential components from the kernel &amp; implementing them as system &amp; user-level progs- smaller kernel. E.g. Mach OS</li><li>Microkernel provides communication between client prog &amp; various services that are running in user space using message passing.</li><li>Benefits:<ul><li>extension of the OS is easier when there is less kernel to modify.</li><li>easier to port the operating system to a different hardware platform because there's less kernel to reimplement.</li><li>more reliable (less code is running in kernel mode).</li><li>more secure (most services are running as user rather than kernel)</li></ul></li></ul></div></div><div class="slide-foot"><span class="bar"></span><span class="num">23</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 23"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article><article class="sheet" id="s-24" data-n="24" data-past="1" aria-label="Slide 24: Microkernel System Structure"><div class="sheet-grid"><div><div class="slide image"><div class="stamp">★ Past exam</div><img src="figures/slide-24.jpg" alt="Slide 24: Microkernel System Structure" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 24"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●●●</span> High</div><ol><li data-n="1">Microkernel: move most services into user space; communicate by message passing. + easier to extend, port, more reliable and secure. − message-passing overhead.</li></ol></div></div><div class="extras"><div class="past"><p class="row-label">Asked in a real exam</p><div class="links"><a class="dir" href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">★ Quiz 1 (Ch. 1 &amp; 2) · Q28, Q32: microkernel location and disadvantage</a></div></div><details class="radar" open><summary>🎯 How this can come up · 2 questions</summary><div class="radar-items"><div class="q"><span class="q-type mcq">MCQ</span><p>In a microkernel OS, most OS functionality runs:</p><div class="opts"><button type="button" class="opt" data-right="0">In the kernel</button><button type="button" class="opt" data-right="1">In user-space processes</button><button type="button" class="opt" data-right="0">In hardware</button><button type="button" class="opt" data-right="0">In device drivers only</button></div><p class="why" hidden>Correct: In user-space processes.</p></div><div class="q"><span class="q-type short">Written</span><p>Give one disadvantage of the microkernel approach.</p><button type="button" class="reveal" aria-expanded="false">Show model answer</button><p class="why" hidden>Performance overhead: user-space services communicate through the kernel by message passing, which costs extra copies and context switches.</p></div></div></details></div></article><article class="sheet" id="s-25" data-n="25" data-past="0" aria-label="Slide 25: Modules"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-25.jpg" alt="Slide 25: Modules" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 25"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Loadable kernel modules: core kernel + modules loaded as needed (like layers but any module can call any other).</li></ol></div></div></article><article class="sheet" id="s-26" data-n="26" data-past="0" aria-label="Slide 26: Hybrid Systems"><div class="sheet-grid"><div><div class="slide content"><div class="slide-inner"><div class="slide-head"><h2>Hybrid Systems</h2></div><div class="slide-body"><div class="slide-text"><p> Most modern operating systems actually not one pure model</p><p>Hybrid combines multiple approaches to address performance, security, usability</p><p></p><p>needs Linux and Solaris kernels in kernel address space, so monolithic, plus modular</p><p></p><p>for dynamic loading of functionality</p><p> Windows mostly monolithic, plus microkernel providing support for separate</p><p>subsystems that run as user-mode processes.</p></div></div><div class="slide-foot"><span class="bar"></span><span class="num">26</span></div></div></div></div><div class="margin" role="note" aria-label="Notes for slide 26"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol><li data-n="1">Hybrid systems mix structures: Linux/Solaris monolithic + modules; Windows mostly monolithic + microkernel parts; macOS/iOS Mach + BSD.</li></ol></div></div></article><article class="sheet" id="s-27" data-n="27" data-past="0" aria-label="Slide 27: Operating-System Debugging"><div class="sheet-grid"><div><div class="slide image"><img src="figures/slide-27.jpg" alt="Slide 27: Operating-System Debugging" width="1200" height="900" loading="lazy" decoding="async"></div></div><div class="margin" role="note" aria-label="Notes for slide 27"><div class="weight" title="How likely this slide is to be examined">Exam weight <span class="dots" aria-hidden="true">●○○</span> Low</div><ol></ol></div></div></article>
-<p class="empty-filter" id="as-empty" hidden>No slides match this filter.</p>
+
+<section class="card bare" id="slide-1" data-slide="1">
+  <header class="card-head"><span class="sn">Slide 1 <span>/ 27</span></span><h3>Chapter 2</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-01.jpg" width="1440" height="1080" alt="Slide 1: Chapter 2" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-2" data-slide="2">
+  <header class="card-head"><span class="sn">Slide 2 <span>/ 27</span></span><h3>Outline of this lecture</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-02.jpg" width="1440" height="1080" alt="Slide 2: Outline of this lecture" loading="eager" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-3" data-slide="3">
+  <header class="card-head"><span class="sn">Slide 3 <span>/ 27</span></span><h3>Objectives</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-03.jpg" width="1440" height="1080" alt="Slide 3: Objectives" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-4" data-slide="4">
+  <header class="card-head"><span class="sn">Slide 4 <span>/ 27</span></span><h3>Operating System Services</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-4">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-04.jpg" width="1440" height="1080" alt="Slide 4: Operating System Services" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-4"><h4>Notes</h4><ol><li id="n4-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Services for the user: UI, program execution, I/O, file-system manipulation, communication, error detection.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-5" data-slide="5">
+  <header class="card-head"><span class="sn">Slide 5 <span>/ 27</span></span><h3>Additional Operating System Functions</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-5">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-05.jpg" width="1440" height="1080" alt="Slide 5: Additional Operating System Functions" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-5"><h4>Notes</h4><ol><li id="n5-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Services for the system itself: resource allocation, accounting (logging), protection and security.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-6" data-slide="6">
+  <header class="card-head"><span class="sn">Slide 6 <span>/ 27</span></span><h3>A View of Operating System Services</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-06.jpg" width="1440" height="1080" alt="Slide 6: A View of Operating System Services" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-7" data-slide="7">
+  <header class="card-head"><span class="sn">Slide 7 <span>/ 27</span></span><h3>User Operating System Interface - CLI</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-7">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-07.jpg" width="1440" height="1080" alt="Slide 7: User Operating System Interface - CLI" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-7"><h4>Notes</h4><ol><li id="n7-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>CLI (command interpreter / shell) reads and runs commands; GUI uses windows and a mouse; touch interfaces use gestures.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-8" data-slide="8">
+  <header class="card-head"><span class="sn">Slide 8 <span>/ 27</span></span><h3>Bourne Shell Command Interpreter-</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-08.jpg" width="1440" height="1080" alt="Slide 8: Bourne Shell Command Interpreter-" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-9" data-slide="9">
+  <header class="card-head"><span class="sn">Slide 9 <span>/ 27</span></span><h3>User Operating System Interface - GUI</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-09.jpg" width="1440" height="1080" alt="Slide 9: User Operating System Interface - GUI" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-10" data-slide="10">
+  <header class="card-head"><span class="sn">Slide 10 <span>/ 27</span></span><h3>Touchscreen Interfaces</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-10.jpg" width="1440" height="1080" alt="Slide 10: Touchscreen Interfaces" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-11" data-slide="11">
+  <header class="card-head"><span class="sn">Slide 11 <span>/ 27</span></span><h3>The Mac OS X GUI</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-11.jpg" width="1440" height="1080" alt="Slide 11: The Mac OS X GUI" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-12" data-slide="12">
+  <header class="card-head"><span class="sn">Slide 12 <span>/ 27</span></span><h3>System Calls</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-12">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-12.jpg" width="1440" height="1080" alt="Slide 12: System Calls" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-12"><h4>Notes</h4><ol><li id="n12-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>System calls are the programming interface to OS services; programs usually reach them through an API (Win32, POSIX, Java API).</p></div></li><li id="n12-2" data-n="2"><span class="num" aria-hidden="true">2</span><div class="body"><p><span class="kind trap">Trap</span> The JVM is not a system-call API; the Java API is.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 12"><h4>Exam angle</h4><article class="q past ptr"><header><span class="tag past">Past exam · <a href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">Quiz 1 (Ch. 1 &amp; 2)</a></span></header><p>Q25, Q26, Q31: system-call interface and APIs</p></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>The API that Unix-like systems give programmers is:</p><ol class="opts" type="A"><li>POSIX</li><li>JVM</li><li>Win32</li><li>DirectX</li></ol><details><summary>Show answer</summary><p><strong>A. POSIX</strong></p></details></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q2</span></header><p>The three most common APIs for system calls include all EXCEPT:</p><ol class="opts" type="A"><li>Java API</li><li>POSIX</li><li>Java Virtual Machine</li><li>Win32</li></ol><details><summary>Show answer</summary><p><strong>C. Java Virtual Machine</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-13" data-slide="13">
+  <header class="card-head"><span class="sn">Slide 13 <span>/ 27</span></span><h3>System Call Implementation</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-13.jpg" width="1440" height="1080" alt="Slide 13: System Call Implementation" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-14" data-slide="14">
+  <header class="card-head"><span class="sn">Slide 14 <span>/ 27</span></span><h3>API – System Call – OS Relationship</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-14">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-14.jpg" width="1440" height="1080" alt="Slide 14: API – System Call – OS Relationship" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-14"><h4>Notes</h4><ol><li id="n14-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>The system-call interface uses a table indexed by system-call number; the caller doesn’t need to know how it is implemented.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-15" data-slide="15">
+  <header class="card-head"><span class="sn">Slide 15 <span>/ 27</span></span><h3>System Call Parameter Passing</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-15">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-15.jpg" width="1440" height="1080" alt="Slide 15: System Call Parameter Passing" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-15"><h4>Notes</h4><ol><li id="n15-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Passing parameters: in registers, in a block/table in memory (address in a register), or pushed on the stack.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 15"><h4>Exam angle</h4><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Which is NOT a way to pass parameters to a system call?</p><ol class="opts" type="A"><li>Registers</li><li>A block in memory whose address is in a register</li><li>Through the file system</li><li>The stack</li></ol><details><summary>Show answer</summary><p><strong>C. Through the file system</strong></p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-16" data-slide="16">
+  <header class="card-head"><span class="sn">Slide 16 <span>/ 27</span></span><h3>Passing of Parameters As A Table</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-16.jpg" width="1440" height="1080" alt="Slide 16: Passing of Parameters As A Table" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-17" data-slide="17">
+  <header class="card-head"><span class="sn">Slide 17 <span>/ 27</span></span><h3>Types of System Calls</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-17">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-17.jpg" width="1440" height="1080" alt="Slide 17: Types of System Calls" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-17"><h4>Notes</h4><ol><li id="n17-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Types: process control, file management, device management, information maintenance, communications, protection.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 17"><h4>Exam angle</h4><article class="q past ptr"><header><span class="tag past">Past exam · <a href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">Quiz 1 (Ch. 1 &amp; 2)</a></span></header><p>Q24, Q27: fork() and system-call categories</p></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Which system call creates a process in UNIX?</p><ol class="opts" type="A"><li>read()</li><li>open()</li><li>exec()</li><li>fork()</li></ol><details><summary>Show answer</summary><p><strong>D. fork()</strong> — exec() replaces the program in an existing process.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-18" data-slide="18">
+  <header class="card-head"><span class="sn">Slide 18 <span>/ 27</span></span><h3>Examples of Windows and Unix System Calls</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-18.jpg" width="1440" height="1080" alt="Slide 18: Examples of Windows and Unix System Calls" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-19" data-slide="19">
+  <header class="card-head"><span class="sn">Slide 19 <span>/ 27</span></span><h3>Standard C Library Example</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-19">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-19.jpg" width="1440" height="1080" alt="Slide 19: Standard C Library Example" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-19"><h4>Notes</h4><ol><li id="n19-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>printf() is a C library function that eventually calls the write() system call; it is not itself a system call.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 19"><h4>Exam angle</h4><article class="q past ptr"><header><span class="tag past">Past exam · <a href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">Quiz 1 (Ch. 1 &amp; 2)</a></span></header><p>Q29, Q30: printf and calling system calls directly</p></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>printf() in C is a system call.</p><details><summary>Show answer</summary><p><strong>False</strong> — It is a library function that invokes write().</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-20" data-slide="20">
+  <header class="card-head"><span class="sn">Slide 20 <span>/ 27</span></span><h3>Operating System Structure</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-20.jpg" width="1440" height="1080" alt="Slide 20: Operating System Structure" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card bare" id="slide-21" data-slide="21">
+  <header class="card-head"><span class="sn">Slide 21 <span>/ 27</span></span><h3>Linux System Structure</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-21.jpg" width="1440" height="1080" alt="Slide 21: Linux System Structure" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-22" data-slide="22">
+  <header class="card-head"><span class="sn">Slide 22 <span>/ 27</span></span><h3>2. Layered Approach</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-22">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-22.jpg" width="1440" height="1080" alt="Slide 22: 2. Layered Approach" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-22"><h4>Notes</h4><ol><li id="n22-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Layered: layer 0 = hardware … layer N = UI; each uses only the layers below. Advantage: easy debugging and maintenance. Disadvantage: hard to define layers, overhead.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 22"><h4>Exam angle</h4><article class="q past ptr"><header><span class="tag past">Past exam · <a href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">Quiz 1 (Ch. 1 &amp; 2)</a></span></header><p>Q33: advantage of layering</p></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>Give one advantage of the layered approach.</p><details><summary>Show answer</summary><p>Simple construction and debugging: each layer is debugged on top of already-verified lower layers, so an error is found in the layer being tested; layers can also be changed independently.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card bare" id="slide-23" data-slide="23">
+  <header class="card-head"><span class="sn">Slide 23 <span>/ 27</span></span><h3>3. Microkernel System Structure</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-23.jpg" width="1440" height="1080" alt="Slide 23: 3. Microkernel System Structure" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
+<section class="card" id="slide-24" data-slide="24">
+  <header class="card-head"><span class="sn">Slide 24 <span>/ 27</span></span><h3>Microkernel System Structure</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-24">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-24.jpg" width="1440" height="1080" alt="Slide 24: Microkernel System Structure" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-24"><h4>Notes</h4><ol><li id="n24-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Microkernel: move most services into user space; communicate by message passing. + easier to extend, port, more reliable and secure. − message-passing overhead.</p></div></li></ol><section class="exam" aria-label="Exam practice for slide 24"><h4>Exam angle</h4><article class="q past ptr"><header><span class="tag past">Past exam · <a href="/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/" target="_top">Quiz 1 (Ch. 1 &amp; 2)</a></span></header><p>Q28, Q32: microkernel location and disadvantage</p></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q1</span></header><p>In a microkernel OS, most OS functionality runs:</p><ol class="opts" type="A"><li>In the kernel</li><li>In user-space processes</li><li>In hardware</li><li>In device drivers only</li></ol><details><summary>Show answer</summary><p><strong>B. In user-space processes</strong></p></details></article><article class="q predict"><header><span class="tag predict">Prediction</span><span class="qn">Q2</span></header><p>Give one disadvantage of the microkernel approach.</p><details><summary>Show answer</summary><p>Performance overhead: user-space services communicate through the kernel by message passing, which costs extra copies and context switches.</p></details></article></section></div>
+  </div>
+</section>
+<section class="card" id="slide-25" data-slide="25">
+  <header class="card-head"><span class="sn">Slide 25 <span>/ 27</span></span><h3>Modules</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-25">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-25.jpg" width="1440" height="1080" alt="Slide 25: Modules" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-25"><h4>Notes</h4><ol><li id="n25-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Loadable kernel modules: core kernel + modules loaded as needed (like layers but any module can call any other).</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card" id="slide-26" data-slide="26">
+  <header class="card-head"><span class="sn">Slide 26 <span>/ 27</span></span><h3>Hybrid Systems</h3><button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-26">Hide notes</button></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-26.jpg" width="1440" height="1080" alt="Slide 26: Hybrid Systems" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    <div class="notes" id="notes-26"><h4>Notes</h4><ol><li id="n26-1" data-n="1"><span class="num" aria-hidden="true">1</span><div class="body"><p>Hybrid systems mix structures: Linux/Solaris monolithic + modules; Windows mostly monolithic + microkernel parts; macOS/iOS Mach + BSD.</p></div></li></ol></div>
+  </div>
+</section>
+<section class="card bare" id="slide-27" data-slide="27">
+  <header class="card-head"><span class="sn">Slide 27 <span>/ 27</span></span><h3>Operating-System Debugging</h3></header>
+  <div class="row">
+    <figure class="slide"><img src="figures/slide-27.jpg" width="1440" height="1080" alt="Slide 27: Operating-System Debugging" loading="lazy" decoding="async">
+      <svg class="hl-layer" viewBox="0 0 1 0.75000" preserveAspectRatio="none" aria-hidden="true"></svg></figure>
+    
+  </div>
+</section>
 </main>
-<footer class="as-foot">Rebuilt slides from the CS330 lecture slides, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-2-operating-system-services/" target="_top">original deck</a>. Made by Shoug Alomran.</footer>
-</div>
-<nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
-<script src="/javascripts/annotated-slides.js"></script>
+<nav class="flipbar" aria-label="Slide navigation" hidden>
+  <button type="button" id="f-prev" aria-label="Previous slide">Previous</button>
+  <select id="f-jump" aria-label="Go to slide"></select>
+  <button type="button" id="f-next" aria-label="Next slide">Next</button>
+</nav>
+<footer class="end">Original slides from the CS330 lecture deck, with study notes. Check exact wording against the <a href="/academics/computer-science/cs330/slides/chapter-2-operating-system-services/" target="_top">original deck</a>. Notes and questions are study aids. Made by Shoug Alomran.</footer>
+<script>(function(){
+  var root=document.documentElement, body=document.body, K=body.getAttribute('data-key')||'annotated';
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function read(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  // theme toggle (shared key with the rest of the site)
+  var tbtn=document.getElementById('t-theme');
+  function paintTheme(){tbtn.textContent=root.getAttribute('data-theme')==='dark'?'Light':'Dark'}
+  tbtn.addEventListener('click',function(){var t=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',t);store('shoug-theme',t);paintTheme()});
+  window.addEventListener('storage',function(ev){if(ev.key==='shoug-theme'&&ev.newValue){root.setAttribute('data-theme',ev.newValue);paintTheme()}});
+  paintTheme();
+  // global toggles
+  function setPressed(b,on){b.setAttribute('aria-pressed',on?'true':'false')}
+  var bn=document.getElementById('t-notes'), bh=document.getElementById('t-hl'), ba=document.getElementById('t-ans');
+  function setCardNotes(card,show){var b=card.querySelector('.note-toggle');if(!b)return;card.classList.toggle('notes-hidden',!show);b.textContent=show?'Hide notes':'Show notes';b.setAttribute('aria-expanded',show?'true':'false')}
+  bn.addEventListener('click',function(){var on=bn.getAttribute('aria-pressed')!=='true';setPressed(bn,on);
+    document.querySelectorAll('.card[data-slide]').forEach(function(c){setCardNotes(c,on)});store(K+'-notes',on?'1':'0')});
+  bh.addEventListener('click',function(){var on=bh.getAttribute('aria-pressed')!=='true';setPressed(bh,on);body.classList.toggle('no-hl',!on);store(K+'-hl',on?'1':'0')});
+  ba.addEventListener('click',function(){var on=ba.getAttribute('aria-pressed')!=='true';setPressed(ba,on);
+    document.querySelectorAll('.exam details').forEach(function(d){d.open=on})});
+  document.querySelectorAll('.note-toggle').forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.card');setCardNotes(c,c.classList.contains('notes-hidden'))})});
+  // overview show/hide (control lives inside the overview)
+  var ob=document.querySelector('.ov-toggle'), ovb=document.getElementById('ov-body');
+  function setOv(show){ovb.hidden=!show;ob.textContent=show?'Hide overview':'Show overview';ob.setAttribute('aria-expanded',show?'true':'false');store(K+'-ov',show?'1':'0')}
+  ob.addEventListener('click',function(){setOv(ovb.hidden)});
+  if(read(K+'-ov')==='0')setOv(false);
+  if(read(K+'-notes')==='0')bn.click();
+  if(read(K+'-hl')==='0')bh.click();
+  // highlight <-> note linking
+  function link(card,n,on){card.querySelectorAll('[data-n="'+n+'"]').forEach(function(el){el.classList.toggle('on',on)})}
+  document.querySelectorAll('.card[data-slide]').forEach(function(card){
+    card.querySelectorAll('.notes li[data-n]').forEach(function(li){var n=li.getAttribute('data-n');
+      li.addEventListener('mouseenter',function(){link(card,n,true)});li.addEventListener('mouseleave',function(){link(card,n,false)})});
+    card.querySelectorAll('rect.hl:not(.free)').forEach(function(r){var n=r.getAttribute('data-n');
+      r.addEventListener('mouseenter',function(){link(card,n,true)});r.addEventListener('mouseleave',function(){link(card,n,false)});
+      r.addEventListener('click',function(){if(card.classList.contains('notes-hidden'))setCardNotes(card,true);var li=card.querySelector('.notes li[data-n="'+n+'"]');
+        if(li){li.scrollIntoView({behavior:'smooth',block:'center'});li.classList.add('flash');setTimeout(function(){li.classList.remove('flash')},1600)}})});
+  });
+  // scroll / flip view: flip shows one card (overview or slide) at a time
+  var cards=[].slice.call(document.querySelectorAll('main>.card')), bar=document.querySelector('.flipbar'),
+      ms=document.getElementById('m-scroll'), mf=document.getElementById('m-flip'), jump=document.getElementById('f-jump'),
+      fp=document.getElementById('f-prev'), fn=document.getElementById('f-next'), cur=0;
+  cards.forEach(function(c,i){var o=document.createElement('option');var h=c.querySelector('h3');
+    o.value=i;o.textContent=(c.dataset.slide?c.dataset.slide+' · ':'')+(c.dataset.slide?(h?h.textContent:''):'Overview');jump.appendChild(o)});
+  function indexOf(id){for(var i=0;i<cards.length;i++){if(cards[i].id===id)return i}return -1}
+  function show(i,noScroll){cur=Math.max(0,Math.min(cards.length-1,i));
+    cards.forEach(function(c,k){c.classList.toggle('current',k===cur)});
+    jump.value=cur;fp.disabled=cur===0;fn.disabled=cur===cards.length-1;
+    try{history.replaceState(null,'','#'+cards[cur].id)}catch(e){}
+    if(!noScroll)window.scrollTo(0,0)}
+  function setMode(flip){body.classList.toggle('flip',flip);bar.hidden=!flip;setPressed(mf,flip);setPressed(ms,!flip);store(K+'-mode',flip?'flip':'scroll');
+    if(flip){var top=0;for(var i=0;i<cards.length;i++){if(cards[i].getBoundingClientRect().bottom>90){top=i;break}}show(top)}
+    else{cards[cur].scrollIntoView()}}
+  ms.addEventListener('click',function(){if(body.classList.contains('flip'))setMode(false)});
+  mf.addEventListener('click',function(){if(!body.classList.contains('flip'))setMode(true)});
+  fp.addEventListener('click',function(){show(cur-1)});fn.addEventListener('click',function(){show(cur+1)});
+  jump.addEventListener('change',function(){show(+jump.value)});
+  document.addEventListener('keydown',function(ev){if(!body.classList.contains('flip')||ev.altKey||ev.ctrlKey||ev.metaKey)return;
+    var t=ev.target.tagName;if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA')return;
+    if(ev.key==='ArrowRight'||ev.key==='PageDown'){show(cur+1);ev.preventDefault()}
+    else if(ev.key==='ArrowLeft'||ev.key==='PageUp'){show(cur-1);ev.preventDefault()}});
+  var sx=null,sy=null;
+  document.addEventListener('touchstart',function(ev){if(ev.touches.length===1){sx=ev.touches[0].clientX;sy=ev.touches[0].clientY}},{passive:true});
+  document.addEventListener('touchend',function(ev){if(sx===null||!body.classList.contains('flip'))return;
+    var dx=ev.changedTouches[0].clientX-sx,dy=ev.changedTouches[0].clientY-sy;sx=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>2*Math.abs(dy))show(cur+(dx<0?1:-1))},{passive:true});
+  // in-page links (contents list, "seen again") go to the right card in flip mode
+  document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href^="#"]');
+    if(!a||!body.classList.contains('flip'))return;var i=indexOf(a.getAttribute('href').slice(1));if(i>=0){ev.preventDefault();show(i)}});
+  var start=indexOf(location.hash.slice(1));
+  if(read(K+'-mode')==='flip'){body.classList.add('flip');bar.hidden=false;setPressed(mf,true);setPressed(ms,false);show(start>=0?start:0)}
+})();
+</script>
+
 </body>
 </html>

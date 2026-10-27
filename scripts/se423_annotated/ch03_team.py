@@ -8,6 +8,7 @@ DECK = {
     'file': 'team',
     'title': 'Team',
     'chapter': 'Chapter 3',
+    'page': 'ch03_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-3/',
     'lede': ('The most examined chapter in SE423. Midterm 251 (both versions) took most of its short '
              'questions and its RACI question from here, and both finals have a whole “team-based '

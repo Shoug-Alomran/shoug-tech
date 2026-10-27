@@ -8,6 +8,7 @@ DECK = {
     'file': 'organizational-context',
     'title': 'The Organizational Context: Strategy, Structure, and Culture',
     'chapter': 'Chapter 2',
+    'page': 'ch02_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-2/',
     'lede': ('Three things around a project that decide how it can be run: the organization’s strategy, its '
              'structure (functional, project or matrix) and its culture. Also the full story of PMOs: '

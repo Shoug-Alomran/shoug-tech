@@ -8,6 +8,7 @@ DECK = {
     'file': 'development-approach',
     'title': 'Development Approach',
     'chapter': 'Chapter 4',
+    'page': 'ch04_page',  # notes, highlights and exam questions in the page schema
     'pdf': '/academics/software-engineering/se423/slides/chapter-4/',
     'lede': ('Methodologies, waterfall vs. iterative (and the four iterative phases), agile (4 values, 12 '
              'principles), XP, Scrum and DevOps project management. The “which approach would you '

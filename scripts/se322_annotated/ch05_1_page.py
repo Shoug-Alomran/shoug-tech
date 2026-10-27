@@ -61,7 +61,8 @@ SLIDES = {
                     a=2, opts=['External properties of software components and non-functional requirements.',
                                'The overall development process for both hardware and software.',
                                'The internals of system components and their behavior to fulfill functional requirements.',
-                               'Project management tasks like staffing and tracking.'])]),
+                               'Project management tasks like staffing and tracking.'],
+                    why='Detailed design turns a component’s architectural role into implementable internals: its structure and behavior. External quality attributes are considered across the architecture, while staffing and tracking belong to project management.')]),
     5: dict(
         hl=[('architecture', 1), ('construction', 1), ('full understanding', 1), ('bridge between design and code', 2), ('design strategies', 3)],
         notes=['Detailed design sits between **architecture** and **construction**, so detailed designers need a **full understanding** of both the requirements and the architecture they are refining.',

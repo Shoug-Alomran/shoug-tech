@@ -1,0 +1,673 @@
+"""SE423 Chapter 1.2 (Project Performance Domains): page content for the annotated deck.
+
+Schema: see annotated_page.py. Domain title cards, tables and diagrams are pictures, so their marks use 'ocr'
+(skipped if OCR can't read them). Past-exam questions are copied from the papers in exams/ and from the
+instructor's 2026 midterm (m261); everything else is a prediction.
+"""
+from .common import asked, likely
+
+TITLE = 'The Eight Project Performance Domains'
+CHAPTER = 'SE423 · Chapter 1.2'
+
+OVERVIEW = {
+    'summary': ('Chapter 1 named the eight performance domains; this deck opens each one. A domain is a group of related '
+                'activities critical to delivering project outcomes, and all eight run at the same time and interact. '
+                'Each section defines the domain, gives its key terms and practices, and ends with a “checking outcomes” '
+                'table describing what success looks like: stakeholders (who is affected and how to engage them), team '
+                '(management vs. leadership, culture, high performance), development approach and life cycle '
+                '(predictive, hybrid, adaptive; cadence), planning (estimates, schedules, budget and reserves), project '
+                'work (processes, constraints, procurement, knowledge), delivery (value, quality), measurement (metrics, '
+                'KPIs, dashboards) and uncertainty (ambiguity, complexity, volatility, risk responses).'),
+    'ideas': [
+        ('Concurrent, not sequential', 'The domains are interactive, interrelated and interdependent areas of focus that run throughout the project, however value is delivered.'),
+        ('Centralized vs. decentralized', 'Centralized: one accountable PM, more control and standardization, cheaper, less creative. Decentralized: authority near the work, faster and more creative, more expensive.'),
+        ('Approach spectrum', 'Predictive (stable, known requirements) ↔ hybrid ↔ adaptive (uncertain, volatile requirements; iterative and incremental).'),
+        ('Risk responses', 'Threats: avoid, escalate, transfer, mitigate, accept. Opportunities: exploit, escalate, share, enhance, accept.'),
+    ],
+    'sections': [
+        ('Slides 1–5', 'What a performance domain is; 1 Stakeholders'),
+        ('Slides 6–18', '2 Team: management and leadership, culture, high performance, emotional intelligence'),
+        ('Slides 19–34', '3 Development approach and life cycle: cadence, predictive, hybrid, adaptive'),
+        ('Slides 35–52', '4 Planning: estimates, schedules, dependencies, budget and reserves, procurement, metrics'),
+        ('Slides 53–65', '5 Project work: processes, constraints, procurement and bids, knowledge'),
+        ('Slides 66–72', '6 Delivery: value, quality, cost of quality'),
+        ('Slides 73–87', '7 Measurement: metrics, KPIs, presenting information'),
+        ('Slides 88–107', '8 Uncertainty: ambiguity, complexity, volatility, risk and reserves'),
+    ],
+    'exam': ('Midterm 251 asked about the nature of performance domains, the purpose of cadence and when an iterative approach '
+             'fits; its case study asked you to choose Agile, Waterfall or Hybrid. The instructor’s 2026 midterm asked which '
+             'opportunity strategy applies when a team acts to make sure an early finish happens (exploit). Finals drew on '
+             'estimation, scheduling, risk responses, constraints, the scope statement and burn charts from this deck.'),
+}
+
+TITLES = {5: 'Checking Outcomes: Stakeholder Performance Domain', 6: 'Team Performance Domain', 10: 'Centralized vs. Decentralized',
+          16: 'Components of Emotional Intelligence', 18: 'Checking Outcomes: Team Performance Domain', 19: 'Development Approach and Life Cycle Performance Domain',
+          26: 'Iterative vs. Incremental', 33: 'A hybrid life cycle: the community center', 34: 'Checking Outcomes: Development Approach and Life Cycle',
+          35: 'Planning Performance Domain', 44: 'Release and Iteration Plan', 48: 'Budget Build Up', 52: 'Checking Outcomes: Planning',
+          53: 'Project Work Performance Domain', 65: 'Checking Outcomes: Project Work', 66: 'Delivery Performance Domain', 72: 'Checking Outcomes: Delivery',
+          73: 'Measurement Performance Domain', 82: 'Stakeholder and Team Health Dashboard', 84: 'Dashboards', 85: 'Information Radiators', 86: 'Visual Controls',
+          87: 'Checking Outcomes: Measurement', 88: 'Uncertainty Performance Domain', 103: 'Risk Reduction over Time', 107: 'Checking Outcomes: Uncertainty'}
+
+CHECK = ('The “checking outcomes” table: the left column is what success looks like for the domain, the right column is the evidence '
+         'that it happened. You won’t be asked to reproduce it, but it is a good structure for a written answer about the domain.')
+
+SLIDES = {
+    1: dict(
+        hl=[('Project Performance', 1), ('SE423: Software Project Management', 2)],
+        notes=['Chapter 1 listed the 8 domain names; this deck opens each one in turn. The number badge (1–8) on each domain’s title slide keeps the order: stakeholders, team, development approach and life cycle, planning, project work, delivery, measurement, uncertainty.',
+               'For each domain learn its purpose, its key terms (many are examined as definitions), and one or two practices you could describe in a scenario answer.']),
+    2: dict(
+        hl=[('group of', 1), ('related activities that are critical', 1), ('interactive,', 2), ('interrelated, and interdependent', 2), ('run concurrently', 3)],
+        notes=['**Definition**: a project performance domain is a **group of related activities that are critical** for the effective delivery of project outcomes.',
+               'The domains are **interactive, interrelated and interdependent** areas of focus that work in unison: weak stakeholder engagement hurts planning, poor measurement hides uncertainty, and so on.',
+               'They **run concurrently** throughout the project, whether value is delivered frequently, periodically or only at the end. They are **not** phases done in order, which is exactly the trap in the real MCQ.'],
+        exam=[asked('m251v1', 'MCQ 3', 'Which of the following best explains the nature of project performance domains?',
+                    a=0, opts=['They represent distinct areas of focus that guide effective project management.', 'They are rigid processes that must be followed in order, from initiation to closure.',
+                               'They are optional tools that project managers may use only in large projects.', 'They are specific deliverables required at the end of each project phase.'],
+                    why='Performance domains are areas of focus that run concurrently; they are not sequential processes or deliverables. (Also Midterm 251 V2 MCQ 1.)')]),
+    3: dict(
+        hl=[('Stakeholder', 1, 1), ('may affect,', 1), ('perceive itself to be affected', 1), ('Stakeholder Analysis', 2), ('internal and external', 3), ('may not be supportive', 3)],
+        notes=['**Stakeholder**: an individual, group or organization that **may affect, be affected by, or perceive itself to be affected by** a decision, activity or outcome of a project, program or portfolio. All three count: someone who only *believes* they are affected is still a stakeholder.',
+               '**Stakeholder analysis**: systematically gathering and analysing quantitative and qualitative information to decide **whose interests to take into account** throughout the project.',
+               'It covers stakeholders **internal and external** to the organization, and those who **support, oppose or are neutral** toward the project. Ignoring opponents is how projects get blocked late.'],
+        exam=[asked('m251v1', 'Case Q3', 'Edugate scheduling system: identify three main stakeholder groups for this project, describe their roles, and explain how their input will shape the system.',
+                    a='Students are the end users; their input shapes usability and flexibility (0.3). The IT/Edugate team ensures integration, security and compliance with PSU IT policies (0.3). Faculty advisors and administration ensure study-plan rules are enforced and use the system to monitor students (0.4).')]),
+    4: dict(
+        hl=[('interpersonal and leadership skills', 1)],
+        notes=['Technical PM skills matter, but **interpersonal and leadership skills** for working with stakeholders may matter more. Most stakeholder problems (resistance, conflicting expectations) are solved by listening, negotiating and building trust, not by a better Gantt chart. The circles diagram groups stakeholders from the core team outward to customers, end users and regulators.']),
+    5: dict(
+        hl=[('A productive working relationship', 1, 0, 'ocr'), ('Stakeholder agreement with project', 2, 0, 'ocr'), ('Surveys, interviews,', 3, 0, 'ocr')],
+        notes=[CHECK + ' Here: **a productive working relationship** with stakeholders throughout, checked by observing it and by how stakeholders move along the engagement continuum (unaware → resistant → neutral → supportive → leading).',
+               '**Stakeholder agreement with project objectives**, checked by the number of changes: many scope modifications suggest stakeholders weren’t aligned.',
+               '**Supportive beneficiaries and harmless opponents**, checked with surveys, interviews and focus groups, and by reviewing the issue and risk registers.']),
+    6: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('Shared ownership', 2, 0, 'ocr'), ('high-performing', 2, 0, 'ocr')],
+        notes=['The **team** domain covers the activities and functions of the people who produce the project deliverables.',
+               'Desired outcomes: **shared ownership** of the work, a **high-performing team**, and leadership and interpersonal skills shown by **all** team members, not only the PM.']),
+    7: dict(
+        hl=[('management activities as well as leadership activities', 1), ('means of meeting', 2), ('Leadership activities focus on people', 3), ('influencing, motivating, listening', 3)],
+        notes=['Project management applies knowledge, skills, tools and techniques to **both management and leadership** activities.',
+               '**Management** focuses on the **means** of meeting objectives: effective processes, planning, coordinating, measuring and monitoring work. It manages things.',
+               '**Leadership** focuses on **people**: influencing, motivating, listening, enabling. It leads people. Both are needed to deliver the outcomes.'],
+        exam=[likely('Influencing, motivating and listening to the team are examples of which kind of activity?', a=0,
+                     opts=['Leadership activities', 'Management activities', 'Governance activities', 'Procurement activities'])]),
+    8: dict(
+        hl=[('Centralized Management and Leadership', 1), ('accountability (being answerable for an outcome)', 2), ('project charter', 3)],
+        notes=['Leadership should be practised by **everyone**, but **management** activities can be centralized or distributed.',
+               'In a **centralized** environment, **accountability** (being answerable for an outcome) is usually assigned to **one** person, the PM or a similar role.',
+               'A **project charter** or other authorizing document gives that PM approval to form the team and use resources.']),
+    9: dict(
+        hl=[('Distributed Management and Leadership', 1), ('self-organize', 2), ('facilitator', 3), ('This role may shift', 3)],
+        notes=['In **distributed** management, PM activities are shared among a project management team while team members do the work.',
+               'A team may even **self-organize** to complete the project.',
+               'Instead of a designated PM, someone acts as **facilitator** to enable communication, collaboration and engagement (like a Scrum master), and **the role can shift** among members.']),
+    10: dict(
+        hl=[('DECENTRALIZED', 1, 0, 'ocr'), ('CENTRALIZED', 2, 0, 'ocr'), ('Faster decision making', 3, 0, 'ocr'), ('More expensive', 3, 0, 'ocr'), ('More standardization', 4, 0, 'ocr')],
+        notes=['**Decentralized**: middle and lower-level managers have decision power, and authority goes to those **closer to the stakeholders**; units are self-sufficient.',
+               '**Centralized**: a few **upper-management** members decide, with authority at the top of the chain of command.',
+               'Decentralized gives **faster decisions and more creativity** but is **more expensive** (duplicated resources and skills in each unit).',
+               'Centralized gives **more standardization and control** and is **less expensive**, with limited creativity. Learn it as three opposite pairs: speed vs. control, more vs. less expensive, creativity vs. standardization.'],
+        exam=[asked('m251v1', 'MCQ 1', 'In decentralized project management, decision-making authority is primarily:',
+                    a=0, opts=['Distributed among team members to encourage shared accountability.', 'Concentrated in the hands of a single project manager.',
+                               'Transferred to external auditors for oversight.', 'Reserved exclusively for senior executives in the organization.'],
+                    why='(Also Midterm 251 V2 MCQ 2.)'),
+              likely('Which is a characteristic of decentralized management, according to the table?', a=0,
+                     opts=['Faster decision making but more expensive', 'More standardization and control', 'Authority at the top of the chain of command', 'Less expensive with limited creativity'])]),
+    11: dict(
+        hl=[('Vision and objectives', 1), ('Roles and responsibilities', 1), ('Project team operations', 1), ('Guidance', 2), ('Growth', 3)],
+        notes=['Whatever the structure, most teams need the same foundations: a shared **vision and objectives**, clear **roles and responsibilities**, and agreed **team operations** (how meetings, decisions and communication work).',
+               '**Guidance**: for the whole team, to keep everyone heading the same way, and from individual members on particular tasks or deliverables.',
+               '**Growth**: point out what the team does well and where it can improve, then set improvement goals together (what a retrospective does).']),
+    12: dict(
+        hl=[('own team culture', 1), ('deliberately', 2), ('informally', 2), ('within the organization', 3)],
+        notes=['Every team develops its **own culture**.',
+               'It can be built **deliberately**, by agreeing team norms (“we review every pull request within a day”), or form **informally** from how members actually behave.',
+               'It operates **within the organization’s culture** but reflects the team’s own ways of working.']),
+    13: dict(
+        hl=[('safe, respectful, nonjudgmental', 1), ('modeling desired behaviors', 2), ('Transparency', 2), ('Courage', 2), ('Celebrating success', 3)],
+        notes=['The PM is key to a **safe, respectful, nonjudgmental** environment where people can speak openly (the basis of trust in Chapter 3).',
+               'The main way is **modeling** the behaviors the PM wants: transparency, integrity, respect, positive discourse, support and **courage** (raising problems, admitting mistakes).',
+               '**Celebrating success** is one of them: recognizing milestones and contributions keeps morale high.'],
+        exam=[asked('f251', 'Q5.3', 'Your team has just completed a major milestone in the project development process. How would you celebrate this achievement collaboratively with your team members? How would you recognize individual contributions to the team’s success? What actions would you take to ensure that team morale remains high as you move forward in the project?',
+                    a='Celebrate as a team, e.g. a team lunch and an announcement of the milestone to the stakeholders. Recognize individuals specifically and publicly: name what each person contributed in the meeting, send thank-you notes to their managers, and give certificates or small rewards. Keep morale high with a retrospective that captures what went well, clear and achievable next goals, a balanced workload to avoid burnout, growth opportunities, and continued recognition, not only at milestones.')]),
+    14: dict(
+        hl=[('Open communication', 1), ('Shared understanding', 1), ('Shared ownership', 1), ('Trust', 2), ('Collaboration', 2), ('Adaptability', 3), ('Resilience', 3), ('Empowerment', 4), ('Recognition', 4)],
+        notes=['Factors of high-performing teams. **Open communication, shared understanding** of goals and **shared ownership** of the work: everyone knows what they are building and feels it is theirs.',
+               '**Trust** and **collaboration**: members rely on each other and work together instead of protecting their own part.',
+               '**Adaptability** and **resilience**: the team adjusts to change and recovers from setbacks.',
+               '**Empowerment** (the team can make decisions) and **recognition** (contributions are acknowledged).'],
+        exam=[asked('m251v1', 'Short Q1', 'What are key characteristics of a good team?',
+                    a='A good team trusts each other enough to speak openly and admit mistakes, shares a clear goal with clear roles, debates ideas in healthy conflict, commits to decisions, holds each other accountable, and puts team results ahead of individual credit. (The slide’s factors: open communication, shared understanding and ownership, trust, collaboration, adaptability, resilience, empowerment, recognition.)')]),
+    15: dict(
+        hl=[('Establishing and Maintaining Vision', 1), ('Critical Thinking', 2), ('Motivation', 3), ('Interpersonal Skills', 4)],
+        notes=['**Vision**: establish and maintain a shared picture of what the project is for, so decisions point the same way.',
+               '**Critical thinking**: weigh evidence, question assumptions and make sound judgments.',
+               '**Motivation**: understand what drives each person (intrinsic or extrinsic) and use it.',
+               '**Interpersonal skills**: emotional intelligence, decision-making and conflict resolution (next slide).']),
+    16: dict(
+        hl=[('Self-Awareness', 1, 0, 'ocr'), ('Self-Management', 2, 0, 'ocr'), ('Social Awareness', 3, 0, 'ocr'), ('Social Skill', 4, 0, 'ocr')],
+        notes=['Emotional intelligence (EI) has four components: two about yourself, two about others. **Self-awareness**: how do you affect the team, and how does the team affect you?',
+               '**Self-management**: think before you act, build trust.',
+               '**Social awareness**: be empathetic, use active listening.',
+               '**Social skill**: establish rapport, build effective teams, manage attitude.'],
+        exam=[likely('“Be empathetic” and “employ active listening” belong to which component of emotional intelligence?', a=0,
+                     opts=['Social awareness', 'Self-management', 'Self-awareness', 'Social skill'])]),
+    17: dict(
+        hl=[('autocratic, democratic, laisser-faire', 1), ('Experience with the type of project', 2), ('Maturity of the project team members', 2), ('Distributed project teams', 2)],
+        notes=['Leadership styles (autocratic, democratic, laissez-faire, transactional, servant…) are **tailored** to the project, environment and stakeholders; no style is always right.',
+               'What drives the choice: **experience** with this type of project, the **maturity** of the team members (a senior team needs less direction), the organization’s **governance structure**, and whether the team is **distributed** (which needs more deliberate communication).'],
+        exam=[asked('m251v1', 'Short Q5', 'How can a project manager balance technical leadership with adaptive leadership in a software team?',
+                    a='First diagnose the problem. When it can be solved by known means (a coding standard, an architecture choice the PM knows well), use technical leadership: give direction from expertise and vision. When it can’t (new technology, unclear requirements), use adaptive leadership: frame the purpose, ask questions, let the team experiment and learn, and motivate through visible progress. Switching between the two as the situation changes is the balance. (Also Midterm 251 V2 Short Q5.)')]),
+    18: dict(hl=[('Shared ownership', 1, 0, 'ocr'), ('A high-performing team', 1, 0, 'ocr'), ('Applicable leadership', 1, 0, 'ocr')], notes=[CHECK + ' Team: **shared ownership** (members are engaged and take initiative), a **high-performing team** (trust, collaboration, adapting to change) and **leadership shown by all** (evidenced by members’ interpersonal skills and initiative).']),
+    19: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('consistent with project', 2, 0, 'ocr'), ('delivery cadence', 3, 0, 'ocr')],
+        notes=['This domain covers the **development approach**, **cadence** and **life-cycle phases**.',
+               'Outcomes: approaches that are **consistent with the deliverables**, and a life cycle whose phases connect the delivery of value from start to end and support the required **delivery cadence**.']),
+    20: dict(
+        hl=[('Deliverable', 1), ('unique and verifiable', 1), ('Development Approach', 2, 2), ('Cadence', 3), ('rhythm of activities', 3), ('Project Phase', 4), ('Project Life Cycle', 4)],
+        notes=['**Deliverable**: any unique and verifiable product, result or capability that must be produced to complete a process, phase or project.',
+               '**Development approach**: the method used to create and evolve the product: predictive, iterative, incremental, adaptive or hybrid.',
+               '**Cadence**: a **rhythm of activities** conducted throughout the project (two-week sprints, monthly releases). A predictable rhythm helps coordination and communication.',
+               '**Project phase**: a set of logically related activities ending in one or more deliverables. **Project life cycle**: the series of phases from start to completion.'],
+        exam=[asked('m251v1', 'MCQ 4', 'In project management, what is the primary purpose of establishing a project cadence?',
+                    a=0, opts=['To create a predictable rhythm that supports coordination, communication, and timely delivery.', 'To enforce strict deadlines that cannot be adjusted under any circumstances.',
+                               'To eliminate the need for stakeholder engagement during development.', 'To ensure that all deliverables are produced only at the end of the project.'],
+                    why='Cadence is the rhythm of activities (single, multiple, periodic or continuous delivery) that keeps the work coordinated. (Also Midterm 251 V2 MCQ 5.)')]),
+    21: dict(
+        hl=[('type of project deliverable(s) determines', 1), ('cadence for project deliveries', 2), ('life cycle and its phases', 3), ('timing and frequency', 4), ('single delivery, multiple deliveries, or periodic', 5)],
+        notes=['The chain of decisions starts with the **type of deliverable**: it determines how the product can be developed (you can’t release half a bridge, but you can release half an app).',
+               'The deliverable type and approach then influence the **number and cadence of deliveries**…',
+               '…and the approach plus the desired cadence determine the **life cycle and its phases**.',
+               '**Delivery cadence** is the **timing and frequency** of deliveries.',
+               'Projects can have a **single** delivery (at the end), **multiple** deliveries (at different points), or **periodic** deliveries (on a fixed schedule, e.g. monthly).']),
+    22: dict(
+        hl=[('continuous', 1), ('feature increments immediately', 2), ('product management perspective', 3), ('DevOps', 4)],
+        notes=['For digital products there is a fourth option: **continuous delivery**.',
+               'It delivers **feature increments immediately** to customers, using small batches of work and automation (automated build, test and deployment).',
+               'From the **product** perspective the emphasis is delivering value throughout the product’s life, so the team can respond to market trends.',
+               'It is part of **DevOps**, #noprojects and Continuous Digital (Chapter 4 covers DevOps).']),
+    23: dict(
+        hl=[('create and evolve the', 1), ('different terms', 2), ('predictive', 3), ('adaptive', 3)],
+        notes=['A **development approach** is the means used to create and evolve the product during the life cycle.',
+               'Industries use **different names** for the same approaches.',
+               'The three common ones are **predictive, hybrid and adaptive**, a **spectrum** rather than three boxes: the further toward adaptive, the more iterative and incremental the work.']),
+    24: dict(
+        hl=[('defined, collected, and analyzed at the start', 1), ('significant investment', 2), ('relatively stable', 3), ('planning upfront', 4)],
+        notes=['**Predictive** (waterfall) is useful when requirements can be **defined, collected and analysed at the start**.',
+               'It is also used when there is **significant investment** and high risk that call for frequent reviews, change control and replanning between phases (a new hospital information system).',
+               'Scope, schedule, cost, resources and risks can be defined early and are **relatively stable**.',
+               'It reduces uncertainty early and does most of the **planning up front**.'],
+        exam=[likely('A government payroll system must implement fixed legal rules that will not change during the project. Which development approach fits, and why?',
+                     a='Predictive (waterfall): the requirements can be defined and analysed at the start and are stable, so scope, schedule and cost can be planned up front with phase reviews and change control.')]),
+    25: dict(
+        hl=[('combination of adaptive and predictive', 1), ('uncertainty or risk around the requirements', 2), ('modularized', 3)],
+        notes=['**Hybrid** combines elements of adaptive and predictive approaches.',
+               'It is useful when there is **uncertainty or risk around the requirements** for part of the product.',
+               'It also fits when deliverables can be **modularized** or built by different teams: a fixed back-end integration planned predictively, with a user-facing app built in sprints.'],
+        exam=[asked('m251v1', 'Case Q2', 'Edugate scheduling system: given the evolving requirements (student usability, advisor requests, IT integration rules), which development approach (Agile, Waterfall, or Hybrid) would you recommend, and why would it be the best fit for this project?',
+                    a='Agile (Scrum) (0.5), because it handles the evolving requirements from students, advisors and IT, delivers iteratively so each sprint gets feedback, and integrates with DevOps pipelines for frequent tested releases (0.5). (A hybrid answer that plans the fixed IT integration predictively and builds the student-facing features iteratively is also well argued.)',
+                    why='The instructor’s key gives Agile (Scrum).')]),
+    26: dict(
+        hl=[('Iterative', 1, 0, 'ocr'), ('Incremental', 2, 0, 'ocr')],
+        notes=['**Iterative** (top row): try different ideas to clarify scope, approach and requirements, refining the **same** thing after each round of feedback (sketch → mock-up → prototype → app). The customer needs a way to capture ideas that might change.',
+               '**Incremental** (bottom row): progressively **add new** features and functions, each a working piece (foundation → frame → walls → finished house), with feedback after each increment. Adaptive approaches use both. Iterative refines; incremental adds.'],
+        exam=[likely('Adding one new working feature to the product in each cycle is best described as:', a=0,
+                     opts=['Incremental development', 'Iterative development', 'Predictive development', 'Waterfall development'])]),
+    27: dict(
+        hl=[('high level of uncertainty and volatility', 1), ('clear vision', 2), ('iterative and incremental', 3), ('iterations tend to get shorter', 3)],
+        notes=['**Adaptive** approaches suit requirements with **high uncertainty and volatility** that will change throughout the project.',
+               'A **clear vision** is set at the start; the known requirements are then refined, detailed, changed or replaced based on user feedback, the environment or unexpected events.',
+               'Adaptive approaches are **iterative and incremental**; toward the far adaptive end, iterations **get shorter** and the product evolves more from stakeholder feedback.'],
+        exam=[asked('m251v1', 'MCQ 6', 'In which type of project would an iterative development approach be most beneficial?',
+                    a=0, opts=['A project where requirements are unclear and expected to evolve over time.', 'A project with well-defined, unchanging requirements from the start.',
+                               'A project that must deliver the entire product only at final completion.', 'A project that cannot accommodate stakeholder feedback during execution.'],
+                    why='Iterative development refines ideas through feedback, which suits unclear or evolving requirements. (Also Midterm 251 V2 MCQ 6.)')]),
+    28: dict(
+        hl=[('agile approaches can be considered adaptive', 1), ('1 to 2 weeks', 1), ('very engaged with the planning', 2), ('prioritized backlog', 3)],
+        notes=['**Agility** is a mindset broader than any framework, but agile approaches count as adaptive. Some use **1–2 week iterations** that end with a demonstration of what was accomplished.',
+               'The team is **very engaged in planning** each iteration.',
+               'It decides how much scope it can achieve from a **prioritized backlog**, estimates the work itself, and works collaboratively through the iteration to build it.']),
+    29: dict(
+        hl=[('nature of the product', 1), ('Degree of innovation', 2), ('Requirements certainty', 2), ('Scope stability', 2), ('Safety requirements', 3), ('Regulations', 3)],
+        notes=['Product variables that influence the approach. Rule of thumb: high **innovation**, uncertain **requirements**, unstable **scope**, easy **change** and frequent **delivery options** push toward adaptive.',
+               'Strict **safety requirements** and **regulations** push toward predictive (they need documented, controlled phases).'],
+        exam=[likely('A medical device must meet strict safety regulations and its requirements are stable. Which way do these product variables push the development approach?',
+                     a='Toward predictive: strict safety requirements and regulation, plus certain and stable requirements, favour up-front planning, documented phases and phase-gate reviews.')]),
+    30: dict(
+        hl=[('stakeholders, schedule constraints, and funding', 1), ('significant stakeholder involvement', 2), ('deliver something early', 3), ('funding uncertainty', 4), ('minimum viable product', 5)],
+        notes=['Project variables: **stakeholders, schedule constraints and funding availability**.',
+               '**Stakeholders**: adaptive methods need **significant stakeholder involvement** throughout; a product owner sets and prioritizes the work.',
+               '**Schedule**: if something must be **delivered early**, even unfinished, an iterative or adaptive approach helps.',
+               '**Funding**: under **funding uncertainty**, adaptive or iterative work is safer…',
+               '…because a **minimum viable product (MVP)** can be released with less investment to test or capture the market.']),
+    31: dict(
+        hl=[('structure, culture, capability, project team', 1), ('Organizational structure', 2), ('Culture', 2), ('Project team size and location', 2)],
+        notes=['Organizational variables also matter: **structure, culture, capability, team size and location**.',
+               'A strongly hierarchical, documentation-heavy culture struggles with adaptive work; a small co-located team adopts it easily; large or distributed teams need more structure.']),
+    32: dict(
+        hl=[('phase gate review', 1), ('exit criteria', 2), ('acceptance criteria', 2), ('Sample Predictive Life Cycle', 3)],
+        notes=['Phases often end with a **phase gate review** (stage gate): a checkpoint that the phase’s desired outcomes or **exit criteria** are met before moving on.',
+               'Exit criteria may be tied to **acceptance criteria** for deliverables, contractual obligations or performance targets.',
+               'The diagrams: a **predictive** life cycle (feasibility → design → build → test → deploy → close, one phase after another) and an **incremental** one (plan → design → build repeated, each round delivering an increment).']),
+    33: dict(
+        hl=[('Community Center Life Cycle', 1, 0, 'ocr'), ('Website Development and Deliveries', 2, 0, 'ocr')],
+        notes=['A real **hybrid** example. The community center building follows predictive phases with milestone reviews: start up → plan → development → test → deploy → close.',
+               'Inside development, the **website** is delivered in iterations (senior service releases 1–4) and the **training** (community action patrol modules 1–3 and integration) in increments, while construction proceeds predictively. One project, different approaches for different deliverables.']),
+    34: dict(hl=[('consistent with project deliverables', 1, 0, 'ocr'), ('from the beginning to the end', 1, 0, 'ocr'), ('facilitate the delivery cadence', 1, 0, 'ocr')], notes=[CHECK + ' Development approach and life cycle: approaches **consistent with the deliverables** (an approach that suits each product), a life cycle that **delivers value from start to end**, and phases that **support the delivery cadence**.']),
+    35: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('desired outcomes', 2, 0, 'ocr')],
+        notes=['The **planning** domain covers the initial, ongoing and evolving organization and coordination needed to deliver the deliverables and outcomes.',
+               'Desired outcomes: the project progresses in an organized, coordinated way; a holistic approach to delivery; evolving information elaborated over time; **planning time appropriate** for the situation (not over-planning); enough information to manage stakeholder expectations; and a process to **adapt plans** as needs change.']),
+    36: dict(
+        hl=[('Estimate', 1), ('quantitative assessment', 1), ('Accuracy', 2), ('assessment of correctness', 2), ('Precision', 3), ('assessment of exactness', 3)],
+        notes=['**Estimate**: a quantitative assessment of the likely amount or outcome of a variable (cost, resources, effort, duration).',
+               '**Accuracy** = **correctness**: how well the estimate predicts reality. Estimate $100K, actual $102K → accurate.',
+               '**Precision** = **exactness**: how detailed and consistent the estimate is. A precise estimate (every cost broken down) can still be **inaccurate** if the project ends up costing much more. Accurate = hits the target; precise = tightly grouped.'],
+        exam=[likely('An estimate built from a detailed, line-by-line cost breakdown ends up 40% over the actual cost. The estimate was:', a=0,
+                     opts=['Precise but not accurate', 'Accurate but not precise', 'Both accurate and precise', 'Neither accurate nor precise by definition'])]),
+    37: dict(
+        hl=[('proactively', 1), ('prior to project authorization', 2), ('progressively elaborates', 3), ('social and', 4)],
+        notes=['The purpose of planning is to **proactively** develop an approach to create the deliverables: deciding in advance instead of reacting.',
+               'High-level planning may start **before the project is authorized** (to build the business case).',
+               'The team **progressively elaborates** early documents (vision statement, charter, business case): start high-level, add detail as more is learned.',
+               'Planning increasingly weighs **social and environmental** impacts as well as financial ones, e.g. a product life cycle assessment of materials, toxicity and sustainability.']),
+    38: dict(
+        hl=[('business case, stakeholder', 1), ('Product scope', 2), ('features and functions', 2), ('Project scope', 3), ('work performed', 3)],
+        notes=['Planning starts by understanding the **business case**, the stakeholder requirements, and the project and product scope.',
+               '**Product scope**: the **features and functions** of the product, service or result (what it has).',
+               '**Project scope**: the **work** performed to deliver it (what the team must do). Don’t swap them; near-identical terms are the instructor’s favourite trap.'],
+        exam=[asked('f251', 'Q1.3', 'Describe the significance of a project scope statement in project management and elaborate on how it aids in mitigating project risks and ensuring successful project outcomes.',
+                    a='The scope statement defines what the project will and won’t deliver: objectives, deliverables, acceptance criteria, exclusions, assumptions and constraints. It reduces risk because everyone agrees on the boundaries up front, it’s the baseline for change control (so scope creep is caught and evaluated rather than absorbed), and it’s the basis for the WBS, estimates and schedule. That leads to realistic plans and a result the stakeholders will accept.'),
+              likely('“The work performed to deliver a product, service, or result with the specified features and functions” defines:', a=0,
+                     opts=['Project scope', 'Product scope', 'The business case', 'Cadence'])]),
+    39: dict(
+        hl=[('predictive planning', 1), ('work breakdown structure (WBS)', 1), ('themes or epics', 2), ('user stories', 2), ('unique, significant, risky, or novel', 3), ('last responsible moment', 4)],
+        notes=['**Predictive** planning starts with high-level deliverables and decomposes them using a **scope statement** and a **work breakdown structure (WBS)**.',
+               '**Iterative and incremental** planning decomposes **themes or epics** into features, then into **user stories** and other backlog items.',
+               'Work that is **unique, significant, risky or novel** is done first, to reduce scope uncertainty before big investment.',
+               'Routine work is planned at the **last responsible moment**: defer a decision to keep options open until the cost of further delay would exceed the benefit.'],
+        exam=[likely('Deferring a decision until the cost of further delay would exceed the benefit of waiting is called:', a=0,
+                     opts=['The last responsible moment', 'A phase gate', 'Fast-tracking', 'A management reserve'])]),
+    40: dict(
+        hl=[('work effort, duration, costs, people', 1), ('quantitative assessment', 2), ('estimates can change', 3)],
+        notes=['Planning develops estimates for **effort, duration, costs, people and physical resources**.',
+               'An estimate is a **quantitative assessment** of a likely amount or outcome.',
+               'Estimates **change** as the project evolves and more is known (the “cone of uncertainty” in Chapter 6).'],
+        exam=[asked('f242', 'Q2.2', 'To plan accurately for the design, prototyping, and testing phases, you need to estimate the time and effort required. Choose two effort estimation techniques you would apply to this project. Explain how each technique supports better planning and risk control in this scenario.',
+                    a='Three-point (PERT) estimation: each design, prototyping and test activity gets optimistic, most-likely and pessimistic values, (O + 4M + P) / 6, so the plan reflects the uncertainty of hardware prototyping and the spread shows where contingency is needed. Delphi / expert judgment: hardware and software experts estimate anonymously and converge over rounds, which brings in experience with regulatory testing and removes single-person bias. Comparing the two estimates cross-checks them and exposes risky tasks early.',
+                    why='Chapter 6 teaches the techniques.')]),
+    41: dict(
+        hl=[('model for executing', 1), ('predictive or adaptive', 2), ('Decompose the project scope', 3), ('Sequence related activities', 3), ('Estimate the effort', 3), ('Allocate people', 3), ('Adjust the sequence', 3)],
+        notes=['A **schedule** is a model for executing the activities: durations, dependencies and other planning information.',
+               'It can be planned **predictively or adaptively**.',
+               'The predictive steps: (1) **decompose** scope into activities; (2) **sequence** them; (3) **estimate** effort, duration and resources; (4) **allocate** people and resources by availability; (5) **adjust** until the schedule is agreed. Decompose → sequence → estimate → allocate → adjust.'],
+        exam=[asked('f242', 'Q2.1', 'As the project manager, you must ensure that the 12-month development timeline is realistic and achievable. Identify three project scheduling methods/techniques you would use to plan the sequence and timing of tasks. Briefly explain how each method helps in identifying delays or managing overlapping activities.',
+                    a='1) Network diagram + Critical Path Method: shows dependencies and the longest path; any delay on a zero-slack critical activity delays the whole project, while slack shows how much other tasks can slip. 2) Gantt chart: shows each task on a timeline, so overlapping activities, resource clashes and slipping bars (actual vs planned) are easy to spot. 3) PERT: uses optimistic, most-likely and pessimistic durations ((O + 4M + P) / 6), useful for uncertain design, prototyping and regulatory work, so likely delays are built in.',
+                    why='Chapter 6.2 covers these techniques.')]),
+    42: dict(
+        hl=[('Mandatory dependency', 1), ('Discretionary dependency', 2), ('External dependency', 3), ('Internal dependency', 4)],
+        notes=['**Mandatory**: required by contract or by the nature of the work (you can’t test code before it is written). Usually **cannot** be modified.',
+               '**Discretionary**: based on best practice or preference (“finish the design review before coding”). **May** be modified, which is what fast-tracking relaxes.',
+               '**External**: between a project activity and a **non-project** one (waiting for a government permit or a vendor’s delivery). Usually **cannot** be modified.',
+               '**Internal**: between project activities, under the team’s control. **May** be modified.'],
+        exam=[likely('Waiting for a government permit before construction can begin is which type of dependency?', a=0,
+                     opts=['External', 'Discretionary', 'Internal', 'Neither, it is a constraint'])]),
+    43: dict(
+        hl=[('incremental planning', 1), ('release plan', 2), ('two or more iterations', 3), ('business and/or stakeholder value', 4), ('kept at a high level', 5)],
+        notes=['**Adaptive** scheduling uses **incremental planning**.',
+               'A high-level **release plan** says which features go in each release.',
+               'Each release contains **two or more iterations**…',
+               '…and each iteration adds **business or stakeholder value** (features, risk reduction, experiments).',
+               'Future releases are **kept high level** on purpose, because feedback from earlier releases will change them.']),
+    44: dict(
+        hl=[('Release Plan', 1, 0, 'ocr'), ('Iteration Plan', 2, 1, 'ocr'), ('Task A', 3, 0, 'ocr')],
+        notes=['Reading the diagram as zoom levels: the product **vision** drives the roadmap, the **roadmap** drives the release plans (Releases 1–3), and each **release plan** sets its iterations (0…n).',
+               'Each **iteration plan** schedules features delivered as **user stories**, estimated in story points.',
+               'Stories are broken into **tasks** estimated in hours (Task A 5 h, B 8 h…), the most detailed level, planned only for the current iteration.']),
+    45: dict(
+        hl=[('timeboxes', 1), ('prioritized backlog', 2), ('self-manages', 3), ('demonstrates the work', 4), ('reprioritized', 5)],
+        notes=['Adaptive approaches use **timeboxes**: fixed time, flexible scope (a sprint).',
+               'The work in each timebox comes from a **prioritized backlog**.',
+               'The team decides how much it can do, estimates it, and **self-manages** to complete it.',
+               'At the end the team **demonstrates** the completed work…',
+               '…and the backlog and estimates are updated and **reprioritized** for the next timebox.']),
+    46: dict(
+        hl=[('agreed estimates', 1), ('cost baseline', 2), ('time-phased budget', 3), ('balance the funds', 4), ('rescheduled', 5)],
+        notes=['The **budget** grows out of the agreed estimates.',
+               'Cost estimates are aggregated into the **cost baseline**…',
+               '…which is a **time-phased budget**: spread across the schedule to show when costs will be incurred.',
+               'That lets the PM **balance the funds** approved per budget period against the scheduled work.',
+               'If a period’s funding is limited, work may have to be **rescheduled** to fit.']),
+    47: dict(
+        hl=[('contingency reserve', 1), ('identified risks, controlled', 2), ('Management reserves', 3), ('unknown risks', 3), ('PMO', 4)],
+        notes=['The budget should include **contingency reserve** for uncertainty.',
+               '**Contingency reserve**: set aside to implement a risk response or respond to **identified** risks if they occur. Controlled by the **PM**. (“Known unknowns”.)',
+               '**Management reserve**: set aside for **unknown**, unexpected in-scope work. Usually controlled by **upper management**. (“Unknown unknowns”.)',
+               'Depending on the organization, management reserve may be held by the project, the sponsor, the product owner or the **PMO**.'],
+        exam=[likely('A reserve for unknown, unplanned in-scope work, usually controlled by upper management, is the:', a=0,
+                     opts=['Management reserve', 'Contingency reserve', 'Cost baseline', 'Work package budget'])]),
+    48: dict(
+        hl=[('Work Cost', 1, 0, 'ocr'), ('Contingency', 2, 0, 'ocr'), ('Management', 3, 0, 'ocr')],
+        notes=['Build the budget bottom-up: **work cost estimates** come first.',
+               'Add the **contingency reserve** → the **cost baseline** (what the PM manages against).',
+               'Add the **management reserve** → the total **project budget**. So contingency is inside the baseline; management reserve is outside it.'],
+        exam=[likely('Which amount is included in the cost baseline but not in the management reserve?', a=0,
+                     opts=['Contingency reserve', 'Management reserve', 'Both reserves', 'Neither reserve'])]),
+    49: dict(
+        hl=[('not a person', 1), ('testing environments', 2), ('supply', 3), ('procurement activities', 4), ('lead time', 5)],
+        notes=['**Physical resources** are any resource that is **not a person**…',
+               '…materials, equipment, software, **testing environments**, licenses.',
+               'Planning them includes estimating plus **supply chain**, logistics and management.',
+               'Projects with large physical needs (engineering, construction) must plan **procurement** to acquire them.',
+               'It also covers **lead time** for delivery, movement, storage, disposal, and tracking inventory from arrival to delivery.']),
+    50: dict(
+        hl=[('any time during a project', 1), ('make-or-', 2), ('in-house', 3), ('purchased from external sources', 3)],
+        notes=['**Procurement** can happen at any time, but planning it up front sets expectations so it runs smoothly.',
+               'Once the high-level scope is known, the team runs a **make-or-buy analysis**…',
+               '…deciding what to develop **in-house** and what to **purchase**. The answer affects the team’s composition and the schedule.'],
+        exam=[likely('Deciding which deliverables to develop in-house and which to purchase is called:', a=0,
+                     opts=['Make-or-buy analysis', 'A bidder conference', 'A phase gate', 'Resource leveling'])]),
+    51: dict(
+        hl=[('natural linkage', 1), ('That linkage is metrics', 2), ('thresholds', 3), ('only measure what matters', 4)],
+        notes=['Planning, delivering and measuring work are naturally linked…',
+               '…and the link is **metrics**.',
+               'Setting metrics includes **thresholds** that show whether performance is as expected, trending positively or negatively, or unacceptable.',
+               'Decide what to measure and how often by the rule **“only measure what matters”**: measuring costs effort.']),
+    52: dict(hl=[('organized, coordinated', 1, 0, 'ocr'), ('holistic approach', 1, 0, 'ocr'), ('Evolving information', 1, 0, 'ocr'), ('appropriate for the situation', 1, 0, 'ocr'), ('adaptation of plans', 1, 0, 'ocr')], notes=[CHECK + ' Planning: the project progresses in an **organized** way (checked against baselines), a **holistic** approach (schedule, budget and resources integrated), plans **elaborated over time**, planning effort **appropriate** to the situation, and plans that **adapt**.']),
+    53: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('Efficient and effective project performance', 2, 0, 'ocr'), ('continuous learning', 3, 0, 'ocr')],
+        notes=['The **project work** domain covers establishing processes, managing physical resources and fostering a learning environment.',
+               'Outcomes: efficient and effective performance, appropriate processes, good stakeholder communication, efficient management of physical resources and procurement, and improved capability through **continuous learning**.']),
+    54: dict(
+        hl=[('Bid Documents', 1), ('Bidder Conference', 2), ('Explicit Knowledge', 3), ('Tacit Knowledge', 4)],
+        notes=['**Bid documents**: all documents used to request information, quotations or proposals from prospective sellers.',
+               '**Bidder conference**: meetings with prospective sellers **before** they prepare bids, so all have the same understanding of the procurement (also called contractor, vendor or pre-bid conference).',
+               '**Explicit knowledge**: can be codified in words, numbers and pictures (documents, wikis).',
+               '**Tacit knowledge**: personal and hard to articulate (beliefs, experience, insights), e.g. a senior developer’s instinct for which module will break. It is shared through mentoring, pairing and conversation.'],
+        exam=[likely('An experienced developer’s instinct for which modules usually break under load is an example of:', a=0,
+                     opts=['Tacit knowledge', 'Explicit knowledge', 'A bid document', 'A metric'])]),
+    55: dict(
+        hl=[('focused and project activities', 1), ('flow of existing work, new work, and changes', 2), ('procurements and contracts', 3), ('project learning and knowledge transfer', 4)],
+        notes=['Project work keeps the team **focused** and activities running smoothly.',
+               'It includes managing the **flow of work and changes**, keeping the team focused, efficient systems and processes, and communicating with stakeholders.',
+               'It includes managing materials and logistics and working with contracting professionals and vendors on **procurements and contracts**, and monitoring changes that affect the project.',
+               'And it enables **learning and knowledge transfer** across the team.']),
+    56: dict(
+        hl=[('periodically', 1), ('task boards', 2), ('bottlenecks', 2), ('impediments', 2)],
+        notes=['The PM and team establish and **periodically review** the processes they use.',
+               'For example, review **task boards** for **bottlenecks** (work piling up in one column), whether work flows at the expected rate, and **impediments** blocking progress.']),
+    57: dict(
+        hl=[('Process tailoring', 1), ('large projects have more process', 2), ('Lean production methods', 3), ('Retrospectives', 3)],
+        notes=['**Process tailoring** optimizes the process for the project.',
+               '**Large** and **critical** projects get more process; small or less significant ones get less.',
+               'Ways to optimize: **lean** methods (remove waste), **retrospectives** and lessons learned, and asking where the next unit of funding is best spent.']),
+    58: dict(
+        hl=[('waste', 1), ('Time spent tracking conformance', 2), ('just enough time', 3)],
+        notes=['Process reviews look for inefficiency and **waste** that can be eliminated.',
+               '**Time spent checking conformance** to process is time not spent delivering outcomes.',
+               'So teams spend **just enough** time on process reviews to get their benefit and satisfy governance.']),
+    59: dict(
+        hl=[('constraints', 1, 1), ('fixed delivery dates', 2), ('predetermined budget', 2), ('shift and change', 3), ('new stakeholder requirement', 4), ('reduction in budget', 5)],
+        notes=['Leading a project means understanding its **constraints**.',
+               'They include **fixed delivery dates**, regulatory compliance, a **predetermined budget** and quality policies.',
+               'Constraints **shift** during the project.',
+               'A **new stakeholder requirement** may expand the schedule and budget…',
+               '…and a **budget cut** may relax a quality requirement or reduce scope. They are interrelated: change one, and the others move.'],
+        exam=[asked('f242', 'Q1.1', 'Define the term ‘project constraints’ and explain how they influence project planning and execution. Provide at least three examples of common constraints and discuss their interrelationship.',
+                    a='Project constraints are the limits a project must be delivered within. The classic three are scope, time and cost, often with quality, resources and risk. They drive planning because every schedule, budget and scope decision has to fit inside them, and during execution the PM keeps trading them off. They are interrelated (the triple constraint): cutting the schedule usually needs more cost or less scope, and adding scope needs more time or money; quality sits in the middle and suffers if they are squeezed.')]),
+    60: dict(
+        hl=[('ongoing project activity', 1), ('present alternatives and implications', 2), ('project team’s authority', 3)],
+        notes=['Balancing shifting constraints while keeping stakeholders satisfied is an **ongoing** activity.',
+               'Big trade-offs go to the customer, sponsor or product owner, with **alternatives and their implications** presented.',
+               'Smaller trade-offs and variances may be within the **team’s own authority**.']),
+    61: dict(
+        hl=[('contracting or procurement', 1), ('material, capital equipment', 2), ('do not have contracting', 3), ('contracting officers', 4)],
+        notes=['Many projects involve **contracting or procurement**…',
+               '…of anything from **materials and equipment** to solutions, labor and services.',
+               'In most organizations PMs **do not have contracting authority** (they can’t sign contracts)…',
+               '…so they work with **contracting officers** and experts in contracts, laws and regulations.']),
+    62: dict(
+        hl=[('rigorous policies and procedures', 1), ('request for proposals (RFP)', 2), ('statement of work (SOW)', 2)],
+        notes=['Organizations have **rigorous procurement policies** that define who can sign contracts, the limits of that authority, and the process to follow.',
+               'Before procuring, the PM and technical team members work with contracting professionals to write the **request for proposals (RFP)**, the **statement of work (SOW)** (what work the seller must do), terms and conditions, and other bid documents.']),
+    63: dict(
+        hl=[('bid process', 1, 1), ('Request for information', 2), ('Request for proposal', 3), ('Request for quote', 4)],
+        notes=['The **bid process**: develop and publish bid documents, hold bidder conferences, select a bidder.',
+               '**RFI** (request for information): “what’s out there?”, used to learn about technologies and vendors before deciding.',
+               '**RFP** (request for proposal): “how would you build it?”, used once the type of solution is chosen, to invite vendors to propose and bid.',
+               '**RFQ** (request for quote): “what’s your price?”, used for a known, specified item (500 laptops with exact specs).'],
+        exam=[likely('A company needs 500 laptops with exact specifications and asks several vendors for their best price and delivery time. Which bid document does it issue?', a=0,
+                     opts=['Request for quote (RFQ)', 'Request for information (RFI)', 'Request for proposal (RFP)', 'Statement of work (SOW)'])]),
+    64: dict(
+        hl=[('Knowledge Management', 1), ('Explicit and Tacit Knowledge', 2)],
+        notes=['Learning through the project is **knowledge management**: capturing and sharing what the team learns so it isn’t lost when people leave.',
+               'It covers both **explicit** knowledge (documents, lessons-learned registers) and **tacit** knowledge (shared through mentoring, pairing, communities of practice). The diagram shows explicit knowledge flowing through information management and tacit knowledge through people.']),
+    65: dict(hl=[('Efficient and effective project', 1, 0, 'ocr'), ('Appropriate communication', 1, 0, 'ocr'), ('Effective management of', 1, 0, 'ocr'), ('Improved capability', 1, 0, 'ocr')], notes=[CHECK + ' Project work: efficient performance (status reports show the work on track), appropriate processes, good communication, efficient physical resources and procurement, and improved capability through learning.']),
+    66: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('business objectives and advancement', 2, 0, 'ocr'), ('accept and are satisfied', 3, 0, 'ocr')],
+        notes=['The **delivery** domain covers delivering the scope and quality the project was undertaken to achieve.',
+               'Outcomes: projects contribute to business objectives and strategy, realize the outcomes they were initiated for, realize benefits in the planned time, the team clearly understands the requirements, and **stakeholders accept and are satisfied** with the deliverables.']),
+    67: dict(
+        hl=[('Definition of Done (DoD)', 1), ('ready for customer use', 1), ('Quality', 2), ('inherent characteristics fulfills requirements', 2), ('Cost of Quality (COQ)', 3)],
+        notes=['**Definition of done (DoD)**: a checklist of all criteria a deliverable must meet to be considered **ready for customer use** (coded, reviewed, tested, documented).',
+               '**Quality**: the degree to which a set of **inherent characteristics fulfills requirements**.',
+               '**Cost of quality (COQ)**: all costs over the product’s life from **prevention** (training, standards), **appraisal** (testing, inspection) and **failure** (rework, warranty, lost customers). Chapter 7 develops it.'],
+        exam=[likely('Which three kinds of cost make up the cost of quality?', a=0,
+                     opts=['Prevention, appraisal, and failure', 'Design, build, and test', 'Fixed, variable, and sunk', 'Labor, materials, and overhead'])]),
+    68: dict(
+        hl=[('releasing', 1), ('long after', 2), ('business case', 3)],
+        notes=['Approaches that **release** deliverables throughout the life cycle start delivering value **during** the project.',
+               'Business value often keeps being captured **long after** the project ends.',
+               'A **business case** gives the justification and projected value; its format depends on the approach.']),
+    69: dict(
+        hl=[('more than just scope', 1), ('what needs to be delivered', 2), ('performance levels', 3), ('definition of done', 4)],
+        notes=['Delivery is **more than scope and requirements**.',
+               'Scope and requirements say **what** must be delivered.',
+               'Quality says **how well**: the **performance levels** that must be met (response time, reliability, accuracy).',
+               'Quality requirements appear in completion criteria, the **definition of done**, the statement of work or requirements documents.']),
+    70: dict(
+        hl=[('sponsoring organization', 1), ('quality policy', 2), ('training, and process audit', 3), ('balancing the quality needs', 4), ('cost of quality methodology', 5)],
+        notes=['Much of the cost of quality is borne by the **sponsoring organization** through its policies, procedures and processes.',
+               'Policies that govern how work is done are part of the organization’s **quality policy**.',
+               'Overhead, **training and process audits** are paid by the organization though used by the project.',
+               'Projects **balance** the quality needs of processes and products against the cost of meeting them.',
+               'The **cost of quality** method finds that balance: invest in prevention and appraisal to avoid more expensive defects and failures.']),
+    71: dict(
+        hl=[('suboptimal outcomes', 1, 1), ('fully experimental project', 2), ('market opportunity has passed', 3), ('minimize negative outcomes', 4)],
+        notes=['Some projects fail or produce **suboptimal outcomes**, and the possibility exists in every project.',
+               'A **fully experimental** project (a new technology or medicine) deliberately invests in an uncertain outcome; several failures may come before success.',
+               'Others fail because the **market opportunity passed** or a competitor got there first.',
+               'Good project management **minimizes** negative outcomes but can’t eliminate them: uncertainty is part of producing something unique.']),
+    72: dict(hl=[('contribute to business', 1, 0, 'ocr'), ('realize the outcomes', 1, 0, 'ocr'), ('Project benefits are realized', 1, 0, 'ocr'), ('clear', 1, 0, 'ocr'), ('Stakeholders accept', 1, 0, 'ocr')], notes=[CHECK + ' Delivery: contribution to strategy and business objectives (checked against the business case), outcomes realized, benefits realized on time (benefits realization plan), clear understanding of requirements, and stakeholder acceptance.']),
+    73: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('reliable understanding of the status', 2, 0, 'ocr'), ('Actionable data', 2, 0, 'ocr')],
+        notes=['The **measurement** domain covers assessing performance and taking action to keep it acceptable.',
+               'Outcomes: a **reliable understanding of status**, **actionable data** for decisions, timely actions to stay on track, and business value from informed, timely decisions based on reliable forecasts.']),
+    74: dict(
+        hl=[('Metric', 1), ('Baseline', 2), ('approved version of a measure', 2), ('Dashboard', 3)],
+        notes=['**Metric**: a description of a project or product attribute and **how to measure** it (e.g. percent of work complete).',
+               '**Baseline**: the **approved version** of a measure used to compare actual results against (the approved budget or schedule).',
+               '**Dashboard**: a set of charts and graphs showing progress or performance against the important measures.'],
+        exam=[likely('The approved version of a measure that actual results are compared against is called a:', a=0,
+                     opts=['Baseline', 'Metric', 'Dashboard', 'Forecast'])]),
+    75: dict(
+        hl=[('Evaluating performance compared to plan', 1), ('Demonstrating accountability', 2), ('trade-offs, threats, opportunities', 3), ('customer acceptance criteria', 4)],
+        notes=['Why measure: to **evaluate performance against the plan** and track resource use, work done and budget spent.',
+               'To **demonstrate accountability** and inform stakeholders.',
+               'To check whether deliverables will produce the planned benefits, and to **focus conversations** about trade-offs, threats, opportunities and options.',
+               'To make sure deliverables will meet **customer acceptance criteria**.']),
+    76: dict(
+        hl=[('conversations about how to use the data', 1), ('right things are measured', 2), ('reduce the likelihood of performance deterioration', 3)],
+        notes=['The value of measurement is **not in collecting data** but in the **conversations** about how to act on it.',
+               'It helps make sure the **right things** are measured and reported.',
+               'Good measures let the team track, evaluate and report status, improve performance and **reduce the chance of performance deteriorating** unnoticed.']),
+    77: dict(
+        hl=[('Leading indicators', 1), ('predict changes or trends', 1), ('Rate of scope change requests', 2), ('Lagging indicators', 3), ('after the fact', 3), ('Cost variance', 4)],
+        notes=['**Key performance indicators (KPIs)** come in two kinds. **Leading** indicators are proactive: they **predict** changes or trends while there is still time to act.',
+               'Examples: the **rate of scope change requests** (many changes hint at poor planning) and **team workload balance** (overload predicts burnout and missed dates).',
+               '**Lagging** indicators are reactive: they measure deliverables or events **after the fact**.',
+               'Examples: **cost variance**, number of deliverables completed, customer satisfaction scores. Leading looks ahead; lagging looks back.'],
+        exam=[likely('Which of these is a leading indicator?', a=0,
+                     opts=['Team workload balance', 'Cost variance', 'Customer satisfaction score', 'Number of deliverables completed'])]),
+    78: dict(
+        hl=[('only measure what is relevant', 1), ('Specific', 2), ('Meaningful', 2), ('Achievable', 2), ('Relevant', 2), ('Timely', 2)],
+        notes=['Measuring takes time that could go to productive work, so teams **measure only what is relevant** and useful.',
+               'Effective metrics are **SMART**: Specific, **Meaningful**, Achievable, Relevant, Timely. Note that in this slide the M is “meaningful”, not the usual “measurable”: a classic trap.']),
+    79: dict(
+        hl=[('project objectives, the intended outcomes', 1), ('Deliverable metrics', 2), ('Baseline performance', 2), ('Business value', 2), ('Forecasts', 2)],
+        notes=['What to measure depends on the **objectives, intended outcomes and environment**.',
+               'Seven common categories: **deliverable** metrics, **delivery**, **baseline performance**, **resources**, **business value**, **stakeholders** and **forecasts**. Slides 80–81 give examples of each.']),
+    80: dict(
+        hl=[('Deliverable metrics', 1), ('Delivery', 2), ('Lead time', 2), ('Cycle time', 2), ('Baseline performance', 3)],
+        notes=['**Deliverable metrics**: errors or defects, performance measures, technical performance measures.',
+               '**Delivery**: work in progress, **lead time** (from identifying the need to delivering the result: the customer’s whole wait), **cycle time** (from starting the work to finishing it), process efficiency.',
+               '**Baseline performance**: start and finish dates, effort and duration, schedule variance.']),
+    81: dict(
+        hl=[('Resources', 1), ('Return on investment (ROI)', 2), ('Net Promoter Score (NPS)', 3), ('Estimate at completion (EAC)', 4)],
+        notes=['**Resources**: planned vs. actual resource use and cost.',
+               '**Business value**: cost-benefit ratio, **return on investment (ROI)**, net present value (NPV).',
+               '**Stakeholders**: **Net Promoter Score (NPS)**, mood charts, morale, turnover.',
+               '**Forecasts**: estimate to complete (ETC: what is left), **estimate at completion (EAC**: the expected total), variance at completion (VAC = budget − EAC).']),
+    82: dict(
+        hl=[('Stakeholder Engagement', 1, 0, 'ocr'), ('Net Promoter Score', 2, 0, 'ocr'), ('Turnover Rate', 3, 0, 'ocr')],
+        notes=['An example dashboard for the stakeholder and team metrics of slide 81. Each row has a current value, a trend arrow, a target and a red/amber/green status. **Stakeholder engagement**: 82% active participation, rising, green.',
+               '**NPS** +45 against a target of >30 (green). Mood chart and morale (7.2/10 vs. >8) are amber.',
+               '**Turnover** 12% against a target of <10% is red: the item needing action. A dashboard’s job is exactly this, pointing attention at what is off track.']),
+    83: dict(
+        hl=[('Dashboards', 1), ('Information Radiators', 2), ('Visual Controls', 3)],
+        notes=['**Dashboards**: summary displays of the key measures, usually electronic (slide 84).',
+               '**Information radiators**: large, visible displays placed where everyone sees them without asking (slide 85).',
+               '**Visual controls**: task boards, burn charts and other charts that show the flow of work (slide 86).']),
+    84: dict(
+        hl=[('Organization Project Name', 1, 0, 'ocr'), ('Concern', 2, 0, 'ocr')],
+        notes=['A project **dashboard** template: project name, sponsor, PM, dates, overall status for schedule, resources and budget, then key activities with recent accomplishments, upcoming deliverables and a coloured status (concern, on track, issue). The legend at the bottom defines the colour codes.']),
+    85: dict(
+        hl=[('Information', 1, 1), ('Radiators', 1)],
+        notes=['An **information radiator** is a big visible display, such as a burnup or burndown chart or a risk log, placed where the team works, so status is visible without asking anyone. (Also called a “big visible chart”.)'],
+        exam=[asked('f242', 'Q6.2', 'How can a burn chart help a project manager track progress and identify if the team is ahead or behind schedule?',
+                    a='A burndown chart plots the work remaining (e.g. story points) against time, next to an ideal line from the total down to zero at the end of the sprint. If the actual line is above the ideal line the team is behind; below it, ahead. A burnup chart shows completed work rising toward the scope line and also reveals scope changes. Either one gives an early warning, so the PM can act (remove blockers, re-prioritize, adjust scope) before the deadline.')]),
+    86: dict(
+        hl=[('Task boards', 1), ('Burn charts', 2), ('Cycle time', 3, 0, 'ocr'), ('Lead time', 3, 0, 'ocr')],
+        notes=['**Task boards** make the flow of work visible: columns Ready → Develop and unit test → Dev-done → System test → Done, with work-in-progress limits (the boxed numbers).',
+               '**Burn charts** show work remaining (burndown) or completed (burnup) over time.',
+               'On the board: **cycle time** runs from when work starts on an item until it is complete; **lead time** runs from when the item is put on the board until it is delivered. Lead time is longer, because items wait in Ready and their order can change.'],
+        exam=[asked('f251', 'Q6.1', 'What does a burndown chart measure, and how are its two axes labeled in Agile project management?',
+                    a='It measures the work remaining against time, showing whether the team will finish on schedule. X-axis: time (days of the sprint, or sprints/iterations). Y-axis: work remaining (story points, hours or tasks).')]),
+    87: dict(hl=[('A reliable understanding', 1, 0, 'ocr'), ('Actionable data', 1, 0, 'ocr'), ('Timely and appropriate actions', 1, 0, 'ocr'), ('business value', 1, 0, 'ocr')], notes=[CHECK + ' Measurement: a reliable understanding of status (audits of measures), actionable data (data shows whether to act), timely action (leading indicators prevent surprises) and business value from informed decisions.']),
+    88: dict(
+        hl=[('addresses', 1, 0, 'ocr'), ('Proactively exploring', 2, 0, 'ocr'), ('reserves are utilized', 3, 0, 'ocr')],
+        notes=['The **uncertainty** domain covers activities related to risk and uncertainty.',
+               'Outcomes: awareness of the environment (technical, social, political, market, economic), **proactive** exploration of and response to uncertainty, awareness of how variables depend on each other, anticipating threats and opportunities, delivery with little impact from surprises, and opportunities realized.',
+               'And **cost and schedule reserves used effectively** to stay aligned with the objectives.']),
+    89: dict(
+        hl=[('Uncertainty', 1, 2), ('Ambiguity', 2), ('Complexity', 3), ('Volatility', 4), ('rapid and unpredictable change', 4), ('Risk', 5), ('positive or negative effect', 5)],
+        notes=['**Uncertainty**: a lack of understanding or awareness of issues, events, paths or solutions.',
+               '**Ambiguity**: being unclear, having difficulty identifying the cause of events, or having **multiple options** to choose from.',
+               '**Complexity**: a characteristic that makes a project difficult to manage because of human behavior, system behavior and ambiguity.',
+               '**Volatility**: the possibility of **rapid and unpredictable change**.',
+               '**Risk**: an uncertain event or condition that, if it occurs, has a **positive or negative** effect on objectives.'],
+        exam=[likely('“The possibility for rapid and unpredictable change” defines:', a=0, opts=['Volatility', 'Ambiguity', 'Complexity', 'Risk'])]),
+    90: dict(
+        hl=[('state of not knowing', 1), ('Risk associated with not knowing future events', 2), ('Ambiguity associated', 2), ('Complexity associated', 2)],
+        notes=['**Uncertainty** in the broadest sense is a state of **not knowing** or unpredictability.',
+               'It has nuances: **risk** (not knowing future events), **ambiguity** (not being aware of current or future conditions) and **complexity** (dynamic systems with unpredictable outcomes).']),
+    91: dict(
+        hl=[('larger environment', 1), ('Economic factors', 2), ('Technical considerations', 2), ('Legal or legislative', 2), ('Political influences', 3)],
+        notes=['Navigating uncertainty starts with understanding the **larger environment**.',
+               'Sources: **economic** (price volatility, resource availability, borrowing, inflation), **technical** (new technology, system complexity, interfaces), **legal**, physical (safety, weather, working conditions), ambiguity, and social and market influences shaped by opinion and media.',
+               '**Political** influences, inside or outside the organization. (A PESTLE-style checklist.)']),
+    92: dict(
+        hl=[('Conceptual ambiguity', 1), ('similar terms or arguments in', 1), ('Situational ambiguity', 2), ('more than one outcome is possible', 2)],
+        notes=['**Conceptual ambiguity**: a lack of shared understanding, when people use the same terms differently. “The schedule was reported on track last week”: was it on track last week, or was it reported last week? Disagreeing about what “done” means is the same problem.',
+               '**Situational ambiguity**: **more than one outcome** is possible; having several options to solve a problem is a form of it.'],
+        exam=[likely('Team members argue in a status meeting because they mean different things by “done”. Which kind of uncertainty is this?', a=0,
+                     opts=['Conceptual ambiguity', 'Situational ambiguity', 'Volatility', 'A threat'])]),
+    93: dict(
+        hl=[('difficult to manage', 1), ('many interconnected influences', 2)],
+        notes=['**Complexity** makes a project or its environment **difficult to manage** because of human behavior, system behavior or ambiguity.',
+               'It exists when there are **many interconnected influences** that behave and interact in diverse ways.']),
+    94: dict(
+        hl=[('unforeseen or unintended outcomes', 1), ('no way of making accurate predictions', 2), ('systems-based', 3), ('reframing', 3), ('process', 3)],
+        notes=['In complex environments, individual elements combine into **unforeseen or unintended outcomes**.',
+               'The effect: there is **no way to predict** the likelihood of outcomes accurately, or even which outcomes might emerge.',
+               'Three families of ways to work with complexity: **systems-based**, **reframing** and **process-based** (next three slides).']),
+    95: dict(
+        hl=[('Decoupling', 1), ('reduces the overall size of the', 1), ('Simulation', 2), ('shopping malls', 2)],
+        notes=['**Decoupling** (systems-based): disconnect parts of the system to simplify it and reduce connected variables. Understanding how one piece works on its own shrinks the problem.',
+               '**Simulation**: use similar but unrelated scenarios to model parts of the system. A new airport with shops and restaurants can study **shopping malls** to learn about consumer buying habits.'],
+        exam=[likely('A team designing a new airport’s retail area studies shopping malls to predict consumer buying habits. Which complexity technique is this?', a=0,
+                     opts=['Simulation', 'Decoupling', 'Fail safe', 'Balance'])]),
+    96: dict(
+        hl=[('Diversity', 1), ('Delphi-like processes', 1), ('Balance', 2), ('counteract each other', 2)],
+        notes=['**Diversity** (reframing): view the system from diverse perspectives, e.g. brainstorming to open divergent ideas, then Delphi-like processes to converge.',
+               '**Balance**: balance the type of data used (forecasts and lagging indicators, not just one) for a broader view, and use elements whose variations **counteract** each other’s negative effects.']),
+    97: dict(
+        hl=[('Iterate', 1), ('Engage', 2), ('reduces the number of assumptions', 2), ('Fail safe', 3), ('graceful degradation', 3)],
+        notes=['**Iterate** (process-based): build iteratively or incrementally, one feature at a time, and after each iteration learn what worked, what didn’t and how customers reacted.',
+               '**Engage**: build in stakeholder engagement, which **reduces assumptions** and builds learning into the process.',
+               '**Fail safe**: for critical elements, build in **redundancy** or **graceful degradation** so a component failure doesn’t take the whole system down (a backup server).'],
+        exam=[likely('Adding a backup server so a critical system keeps working in reduced form if its main server fails is which complexity technique?', a=0,
+                     opts=['Fail safe', 'Iterate', 'Engage', 'Decoupling'])]),
+    98: dict(
+        hl=[('rapid and', 1), ('fluctuations in available', 2), ('cost and schedule', 3)],
+        notes=['**Volatility** exists where change is **rapid and unpredictable**.',
+               'It often comes from **fluctuations** in available skills or materials (a key specialist leaves; chip prices spike).',
+               'It usually hits **cost and schedule**.']),
+    99: dict(
+        hl=[('Alternatives analysis', 1), ('different mix of skills', 2), ('outsourcing', 2), ('Cost reserve', 3)],
+        notes=['Volatility is addressed with **alternatives analysis** and **reserves**.',
+               '**Alternatives analysis**: find and evaluate different ways to meet the objective: a different **mix of skills**, resequencing work, or **outsourcing**.',
+               '**Reserve**: a **cost reserve** covers budget overruns caused by price volatility (and a schedule reserve covers time).']),
+    100: dict(
+        hl=[('aspect of uncertainty', 1), ('positive', 2), ('threats', 3), ('opportunities', 3), ('unique undertakings', 4)],
+        notes=['**Risk** is one aspect of uncertainty.',
+               'It is an uncertain event or condition with a **positive or negative** effect on objectives if it occurs.',
+               'Negative risks are **threats**; positive risks are **opportunities**.',
+               'Every project has risk because projects are **unique** undertakings.']),
+    101: dict(
+        hl=[('complexity, ambiguity, and volatility', 1), ('overall project rather than to a specific event', 2), ('cancel the project', 3)],
+        notes=['**Overall project risk** is often a function of **complexity, ambiguity and volatility**.',
+               'Responses to overall risk use the same strategies as individual threats and opportunities, applied to the **project as a whole**.',
+               'If overall risk is too high, the organization may **cancel** the project: a legitimate outcome, not a failure of risk management.']),
+    102: dict(
+        hl=[('threat', 1, 1), ('Avoid', 2), ('Escalate', 3), ('Transfer', 4), ('Mitigate', 5), ('Accept', 6)],
+        notes=['A **threat** is an event or condition with a **negative** impact on objectives if it occurs.',
+               '**Avoid**: eliminate the threat or protect the project from it (change the plan, drop the risky feature).',
+               '**Escalate**: the threat is outside the PM’s authority or scope, so pass it to the right level (program, portfolio, sponsor).',
+               '**Transfer**: shift ownership and impact to a third party (insurance, a fixed-price contract).',
+               '**Mitigate**: reduce the probability or impact (extra testing, a prototype).',
+               '**Accept**: acknowledge it without action, perhaps with a contingency reserve.'],
+        exam=[likely('Buying insurance against a data-centre fire is which threat response strategy?', a=0,
+                     opts=['Transfer', 'Avoid', 'Mitigate', 'Exploit'])]),
+    103: dict(
+        hl=[('Threat Profile', 1, 0, 'ocr'), ('Permits obtained', 2, 0, 'ocr')],
+        notes=['The table scores five risks each month (impact × probability = severity), and the **threat profile** chart stacks their severities over time. The total (dashed line) falls from about 26 in January to about 11 in April.',
+               'Some risks disappear as they are dealt with (**permits obtained** drops to 0 once permits are secured; “site not ready in time” too), while “pump capacity” stays. A falling profile is the evidence that risk responses are working.']),
+    104: dict(
+        hl=[('opportunity', 1), ('finishes work early', 2), ('Exploit', 3), ('Share', 4), ('Enhance', 5)],
+        notes=['An **opportunity** is an event or condition with a **positive** impact on objectives if it occurs.',
+               'Example: a time-and-materials subcontractor **finishes early**, saving cost and schedule.',
+               '**Exploit**: act to make sure the opportunity **happens** (raise its probability to 100%).',
+               '**Share**: give part of the ownership to a third party better able to capture the benefit (a partnership).',
+               '**Enhance**: increase its **probability or impact** without guaranteeing it. **Escalate** and **accept** apply to opportunities too.'],
+        exam=[asked('m261', 'MCQ', 'A team identifies a chance to finish early and takes action to ensure that the opportunity occurs. Which strategy is this?',
+                    a=0, opts=['Exploit', 'Transfer', 'Enhance', 'Accept'],
+                    why='Exploit makes sure the opportunity happens. Enhance only increases its chance; transfer is a threat strategy.'),
+              likely('A firm partners with another company so that both can capture a positive risk neither could capture alone. Which opportunity strategy is this?', a=0,
+                     opts=['Share', 'Exploit', 'Enhance', 'Transfer'])]),
+    105: dict(
+        hl=[('amount of time or budget', 1), ('Contingency reserve', 2, 1), ('identified risks', 2), ('Management reserve', 3), ('unknown events', 3)],
+        notes=['A **reserve** is time or budget set aside for handling risks.',
+               '**Contingency reserve**: for **identified** risks, should they occur.',
+               '**Management reserve**: for **unknown** events such as unplanned, in-scope work (slide 47).'],
+        exam=[likely('True or false: contingency reserve is set aside for unknown, unplanned events.', tf=False,
+                     why='Contingency reserve covers identified risks; management reserve covers unknown events.')]),
+    106: dict(
+        hl=[('rhythm or cadence of review', 1), ('Daily standup meetings', 2), ('blockers or impediments', 3), ('progress and breakthroughs', 4), ('Frequent demonstrations', 5)],
+        notes=['A regular **cadence of review** and feedback with a broad set of stakeholders helps navigate risk proactively.',
+               '**Daily stand-ups** (usable in any project) surface potential threats and opportunities.',
+               'Reported **blockers** may become threats if they keep delaying progress…',
+               '…while **progress and breakthroughs** may point to opportunities to exploit and share.',
+               '**Frequent demonstrations** of increments, interim designs or proofs of concept also surface threats and opportunities early.']),
+    107: dict(hl=[('An awareness of the environment', 1, 0, 'ocr'), ('Proactively exploring', 1, 0, 'ocr'), ('anticipate threats', 1, 0, 'ocr'), ('Realized opportunities', 1, 0, 'ocr'), ('Cost and schedule reserves', 1, 0, 'ocr')], notes=[CHECK + ' Uncertainty: awareness of the environment (environmental factors considered in estimates and plans), proactive responses (risk register and responses kept current), awareness of interdependencies, anticipation of threats and opportunities, little impact from surprises, realized opportunities, and effective use of reserves.']),
+}
