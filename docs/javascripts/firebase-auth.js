@@ -1503,6 +1503,7 @@
           '">My Profile</a>',
         '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
         '  <a class="shoug-drop-link" href="/account/transcript/">Transcript</a>',
+        '  <a class="shoug-drop-link" href="' + planGridHref() + '">Academic Plan</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
         '  <a class="shoug-drop-link" href="/community/">Community</a>',
@@ -3703,11 +3704,44 @@
       : "en";
   }
 
+  // The student's own grid: the plan picked on the transcript page, else the grid
+  // they've been filling in, else the plan picker. Keep in sync with account-nav.js.
+  var PLAN_GRID_KEYS = {
+    "cs-ai": "shoug_academic_plan_grid_cs_ai_v1",
+    "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
+    "cs-dx": "shoug_academic_plan_grid_cs_dx_v1",
+    "is-ai": "shoug_academic_plan_grid_is_ai_v1",
+    "se-ai": "shoug_academic_plan_grid_se_ai_v1",
+    "se-cys": "shoug_academic_plan_grid_v4",
+    se: "shoug_academic_plan_grid_se_v1",
+  };
+  function planGridHref() {
+    try {
+      var picked = /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+        localStorage.getItem("shoug-transcript-plan") || "",
+      );
+      if (picked) return "/academic-plan-themes/" + picked[1] + "/grid.html";
+      var best = null,
+        bestCount = 0;
+      Object.keys(PLAN_GRID_KEYS).forEach(function (plan) {
+        var saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[plan]) || "null");
+        var count = saved && saved.statusMap ? Object.keys(saved.statusMap).length : 0;
+        if (count > bestCount) {
+          best = plan;
+          bestCount = count;
+        }
+      });
+      if (best) return "/academic-plan-themes/" + best + "/grid.html";
+    } catch (e) {}
+    return "/academic-plan-themes/academic-plan/";
+  }
+
   var APP_NAV_LABELS = {
     en: {
       home: "Home",
       profile: "My Profile",
       transcript: "My Transcript",
+      plan: "My Plan",
       calendar: "Calendar",
       bookmarks: "Bookmarks",
       progress: "My Progress",
@@ -3718,6 +3752,7 @@
       home: "الرئيسية",
       profile: "ملفي الشخصي",
       transcript: "سجلي الأكاديمي",
+      plan: "خطتي الدراسية",
       calendar: "التقويم",
       bookmarks: "المحفوظات",
       progress: "تقدمي",
@@ -3732,6 +3767,7 @@
     "bookmarks",
     "progress",
     "transcript",
+    "plan",
     "community",
   ];
 
@@ -3795,6 +3831,11 @@
         key: "transcript",
         href: "/account/transcript/",
         active: path.indexOf("/account/transcript") === 0,
+      },
+      {
+        key: "plan",
+        href: planGridHref(),
+        active: path.indexOf("/academic-plan-themes") === 0,
       },
       {
         key: "community",
