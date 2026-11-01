@@ -2218,6 +2218,9 @@
       context = "bookmarks";
       storageKey = "shoug-ob-bookmarks-v2";
     } else if (parts[0] === "academic-plan-themes") {
+      // The grid pages ship their own "?" walkthrough; the site tour's backdrop
+      // would sit over their re-rendered course cards and swallow clicks.
+      if (parts[parts.length - 1] === "grid.html") return false;
       context = "academic-plan-themes";
       storageKey = "shoug-ob-apt-v2";
     } else {
