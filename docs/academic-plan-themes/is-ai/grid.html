@@ -1625,6 +1625,7 @@
       </div>
       <div class="summer-actions export-actions">
         <button id="exportCsvBtn" type="button"></button>
+        <button id="exportGridBtn" type="button"></button>
         <button id="exportOpenBtn" type="button"></button>
       </div>
     </div>
@@ -1744,6 +1745,8 @@
             advisor: "اسم المرشد/ة الأكاديمي",
             notes: "أسئلة أو ملاحظات للمرشد",
             open: "فتح التقرير للطباعة",
+            grid: "فتح الشبكة كما تظهر لي",
+            gridTitle: "شبكة الخطة الدراسية",
             csv: "تنزيل جدول (CSV)",
             popupBlocked: "منع المتصفح فتح نافذة جديدة، فتم تنزيل التقرير بدلاً من ذلك.",
             docTitle: "مراجعة الخطة الدراسية",
@@ -2041,6 +2044,8 @@
             advisor: "Advisor name",
             notes: "Questions or notes for your advisor",
             open: "Open printable report",
+            grid: "Open grid as I see it",
+            gridTitle: "Plan Grid",
             csv: "Download spreadsheet (CSV)",
             popupBlocked: "Your browser blocked the new tab, so the report was downloaded instead.",
             docTitle: "Academic Plan Review",
@@ -4429,6 +4434,7 @@
         document.getElementById("exportNotesLabel").textContent = s.report.notes;
         document.getElementById("exportOpenBtn").textContent = s.report.open;
         document.getElementById("exportCsvBtn").textContent = s.report.csv;
+        document.getElementById("exportGridBtn").textContent = s.report.grid;
         renderCloudBtn();
         document.getElementById("summerTitle").textContent = s.addSummerTitle;
         document.getElementById("summerSub").textContent = s.addSummerSub;
@@ -5094,6 +5100,12 @@
         return { year: y, semester: "spring" }; // May-Jul summer break
       }
 
+      // False only in the May-Jul break, when the Spring that currentAcademicSemester() names is already over.
+      function currentTermInProgress() {
+        const m = new Date().getMonth() + 1;
+        return m < 5 || m > 7;
+      }
+
       function psuTermCode(termRef) {
         const academicYear =
           termRef.semester === "fall" ? termRef.year : termRef.year - 1;
@@ -5296,7 +5308,12 @@
         const expectedOrder = calendarOrder(startTerm.order) + stepsElapsed;
         const actualPosition = furthestReachedOrder(termId);
 
-        const progress = courseAndHourProgress(expectedOrder, termId);
+        // Pace is measured against terms that are already over: a standard student hasn't passed the
+        // current term's courses yet either, and in-progress courses don't count as earned on our side.
+        const finishedOrder = currentTermInProgress()
+          ? expectedOrder - 1
+          : expectedOrder;
+        const progress = courseAndHourProgress(finishedOrder, termId);
         const courseDiff = progress.actualCourses - progress.expectedCourses;
         const hourDiff = progress.actualHours - progress.expectedHours;
 
@@ -6053,6 +6070,93 @@
         setTimeout(() => URL.revokeObjectURL(url), 60000);
       }
 
+      // The plan exactly as the student sees it: the live grid with its own styles, minus the editing controls.
+      function gridViewHtml(fields) {
+        const R = t().report;
+        const e = escapeHtml;
+        const d = advisorReportData();
+        // Only the grid's own stylesheet; the site shell injects print rules of its own.
+        const css = document.querySelector("head > style").textContent;
+        const fonts = [...document.querySelectorAll('link[rel="stylesheet"]')]
+          .map((l) => `<link rel="stylesheet" href="${e(l.href)}" />`)
+          .join("");
+        const wrap = document.createElement("div");
+        ["plan-prep", "plan", "plan-electives"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el && el.style.display !== "none") wrap.appendChild(el.cloneNode(true));
+        });
+        const legend = document.querySelector(".legend");
+        if (legend) wrap.appendChild(legend.cloneNode(true));
+        wrap
+          .querySelectorAll("button, .term-remove, .add-course-tile, .syllabus-panel")
+          .forEach((n) => n.remove());
+        wrap.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+        wrap.querySelectorAll("[draggable]").forEach((n) => n.removeAttribute("draggable"));
+        wrap
+          .querySelectorAll(".expanded, .move-selected, .dragging, .move-target-label")
+          .forEach((n) =>
+            n.classList.remove("expanded", "move-selected", "dragging", "move-target-label"),
+          );
+        const who = [fields.name, fields.id].filter(Boolean).join(" · ");
+        const title = [R.gridTitle, d.program, fields.name].filter(Boolean).join(" — ");
+        return `<!doctype html>
+<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>${e(title)}</title>
+${fonts}
+<style>${css}</style>
+<style>
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: var(--bg); }
+  .grid-toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: flex-end; padding: 10px 16px;
+    background: var(--bg); border-bottom: 1px solid var(--border); }
+  .grid-toolbar button { font-family: "Tajawal", sans-serif; font-weight: 700; font-size: 13px; padding: 8px 16px;
+    border-radius: 8px; border: 1px solid var(--term-badge); background: var(--term-badge); color: #fff; cursor: pointer; }
+  .grid-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 6px 20px;
+    margin-bottom: 14px; }
+  .grid-head h1 { margin: 0; font-size: 20px; }
+  .grid-head .sub { font-family: "Tajawal", sans-serif; font-size: 13px; }
+  .course { cursor: default; }
+  @page { size: A4 landscape; margin: 8mm; }
+  @media print {
+    .grid-toolbar { display: none !important; }
+    .wrap { max-width: none; padding: 0; }
+    .term-row, .legend { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-toolbar"><button type="button" onclick="window.print()">${e(R.print)}</button></div>
+<div class="wrap">
+  <div class="grid-head">
+    <div><h1>${e(d.program)}</h1><div class="sub">${e(who)}</div></div>
+    <div class="sub">${e(R.hoursOf(d.earned.actualHours, d.totals.hours))} · ${e(R.generated)}: ${e(d.generated)}</div>
+  </div>
+  ${wrap.innerHTML}
+</div>
+</body>
+</html>`;
+      }
+
+      function openGridView() {
+        const fields = advisorFields();
+        const html = gridViewHtml(fields);
+        const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+        const win = window.open(url, "_blank");
+        if (!win) {
+          downloadFile(
+            `${advisorFileBase(advisorReportData())}-grid.html`,
+            html,
+            "text/html",
+          );
+          toast(t().report.popupBlocked);
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      }
+
       function downloadAdvisorCsv() {
         const fields = advisorFields();
         const d = advisorReportData();
@@ -6078,6 +6182,9 @@
       document
         .getElementById("exportCsvBtn")
         .addEventListener("click", downloadAdvisorCsv);
+      document
+        .getElementById("exportGridBtn")
+        .addEventListener("click", openGridView);
 
       function toggleGrad(open) {
         const overlay = document.getElementById("gradOverlay");
