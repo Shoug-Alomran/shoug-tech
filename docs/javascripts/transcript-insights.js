@@ -578,7 +578,7 @@
   }
   function gridPlanUrl(value) {
     var match =
-      /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+      /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
         String(value || ""),
       );
     return match

@@ -1156,6 +1156,36 @@
         color: var(--term-badge);
       }
 
+      .grad-status-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+        line-height: 1.5;
+      }
+
+      .grad-start-hint {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 16px;
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--summer-badge);
+        border-radius: 10px;
+        background: var(--panel);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .grad-start-hint span {
+        flex: 1 1 280px;
+      }
+
+      .grad-start-hint:empty {
+        display: none;
+      }
+
       .grad-note {
         font-size: 12px;
         color: var(--muted);
@@ -1242,10 +1272,20 @@
         position: relative;
       }
 
-      .drop-tick {
+      /* Room under the card's text, so course names keep the full width. */
+      .course:has(.grade-actions) {
+        padding-bottom: 28px;
+      }
+
+      .grade-actions {
         position: absolute;
         inset-block-end: 4px;
         inset-inline-end: 4px;
+        display: flex;
+        gap: 3px;
+      }
+
+      .drop-tick {
         width: 20px;
         height: 20px;
         border-radius: 4px;
@@ -1271,8 +1311,72 @@
         color: #fff;
       }
 
-      .course:has(.drop-tick) .name {
-        padding-inline-end: 22px;
+      .retake-move {
+        align-self: flex-start;
+        border: none;
+        background: none;
+        color: inherit;
+        font-family: "Tajawal", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 2px 0;
+        cursor: pointer;
+        text-decoration: underline;
+        text-align: start;
+      }
+
+      .together-tag {
+        font-size: 11px;
+        font-weight: 700;
+        opacity: 0.9;
+      }
+
+      .course.withdrawn.failed .w-badge {
+        background: var(--not-taken-bg);
+      }
+
+      .swatch.withdrawn.failed {
+        border-color: var(--not-taken-bg);
+      }
+
+      .retake-group:empty {
+        display: none;
+      }
+
+      .retake-group h4 {
+        margin: 16px 0 8px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .retake-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .retake-option input {
+        margin-top: 3px;
+        flex: 0 0 auto;
+      }
+
+      .retake-option span {
+        min-width: 0;
+      }
+
+      .retake-option small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+        margin-top: 2px;
       }
 
       .remove-tick {
@@ -1298,13 +1402,13 @@
       }
 
       @media (pointer: coarse) {
+        .course:has(.grade-actions) {
+          padding-bottom: 38px;
+        }
+
         .drop-tick {
           width: 30px;
           height: 30px;
-        }
-
-        .course:has(.drop-tick) .name {
-          padding-inline-end: 32px;
         }
       }
 
@@ -1414,6 +1518,21 @@
 
       .tuition-table tfoot td {
         font-weight: 800;
+        background: var(--bg);
+      }
+
+      .tuition-table .tuition-section td {
+        font-weight: 800;
+        color: var(--term-badge);
+        background: var(--bg);
+      }
+
+      .tuition-table .tuition-subtotal td {
+        font-weight: 700;
+      }
+
+      #tuitionCards .grad-card {
+        flex-basis: 30%;
       }
 
       .tuition-table .tuition-w td {
@@ -1786,6 +1905,9 @@
         <div class="legend-item">
           <span class="swatch withdrawn"></span><span id="legendW"></span>
         </div>
+        <div class="legend-item">
+          <span class="swatch withdrawn failed"></span><span id="legendF"></span>
+        </div>
       </div>
 
       <footer class="hint" id="pageFooter"></footer>
@@ -1928,6 +2050,21 @@
       </div>
     </div>
 
+    <div class="compare-overlay" id="retakeOverlay"></div>
+    <div class="walk-panel summer-panel" id="retakePanel">
+      <div class="compare-header">
+        <h2 id="retakeTitle"></h2>
+        <button class="compare-close" id="retakeCloseBtn" type="button">×</button>
+      </div>
+      <div class="sub" id="retakeSub"></div>
+      <div class="retake-group" id="retakeWhere"></div>
+      <div class="retake-group" id="retakeDeps"></div>
+      <div class="summer-actions">
+        <button id="retakeCancelBtn" type="button"></button>
+        <button class="add-confirm" id="retakeConfirmBtn" type="button"></button>
+      </div>
+    </div>
+
     <div class="compare-overlay" id="tuitionOverlay"></div>
     <div class="compare-panel" id="tuitionPanel">
       <div class="compare-header">
@@ -1974,6 +2111,7 @@
         </div>
         <button class="grad-calc-btn" id="gradCalcBtn" type="button"></button>
       </div>
+      <div class="grad-start-hint" id="gradStartHint"></div>
       <div class="grad-results" id="gradResults">
         <div class="grad-card">
           <div class="grad-card-label" id="gradExpectedLabel"></div>
@@ -1995,6 +2133,7 @@
         <div class="grad-card" id="gradStatusCard">
           <div class="grad-card-label" id="gradStatusLabel"></div>
           <div class="grad-card-value" id="gradStatusValue"></div>
+          <div class="grad-status-note" id="gradStatusNote"></div>
         </div>
         <div class="grad-card" id="gradCoursesCard">
           <div class="grad-card-label" id="gradCoursesLabel"></div>
@@ -2063,23 +2202,45 @@
           moveBlockedWithdrawn: (code, term) =>
             `انسحبت من ${code} في ${term}، لذا يجب أخذه في فصل بعده.`,
           legendW: "انسحاب (W)",
+          legendF: "رسوب (F)",
+          failTitle: "رسبت في المقرر (F)",
+          failDone: (code, from, to) =>
+            `رسوب في ${code}: تبقى F في ${from} وانتقل المقرر إلى ${to}.`,
+          failedTitle: (term) => `رسوب (F) في ${term}`,
+          retakeTitleW: (code) => `الانسحاب من ${code}`,
+          retakeTitleF: (code) => `الرسوب في ${code}`,
+          retakeTitleMove: (code) => `نقل ${code}`,
+          retakeSub: "اختر متى ستعيد المقرر. يمكنك نقله لاحقاً أيضاً.",
+          retakeWhereHead: "متى ستعيد المقرر؟",
+          retakeSummerNote: "تأكد أولاً أن المقرر يُطرح في الصيف.",
+          retakeNewTerm: "فصل إضافي جديد",
+          retakeConfirm: "تأكيد",
+          retakeDepsHead: (codes, term) =>
+            `${codes} يعتمد على هذا المقرر وموجود في ${term} أو قبله.`,
+          retakeMoveLater: (n) => `تأخير المقررات المعتمدة عليه (${n})`,
+          retakeAddsTerm: "سيُضاف فصل إضافي",
+          retakeKeep: (term) => `أخذها معه في ${term}`,
+          retakeKeepNote: "استثناء من الجامعة. تأكد من موافقة مرشدك الأكاديمي.",
+          retakeNotOffered: (term) => `غير مطروح صيفاً؟ انقله إلى ${term}`,
+          togetherTag: (codes) => `مع ${codes} (استثناء)`,
           tuitionBtn: "الرسوم",
           tuitionTitle: "الرسوم الدراسية",
           tuitionSub:
-            "أدخل سعر الساعة لتعرف تكلفة كل فصل وما دفعته حتى الآن. المكتمل والحالي والمنسحب منه محسوب كمدفوع، والباقي من الخطة محسوب كمتبقٍ.",
+            "أدخل سعر الساعة لتعرف تكلفة كل فصل وما دفعته حتى الآن. المكتمل والحالي و W و F محسوبة كمدفوع. المتبقي هو المقررات التي لم تبدأها بعد، أي الحمراء والرمادية (لا يؤخر).",
           tuitionRegularLabel: "سعر الساعة: الفصل العادي",
           tuitionSummerLabel: "سعر الساعة: الصيفي",
           tuitionPaid: "المدفوع حتى الآن",
           tuitionDue: "المتبقي للدفع",
-          tuitionTotal: "إجمالي الدراسة",
-          tuitionLost: "منها على مقررات منسحب منها",
+          tuitionPrepTotal: "السنة التحضيرية",
+          tuitionDegreeTotal: "الدراسة بعد التحضيري",
+          tuitionTotal: "الإجمالي من البداية للنهاية",
+          tuitionLost: "منها على مقررات W و F",
           tuitionColTerm: "الفصل",
           tuitionColHours: "الساعات",
           tuitionColRate: "سعر الساعة",
           tuitionColTotal: "تكلفة الفصل",
           tuitionColPaid: "مدفوع",
           tuitionColDue: "متبقٍ",
-          tuitionSum: "الإجمالي",
           tuitionMoney: (v) => `${v} ر.س`,
           tuitionEnterRates: "أدخل سعر الساعة لحساب المبالغ.",
           tuitionNoRegular: (h) =>
@@ -2089,14 +2250,14 @@
           tuitionNoHours: (codes) =>
             `مقررات مضافة بلا ساعات وغير محسوبة: ${codes}. احذفها وأضفها من جديد بعدد ساعاتها.`,
           tuitionWaivedNote: (n) => `${n} مقرر معادل باختبار غير محسوب.`,
-          tuitionWLine: (code, h, cost) =>
-            `⁨W · ${code}⁩ · ${h} س · ${cost}`,
+          tuitionWLine: (grade, code, h, cost) =>
+            `⁨${grade} · ${code}⁩ · ${h} س · ${cost}`,
           tuitionRefund: "المسترد %",
           tuitionPool: "اختياريات مكتملة خارج الفصول",
           tuitionUnplaced: "اختياريات مطلوبة لم توزع بعد",
           walkTuitionStep: [
             "الرسوم والانسحاب",
-            "زر الرسوم يحسب تكلفة كل فصل وما دفعته. زر W على المقرر يسجل الانسحاب وينقله للفصل التالي.",
+            "زر الرسوم يحسب تكلفة كل فصل وما دفعته. زرا W و F على المقرر يسجلان الانسحاب أو الرسوب، وتختار متى تعيده.",
           ],
           addCourseDup: "هذا الرمز موجود بالفعل.",
           addCourseTileTitle: "إضافة مقرر لهذا الفصل",
@@ -2181,6 +2342,8 @@
             noteElective: (group) => `اختياري: \u2068${group}\u2069`,
             noteCustom: "أضافه الطالب/ة",
             noteWithdrawn: (term) => `انسحاب (W) في ${term}`,
+            noteFailed: (term) => `رسوب (F) في ${term}`,
+            noteTogether: (pre) => `يؤخذ مع ${pre} باستثناء`,
             noteCritical: "متطلب سابق لمقررات لاحقة",
             kind: { summer: "صيفي", extra: "إضافي", gap: "انقطاع", prep: "تحضيري" },
             status: {
@@ -2266,7 +2429,12 @@
           gradBtnTitle: "التخرج",
           gradTitle: "الجدول الزمني للتخرج",
           gradSub: "الخطة: سنة تحضيرية + ٤ سنوات تخصص. اختر فصل البداية وسنته.",
-          gradTermLabelText: "الفصل الذي بدأت فيه",
+          gradTermLabelText: "أول فصل درسته (يشمل التحضيري)",
+          gradStartHintText: (earlier, chosen, year) =>
+            `لديك مقررات في ${earlier}، لكن فصل البداية هو ${chosen}. بهذا تُحسب سنة ${year} أول سنة في التخصص. إذا كانت ${year} سنتك التحضيرية فابدأ من ${earlier}.`,
+          gradStartHintBtn: (term) => `البدء من ${term}`,
+          gradStatusBasis: (now, reached) =>
+            `حسب التقويم هذا ${now}. ساعاتك المكتملة والحالية تصل إلى ${reached}.`,
           gradYearLabelText: "السنة (ميلادي)",
           gradCalc: "احسب",
           gradExpectedLabel: "موعد التخرج المتوقع",
@@ -2421,23 +2589,45 @@
           moveBlockedWithdrawn: (code, term) =>
             `You dropped ${code} in ${term}, so it has to go in a later semester.`,
           legendW: "Dropped (W)",
+          legendF: "Failed (F)",
+          failTitle: "Failed this course (F)",
+          failDone: (code, from, to) =>
+            `${code} failed: F stays in ${from}, course moved to ${to}.`,
+          failedTitle: (term) => `Failed (F) in ${term}`,
+          retakeTitleW: (code) => `Drop ${code}`,
+          retakeTitleF: (code) => `Failed ${code}`,
+          retakeTitleMove: (code) => `Move ${code}`,
+          retakeSub: "Choose when you'll retake it. You can still move it later.",
+          retakeWhereHead: "When will you retake it?",
+          retakeSummerNote: "Check first that it's offered in the summer.",
+          retakeNewTerm: "a new Extra Semester",
+          retakeConfirm: "Confirm",
+          retakeDepsHead: (codes, term) =>
+            `Needs this course first, and sits in ${term} or earlier: ${codes}.`,
+          retakeMoveLater: (n) => `Move the courses that depend on it later (${n})`,
+          retakeAddsTerm: "adds an Extra Semester",
+          retakeKeep: (term) => `Take them together in ${term}`,
+          retakeKeepNote: "A university exception. Check that your advisor has approved it.",
+          retakeNotOffered: (term) => `Not offered in summer? Move to ${term}`,
+          togetherTag: (codes) => `With ${codes} (exception)`,
           tuitionBtn: "Tuition",
           tuitionTitle: "Tuition",
           tuitionSub:
-            "Enter the price per credit hour to see what each semester costs and what you have paid. Completed, current and dropped courses count as paid; the rest of the plan counts as still to pay.",
+            "Enter the price per credit hour to see what each semester costs and what you have paid. Completed, current, W and F courses count as paid. Still to pay is the courses you have not started: the red ones and the grey Do not delay ones.",
           tuitionRegularLabel: "Price per hour: regular term",
           tuitionSummerLabel: "Price per hour: summer term",
           tuitionPaid: "Paid so far",
           tuitionDue: "Still to pay",
-          tuitionTotal: "Whole degree",
-          tuitionLost: "Of which on dropped courses",
+          tuitionPrepTotal: "Prep year",
+          tuitionDegreeTotal: "Degree after prep",
+          tuitionTotal: "Start to finish",
+          tuitionLost: "Of which on W and F courses",
           tuitionColTerm: "Semester",
           tuitionColHours: "Hours",
           tuitionColRate: "Per hour",
           tuitionColTotal: "Semester cost",
           tuitionColPaid: "Paid",
           tuitionColDue: "To pay",
-          tuitionSum: "Total",
           tuitionMoney: (v) => `SAR ${v}`,
           tuitionEnterRates: "Enter the price per hour to calculate the amounts.",
           tuitionNoRegular: (h) =>
@@ -2447,13 +2637,13 @@
           tuitionNoHours: (codes) =>
             `Added courses with no credit hours are not counted: ${codes}. Delete and re-add them with their hours.`,
           tuitionWaivedNote: (n) => `${n} course(s) waived by exam are not charged.`,
-          tuitionWLine: (code, h, cost) => `W · ${code} · ${h} cr · ${cost}`,
+          tuitionWLine: (grade, code, h, cost) => `${grade} · ${code} · ${h} cr · ${cost}`,
           tuitionRefund: "Refund %",
           tuitionPool: "Completed electives not placed in a semester",
           tuitionUnplaced: "Required electives not placed yet",
           walkTuitionStep: [
             "Tuition and drops",
-            "The Tuition button works out each semester's cost and what you've paid. The W on a course drops it and moves it to the next semester.",
+            "The Tuition button works out each semester's cost and what you've paid. W and F on a course record a drop or a fail, and you choose when to retake it.",
           ],
           addCourseDup: "That code already exists.",
           addCourseTileTitle: "Add a course to this semester",
@@ -2540,6 +2730,8 @@
             noteElective: (group) => `Elective: ${group}`,
             noteCustom: "Added by student",
             noteWithdrawn: (term) => `Dropped (W) in ${term}`,
+            noteFailed: (term) => `Failed (F) in ${term}`,
+            noteTogether: (pre) => `Taken with ${pre} by exception`,
             noteCritical: "Prerequisite for later courses",
             kind: { summer: "Summer", extra: "Extra", gap: "Gap", prep: "Prep" },
             status: {
@@ -2631,7 +2823,12 @@
           gradTitle: "Graduation Timeline",
           gradSub:
             "Plan length: 1 prep year + 4 major years. Pick your start term and year.",
-          gradTermLabelText: "Term you started in",
+          gradTermLabelText: "First term you took (count prep)",
+          gradStartHintText: (earlier, chosen, year) =>
+            `You have courses in ${earlier}, but your start says ${chosen}. That counts ${year} as your first major year. If ${year} was your prep year, start from ${earlier}.`,
+          gradStartHintBtn: (term) => `Start from ${term}`,
+          gradStatusBasis: (now, reached) =>
+            `By the calendar this is your ${now}. Your completed and current hours reach your ${reached}.`,
           gradYearLabelText: "Year (Gregorian)",
           gradCalc: "Calculate",
           gradExpectedLabel: "Expected graduation",
@@ -4094,6 +4291,7 @@
       let selectedMoveCode = null; // tap-to-move support for touch devices
       let withdrawals = []; // dropped courses: one ghost "W" per drop, in the term it happened
       let tuition = { regular: null, summer: null }; // price per credit hour
+      let togetherPairs = []; // {pre, dep}: university exception to take a prerequisite alongside its dependent
       let addTargetId = null; // term or elective group the add-course dialog is adding to
 
       // Chapters and assessment weights per course, extracted from the syllabi (../course-syllabi.json).
@@ -4316,6 +4514,7 @@
         customCourses = saved.customCourses || [];
         examMap = saved.examMap || {};
         withdrawals = saved.withdrawals || [];
+        togetherPairs = saved.togetherPairs || [];
         tuition = Object.assign({ regular: null, summer: null }, saved.tuition);
         gradState = saved.gradState || gradState;
         const map = courseIndex();
@@ -4335,6 +4534,7 @@
             customCourses,
             examMap,
             withdrawals,
+            togetherPairs,
             tuition,
             gradState,
             updatedAt: Date.now(),
@@ -4524,7 +4724,11 @@
           const preLoc = assignments[preCode];
           if (!preLoc || preLoc === "pool" || isGroupId(preLoc)) continue;
           const preTerm = terms.find((term) => term.id === preLoc);
-          if (preTerm && preTerm.order >= targetOrder) {
+          if (
+            preTerm &&
+            preTerm.order >= targetOrder &&
+            !(preTerm.order === targetOrder && isTogether(preCode, code))
+          ) {
             return { ok: false, reason: t().moveBlockedPrereq(code, preCode) };
           }
         }
@@ -4549,9 +4753,14 @@
           const depLoc = assignments[dep.code];
           if (!depLoc || depLoc === "pool" || isGroupId(depLoc)) continue;
           const depTerm = terms.find((term) => term.id === depLoc);
-          if (depTerm && depTerm.order <= targetOrder) {
+          if (
+            depTerm &&
+            depTerm.order <= targetOrder &&
+            !(depTerm.order === targetOrder && isTogether(code, dep.code))
+          ) {
             return {
               ok: false,
+              dependents: true,
               reason: t().moveBlockedDependent(code, dep.code),
             };
           }
@@ -4659,6 +4868,8 @@
         if (!term) return false;
         const preBroken = (course.prereqs || []).some((p) => {
           const preTerm = terms.find((x) => x.id === assignments[p]);
+          if (preTerm && preTerm.order === term.order && isTogether(p, course.code))
+            return false;
           return preTerm && preTerm.order >= term.order;
         });
         if (preBroken) return true;
@@ -4668,13 +4879,25 @@
         );
       }
 
-      function nextTermFor(course, afterOrder, createdTerms) {
-        const next = allTerms().find(
-          (term) =>
-            term.order > afterOrder &&
-            !term.isGap &&
-            !(term.isPrep && gradState.dropPYP) &&
-            !(course.noPrepSummer && (term.isPrep || term.isSummer)),
+      // A prerequisite and its dependent the university lets a student take in the same semester.
+      function isTogether(pre, dep) {
+        return togetherPairs.some((x) => x.pre === pre && x.dep === dep);
+      }
+
+      function usableAfter(course, term, order, regularOnly) {
+        return (
+          term.order > order &&
+          !term.isGap &&
+          !(term.isPrep && gradState.dropPYP) &&
+          !(course.noPrepSummer && (term.isPrep || term.isSummer)) &&
+          !(regularOnly && term.isSummer)
+        );
+      }
+
+      // Courses pushed along by a drop skip summers: not everything runs in one.
+      function nextTermFor(course, afterOrder, createdTerms, allowSummer) {
+        const next = allTerms().find((term) =>
+          usableAfter(course, term, afterOrder, !allowSummer),
         );
         if (next) return next;
         const all = allTerms();
@@ -4691,11 +4914,12 @@
         return created;
       }
 
-      function dropCourse(code) {
+      // Moves a course to its retake term. Dependents either move later or, with keep, stay beside it
+      // under a university exception. Anything else the move breaks is pushed down.
+      function applyRetake(code, targetId, keep) {
         const map = courseIndex();
         const course = map[code];
         const fromTerm = termById(assignments[code]);
-        if (!course || !fromTerm) return;
         const brokenBefore = new Set(
           Object.values(map)
             .filter((c) => placementBroken(c, map, allTerms()))
@@ -4703,18 +4927,28 @@
         );
         const moves = [];
         const createdTerms = [];
+        const together = [];
         const move = (c, target) => {
           const seen = moves.find((m) => m.code === c.code);
           if (seen) seen.to = target.id;
           else moves.push({ code: c.code, from: assignments[c.code], to: target.id });
           assignments[c.code] = target.id;
         };
-        const prevStatus = statusMap[code] || "not-taken";
-        const target = nextTermFor(course, fromTerm.order, createdTerms);
+        const target =
+          (targetId && termById(targetId)) ||
+          nextTermFor(course, fromTerm.order, createdTerms, false);
         move(course, target);
-        // "not-taken", not delete: the cloud copy is merged key by key, so a deleted key would come back.
-        statusMap[code] = "not-taken";
-
+        if (keep) {
+          dependentsOf(code, map).forEach((dep) => {
+            const at = termById(assignments[dep.code]);
+            if (!at || isCourseDone(dep) || statusMap[dep.code] === "current") return;
+            if (at.order > target.order) return;
+            if (at.order < target.order) move(dep, target);
+            const pair = { pre: code, dep: dep.code };
+            togetherPairs.push(pair);
+            together.push(pair);
+          });
+        }
         for (let pass = 0; pass < 40; pass++) {
           const terms = allTerms();
           const broken = Object.values(map).find(
@@ -4726,31 +4960,259 @@
           );
           if (!broken) break;
           const at = terms.find((x) => x.id === assignments[broken.code]);
-          move(broken, nextTermFor(broken, at.order, createdTerms));
+          move(broken, nextTermFor(broken, at.order, createdTerms, false));
         }
+        return { moves, createdTerms, together, target };
+      }
 
+      function dropCourse(code, options = {}) {
+        const map = courseIndex();
+        const course = map[code];
+        const fromTerm = termById(assignments[code]);
+        if (!course || !fromTerm) return;
+        const grade = options.grade === "F" ? "F" : "W";
+        const prevStatus = statusMap[code] || "not-taken";
+        // "not-taken", not delete: the cloud copy is merged key by key, so a deleted key would come back.
+        statusMap[code] = "not-taken";
+        const plan = applyRetake(code, options.targetId || null, !!options.keep);
         withdrawals.push({
           id: `w-${Date.now()}-${withdrawals.length}`,
           code,
+          grade,
           termId: fromTerm.id,
           hours: billedHours(course),
           nameAr: course.name || code,
           nameEn: course.nameEn || course.name || code,
           prevStatus,
           refund: 0,
-          moves,
-          createdTerms,
+          moves: plan.moves,
+          createdTerms: plan.createdTerms,
+          together: plan.together,
           at: Date.now(),
         });
         if (selectedMoveCode === code) selectedMoveCode = null;
         expandedCodes.clear();
         saveState();
         render();
+        const s = t();
         const finalTerm = termById(assignments[code]);
         toast(
-          t().dropDone(code, nameOfTerm(fromTerm), nameOfTerm(finalTerm)) +
-            (moves.length > 1 ? t().dropAlsoMoved(moves.length - 1) : ""),
+          (grade === "F" ? s.failDone : s.dropDone)(
+            code,
+            nameOfTerm(fromTerm),
+            nameOfTerm(finalTerm),
+          ) +
+            (plan.moves.length > 1 ? s.dropAlsoMoved(plan.moves.length - 1) : ""),
         );
+      }
+
+      // A retake moved later on, e.g. out of a summer that doesn't offer it. Undo on the W/F covers this too.
+      function moveRetake(code, targetId, keep) {
+        const plan = applyRetake(code, targetId, keep);
+        const record = withdrawals
+          .slice()
+          .reverse()
+          .find(
+            (w) =>
+              w.code === code || (w.moves || []).some((m) => m.code === code),
+          );
+        if (record) {
+          plan.moves.forEach((m) => {
+            const seen = record.moves.find((x) => x.code === m.code);
+            if (seen) seen.to = m.to;
+            else record.moves.push(m);
+          });
+          record.createdTerms = (record.createdTerms || []).concat(plan.createdTerms);
+          record.together = (record.together || []).concat(plan.together);
+        }
+        if (selectedMoveCode === code) selectedMoveCode = null;
+        saveState();
+        render();
+        const s = t();
+        toast(
+          s.moveCourseDone(code) +
+            (plan.moves.length > 1 ? s.dropAlsoMoved(plan.moves.length - 1) : ""),
+        );
+      }
+
+      // Runs the plan on the live state to see what it would touch, then puts everything back.
+      function previewRetake(code, targetId, keep) {
+        const saved = {
+          assignments: { ...assignments },
+          extraTerms: extraTerms.slice(),
+          togetherPairs: togetherPairs.slice(),
+        };
+        const plan = applyRetake(code, targetId, keep);
+        assignments = saved.assignments;
+        extraTerms = saved.extraTerms;
+        togetherPairs = saved.togetherPairs;
+        return plan;
+      }
+
+      function retakeConflicts(code, targetId) {
+        const target = targetId && termById(targetId);
+        if (!target) return [];
+        return dependentsOf(code, courseIndex()).filter((dep) => {
+          const at = termById(assignments[dep.code]);
+          return (
+            at &&
+            at.order <= target.order &&
+            !isCourseDone(dep) &&
+            statusMap[dep.code] !== "current" &&
+            !isTogether(code, dep.code)
+          );
+        });
+      }
+
+      let retakeState = null;
+
+      // grade set: a new W/F. No grade: moving a retake that already has one. targetId fixes the destination.
+      function openRetake({ code, grade = null, targetId = null }) {
+        const course = courseIndex()[code];
+        const from = termById(assignments[code]);
+        if (!course || !from) return;
+        let options;
+        if (targetId) options = [targetId];
+        else {
+          const after = allTerms();
+          const next = after.find((x) => usableAfter(course, x, from.order, false));
+          const regular = after.find((x) => usableAfter(course, x, from.order, true));
+          options = [regular ? regular.id : ""];
+          if (next && next.isSummer) options.push(next.id);
+        }
+        retakeState = { code, grade, options, targetId: options[0], keep: false };
+        if (options.length === 1 && !retakeConflicts(code, options[0]).length) {
+          commitRetake();
+          return;
+        }
+        toggleRetake(true);
+      }
+
+      function commitRetake() {
+        const state = retakeState;
+        retakeState = null;
+        toggleRetake(false);
+        if (!state) return;
+        if (state.grade)
+          dropCourse(state.code, {
+            grade: state.grade,
+            targetId: state.targetId || null,
+            keep: state.keep,
+          });
+        else moveRetake(state.code, state.targetId || null, state.keep);
+      }
+
+      function toggleRetake(open) {
+        document.getElementById("retakeOverlay").classList.toggle("open", open);
+        document.getElementById("retakePanel").classList.toggle("open", open);
+        if (open) renderRetake();
+      }
+
+      function renderRetake() {
+        if (!retakeState) return;
+        const s = t();
+        const { code, grade, options, targetId, keep } = retakeState;
+        const termName = (id) => {
+          const term = id && termById(id);
+          return term ? nameOfTerm(term) : s.retakeNewTerm;
+        };
+        document.getElementById("retakeTitle").textContent =
+          grade === "F" ? s.retakeTitleF(code) : grade ? s.retakeTitleW(code) : s.retakeTitleMove(code);
+        document.getElementById("retakeSub").textContent = grade ? s.retakeSub : "";
+        document.getElementById("retakeCancelBtn").textContent = s.addCancel;
+        document.getElementById("retakeConfirmBtn").textContent = s.retakeConfirm;
+
+        const radio = (name, value, checked, title, meta, onPick) => {
+          const label = document.createElement("label");
+          label.className = "retake-option";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = name;
+          input.checked = checked;
+          input.addEventListener("change", onPick);
+          const text = document.createElement("span");
+          const strong = document.createElement("strong");
+          strong.textContent = title;
+          text.appendChild(strong);
+          if (meta) {
+            const small = document.createElement("small");
+            small.textContent = meta;
+            text.appendChild(small);
+          }
+          label.append(input, text);
+          return label;
+        };
+
+        const where = document.getElementById("retakeWhere");
+        where.innerHTML = "";
+        if (options.length > 1) {
+          const head = document.createElement("h4");
+          head.textContent = s.retakeWhereHead;
+          where.appendChild(head);
+          options.forEach((id) => {
+            const term = id && termById(id);
+            where.appendChild(
+              radio(
+                "retakeTarget",
+                id,
+                id === targetId,
+                termName(id),
+                term && term.isSummer ? s.retakeSummerNote : "",
+                () => {
+                  retakeState.targetId = id;
+                  retakeState.keep = false;
+                  renderRetake();
+                },
+              ),
+            );
+          });
+        }
+
+        const deps = document.getElementById("retakeDeps");
+        deps.innerHTML = "";
+        const conflicts = retakeConflicts(code, targetId);
+        if (conflicts.length) {
+          const head = document.createElement("h4");
+          head.textContent = s.retakeDepsHead(
+            conflicts.map((c) => c.code).join(", "),
+            termName(targetId),
+          );
+          deps.appendChild(head);
+          const later = previewRetake(code, targetId || null, false);
+          const moved = later.moves.map((m) => m.code).filter((c) => c !== code);
+          deps.appendChild(
+            radio(
+              "retakeKeep",
+              "move",
+              !keep,
+              s.retakeMoveLater(moved.length),
+              moved.join(", ") + (later.createdTerms.length ? ` · ${s.retakeAddsTerm}` : ""),
+              () => {
+                retakeState.keep = false;
+                renderRetake();
+              },
+            ),
+          );
+          deps.appendChild(
+            radio(
+              "retakeKeep",
+              "keep",
+              keep,
+              s.retakeKeep(termName(targetId)),
+              s.retakeKeepNote,
+              () => {
+                retakeState.keep = true;
+                renderRetake();
+              },
+            ),
+          );
+        }
+      }
+
+      function refuseMove(code, targetId, verdict) {
+        if (verdict.dependents && delayedByDrop(code, courseIndex()))
+          openRetake({ code, targetId });
+        else toast(verdict.reason);
       }
 
       function undoWithdrawal(id) {
@@ -4765,6 +5227,9 @@
         assignments[w.code] = w.termId;
         statusMap[w.code] = w.prevStatus || "not-taken";
         withdrawals = withdrawals.filter((x) => x !== w);
+        togetherPairs = togetherPairs.filter(
+          (p) => !(w.together || []).some((x) => x.pre === p.pre && x.dep === p.dep),
+        );
         const map = courseIndex();
         extraTerms = extraTerms.filter(
           (term) =>
@@ -4787,6 +5252,7 @@
         if (!confirm(t().removeCustomConfirm(code))) return;
         customCourses = customCourses.filter((c) => c.code !== code);
         withdrawals = withdrawals.filter((w) => w.code !== code);
+        togetherPairs = togetherPairs.filter((p) => p.pre !== code && p.dep !== code);
         delete assignments[code];
         statusMap[code] = "not-taken";
         if (selectedMoveCode === code) selectedMoveCode = null;
@@ -4798,9 +5264,12 @@
       function withdrawnEl(w) {
         const s = t();
         const div = document.createElement("div");
-        div.className = "course withdrawn";
+        const failed = w.grade === "F";
+        div.className = "course withdrawn" + (failed ? " failed" : "");
         const term = termById(w.termId);
-        div.title = term ? s.withdrawnTitle(nameOfTerm(term)) : "";
+        div.title = term
+          ? (failed ? s.failedTitle : s.withdrawnTitle)(nameOfTerm(term))
+          : "";
         const row = document.createElement("div");
         row.className = "code-row";
         const group = document.createElement("span");
@@ -4817,7 +5286,7 @@
         }
         const badge = document.createElement("span");
         badge.className = "w-badge";
-        badge.textContent = "W";
+        badge.textContent = failed ? "F" : "W";
         row.append(group, badge);
         const name = document.createElement("span");
         name.className = "name";
@@ -4881,7 +5350,7 @@
         Object.values(map).forEach((c) => {
           const hours = billedHours(c);
           if (assignments[c.code] !== term.id || !hours) return;
-          if (prepTermSkipped(term)) return;
+          if (prepTermSkipped(term) && !c.hours) return;
           if (c.examEligible && examMap[c.code]) return;
           if (["completed", "current"].includes(statusMap[c.code]))
             row.paidHours += hours;
@@ -4890,7 +5359,7 @@
         withdrawals
           .filter((w) => w.termId === term.id)
           .forEach((w) => {
-            const refund = Math.min(100, Math.max(0, w.refund || 0));
+            const refund = w.grade === "F" ? 0 : Math.min(100, Math.max(0, w.refund || 0));
             const charged = (w.hours || 0) * (rate || 0) * (1 - refund / 100);
             row.dropHours += w.hours || 0;
             row.dropped += charged;
@@ -4946,8 +5415,17 @@
         if (unplacedHours) rows.push(extra(t().tuitionUnplaced, 0, unplacedHours));
 
         const sum = (key) => rows.reduce((total, row) => total + row[key], 0);
+        const section = (list) => ({
+          rows: list,
+          hours: list.reduce((total, row) => total + row.hours, 0),
+          total: list.reduce((total, row) => total + row.total, 0),
+          paid: list.reduce((total, row) => total + row.paid, 0),
+          due: list.reduce((total, row) => total + row.due, 0),
+        });
         return {
           rows,
+          prep: section(rows.filter((row) => row.term && row.term.isPrep)),
+          degree: section(rows.filter((row) => !(row.term && row.term.isPrep))),
           paid: sum("paid"),
           due: sum("due"),
           total: sum("total"),
@@ -4973,6 +5451,8 @@
         document.getElementById("tuitionCards").innerHTML = [
           [s.tuitionPaid, data.paid],
           [s.tuitionDue, data.due],
+          ...(data.prep.rows.length ? [[s.tuitionPrepTotal, data.prep.total]] : []),
+          [s.tuitionDegreeTotal, data.degree.total],
           [s.tuitionTotal, data.total],
           [s.tuitionLost, data.dropped],
         ]
@@ -5001,25 +5481,29 @@
         if (waived) notes.push(s.tuitionWaivedNote(waived));
         document.getElementById("tuitionNote").textContent = notes.join(" ");
 
-        const rows = data.rows
-          .map((row) => {
-            const has = row.rate !== null;
-            const label = row.term ? nameOfTerm(row.term) : row.label;
-            const drops = row.drops
-              .map(
-                (d) => `<tr class="tuition-w"><td colspan="6"><div class="tuition-w-line">
-                  <span>${e(s.tuitionWLine(d.w.code, d.w.hours, has ? s.tuitionMoney(formatMoney(d.charged)) : "—"))}</span>
-                  <label>${e(s.tuitionRefund)}<input type="number" min="0" max="100" step="any" inputmode="decimal" data-w="${e(d.w.id)}" value="${d.refund}"${viewMode ? " disabled" : ""} /></label>
+        const rowHtml = (row) => {
+          const has = row.rate !== null;
+          const label = row.term ? nameOfTerm(row.term) : row.label;
+          const drops = row.drops
+            .map(
+              (d) => `<tr class="tuition-w"><td colspan="6"><div class="tuition-w-line">
+                  <span>${e(s.tuitionWLine(d.w.grade === "F" ? "F" : "W", d.w.code, d.w.hours, has ? s.tuitionMoney(formatMoney(d.charged)) : "—"))}</span>
+                  ${d.w.grade === "F" ? "" : `<label>${e(s.tuitionRefund)}<input type="number" min="0" max="100" step="any" inputmode="decimal" data-w="${e(d.w.id)}" value="${d.refund}"${viewMode ? " disabled" : ""} /></label>`}
                 </div></td></tr>`,
-              )
-              .join("");
-            return `<tr><td>${e(label)}</td><td>${row.hours}</td><td class="col-rate">${has ? formatMoney(row.rate) : "—"}</td><td>${cell(row.total, has)}</td><td>${cell(row.paid, has)}</td><td>${cell(row.due, has)}</td></tr>${drops}`;
-          })
-          .join("");
+            )
+            .join("");
+          return `<tr><td>${e(label)}</td><td>${row.hours}</td><td class="col-rate">${has ? formatMoney(row.rate) : "—"}</td><td>${cell(row.total, has)}</td><td>${cell(row.paid, has)}</td><td>${cell(row.due, has)}</td></tr>${drops}`;
+        };
+        const sumCells = (part) =>
+          `<td>${part.hours}</td><td class="col-rate"></td><td>${cell(part.total, anyRate)}</td><td>${cell(part.paid, anyRate)}</td><td>${cell(part.due, anyRate)}</td>`;
+        const sectionHtml = (title, part) =>
+          part.rows.length
+            ? `<tbody><tr class="tuition-section"><td colspan="6">${e(title)}</td></tr>${part.rows.map(rowHtml).join("")}<tr class="tuition-subtotal"><td>${e(title)}</td>${sumCells(part)}</tr></tbody>`
+            : "";
         document.getElementById("tuitionTable").innerHTML = `<table class="tuition-table">
           <thead><tr><th>${e(s.tuitionColTerm)}</th><th>${e(s.tuitionColHours)}</th><th class="col-rate">${e(s.tuitionColRate)}</th><th>${e(s.tuitionColTotal)}</th><th>${e(s.tuitionColPaid)}</th><th>${e(s.tuitionColDue)}</th></tr></thead>
-          <tbody>${rows}</tbody>
-          <tfoot><tr><td>${e(s.tuitionSum)}</td><td>${data.hours}</td><td class="col-rate"></td><td>${cell(data.total, anyRate)}</td><td>${cell(data.paid, anyRate)}</td><td>${cell(data.due, anyRate)}</td></tr></tfoot>
+          ${sectionHtml(s.tuitionPrepTotal, data.prep)}${sectionHtml(s.tuitionDegreeTotal, data.degree)}
+          <tfoot><tr><td>${e(s.tuitionTotal)}</td>${sumCells(data)}</tr></tfoot>
         </table>`;
         document
           .querySelectorAll("#tuitionTable input[data-w]")
@@ -5214,23 +5698,59 @@
           return div;
         }
 
-        if (!expanded && !isCourseDone(course) && termById(assignments[course.code])) {
-          const dropBtn = document.createElement("button");
-          dropBtn.type = "button";
-          dropBtn.className = "drop-tick";
-          dropBtn.textContent = "W";
-          dropBtn.title = t().dropTitle;
-          dropBtn.setAttribute("aria-label", t().dropTitle);
-          dropBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropCourse(course.code);
+        const inTerm = termById(assignments[course.code]);
+        const together = togetherPairs.filter(
+          (p) =>
+            p.dep === course.code &&
+            assignments[p.pre] === assignments[course.code],
+        );
+        if (together.length) {
+          const tag = document.createElement("small");
+          tag.className = "together-tag";
+          tag.textContent = t().togetherTag(together.map((p) => p.pre).join(", "));
+          div.appendChild(tag);
+        }
+        if (!expanded && !isCourseDone(course) && inTerm) {
+          if (inTerm.isSummer && latestWithdrawal(course.code)) {
+            const nextUp = allTerms().find((x) =>
+              usableAfter(course, x, inTerm.order, true),
+            );
+            const moveOut = document.createElement("button");
+            moveOut.type = "button";
+            moveOut.className = "retake-move";
+            moveOut.textContent = t().retakeNotOffered(
+              nextUp ? nameOfTerm(nextUp) : t().retakeNewTerm,
+            );
+            moveOut.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openRetake({ code: course.code, targetId: nextUp ? nextUp.id : "" });
+            });
+            div.appendChild(moveOut);
+          }
+          const gradeRow = document.createElement("span");
+          gradeRow.className = "grade-actions";
+          [
+            ["W", t().dropTitle],
+            ["F", t().failTitle],
+          ].forEach(([grade, title]) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "drop-tick";
+            btn.textContent = grade;
+            btn.title = title;
+            btn.setAttribute("aria-label", title);
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openRetake({ code: course.code, grade });
+            });
+            btn.addEventListener("pointerdown", () => {
+              div.draggable = false;
+            });
+            btn.addEventListener("pointerup", restoreDrag);
+            btn.addEventListener("pointerleave", restoreDrag);
+            gradeRow.appendChild(btn);
           });
-          dropBtn.addEventListener("pointerdown", () => {
-            div.draggable = false;
-          });
-          dropBtn.addEventListener("pointerup", restoreDrag);
-          dropBtn.addEventListener("pointerleave", restoreDrag);
-          div.appendChild(dropBtn);
+          div.appendChild(gradeRow);
         }
 
         div.addEventListener("click", (e) => {
@@ -5273,7 +5793,7 @@
         const code = selectedMoveCode;
         const v = validateMove(code, locationId);
         if (!v.ok) {
-          toast(v.reason);
+          refuseMove(code, locationId, v);
           return true;
         }
         assignments[code] = locationId;
@@ -5313,7 +5833,7 @@
           if (!code) return;
           const v = validateMove(code, locationId);
           if (!v.ok) {
-            toast(v.reason);
+            refuseMove(code, locationId, v);
             return;
           }
           assignments[code] = locationId;
@@ -5706,6 +6226,9 @@
         document.getElementById("legendGreen").textContent = s.legendGreen;
         document.getElementById("legendLocked").textContent = s.legendLocked;
         document.getElementById("legendW").textContent = s.legendW;
+        document.getElementById("legendF").textContent = s.legendF;
+        if (document.getElementById("retakePanel").classList.contains("open"))
+          renderRetake();
         document.getElementById("pageFooter").textContent = s.footer;
         document.getElementById("langBtn").textContent = s.toggleTo;
         const themeBtn = document.getElementById("themeBtn");
@@ -5954,9 +6477,14 @@
         const termCourses = Object.values(map).filter(
           (c) => assignments[c.code] === term.id,
         );
-        const droppedHours = withdrawals
-          .filter((w) => w.termId === term.id)
-          .reduce((sum, w) => sum + (w.hours || 0), 0);
+        const gradeHours = (grade) =>
+          withdrawals
+            .filter((w) => w.termId === term.id && (w.grade || "W") === grade)
+            .reduce((sum, w) => sum + (w.hours || 0), 0);
+        const droppedParts = ["W", "F"]
+          .filter((grade) => gradeHours(grade))
+          .map((grade) => `${gradeHours(grade)} ${grade}`);
+        const droppedHours = droppedParts.length;
         if (termCourses.length || droppedHours) {
           const termHours = termCourses.reduce((sum, c) => sum + billedHours(c), 0);
           const hoursTag = document.createElement("small");
@@ -5966,7 +6494,7 @@
               ? termHours
                 ? t().termHours(termHours)
                 : t().nonCredit
-              : "") + (droppedHours ? `${termHours ? " + " : ""}${droppedHours} W` : "");
+              : "") + (droppedHours ? `${termHours ? " + " : ""}${droppedParts.join(" + ")}` : "");
           label.appendChild(hoursTag);
         }
         if (hourRate(term) !== null && !term.isGap) {
@@ -6537,6 +7065,82 @@
         return { hours, courses };
       }
 
+      // Where a student's hours put them, whichever semester each course was actually taken in. A swap
+      // counts in full: this reads total hours against the official plan's running total, not the rows.
+      function paceOrder(hours) {
+        const load = {};
+        COURSES.forEach((c) => {
+          if (c.term) load[c.term] = (load[c.term] || 0) + (c.hours || 0);
+        });
+        ELECTIVE_SLOTS.forEach((slot) => {
+          const group = ELECTIVE_GROUPS.find((g) => g.id === slot.group);
+          const slotTotal = ELECTIVE_SLOTS.filter(
+            (x) => x.group === slot.group,
+          ).reduce((sum, x) => sum + x.count, 0);
+          if (group && slotTotal)
+            load[slot.term] =
+              (load[slot.term] || 0) + (group.required * slot.count) / slotTotal;
+        });
+        const terms = BASE_TERMS.filter((x) => !x.isPrep).sort(
+          (a, b) => a.order - b.order,
+        );
+        let total = 0;
+        for (const term of terms) {
+          const size = load[term.id] || 0;
+          if (size && hours < total + size)
+            return term.order - 1 + (hours - total) / size;
+          total += size;
+        }
+        return terms[terms.length - 1].order;
+      }
+
+      // Prep rows the chosen start says were skipped, yet hold courses the student marked as taken.
+      function earlierStartThanChosen(termId) {
+        const chosen = BASE_TERMS.find((x) => x.id === termId);
+        const map = courseIndex();
+        return (
+          BASE_TERMS.filter((x) => x.isPrep && x.order < chosen.order)
+            .sort((a, b) => a.order - b.order)
+            .find((prep) =>
+              Object.values(map).some((c) => {
+                if (assignments[c.code] !== prep.id) return false;
+                if (gradState.dropPYP && BASE_TERMS.some((x) => x.isPrep && x.id === c.term))
+                  return false;
+                if (c.examEligible && examMap[c.code]) return false;
+                return ["completed", "current"].includes(statusMap[c.code]);
+              }),
+            ) || null
+        );
+      }
+
+      function renderStartHint(termId, year) {
+        const hint = document.getElementById("gradStartHint");
+        hint.innerHTML = "";
+        const earlier = earlierStartThanChosen(termId);
+        if (!earlier) return;
+        const s = t();
+        const chosen = BASE_TERMS.find((x) => x.id === termId);
+        const text = document.createElement("span");
+        text.textContent = s.gradStartHintText(
+          nameOfTerm(earlier),
+          nameOfTerm(chosen),
+          year,
+        );
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "grad-calc-btn";
+        btn.textContent = s.gradStartHintBtn(nameOfTerm(earlier));
+        btn.addEventListener("click", () => {
+          gradState.dropPYP = false;
+          delete gradState.pypPrevStartTerm;
+          renderStaticText();
+          document.getElementById("gradStartTerm").value = earlier.id;
+          calculateGraduation();
+          render();
+        });
+        hint.append(text, btn);
+      }
+
       function calculateGraduation() {
         const s = t();
         const termId = document.getElementById("gradStartTerm").value;
@@ -6544,6 +7148,8 @@
         const year = parseInt(yearRaw, 10);
         const results = document.getElementById("gradResults");
         const note = document.getElementById("gradNote");
+        document.getElementById("gradStartHint").innerHTML = "";
+        document.getElementById("gradStatusNote").textContent = "";
 
         if (!year || year < 2000 || year > 2100) {
           results.classList.remove("show");
@@ -6553,6 +7159,8 @@
 
         gradState = { ...gradState, startTerm: termId, startYear: year };
         saveState();
+
+        renderStartHint(termId, year);
 
         const startTerm = BASE_TERMS.find((bt) => bt.id === termId);
         const t8 = BASE_TERMS.find((bt) => bt.id === "t8");
@@ -6715,7 +7323,24 @@
           statusValue.textContent = "—";
           note.textContent = s.gradNoProgress;
         } else {
-          const diff = actualPosition.calendar - expectedOrder;
+          // Still in the prep year there are no credit hours to read, so the row is all there is.
+          let reachedOrder = actualPosition.calendar;
+          if (expectedOrder >= 1) {
+            const currentHours = Object.values(map)
+              .filter((c) => statusMap[c.code] === "current" && !isCourseDone(c))
+              .reduce((sum, c) => sum + (c.hours || 0), 0);
+            reachedOrder = Math.round(
+              paceOrder(progress.actualHours + currentHours),
+            );
+            const termAt = (order) =>
+              BASE_TERMS.find((x) => x.order === order) || null;
+            const nowTerm = termAt(Math.min(expectedOrder, t8.order));
+            const reachedTerm = termAt(Math.max(1, reachedOrder));
+            if (nowTerm && reachedTerm)
+              document.getElementById("gradStatusNote").textContent =
+                s.gradStatusBasis(nameOfTerm(nowTerm), nameOfTerm(reachedTerm));
+          }
+          const diff = reachedOrder - expectedOrder;
           if (diff === 0) {
             statusCard.classList.add("grad-status-ontrack");
             statusValue.textContent = s.gradOnTrack;
@@ -6848,7 +7473,14 @@
           if (isCustom(c)) notes.push(R.noteCustom);
           withdrawals
             .filter((w) => w.code === c.code)
-            .forEach((w) => notes.push(R.noteWithdrawn(placeName(w.termId))));
+            .forEach((w) =>
+              notes.push(
+                (w.grade === "F" ? R.noteFailed : R.noteWithdrawn)(placeName(w.termId)),
+              ),
+            );
+          togetherPairs
+            .filter((p) => p.dep === c.code)
+            .forEach((p) => notes.push(R.noteTogether(p.pre)));
           if (gateways.has(c.code)) notes.push(R.noteCritical);
           return {
             code: c.code,
@@ -6945,7 +7577,8 @@
               map[p] &&
               !isCourseDone(map[p]) &&
               !prepExempt(map[p]) &&
-              orderOf(assignments[p]) >= orderOf(loc),
+              orderOf(assignments[p]) >= orderOf(loc) &&
+              !(orderOf(assignments[p]) === orderOf(loc) && isTogether(p, c.code)),
           );
           if (missing.length)
             attention.push(
@@ -7473,6 +8106,7 @@ ${fonts}
           statusMap = {};
           examMap = {};
           withdrawals = [];
+          togetherPairs = [];
           extraTerms = [];
           customCourses = [];
           assignments = {};
@@ -7537,6 +8171,13 @@ ${fonts}
           };
           saveState();
           render();
+        }),
+      );
+      document.getElementById("retakeConfirmBtn").addEventListener("click", commitRetake);
+      ["retakeCloseBtn", "retakeCancelBtn", "retakeOverlay"].forEach((id) =>
+        document.getElementById(id).addEventListener("click", () => {
+          retakeState = null;
+          toggleRetake(false);
         }),
       );
       document.getElementById("addPick").addEventListener("change", syncAddFields);

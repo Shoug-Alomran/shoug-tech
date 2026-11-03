@@ -3710,14 +3710,16 @@
     "cs-ai": "shoug_academic_plan_grid_cs_ai_v1",
     "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
     "cs-dx": "shoug_academic_plan_grid_cs_dx_v1",
+    cs: "shoug_academic_plan_grid_cs_v1",
     "is-ai": "shoug_academic_plan_grid_is_ai_v1",
     "se-ai": "shoug_academic_plan_grid_se_ai_v1",
+    "se-dx": "shoug_academic_plan_grid_se_dx_v1",
     "se-cys": "shoug_academic_plan_grid_v4",
     se: "shoug_academic_plan_grid_se_v1",
   };
   function planGridHref() {
     try {
-      var picked = /^(cs-ai|cs-cys|cs-dx|se-ai|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+      var picked = /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
         localStorage.getItem("shoug-transcript-plan") || "",
       );
       if (picked) return "/academic-plan-themes/" + picked[1] + "/grid.html";
