@@ -81,8 +81,10 @@ ASKED_ON = dict({k: (t, '/academics/software-engineering/se423/exams/%s/' % f) f
                 m261=('Midterm 261', '/academics/software-engineering/se423/extra-resources/midterm-cheat-sheet/'))
 
 
-def _question(kind, q, a, opts, tf, why):
+def _question(kind, q, a, opts, tf, why, wrong=None):
     d = {'kind': kind, 'q': q, 'why': why}
+    if wrong:
+        d['wrong'] = wrong
     if opts is not None:
         d.update(opts=opts, a=a)
     elif tf is not None:
@@ -92,12 +94,22 @@ def _question(kind, q, a, opts, tf, why):
     return d
 
 
-def asked(paper, where, q, a=None, opts=None, tf=None, why=''):
+def asked(paper, where, q, a=None, opts=None, tf=None, why='', wrong=None):
     title, href = ASKED_ON[paper]
-    d = _question('past', q, a, opts, tf, why)
+    d = _question('past', q, a, opts, tf, why, wrong)
     d.update(ref='%s · %s' % (title, where), href=href)
     return d
 
 
-def likely(q, a=None, opts=None, tf=None, why=''):
-    return _question('predict', q, a, opts, tf, why)
+def likely(q, a=None, opts=None, tf=None, why='', wrong=None):
+    return _question('predict', q, a, opts, tf, why, wrong)
+
+
+def pick(q, right, why, *wrongs):
+    """A predicted MCQ: the right answer and why, then (wrong option, why it is wrong) pairs. Options are shuffled when built."""
+    return likely(q, a=0, opts=[right] + [w[0] for w in wrongs], why=why, wrong={i: w[1] for i, w in enumerate(wrongs, 1)})
+
+
+def truth(q, value, why, wrong):
+    """A predicted true/false question: why the answer is right, and what to fix if the other one was picked."""
+    return likely(q, tf=value, why=why, wrong=wrong)

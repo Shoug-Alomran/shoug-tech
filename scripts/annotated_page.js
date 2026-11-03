@@ -15,8 +15,21 @@
   bn.addEventListener('click',function(){var on=bn.getAttribute('aria-pressed')!=='true';setPressed(bn,on);
     document.querySelectorAll('.card[data-slide]').forEach(function(c){setCardNotes(c,on)});store(K+'-notes',on?'1':'0')});
   bh.addEventListener('click',function(){var on=bh.getAttribute('aria-pressed')!=='true';setPressed(bh,on);body.classList.toggle('no-hl',!on);store(K+'-hl',on?'1':'0')});
-  ba.addEventListener('click',function(){var on=ba.getAttribute('aria-pressed')!=='true';setPressed(ba,on);
+  if(ba)ba.addEventListener('click',function(){var on=ba.getAttribute('aria-pressed')!=='true';setPressed(ba,on);
     document.querySelectorAll('.exam details').forEach(function(d){d.open=on})});
+  // pick-an-answer questions: a wrong pick explains itself and can be retried; the right one ends the question
+  document.querySelectorAll('.q.pick').forEach(function(q){
+    var verdict=q.querySelector('.verdict'), reveal=q.querySelector('.reveal-ans'), lis=[].slice.call(q.querySelectorAll('.picks>li'));
+    function finish(picked){lis.forEach(function(li){var b=li.querySelector('.choice'),w=li.querySelector('.opt-why');b.disabled=true;
+        if(li.hasAttribute('data-c'))b.classList.add('right');
+        if(w)w.hidden=false});
+      reveal.hidden=true;q.classList.add('done');
+      verdict.className='verdict '+(picked?'good':'shown');verdict.textContent=picked?'Correct.':'Here is the answer, and why the others are wrong.'}
+    lis.forEach(function(li){var b=li.querySelector('.choice');b.addEventListener('click',function(){
+      if(li.hasAttribute('data-c')){finish(true);return}
+      b.classList.add('wrong');b.disabled=true;var w=li.querySelector('.opt-why');if(w)w.hidden=false;
+      verdict.className='verdict bad';verdict.textContent=w?'Not quite. Read why below, then try again.':'Not quite. Try again.';reveal.hidden=false})});
+    reveal.addEventListener('click',function(){finish(false)})});
   document.querySelectorAll('.note-toggle').forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.card');setCardNotes(c,c.classList.contains('notes-hidden'))})});
   // overview show/hide (control lives inside the overview)
   var ob=document.querySelector('.ov-toggle'), ovb=document.getElementById('ov-body');
