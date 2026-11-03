@@ -360,6 +360,12 @@
       ".complete-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#8f8b9a}",
       "#shoug-complete-btn.done .complete-label{color:rgba(34,197,94,.85)}",
       /* exam reminder toast */
+      "#shoug-ob-dim{background:rgba(5,2,10,.84)}",
+      "#shoug-ob-card{--ob-bg:#0a0514;--ob-border:rgba(184,41,234,.45);--ob-tag:#b829ea;--ob-title:#f8f7fb;--ob-text:#a7a2b3;--ob-foot:#857c92;--ob-rule:rgba(255,255,255,.05);background:var(--ob-bg);border:1px solid var(--ob-border)}",
+      "#shoug-ob-card strong{color:var(--ob-title)!important}",
+      "body.shoug-light-mode #shoug-ob-dim{background:rgba(33,21,47,.42)}",
+      "body.shoug-light-mode #shoug-ob-card{--ob-bg:#fff;--ob-border:rgba(142,31,190,.45);--ob-tag:#8e1fbe;--ob-title:#21152f;--ob-text:#4f4560;--ob-foot:#6b6078;--ob-rule:rgba(33,21,47,.1);box-shadow:0 18px 50px rgba(33,21,47,.24)}",
+      "body.shoug-tour-open #shoug-exam-toast{display:none!important}",
       "#shoug-exam-toast{position:fixed;top:82px;left:50%;transform:translate(-50%,-16px);z-index:99997;width:min(760px,calc(100vw - 28px));display:none;align-items:stretch;background:#070b15;border:1px solid rgba(59,130,246,.28);box-shadow:0 18px 60px rgba(0,0,0,.48);opacity:0;transition:opacity 180ms ease,transform 180ms ease;font-family:'JetBrains Mono',monospace;overflow:hidden;}",
       "#shoug-exam-toast.open{display:flex;opacity:1;transform:translate(-50%,0);}",
       "#shoug-exam-toast::before{content:'';width:4px;background:#3b82f6;flex:0 0 4px;box-shadow:0 0 18px rgba(59,130,246,.75);}",
@@ -2155,80 +2161,103 @@
 
   // ── Onboarding ────────────────────────────────────────────────────────────
 
+  // The walkthrough is for first-time visitors only: one finished or skipped
+  // tour, on any page, ends it for good. Signed-in accounts older than a day
+  // count as returning, which also covers new browsers and devices.
+  var TOUR_SEEN_KEY = "shoug-tour-seen";
+  var TOUR_NEW_ACCOUNT_MS = 24 * 60 * 60 * 1000;
+
+  function markTourSeen() {
+    try {
+      localStorage.setItem(TOUR_SEEN_KEY, "1");
+    } catch (e) {}
+  }
+
+  function tourAlreadySeen() {
+    try {
+      if (localStorage.getItem(TOUR_SEEN_KEY)) return true;
+      // Tours finished before this rule were recorded per section.
+      for (var i = 0; i < localStorage.length; i++) {
+        if (String(localStorage.key(i)).indexOf("shoug-ob-") === 0) {
+          markTourSeen();
+          return true;
+        }
+      }
+      var user = firebase.auth().currentUser;
+      if (user) {
+        var created = Date.parse(user.metadata && user.metadata.creationTime);
+        if (created && Date.now() - created > TOUR_NEW_ACCOUNT_MS) {
+          markTourSeen();
+          return true;
+        }
+        return false;
+      }
+      // Still reconnecting: don't show it before knowing who this is.
+      return localStorage.getItem("shoug-was-signed-in") === "1";
+    } catch (e) {
+      // Without storage it can't remember being dismissed, so it stays away.
+      return true;
+    }
+  }
+
   function showOnboarding(triggerEl) {
+    if (tourAlreadySeen()) return false;
+
     // Detect page context so each section type gets its own contextual walkthrough
     var path = window.location.pathname;
     var parts = path.replace(/\/$/, "").split("/").filter(Boolean);
     // parts: [] = home, ["academics"] = hub, ["academics","computer-science"] = subject,
     //        ["academics","computer-science","cs285"] = course overview, 4+ = content leaf
 
-    var context, storageKey;
+    var context;
     if (parts.length === 0) {
       context = "home";
-      storageKey = "shoug-ob-home-v2";
     } else if (parts[0] === "academics") {
       if (parts.length === 1) {
         context = "academics-index";
-        storageKey = "shoug-ob-academics-v2";
       } else if (parts.length === 2) {
         context = "academics-subject";
-        storageKey = "shoug-ob-subject-v2";
       } else {
         context = "academics-course";
-        storageKey = "shoug-ob-course-v2";
       }
     } else if (parts[0] === "resources") {
       context = "resources";
-      storageKey = "shoug-ob-resources-v2";
     } else if (parts[0] === "workshops") {
       if (parts.length === 1) {
         context = "workshops";
-        storageKey = "shoug-ob-workshops-v2";
       } else {
         context = "workshop-detail";
-        storageKey = "shoug-ob-workshop-detail-v2";
       }
     } else if (parts[0] === "about") {
       context = "about";
-      storageKey = "shoug-ob-about-v2";
     } else if (parts[0] === "work") {
       if (parts.length === 1) {
         context = "work";
-        storageKey = "shoug-ob-work-v2";
       } else {
         context = "work-detail";
-        storageKey = "shoug-ob-work-detail-v2";
       }
     } else if (parts[0] === "community") {
       if (parts.length === 1) {
         context = "community";
-        storageKey = "shoug-ob-community-v2";
       } else {
         context = "community-profile";
-        storageKey = "shoug-ob-profile-v2";
       }
     } else if (parts[0] === "account") {
       if (parts[1] === "calendar") {
         context = "account-calendar";
-        storageKey = "shoug-ob-calendar-v1";
       } else {
         context = "account";
-        storageKey = "shoug-ob-account-v2";
       }
     } else if (parts[0] === "bookmarks") {
       context = "bookmarks";
-      storageKey = "shoug-ob-bookmarks-v2";
     } else if (parts[0] === "academic-plan-themes") {
       // The grid pages ship their own "?" walkthrough; the site tour's backdrop
       // would sit over their re-rendered course cards and swallow clicks.
       if (parts[parts.length - 1] === "grid.html") return false;
       context = "academic-plan-themes";
-      storageKey = "shoug-ob-apt-v2";
     } else {
       return false; // No walkthrough for unrecognised pages (policy, career-development, etc.)
     }
-
-    if (localStorage.getItem(storageKey)) return false;
 
     // Header is z-index:10000 (fixed). Overlay below header = 9999 lets header show through.
     // Overlay above header = 10001 covers everything (used for center/no-target steps).
@@ -3118,8 +3147,8 @@
 
     // Dim backdrop — z-index swaps per step (below header for targeted, above for center)
     var dimEl = document.createElement("div");
-    dimEl.style.cssText =
-      "position:fixed;inset:0;background:rgba(5,2,10,.84);pointer-events:all;";
+    dimEl.id = "shoug-ob-dim";
+    dimEl.style.cssText = "position:fixed;inset:0;pointer-events:all;";
 
     // Arrow (CSS triangle) — always above header
     var arrowEl = document.createElement("div");
@@ -3134,8 +3163,9 @@
     card.style.cssText =
       "position:fixed;z-index:" +
       CARD_Z +
-      ";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;background:#0a0514;border:1px solid rgba(184,41,234,.45);font-family:'JetBrains Mono',monospace;pointer-events:all;";
+      ";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;font-family:'JetBrains Mono',monospace;pointer-events:all;";
 
+    document.body.classList.add("shoug-tour-open");
     document.body.appendChild(dimEl);
     document.body.appendChild(arrowEl);
     document.body.appendChild(card);
@@ -3419,22 +3449,22 @@
       card.innerHTML = [
         '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b829ea,rgba(184,41,234,.08));"></div>',
         '<div style="padding:28px 28px 18px;">',
-        '  <div style="font-size:.5rem;color:#b829ea;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">' +
+        '  <div style="font-size:.5rem;color:var(--ob-tag);letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">' +
           s.tag +
           "</div>",
-        '  <div style="font-size:.94rem;font-weight:800;color:#f8f7fb;margin-bottom:10px;line-height:1.3;">' +
+        '  <div style="font-size:.94rem;font-weight:800;color:var(--ob-title);margin-bottom:10px;line-height:1.3;">' +
           s.title +
           "</div>",
-        "  <div style=\"font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:'Inter',sans-serif;\">" +
+        "  <div style=\"font-size:.76rem;color:var(--ob-text);line-height:1.75;font-family:'Inter',sans-serif;\">" +
           s.body +
           "</div>",
         "</div>",
-        '<div style="padding:12px 28px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.05);">',
-        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough ' +
+        '<div style="padding:12px 28px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--ob-rule);">',
+        '  <div style="font-size:.52rem;color:var(--ob-foot);letter-spacing:.12em;text-transform:uppercase;">Walkthrough ' +
           progressLabel +
           "</div>",
         '  <div style="display:flex;gap:8px;align-items:center;">',
-        '  <button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:#6f667c;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>',
+        '  <button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:var(--ob-foot);font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>',
         '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">' +
           primaryLabel +
           "</button>",
@@ -3459,7 +3489,8 @@
     }
 
     function closeTip() {
-      localStorage.setItem(storageKey, "1");
+      markTourSeen();
+      document.body.classList.remove("shoug-tour-open");
       clearHighlight();
       window.removeEventListener("resize", onViewportChange);
       window.removeEventListener("scroll", onViewportChange);
@@ -3993,7 +4024,7 @@
     injectBlueprintCredit();
 
     // Show contextual guidance when the visitor pauses over something clickable.
-    // Completion is tracked per section/context inside showOnboarding().
+    // Only first-time visitors get it; see tourAlreadySeen().
     //
     // There used to also be a blind idle-timeout trigger (pop the tour after
     // 2.5s of no interaction, regardless of what the visitor was about to do).
