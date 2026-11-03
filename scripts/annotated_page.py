@@ -9,6 +9,8 @@ Content schema (one dict per slide number):
          'kind': 'trap'|'trick'|'tip'|'seen'}
   hl     [(phrase, note number[, occurrence])]: a highlight on the slide, linked to one note (0 = not linked)
   exam   [{'kind': 'past'|'predict', 'ref', 'q', 'a', optional 'opts' (MCQ, 'a' = index) or 'tf' (bool), 'why', 'href'}]
+         'wrong': why each wrong option is wrong ({option index: text} for MCQ, text for tf), shown when it is picked
+  tips   short memory aids and ways to understand the slide, shown under the notes
 Markup inside text: **bold**, `code`, *italic*.
 
 Slide images are untouched JPEGs; highlights are an SVG layer placed from the PDF's word boxes (Tesseract OCR
@@ -16,9 +18,11 @@ for slides that are pictures), so they never cover the image and can be switched
 """
 import html
 import os
+import random
 import re
 import subprocess
 import tempfile
+import zlib
 
 import pdfplumber
 from PIL import Image
@@ -194,6 +198,7 @@ def slide_title(pdf, n):
         return ''
     best = max(lines.values(), key=lambda ws: max(w['size'] for w in ws))
     t = ' '.join(w['text'] for w in sorted(best, key=lambda w: w['x0']))
+    t = re.sub(r'\s+', ' ', uncid(t))
     t = re.sub(r'^[➢✓•\s]+', '', t).strip()
     return t if len(t) > 2 else ''
 
@@ -231,7 +236,31 @@ def answer_html(q):
     return rich(q.get('a', '')) + ((' ' + why) if why else '')
 
 
-def exam_html(n, exams):
+def shuffled(q):
+    """Option order for a pick question, stable between builds. Past papers keep their printed order."""
+    order = list(range(len(q['opts'])))
+    if q.get('kind') != 'past':
+        random.Random(zlib.crc32(q['q'].encode('utf-8'))).shuffle(order)
+    return order
+
+
+def pick_html(q):
+    """Options as buttons: a wrong pick says why it is wrong; the right one explains the answer and the others."""
+    if q.get('opts') is not None:
+        wrong = q.get('wrong') or {}
+        rows = [(rich(q['opts'][i]), i == q['a'], wrong.get(i, '')) for i in shuffled(q)]
+    else:
+        rows = [('True', q['tf'] is True, q.get('wrong') or ''), ('False', q['tf'] is False, q.get('wrong') or '')]
+    items = []
+    for j, (text, right, reason) in enumerate(rows):
+        why = q.get('why', '') if right else reason
+        label = 'ABCDEFG'[j] if q.get('opts') is not None else 'TF'[j]
+        items.append('<li%s><button type="button" class="choice"><span class="ltr">%s</span><span>%s</span></button>%s</li>' % (
+            ' data-c="1"' if right else '', label, text, ('<div class="opt-why" hidden>%s</div>' % rich(why)) if why else ''))
+    return '<ol class="picks">%s</ol><p class="verdict" role="status"></p><button type="button" class="reveal-ans" hidden>Show the answer</button>' % ''.join(items)
+
+
+def exam_html(n, exams, pick=False):
     if not exams:
         return ''
     cards, k = [], 0
@@ -245,6 +274,15 @@ def exam_html(n, exams):
             cards.append('<article class="q past ptr"><header>%s</header><p>%s</p></article>' % (tag, rich(q.get('label', ''))))
             continue
         k += 1
+        if pick:
+            head = '<header>%s<span class="qn">Q%d</span></header><p>%s</p>' % (tag, k, rich(q['q']))
+            if q.get('opts') is not None or q.get('tf') is not None:
+                cards.append('<article class="q pick %s">%s%s</article>' % ('past' if past else 'predict', head, pick_html(q)))
+            else:
+                cards.append('<article class="q written %s">%s<textarea rows="3" aria-label="Your answer to Q%d" placeholder="Write your answer, then compare."></textarea>'
+                             '<details><summary>Compare with the model answer</summary><p>%s</p></details></article>' % (
+                                 'past' if past else 'predict', head, k, answer_html(q)))
+            continue
         opts = ''
         if q.get('opts') is not None:
             opts = '<ol class="opts" type="A">%s</ol>' % ''.join('<li>%s</li>' % rich(o) for o in q['opts'])
@@ -254,15 +292,22 @@ def exam_html(n, exams):
     return '<section class="exam" aria-label="Exam practice for slide %d"><h4>Exam angle</h4>%s</section>' % (n, ''.join(cards))
 
 
-def slide_html(n, total, title, sd, rects, size):
+def tips_html(tips):
+    if not tips:
+        return ''
+    return '<section class="tips"><h4>Tips &amp; tricks</h4><ul>%s</ul></section>' % ''.join('<li>%s</li>' % rich(t) for t in tips)
+
+
+def slide_html(n, total, title, sd, rects, size, pick=False):
     W, H = size
     svg = ''.join('<rect class="hl%s" data-n="%d" x="%.4f" y="%.4f" width="%.4f" height="%.4f" rx="0.004"><title>%s</title></rect>' % (
         '' if note else ' free', note, x0, y0 * H / W, x1 - x0, (y1 - y0) * H / W, ('Note %d' % note) if note else 'Key term')
         for note, (x0, y0, x1, y1) in rects)
     notes = ''.join(note_html(n, i, nt) for i, nt in enumerate(sd.get('notes', ()), 1))
-    exam = exam_html(n, sd.get('exam'))
-    has_notes = bool(notes or exam)
-    side = ('<div class="notes" id="notes-%d">%s%s</div>' % (n, ('<h4>Notes</h4><ol>%s</ol>' % notes) if notes else '', exam)) if has_notes else ''
+    exam = exam_html(n, sd.get('exam'), pick)
+    tips = tips_html(sd.get('tips'))
+    has_notes = bool(notes or exam or tips)
+    side = ('<div class="notes" id="notes-%d">%s%s%s</div>' % (n, ('<h4>Notes</h4><ol>%s</ol>' % notes) if notes else '', tips, exam)) if has_notes else ''
     toggle = ('<button type="button" class="note-toggle" aria-expanded="true" aria-controls="notes-%d">Hide notes</button>' % n) if has_notes else ''
     return '''
 <section class="card%(bare)s" id="slide-%(n)d" data-slide="%(n)d">
@@ -276,6 +321,14 @@ def slide_html(n, total, title, sd, rects, size):
                       bare='' if has_notes else ' bare', loading='eager' if n <= 2 else 'lazy')
 
 
+# Courses whose exam questions are answered by picking an option instead of revealing the answer.
+PICK_COURSES = ('se423-',)
+
+
+def is_pick(spec):
+    return spec.get('key', '').startswith(PICK_COURSES)
+
+
 def overview_html(spec, titles):
     o = spec.get('overview') or {}
     summary = o.get('summary') or spec.get('lede', '')
@@ -287,6 +340,8 @@ def overview_html(spec, titles):
     how = ('<p>Every original slide is shown unchanged. <span class="key-hl">Yellow marks</span> on a slide point to a numbered note: '
            'hover or tap a mark to jump to its note, and hover a note to see its marks. Questions tagged <span class="tag past">Past exam</span> '
            'appeared on a real paper; <span class="tag predict">Prediction</span> questions are likely angles, not confirmed.</p>')
+    if is_pick(spec):
+        how = how[:-4] + ' Pick an answer to each question: a wrong pick tells you why it is wrong, so you can try again.</p>'
     left = ('<div><h4>How the lecture is organized</h4><ul class="secs">%s</ul></div>' % secs) if secs else ''
     right = '<div>%s<h4>How to read this page</h4>%s</div>' % (('<h4>Exam focus</h4><p>%s</p>' % rich(exam)) if exam else '', how)
     return '''
@@ -339,7 +394,7 @@ def page_html(spec, cards, titles, has_pdf):
     <div class="seg" role="group" aria-label="View mode"><button type="button" id="m-scroll" aria-pressed="true" title="All slides on one scrolling page">Scroll</button><button type="button" id="m-flip" aria-pressed="false" title="One slide at a time (arrow keys or swipe to turn)">Flip</button></div>
     <button type="button" id="t-notes" aria-pressed="true" title="Show or hide all notes">Notes</button>
     <button type="button" id="t-hl" aria-pressed="true" title="Show or hide the highlights on the slides">Highlights</button>
-    <button type="button" id="t-ans" aria-pressed="false" title="Show or hide every exam answer">Answers</button>
+    %(ans_btn)s
     %(pdf)s
     <button type="button" id="t-theme" title="Switch light or dark theme">Dark</button>
   </div>
@@ -361,7 +416,8 @@ def page_html(spec, cards, titles, has_pdf):
 ''' % dict(head=e(spec['head_title']), desc=e(spec['description']), url=e(spec['url']), boot=THEME_BOOT,
            css=open(CSS_PATH, encoding='utf-8').read(), key=e(spec['key']), chapter=e(spec['chapter']), title=e(spec['title']),
            pdf=pdf_btn, overview=overview_html(spec, titles), cards=''.join(cards), footer=rich(spec['footer']),
-           js=open(JS_PATH, encoding='utf-8').read(), se322_mcq_css=se322_mcq_css, se322_mcq_js=se322_mcq_js)
+           js=open(JS_PATH, encoding='utf-8').read(), se322_mcq_css=se322_mcq_css, se322_mcq_js=se322_mcq_js,
+           ans_btn='' if is_pick(spec) else '<button type="button" id="t-ans" aria-pressed="false" title="Show or hide every exam answer">Answers</button>')
 
 
 def export_pdf(html_path, pdf_path):
@@ -422,7 +478,7 @@ def build(spec):
         n_hl += len(rects)
         t = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or 'Slide %d' % n
         titles.append((n, t))
-        cards.append(slide_html(n, total, t, sd, rects, size))
+        cards.append(slide_html(n, total, t, sd, rects, size, is_pick(spec)))
     pdf.close()
     if missing and spec.get('strict'):
         raise SystemExit('%s: highlight phrases not found on their slides:\n%s' % (
