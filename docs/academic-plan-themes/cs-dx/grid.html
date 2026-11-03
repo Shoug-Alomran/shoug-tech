@@ -2088,8 +2088,6 @@
             `لم تدخل سعر الصيفي، لذا ${h} ساعة صيفية غير محسوبة.`,
           tuitionNoHours: (codes) =>
             `مقررات مضافة بلا ساعات وغير محسوبة: ${codes}. احذفها وأضفها من جديد بعدد ساعاتها.`,
-          tuitionPrepNote:
-            "مقررات السنة التحضيرية بلا ساعات معتمدة في الخطة، لذا لا تدخل في الحساب بالساعة.",
           tuitionWaivedNote: (n) => `${n} مقرر معادل باختبار غير محسوب.`,
           tuitionWLine: (code, h, cost) =>
             `⁨W · ${code}⁩ · ${h} س · ${cost}`,
@@ -2448,8 +2446,6 @@
             `No summer price yet, so ${h} summer hours are not counted.`,
           tuitionNoHours: (codes) =>
             `Added courses with no credit hours are not counted: ${codes}. Delete and re-add them with their hours.`,
-          tuitionPrepNote:
-            "Prep-year courses carry no credit hours in the plan, so per-hour pricing does not include them.",
           tuitionWaivedNote: (n) => `${n} course(s) waived by exam are not charged.`,
           tuitionWLine: (code, h, cost) => `W · ${code} · ${h} cr · ${cost}`,
           tuitionRefund: "Refund %",
@@ -2830,6 +2826,7 @@
           name: "التربية البدنية التحضيرية 1",
           nameEn: "Preparatory Physical Education I",
           term: "prep1",
+          prepHours: 1,
           prereqs: [],
         },
         {
@@ -2837,6 +2834,7 @@
           name: "تطوير المهارات الدراسية 1",
           nameEn: "Preparatory Development Skills I",
           term: "prep1",
+          prepHours: 1,
           prereqs: [],
         },
         {
@@ -2844,6 +2842,7 @@
           name: "الرياضيات التحضيري 1",
           nameEn: "Preparatory Math I",
           term: "prep1",
+          prepHours: 3,
           prereqs: [],
           examEligible: true,
         },
@@ -2852,6 +2851,7 @@
           name: "الإنجليزية التحضيرية 1 (استماع ومحادثة)",
           nameEn: "Preparatory English I (L&S)",
           term: "prep1",
+          prepHours: 4,
           prereqs: [],
           examEligible: true,
         },
@@ -2860,6 +2860,7 @@
           name: "الإنجليزية التحضيرية 1 (قراءة وكتابة)",
           nameEn: "Preparatory English I (R&W)",
           term: "prep1",
+          prepHours: 4,
           prereqs: [],
           examEligible: true,
         },
@@ -2868,6 +2869,7 @@
           name: "أساسيات الكمبيوتر 1",
           nameEn: "Computer Fundamentals I",
           term: "prep1",
+          prepHours: 1,
           prereqs: [],
           examEligible: true,
         },
@@ -2876,6 +2878,7 @@
           name: "التربية البدنية التحضيرية 2",
           nameEn: "Preparatory Physical Education II",
           term: "prep2",
+          prepHours: 1,
           prereqs: ["PE001"],
         },
         {
@@ -2883,6 +2886,7 @@
           name: "تطوير المهارات الدراسية 2",
           nameEn: "Preparatory Development Skills II",
           term: "prep2",
+          prepHours: 1,
           prereqs: ["PDS001"],
         },
         {
@@ -2890,6 +2894,7 @@
           name: "الرياضيات التحضيري 2",
           nameEn: "Preparatory Math II",
           term: "prep2",
+          prepHours: 3,
           prereqs: ["MATH001"],
           examEligible: true,
         },
@@ -2898,6 +2903,7 @@
           name: "الإنجليزية التحضيرية 2 (استماع ومحادثة)",
           nameEn: "Preparatory English II (L&S)",
           term: "prep2",
+          prepHours: 4,
           prereqs: ["ENG020"],
           examEligible: true,
         },
@@ -2906,6 +2912,7 @@
           name: "الإنجليزية التحضيرية 2 (قراءة وكتابة)",
           nameEn: "Preparatory English II (R&W)",
           term: "prep2",
+          prepHours: 4,
           prereqs: ["ENG010"],
           examEligible: true,
         },
@@ -2914,6 +2921,7 @@
           name: "أساسيات الكمبيوتر 2",
           nameEn: "Computer Fundamentals II",
           term: "prep2",
+          prepHours: 1,
           prereqs: ["CMP011"],
           examEligible: true,
         },
@@ -4725,7 +4733,7 @@
           id: `w-${Date.now()}-${withdrawals.length}`,
           code,
           termId: fromTerm.id,
-          hours: course.hours || 0,
+          hours: billedHours(course),
           nameAr: course.name || code,
           nameEn: course.nameEn || course.name || code,
           prevStatus,
@@ -4831,6 +4839,19 @@
       }
 
       /* ---------- Tuition ---------- */
+      // Prep courses carry hours that are charged and displayed, but they sit outside the degree: they
+      // must not count toward the plan total, the standing rule or the pace cards, which all read c.hours.
+      function billedHours(course) {
+        return course.hours || course.prepHours || 0;
+      }
+
+      // A student who entered at Prep 2nd or 1st never took (or paid for) the prep terms before that.
+      function prepTermSkipped(term) {
+        if (!term.isPrep) return false;
+        const start = BASE_TERMS.find((x) => x.id === gradState.startTerm);
+        return !!start && term.order < start.order;
+      }
+
       function formatMoney(value) {
         return (Math.round(value * 100) / 100).toLocaleString("en-US", {
           maximumFractionDigits: 2,
@@ -4858,11 +4879,13 @@
           drops: [],
         };
         Object.values(map).forEach((c) => {
-          if (assignments[c.code] !== term.id || !c.hours) return;
+          const hours = billedHours(c);
+          if (assignments[c.code] !== term.id || !hours) return;
+          if (prepTermSkipped(term)) return;
           if (c.examEligible && examMap[c.code]) return;
           if (["completed", "current"].includes(statusMap[c.code]))
-            row.paidHours += c.hours;
-          else row.dueHours += c.hours;
+            row.paidHours += hours;
+          else row.dueHours += hours;
         });
         withdrawals
           .filter((w) => w.termId === term.id)
@@ -4964,7 +4987,7 @@
           .filter((c) => !c.hours && assignments[c.code])
           .map((c) => c.code);
         const waived = Object.values(map).filter(
-          (c) => c.examEligible && examMap[c.code] && c.hours,
+          (c) => c.examEligible && examMap[c.code] && billedHours(c),
         ).length;
         const notes = [];
         if (!anyRate) notes.push(s.tuitionEnterRates);
@@ -4976,7 +4999,6 @@
         }
         if (noHours.length) notes.push(s.tuitionNoHours(noHours.join(", ")));
         if (waived) notes.push(s.tuitionWaivedNote(waived));
-        if (!gradState.dropPYP) notes.push(s.tuitionPrepNote);
         document.getElementById("tuitionNote").textContent = notes.join(" ");
 
         const rows = data.rows
@@ -5083,10 +5105,10 @@
         codeSpan.className = "code";
         codeSpan.textContent = course.code;
         codeGroup.appendChild(codeSpan);
-        if (course.hours) {
+        if (billedHours(course)) {
           const pill = document.createElement("span");
           pill.className = "credit-pill";
-          pill.textContent = `${course.hours} ${t().creditShort}`;
+          pill.textContent = `${billedHours(course)} ${t().creditShort}`;
           codeGroup.appendChild(pill);
         }
         codeRow.appendChild(codeGroup);
@@ -5936,7 +5958,7 @@
           .filter((w) => w.termId === term.id)
           .reduce((sum, w) => sum + (w.hours || 0), 0);
         if (termCourses.length || droppedHours) {
-          const termHours = termCourses.reduce((sum, c) => sum + (c.hours || 0), 0);
+          const termHours = termCourses.reduce((sum, c) => sum + billedHours(c), 0);
           const hoursTag = document.createElement("small");
           hoursTag.className = "term-hours";
           hoursTag.textContent =
@@ -6831,7 +6853,7 @@
           return {
             code: c.code,
             name: courseName(c),
-            hours: c.hours || 0,
+            hours: billedHours(c),
             status: statusOf(c),
             official: placeName(c.term || c.group),
             planned: placed(c) ? placeName(assignments[c.code]) : R.unplanned,
