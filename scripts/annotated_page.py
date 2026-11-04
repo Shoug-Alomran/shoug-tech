@@ -668,7 +668,7 @@ def build(spec):
             tstems = _stems(t_for_cover)
             def on_title(r):
                 inside = [w['t'] for w in page_words if r[0] <= (w['x0'] + w['x1']) / 2 <= r[2] and r[1] <= (w['y0'] + w['y1']) / 2 <= r[3]]
-                return r[3] < 0.2 and bool(inside) and _stems(' '.join(inside)) <= tstems
+                return r[3] < 0.17 or (r[3] < 0.21 and bool(inside) and _stems(' '.join(inside)) <= tstems)
             rects = [(i, r) for i, r in rects if not on_title(r) or not any(j == i and not on_title(q) for j, q in rects)]
         n_hl += len(rects)
         t = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or 'Slide %d' % n
