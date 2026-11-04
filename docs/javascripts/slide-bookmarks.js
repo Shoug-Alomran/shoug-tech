@@ -23,6 +23,10 @@
   var user = null;
   var db = null;
   var fb = null;
+  var authKnown = false; // false until Firebase has reported the real sign-in state
+  var pending = null; // a click made before that, finished once it is known
+  var connecting = false;
+  var listLoaded = false;
 
   var CSS =
     "html{--sb-bg:#fff;--sb-ink:#1d1d1f;--sb-muted:#5b5b63;--sb-line:#cfcdc7;--sb-accent:#2f5bb7;--sb-accent-ink:#fff}" +
@@ -90,8 +94,16 @@
   }
 
   function save(n, label, anchor, on) {
-    if (!user || !db) {
-      toast(fb ? "Sign in to bookmark slides." : "Still connecting. Try again in a moment.");
+    if (!authKnown || (user && !listLoaded)) {
+      pending = function () {
+        save(n, label, anchor, on);
+      };
+      toast(canLoadAccount() ? "Connecting to your account…" : "Open this deck from its course page to bookmark slides.");
+      loadAccount();
+      return false;
+    }
+    if (!user) {
+      toast("Sign in to bookmark slides.");
       return false;
     }
     var ref = pagesRef().doc(docPrefix + "|slide-" + n);
@@ -221,9 +233,11 @@
     savedList.textContent = "";
     if (!saved_ns.length) {
       var empty = document.createElement("p");
-      empty.textContent = user
-        ? "No bookmarked slides in this deck yet."
-        : "Sign in to bookmark slides.";
+      empty.textContent = !authKnown
+        ? "Your bookmarks appear here once your account connects."
+        : user
+          ? "No bookmarked slides in this deck yet."
+          : "Sign in to bookmark slides.";
       savedList.appendChild(empty);
       return;
     }
@@ -340,7 +354,8 @@
   }
 
   /* ---------------------------------------------------------------- sign-in */
-  function loadSaved() {
+  // Calls done once the list is in, so a bookmark made meanwhile can't be overwritten by it.
+  function loadSaved(done) {
     pagesRef()
       .where("bookmarked", "==", true)
       .get()
@@ -353,29 +368,77 @@
         });
         refresh();
       })
-      .catch(function () {});
+      .catch(function () {})
+      .then(function () {
+        listLoaded = true;
+        refresh();
+        done();
+      });
   }
 
-  function connect(tries) {
-    var candidate = null;
+  function firebaseReady() {
     try {
-      candidate = rootWindow.firebase;
+      var candidate = rootWindow.__shoug_fb || rootWindow.firebase;
+      if (candidate && candidate.apps && candidate.apps.length && candidate.auth && candidate.firestore) return candidate;
     } catch (e) {}
-    if (candidate && candidate.apps && candidate.apps.length && candidate.auth && candidate.firestore) {
-      fb = candidate;
-      db = fb.firestore();
-      fb.auth().onAuthStateChanged(function (u) {
-        user = u;
-        saved = {};
-        refresh();
-        if (u) loadSaved();
-      });
-      return;
+    return null;
+  }
+
+  function canLoadAccount() {
+    try {
+      return !!(firebaseReady() || typeof rootWindow.__shougLoadFirebaseAuth === "function");
+    } catch (e) {
+      return false;
     }
-    if (tries > 0)
-      setTimeout(function () {
-        connect(tries - 1);
-      }, 500);
+  }
+
+  // The site loads its account code late, on purpose, so slide pages stay fast. Ask for it.
+  function loadAccount() {
+    try {
+      if (typeof rootWindow.__shougLoadFirebaseAuth === "function") rootWindow.__shougLoadFirebaseAuth(false);
+    } catch (e) {}
+  }
+
+  function attach() {
+    if (fb) return true;
+    var candidate = firebaseReady();
+    if (!candidate) return false;
+    fb = candidate;
+    db = fb.firestore();
+    fb.auth().onAuthStateChanged(function (u) {
+      authKnown = true;
+      user = u;
+      listLoaded = false;
+      saved = {};
+      refresh();
+      function finishClick() {
+        if (!pending) return;
+        var run = pending;
+        pending = null;
+        run();
+      }
+      if (u) loadSaved(finishClick);
+      else finishClick();
+    });
+    return true;
+  }
+
+  function connect() {
+    if (connecting) return;
+    connecting = true;
+    if (attach()) return;
+    try {
+      rootWindow.addEventListener("shoug:fb", attach);
+    } catch (e) {}
+    var timer = setInterval(function () {
+      if (attach()) clearInterval(timer);
+    }, 500);
+    // Someone who has signed in here before gets their bookmarks without having to click first.
+    var activated = false;
+    try {
+      activated = localStorage.getItem("shoug-account-activated") === "true";
+    } catch (e) {}
+    if (activated) loadAccount();
   }
 
   function start() {
@@ -391,7 +454,7 @@
       buildDeck();
     }
     refresh();
-    connect(40);
+    connect();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
