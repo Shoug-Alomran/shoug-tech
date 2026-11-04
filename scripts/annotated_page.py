@@ -206,6 +206,24 @@ def _boxes(run, pad_x=0.003, pad_y=0.004):
              min(1, max(w['x1'] for w in r) + pad_x), min(1, max(w['y1'] for w in r) + pad_y)) for r in rows.values()]
 
 
+def drop_repeats(notes, rects, words):
+    """Remove notes that only restate the slide. Their highlights stay, with no note attached, and the rest renumber."""
+    on_slide = _stems(' '.join(w['t'] for w in words))
+    if not on_slide:
+        return notes, rects
+    keep, numbers = [], {}
+    for i, note in enumerate(notes, 1):
+        plain = note if isinstance(note, str) else (note.get('text', '') if set(note) == {'text'} else None)
+        stems = _stems(plain) if plain else set()
+        if stems and len(stems) >= 2 and len(stems - on_slide) <= 2 and len(stems & on_slide) >= 0.6 * len(stems):
+            continue
+        keep.append(note)
+        numbers[i] = len(keep)
+    if len(keep) == len(notes):
+        return notes, rects
+    return keep, [(numbers.get(n, 0), r) for n, r in rects]
+
+
 def cover_points(words, notes, rects, title):
     """Extra marks so every point on the slide is linked to the note that explains it.
 
@@ -670,6 +688,8 @@ def build(spec):
                 inside = [w['t'] for w in page_words if r[0] <= (w['x0'] + w['x1']) / 2 <= r[2] and r[1] <= (w['y0'] + w['y1']) / 2 <= r[3]]
                 return r[3] < 0.17 or (r[3] < 0.21 and bool(inside) and _stems(' '.join(inside)) <= tstems)
             rects = [(i, r) for i, r in rects if not on_title(r) or not any(j == i and not on_title(q) for j, q in rects)]
+            kept_notes, rects = drop_repeats(sd['notes'], rects, page_words)
+            sd = dict(sd, notes=kept_notes)
         n_hl += len(rects)
         t = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or 'Slide %d' % n
         titles.append((n, t))
