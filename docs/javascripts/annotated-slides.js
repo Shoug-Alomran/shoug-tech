@@ -3,6 +3,13 @@
 (function () {
   "use strict";
 
+  // Older deck pages don't have the search script tag, so load it from here.
+  if (!document.querySelector('script[src="/javascripts/annotated-search.js"]')) {
+    var searchScript = document.createElement("script");
+    searchScript.src = "/javascripts/annotated-search.js";
+    document.head.appendChild(searchScript);
+  }
+
   var root = document.documentElement;
   var body = document.body;
   var sheets = Array.prototype.slice.call(document.querySelectorAll(".sheet"));

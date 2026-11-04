@@ -17,6 +17,7 @@ build_cs331_annotated_slides.py.
 import glob
 import hashlib
 import html
+import annotated_search
 import importlib
 import json
 import os
@@ -834,6 +835,15 @@ def build_page(deck, mod, out):
         summary = '\n\n'.join(p for p in (getattr(mod, 'OVERVIEW', ''), deck['lede']) if p)
         spec.update(src=deck_pdf(deck['key']), slides=slides, overview={'summary': summary},
                     titles={n: sd['title'] for n, sd in slides.items() if sd['title']})
+    try:
+        extra_tips = importlib.import_module('%s.mnemonics' % C.package).TIPS.get(deck['key'], {})
+    except ModuleNotFoundError:
+        extra_tips = {}
+    spec['slides'] = dict(spec['slides'])
+    for n, tips in extra_tips.items():
+        slide = dict(spec['slides'].get(n, {}))
+        slide['tips'] = list(slide.get('tips', ())) + tips
+        spec['slides'][n] = slide
     spec['head_title'] = '%s · %s · Annotated Slides' % (C.code, deck['chapter'])
     spec['description'] = ('%s %s annotated slides: every original slide with numbered study notes linked to the highlighted '
                            'words, past-exam links and practice questions.' % (C.code, deck['chapter']))
@@ -908,6 +918,7 @@ def deck_page(deck, mod):
 </div>
 <nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
 <script src="/javascripts/annotated-slides.js"></script>
+<script src="/javascripts/annotated-search.js"></script>
 </body>
 </html>
 '''.format(code=C.code, w_direct=C.papers['n_direct'], w_related=C.papers['n_related'], overview=overview_html,
@@ -1178,3 +1189,4 @@ def build(course):
         build_wrapper(deck, data, keys[i - 1] if i > 0 else None, keys[i + 1] if i + 1 < len(keys) else None)
     build_directory(data)
     wire_course_pages()
+    annotated_search.build_course(C.dir)
