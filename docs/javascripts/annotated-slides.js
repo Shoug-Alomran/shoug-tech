@@ -4,9 +4,9 @@
   "use strict";
 
   // Older deck pages don't have the search script tag, so load it from here.
-  if (!document.querySelector('script[src="/javascripts/annotated-search.js"]')) {
+  if (!document.querySelector('script[src^="/javascripts/annotated-search.js"]')) {
     var searchScript = document.createElement("script");
-    searchScript.src = "/javascripts/annotated-search.js";
+    searchScript.src = "/javascripts/annotated-search.js?v=1";
     document.head.appendChild(searchScript);
   }
 
