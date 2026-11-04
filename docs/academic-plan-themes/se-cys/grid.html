@@ -1308,6 +1308,39 @@
         color: #fff;
       }
 
+      .drop-tick.delay-tick {
+        width: auto;
+        padding: 0 6px;
+        font-family: "Tajawal", sans-serif;
+      }
+
+      .retake-opens-list {
+        list-style: none;
+        margin: 0 0 8px;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+        font-size: 13px;
+      }
+
+      .retake-opens-list li {
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .retake-opens-list strong {
+        margin-inline-end: 6px;
+      }
+
+      .retake-opens-note {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
       .retake-move {
         align-self: flex-start;
         border: none;
@@ -1471,6 +1504,63 @@
       }
 
       /* Tuition panel */
+      .coop-fee {
+        margin: 14px 0;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+      }
+
+      .coop-fee:empty {
+        display: none;
+      }
+
+      .coop-fee-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 16px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .coop-fee-choice {
+        display: flex;
+        flex: 0 1 auto;
+        gap: 6px;
+      }
+
+      .coop-fee-choice button {
+        min-height: 36px;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 12.5px;
+        cursor: pointer;
+      }
+
+      .coop-fee-choice button[aria-pressed="true"] {
+        background: var(--text);
+        border-color: var(--text);
+        color: var(--bg);
+      }
+
+      .coop-fee-choice button:disabled {
+        cursor: default;
+      }
+
+      .coop-fee-note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
       .tuition-note {
         font-size: 12.5px;
         color: var(--muted);
@@ -2051,6 +2141,7 @@
         <button class="compare-close" id="retakeCloseBtn" type="button">×</button>
       </div>
       <div class="sub" id="retakeSub"></div>
+      <div class="retake-group" id="retakeOpens"></div>
       <div class="retake-group" id="retakeWhere"></div>
       <div class="retake-group" id="retakeDeps"></div>
       <div class="summer-actions">
@@ -2076,6 +2167,7 @@
           <input id="tuitionSummer" type="number" min="0" step="any" inputmode="decimal" />
         </div>
       </div>
+      <div class="coop-fee" id="coopFee"></div>
       <div class="grad-results show" id="tuitionCards"></div>
       <div class="tuition-note" id="tuitionNote"></div>
       <div id="tuitionTable"></div>
@@ -2215,6 +2307,18 @@
           retakeKeep: (term) => `أخذها معه في ${term}`,
           retakeKeepNote: "استثناء من الجامعة. تأكد من موافقة مرشدك الأكاديمي.",
           retakeNotOffered: (term) => `غير مطروح صيفاً؟ انقله إلى ${term}`,
+          delayBtn: "تأجيل",
+          delayTitle: "تأجيل هذا المقرر. ستظهر لك المقررات التي يفتحها قبل أي نقل.",
+          retakeTitleDelay: (code, term) =>
+            term ? `تأجيل ${code} إلى ${term}` : `تأجيل ${code}`,
+          delaySub:
+            "مقررات لاحقة تحتاج هذا المقرر، لذا قد يؤخرها تأجيله ويؤخر تخرجك. راجع مرشدك الأكاديمي أولاً. يمكنك إعادة المقررات إلى فصل أبكر لاحقاً.",
+          delayWhereHead: "أجّله إلى",
+          delayOpensHead: (code) => `ما يفتحه ${code}`,
+          delayOpensNone: "لا يحتاجه أي مقرر إجباري حالياً.",
+          delayLaterChain: (codes) => `وبعدها تنتظر هذه المقررات أيضاً: ⁨${codes}⁩`,
+          delayElectives: (codes) => `مقررات اختيارية تحتاجه إن اخترتها: ⁨${codes}⁩`,
+          delayCurrentNote: (code) => `أنت تدرس ${code} الآن. استخدم W أو F إن تركته.`,
           togetherTag: (codes) => `مع ${codes} (استثناء)`,
           tuitionBtn: "الرسوم",
           tuitionTitle: "الرسوم الدراسية",
@@ -2243,6 +2347,15 @@
           tuitionNoHours: (codes) =>
             `مقررات مضافة بلا ساعات وغير محسوبة: ${codes}. احذفها وأضفها من جديد بعدد ساعاتها.`,
           tuitionWaivedNote: (n) => `${n} مقرر معادل باختبار غير محسوب.`,
+          coopPay: "يلزمني الدفع",
+          coopFree: "بدون رسوم",
+          coopAutoFree: (year) =>
+            `غير محسوب تلقائياً: طلاب دفعة ${year} لا يدفعون رسومه. غيّر الخيار إذا كانت حالتك مختلفة.`,
+          coopAutoPay: (year) =>
+            `محسوب لأن سنة بدايتك ${year}. اختر بدون رسوم إذا كنت لا تدفع رسومه.`,
+          coopAutoNoYear:
+            "محسوب حالياً. أدخل سنة بدايتك في حاسبة التخرج: طلاب دفعتي 2022 و2023 لا يدفعون رسومه.",
+          coopChosen: "هذا اختيارك، ويبقى حتى تغيّره.",
           tuitionWLine: (grade, code, h, cost) =>
             `⁨${grade} · ${code}⁩ · ${h} س · ${cost}`,
           tuitionRefund: "المسترد %",
@@ -2404,7 +2517,7 @@
           moveBlockedMinHours: (code, needed, have) =>
             `${code} يتطلب إتمام ${needed} ساعة معتمدة على الأقل (مستوى طالب "جونيور") — لديك ${have} ساعة مجدولة قبل هذا الفصل.`,
           moveBlockedNoPrepSummer: (code) => `${code} يجب أن يبقى في فصل عادي.`,
-          criticalTitle: "يمكن تقديمه فقط",
+          criticalTitle: "مقررات لاحقة تحتاجه. استخدم تأجيل لنقله إلى فصل أبعد.",
           examTickTitle: "إعفاء باختبار",
           moveCourseTitle: "نقل المقرر",
           moveCourseSelected: (code) => `اختر الفصل الجديد لنقل ${code}.`,
@@ -2489,7 +2602,7 @@
             ],
             [
               "المسار الحرج",
-              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.",
+              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، وإن احتجت تأخيره فاستخدم زر تأجيل لترى ما يتأثر قبل التأكيد.",
             ],
             [
               "السنة التحضيرية",
@@ -2509,7 +2622,7 @@
             ],
             [
               "المسار الحرج",
-              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.",
+              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، وإن احتجت تأخيره فاستخدم زر تأجيل لترى ما يتأثر قبل التأكيد.",
             ],
             [
               "السنة التحضيرية",
@@ -2532,7 +2645,7 @@
             ["قارن مع الأصل", "👁 يعرض نفس تقدمك لكن على ترتيب الجامعة الأصلي."],
             [
               "المسار الحرج",
-              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.",
+              "الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، وإن احتجت تأخيره فاستخدم زر تأجيل لترى ما يتأثر قبل التأكيد.",
             ],
             [
               "السنة التحضيرية",
@@ -2601,6 +2714,18 @@
           retakeKeep: (term) => `Take them together in ${term}`,
           retakeKeepNote: "A university exception. Check that your advisor has approved it.",
           retakeNotOffered: (term) => `Not offered in summer? Move to ${term}`,
+          delayBtn: "Delay",
+          delayTitle: "Delay this course. Shows what it opens before anything moves.",
+          retakeTitleDelay: (code, term) =>
+            term ? `Delay ${code} to ${term}` : `Delay ${code}`,
+          delaySub:
+            "Later courses need this one, so delaying it can delay them and your graduation. Check with your advisor first. You can move courses back earlier afterwards.",
+          delayWhereHead: "Delay it until",
+          delayOpensHead: (code) => `What ${code} opens`,
+          delayOpensNone: "No required course needs it right now.",
+          delayLaterChain: (codes) => `After those, these also wait: ${codes}`,
+          delayElectives: (codes) => `Electives that need it, if you pick them: ${codes}`,
+          delayCurrentNote: (code) => `You're taking ${code} now. Use W or F if you left it.`,
           togetherTag: (codes) => `With ${codes} (exception)`,
           tuitionBtn: "Tuition",
           tuitionTitle: "Tuition",
@@ -2629,6 +2754,15 @@
           tuitionNoHours: (codes) =>
             `Added courses with no credit hours are not counted: ${codes}. Delete and re-add them with their hours.`,
           tuitionWaivedNote: (n) => `${n} course(s) waived by exam are not charged.`,
+          coopPay: "Required to pay",
+          coopFree: "No fee",
+          coopAutoFree: (year) =>
+            `Not charged automatically: students who joined in ${year} don't pay for it. Change this if your case is different.`,
+          coopAutoPay: (year) =>
+            `Charged because your start year is ${year}. Choose No fee if you don't pay for it.`,
+          coopAutoNoYear:
+            "Charged for now. Add your start year in the graduation calculator: students who joined in 2022 or 2023 don't pay for it.",
+          coopChosen: "This is your choice. It stays until you change it.",
           tuitionWLine: (grade, code, h, cost) => `${grade} · ${code} · ${h} cr · ${cost}`,
           tuitionRefund: "Refund %",
           tuitionPool: "Completed electives not placed in a semester",
@@ -2795,7 +2929,7 @@
             `${code} requires at least ${needed} completed credit hours (junior standing) — you have ${have} hours scheduled before this term.`,
           moveBlockedNoPrepSummer: (code) =>
             `${code} must stay in a regular term.`,
-          criticalTitle: "Can move earlier only",
+          criticalTitle: "Later courses need it. Use Delay to move it later.",
           examTickTitle: "Waived by exam",
           moveCourseTitle: "Move course",
           moveCourseSelected: (code) => `Choose the new term for ${code}.`,
@@ -2888,7 +3022,7 @@
             ],
             [
               "Critical path",
-              "A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.",
+              "A gold ring means a later course needs this one done first. You can take it earlier than shown. If you need to take it later, use Delay to see what it affects before you confirm.",
             ],
             [
               "Prep year",
@@ -2914,7 +3048,7 @@
             ],
             [
               "Critical path",
-              "A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.",
+              "A gold ring means a later course needs this one done first. You can take it earlier than shown. If you need to take it later, use Delay to see what it affects before you confirm.",
             ],
             [
               "Prep year",
@@ -2940,7 +3074,7 @@
             ],
             [
               "Critical path",
-              "A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.",
+              "A gold ring means a later course needs this one done first. You can take it earlier than shown. If you need to take it later, use Delay to see what it affects before you confirm.",
             ],
             [
               "Prep year",
@@ -3861,7 +3995,7 @@
       let examMap = {}; // code -> true if waived via a promotion/placement test (examEligible courses only)
       let selectedMoveCode = null; // tap-to-move support for touch devices
       let withdrawals = []; // dropped courses: one ghost "W" per drop, in the term it happened
-      let tuition = { regular: null, summer: null }; // price per credit hour
+      let tuition = { regular: null, summer: null, coopFee: null }; // price per credit hour; coop answer
       let togetherPairs = []; // {pre, dep}: university exception to take a prerequisite alongside its dependent
       let addTargetId = null; // term or elective group the add-course dialog is adding to
 
@@ -4086,7 +4220,7 @@
         examMap = saved.examMap || {};
         withdrawals = saved.withdrawals || [];
         togetherPairs = saved.togetherPairs || [];
-        tuition = Object.assign({ regular: null, summer: null }, saved.tuition);
+        tuition = Object.assign({ regular: null, summer: null, coopFee: null }, saved.tuition);
         gradState = saved.gradState || gradState;
         const map = courseIndex();
         assignments = saved.assignments || {};
@@ -4350,8 +4484,17 @@
           const defaultTerm = BASE_TERMS.find(
             (term) => term.id === course.term,
           );
-          if (defaultTerm && targetOrder > defaultTerm.order) {
-            return { ok: false, reason: t().moveBlockedCritical(code) };
+          const nowIn = termById(assignments[code]);
+          if (
+            defaultTerm &&
+            targetOrder > defaultTerm.order &&
+            (!nowIn || targetOrder > nowIn.order)
+          ) {
+            return {
+              ok: false,
+              critical: true,
+              reason: t().moveBlockedCritical(code),
+            };
           }
         }
 
@@ -4635,13 +4778,69 @@
         });
       }
 
+      // What a course unlocks: direct required or picked courses, what waits behind them, and electives not picked yet.
+      function coursesOpenedBy(code, map) {
+        const picked = (c) =>
+          !c.group ||
+          !!termById(assignments[c.code]) ||
+          ["current", "completed"].includes(statusMap[c.code]);
+        const open = (c) => !isCourseDone(c);
+        const direct = dependentsOf(code, map).filter(open);
+        const required = direct.filter(picked);
+        const seen = new Set([code, ...required.map((c) => c.code)]);
+        const queue = required.slice();
+        const later = [];
+        while (queue.length) {
+          dependentsOf(queue.shift().code, map)
+            .filter((c) => open(c) && picked(c) && !seen.has(c.code))
+            .forEach((c) => {
+              seen.add(c.code);
+              later.push(c);
+              queue.push(c);
+            });
+        }
+        return {
+          direct: required,
+          later,
+          electives: direct.filter((c) => !picked(c)),
+        };
+      }
+
+      // A delay can't go past a dependent that's already done or under way; the card's own status decides the rest.
+      function delayBlocker(code, targetId, map) {
+        const target = targetId ? termById(targetId) : null;
+        return dependentsOf(code, map).find((dep) => {
+          if (!isCourseDone(dep) && statusMap[dep.code] !== "current") return false;
+          const at = termById(assignments[dep.code]);
+          return at && (!target || at.order <= target.order);
+        });
+      }
+
       let retakeState = null;
 
-      // grade set: a new W/F. No grade: moving a retake that already has one. targetId fixes the destination.
-      function openRetake({ code, grade = null, targetId = null }) {
-        const course = courseIndex()[code];
+      // grade set: a new W/F. delay: moving a course later without a W/F, always confirmed.
+      // Neither: moving a retake that already has one. targetId fixes the destination.
+      function openRetake({
+        code,
+        grade = null,
+        targetId = null,
+        delay = false,
+        fallback = "",
+      }) {
+        const map = courseIndex();
+        const course = map[code];
         const from = termById(assignments[code]);
         if (!course || !from) return;
+        if (delay) {
+          if (isCourseDone(course)) {
+            if (fallback) toast(fallback);
+            return;
+          }
+          if (statusMap[code] === "current") {
+            toast(t().delayCurrentNote(code));
+            return;
+          }
+        }
         let options;
         if (targetId) options = [targetId];
         else {
@@ -4651,8 +4850,19 @@
           options = [regular ? regular.id : ""];
           if (next && next.isSummer) options.push(next.id);
         }
-        retakeState = { code, grade, options, targetId: options[0], keep: false };
-        if (options.length === 1 && !retakeConflicts(code, options[0]).length) {
+        if (delay) {
+          const blocker = delayBlocker(code, options[0], map);
+          if (blocker) {
+            toast(t().moveBlockedDependent(code, blocker.code));
+            return;
+          }
+        }
+        retakeState = { code, grade, delay, options, targetId: options[0], keep: false };
+        if (
+          !delay &&
+          options.length === 1 &&
+          !retakeConflicts(code, options[0]).length
+        ) {
           commitRetake();
           return;
         }
@@ -4682,14 +4892,26 @@
       function renderRetake() {
         if (!retakeState) return;
         const s = t();
-        const { code, grade, options, targetId, keep } = retakeState;
+        const { code, grade, delay, options, targetId, keep } = retakeState;
         const termName = (id) => {
           const term = id && termById(id);
           return term ? nameOfTerm(term) : s.retakeNewTerm;
         };
         document.getElementById("retakeTitle").textContent =
-          grade === "F" ? s.retakeTitleF(code) : grade ? s.retakeTitleW(code) : s.retakeTitleMove(code);
-        document.getElementById("retakeSub").textContent = grade ? s.retakeSub : "";
+          grade === "F"
+            ? s.retakeTitleF(code)
+            : grade
+              ? s.retakeTitleW(code)
+              : delay
+                ? s.retakeTitleDelay(code, options.length === 1 ? termName(targetId) : "")
+                : s.retakeTitleMove(code);
+        const summerTarget = options.length === 1 && termById(targetId);
+        document.getElementById("retakeSub").textContent = grade
+          ? s.retakeSub
+          : delay
+            ? s.delaySub +
+              (summerTarget && summerTarget.isSummer ? ` ${s.retakeSummerNote}` : "")
+            : "";
         document.getElementById("retakeCancelBtn").textContent = s.addCancel;
         document.getElementById("retakeConfirmBtn").textContent = s.retakeConfirm;
 
@@ -4714,11 +4936,42 @@
           return label;
         };
 
+        const opens = document.getElementById("retakeOpens");
+        opens.innerHTML = "";
+        if (delay) {
+          const opened = coursesOpenedBy(code, courseIndex());
+          const head = document.createElement("h4");
+          head.textContent = s.delayOpensHead(code);
+          opens.appendChild(head);
+          const note = (text) => {
+            const p = document.createElement("p");
+            p.className = "retake-opens-note";
+            p.textContent = text;
+            opens.appendChild(p);
+          };
+          if (opened.direct.length) {
+            const list = document.createElement("ul");
+            list.className = "retake-opens-list";
+            opened.direct.forEach((c) => {
+              const li = document.createElement("li");
+              const strong = document.createElement("strong");
+              strong.textContent = c.code;
+              li.append(strong, lang === "ar" ? c.name : c.nameEn || c.name);
+              list.appendChild(li);
+            });
+            opens.appendChild(list);
+          } else note(s.delayOpensNone);
+          if (opened.later.length)
+            note(s.delayLaterChain(opened.later.map((c) => c.code).join(", ")));
+          if (opened.electives.length)
+            note(s.delayElectives(opened.electives.map((c) => c.code).join(", ")));
+        }
+
         const where = document.getElementById("retakeWhere");
         where.innerHTML = "";
         if (options.length > 1) {
           const head = document.createElement("h4");
-          head.textContent = s.retakeWhereHead;
+          head.textContent = delay ? s.delayWhereHead : s.retakeWhereHead;
           where.appendChild(head);
           options.forEach((id) => {
             const term = id && termById(id);
@@ -4781,9 +5034,19 @@
       }
 
       function refuseMove(code, targetId, verdict) {
-        if (verdict.dependents && delayedByDrop(code, courseIndex()))
+        const map = courseIndex();
+        if (verdict.dependents && delayedByDrop(code, map)) {
           openRetake({ code, targetId });
-        else toast(verdict.reason);
+          return;
+        }
+        const from = termById(assignments[code]);
+        const target = termById(targetId);
+        const later = from && target && target.order > from.order;
+        if (!(verdict.critical || verdict.dependents) || !later) {
+          toast(verdict.reason);
+          return;
+        }
+        openRetake({ code, targetId, delay: true, fallback: verdict.reason });
       }
 
       function undoWithdrawal(id) {
@@ -4898,6 +5161,67 @@
         });
       }
 
+      // Students who joined in these years don't pay for cooperative training. tuition.coopFee is the
+      // student's own answer; null means follow the start year.
+      const COOP_FREE_YEARS = [2022, 2023];
+
+      function coopFeeAuto() {
+        return COOP_FREE_YEARS.includes(Number(gradState.startYear)) ? "free" : "pay";
+      }
+
+      function coopFee() {
+        return tuition.coopFee || coopFeeAuto();
+      }
+
+      function isFreeCoop(code, map) {
+        const coop = coopCourse(map);
+        return !!coop && coop.code === code && coopFee() === "free";
+      }
+
+      function setCoopFee(choice) {
+        tuition = { ...tuition, coopFee: choice === coopFeeAuto() ? null : choice };
+        saveState();
+        render();
+      }
+
+      function renderCoopFee() {
+        const box = document.getElementById("coopFee");
+        const coop = coopCourse(courseIndex());
+        box.innerHTML = "";
+        if (!coop) return;
+        const s = t();
+        const year = Number(gradState.startYear);
+        const row = document.createElement("div");
+        row.className = "coop-fee-row";
+        const label = document.createElement("span");
+        label.textContent = `${coop.code} ${lang === "ar" ? coop.name : coop.nameEn || coop.name} (${billedHours(coop)} ${s.creditShort})`;
+        const choice = document.createElement("span");
+        choice.className = "coop-fee-choice";
+        [
+          ["pay", s.coopPay],
+          ["free", s.coopFree],
+        ].forEach(([value, text]) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = text;
+          btn.disabled = !!viewMode;
+          btn.setAttribute("aria-pressed", coopFee() === value ? "true" : "false");
+          btn.addEventListener("click", () => setCoopFee(value));
+          choice.appendChild(btn);
+        });
+        row.append(label, choice);
+        const note = document.createElement("p");
+        note.className = "coop-fee-note";
+        note.textContent = tuition.coopFee
+          ? s.coopChosen
+          : !year
+            ? s.coopAutoNoYear
+            : coopFeeAuto() === "free"
+              ? s.coopAutoFree(year)
+              : s.coopAutoPay(year);
+        box.append(row, note);
+      }
+
       function hourRate(term) {
         const rate = term && term.isSummer ? tuition.summer : tuition.regular;
         return typeof rate === "number" && rate >= 0 ? rate : null;
@@ -4923,12 +5247,13 @@
           if (assignments[c.code] !== term.id || !hours) return;
           if (prepTermSkipped(term) && !c.hours) return;
           if (c.examEligible && examMap[c.code]) return;
+          if (isFreeCoop(c.code, map)) return;
           if (["completed", "current"].includes(statusMap[c.code]))
             row.paidHours += hours;
           else row.dueHours += hours;
         });
         withdrawals
-          .filter((w) => w.termId === term.id)
+          .filter((w) => w.termId === term.id && !isFreeCoop(w.code, map))
           .forEach((w) => {
             const refund = w.grade === "F" ? 0 : Math.min(100, Math.max(0, w.refund || 0));
             const charged = (w.hours || 0) * (rate || 0) * (1 - refund / 100);
@@ -5015,6 +5340,7 @@
         const s = t();
         const e = escapeHtml;
         const data = tuitionSummary();
+        renderCoopFee();
         const anyRate = hourRate(null) !== null || hourRate({ isSummer: true }) !== null;
         const money = (v) => (anyRate ? s.tuitionMoney(formatMoney(v)) : "—");
         const cell = (v, hasRate) => (hasRate ? formatMoney(v) : "—");
@@ -5321,6 +5647,24 @@
             btn.addEventListener("pointerleave", restoreDrag);
             gradeRow.appendChild(btn);
           });
+          if (locked && statusMap[course.code] !== "current") {
+            const delayBtn = document.createElement("button");
+            delayBtn.type = "button";
+            delayBtn.className = "drop-tick delay-tick";
+            delayBtn.textContent = t().delayBtn;
+            delayBtn.title = t().delayTitle;
+            delayBtn.setAttribute("aria-label", t().delayTitle);
+            delayBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openRetake({ code: course.code, delay: true });
+            });
+            delayBtn.addEventListener("pointerdown", () => {
+              div.draggable = false;
+            });
+            delayBtn.addEventListener("pointerup", restoreDrag);
+            delayBtn.addEventListener("pointerleave", restoreDrag);
+            gradeRow.appendChild(delayBtn);
+          }
           div.appendChild(gradeRow);
         }
 
@@ -6728,8 +7072,11 @@
           return;
         }
 
+        const yearChanged = Number(gradState.startYear) !== year;
         gradState = { ...gradState, startTerm: termId, startYear: year };
         saveState();
+        // The start year decides whether coop is charged, and term costs show on the grid.
+        if (yearChanged) render();
 
         renderStartHint(termId, year);
 
@@ -7737,6 +8084,7 @@ ${fonts}
       ["tuitionRegular", "tuitionSummer"].forEach((id) =>
         document.getElementById(id).addEventListener("input", () => {
           tuition = {
+            ...tuition,
             regular: readRateInput("tuitionRegular"),
             summer: readRateInput("tuitionSummer"),
           };
