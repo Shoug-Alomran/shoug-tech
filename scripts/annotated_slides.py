@@ -919,7 +919,7 @@ def deck_page(deck, mod):
 <nav class="flipbar" aria-label="Slide navigation"><button type="button" id="flip-prev" aria-label="Previous slide">◀ Prev</button><div class="flip-pos"><span id="flip-text">Slide 1</span><span class="track"><span class="fill" id="flip-fill"></span></span></div><button type="button" id="flip-next" aria-label="Next slide">Next ▶</button></nav>
 <script src="/javascripts/annotated-slides.js"></script>
 <script src="/javascripts/annotated-search.js?v=1"></script>
-<script src="/javascripts/slide-bookmarks.js?v=2"></script>
+<script src="/javascripts/slide-bookmarks.js?v=3"></script>
 </body>
 </html>
 '''.format(code=C.code, w_direct=C.papers['n_direct'], w_related=C.papers['n_related'], overview=overview_html,

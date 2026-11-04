@@ -18,7 +18,7 @@ from urllib.parse import unquote
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(REPO, 'docs')
 TAG = '<script src="/javascripts/annotated-search.js?v=1"></script>'
-BOOKMARK_TAG = '<script src="/javascripts/slide-bookmarks.js?v=2"></script>'
+BOOKMARK_TAG = '<script src="/javascripts/slide-bookmarks.js?v=3"></script>'
 SKIP_TAGS = {'details', 'svg', 'button', 'textarea', 'script', 'style', 'header', 'h4', 'select', 'figure'}
 SKIP_CLASSES = {'picks', 'opt-why', 'verdict', 'reveal-ans', 'weight', 'slide-foot', 'num', 'kind'}
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'}

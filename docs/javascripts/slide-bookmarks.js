@@ -27,6 +27,8 @@
   var pending = null; // a click made before that, finished once it is known
   var connecting = false;
   var listLoaded = false;
+  var connectFailed = false;
+  var giveUpTimer = null;
 
   var CSS =
     "html{--sb-bg:#fff;--sb-ink:#1d1d1f;--sb-muted:#5b5b63;--sb-line:#cfcdc7;--sb-accent:#2f5bb7;--sb-accent-ink:#fff}" +
@@ -83,6 +85,15 @@
     }, 3200);
   }
 
+  // Firebase lives in the course page, and rejects objects created in this frame.
+  function plain(values) {
+    var out = new rootWindow.Object();
+    Object.keys(values).forEach(function (k) {
+      out[k] = values[k];
+    });
+    return out;
+  }
+
   function pagesRef() {
     return db.collection("userProgress").doc(user.uid).collection("pages");
   }
@@ -94,11 +105,20 @@
   }
 
   function save(n, label, anchor, on) {
+    if (!canLoadAccount()) {
+      // This deck was opened on its own, without the course page that holds the login.
+      rootWindow.location.href = pagePath + "#" + anchor + n;
+      return false;
+    }
+    if (connectFailed) {
+      toast("Couldn’t reach your account. Reload the page and try again.");
+      return false;
+    }
     if (!authKnown || (user && !listLoaded)) {
       pending = function () {
         save(n, label, anchor, on);
       };
-      toast(canLoadAccount() ? "Connecting to your account…" : "Open this deck from its course page to bookmark slides.");
+      toast("Connecting to your account…");
       loadAccount();
       return false;
     }
@@ -106,25 +126,28 @@
       toast("Sign in to bookmark slides.");
       return false;
     }
-    var ref = pagesRef().doc(docPrefix + "|slide-" + n);
-    var write = on
-      ? ref.set(
-          {
+    function undo() {
+      toast("That bookmark didn’t save. Try again.");
+      if (on) delete saved[n];
+      else saved[n] = label || true;
+      refresh();
+    }
+    try {
+      var ref = pagesRef().doc(docPrefix + "|slide-" + n);
+      var data = on
+        ? plain({
             url: pagePath + "#" + anchor + n,
             title: deckTitle() + " · Slide " + n + (label ? ": " + label : ""),
             bookmarked: true,
             bookmarkFolder: null,
             bookmarkSavedAt: fb.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        )
-      : ref.set({ bookmarked: false }, { merge: true });
-    write.catch(function () {
-      toast("That bookmark didn't save. Try again.");
-      if (on) delete saved[n];
-      else saved[n] = label || true;
-      refresh();
-    });
+          })
+        : plain({ bookmarked: false });
+      ref.set(data, plain({ merge: true })).catch(undo);
+    } catch (e) {
+      undo();
+      return false;
+    }
     if (on) saved[n] = label || true;
     else delete saved[n];
     refresh();
@@ -210,6 +233,7 @@
     savedBtn.addEventListener("click", function () {
       savedList.hidden = !savedList.hidden;
       savedBtn.setAttribute("aria-expanded", savedList.hidden ? "false" : "true");
+      if (!savedList.hidden) loadAccount();
     });
     document.addEventListener("click", function (ev) {
       if (!wrap.contains(ev.target)) savedList.hidden = true;
@@ -233,8 +257,12 @@
     savedList.textContent = "";
     if (!saved_ns.length) {
       var empty = document.createElement("p");
-      empty.textContent = !authKnown
-        ? "Your bookmarks appear here once your account connects."
+      empty.textContent = !canLoadAccount()
+        ? "Open this deck from its course page to use bookmarks."
+        : connectFailed
+          ? "Couldn’t reach your account. Reload the page and try again."
+          : !authKnown || (user && !listLoaded)
+            ? "Connecting to your account…"
         : user
           ? "No bookmarked slides in this deck yet."
           : "Sign in to bookmark slides.";
@@ -394,6 +422,14 @@
 
   // The site loads its account code late, on purpose, so slide pages stay fast. Ask for it.
   function loadAccount() {
+    if (!authKnown && !giveUpTimer) {
+      giveUpTimer = setTimeout(function () {
+        if (authKnown) return;
+        connectFailed = true;
+        pending = null;
+        refresh();
+      }, 20000);
+    }
     try {
       if (typeof rootWindow.__shougLoadFirebaseAuth === "function") rootWindow.__shougLoadFirebaseAuth(false);
     } catch (e) {}
@@ -407,6 +443,7 @@
     db = fb.firestore();
     fb.auth().onAuthStateChanged(function (u) {
       authKnown = true;
+      connectFailed = false;
       user = u;
       listLoaded = false;
       saved = {};
