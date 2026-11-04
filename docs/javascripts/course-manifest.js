@@ -10390,6 +10390,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/extra-resources/mindmaps/04-program-project-product/",
+    title: "SE423 | Program, Project or Product? - Chapter 1",
+    track: "software-engineering",
+    course: "se423",
+    section: "extra-resources",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/extra-resources/mindmaps/06-quality/",
     title: "SE423 | Quality - Chapter 7",
     track: "software-engineering",
