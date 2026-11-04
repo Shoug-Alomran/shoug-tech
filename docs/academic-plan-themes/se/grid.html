@@ -4276,9 +4276,13 @@
 
       function computeGatewaySet(map) {
         const gateways = new Set();
-        Object.values(map).forEach((c) =>
-          (c.prereqs || []).forEach((p) => gateways.add(p)),
-        );
+        Object.values(map).forEach((c) => {
+          // An elective only counts once it's being taken or already done. A placed elective doesn't lock
+          // its prerequisite here: validateMove just keeps the prerequisite before that elective.
+          if (c.group && !["current", "completed"].includes(statusMap[c.code]))
+            return;
+          (c.prereqs || []).forEach((p) => gateways.add(p));
+        });
         NEVER_LOCK.forEach((code) => gateways.delete(code));
         return gateways;
       }
