@@ -110,6 +110,113 @@ def pdf_words(pdf):
     return out
 
 
+COVER_STOP = set('this that with from have will your they them their there when what which about into than then also such these those were been being more most some only each many much very used using use can may must should would could does the and for are not but all any how why who its'.split())
+
+
+def _stems(text):
+    return {w[:5] for w in re.findall(r'[a-z0-9]+', re.sub(r'[*_`]', '', text).lower()) if len(w) > 2 and w not in COVER_STOP}
+
+
+def _note_text(note):
+    return note if isinstance(note, str) else (note.get('text', '') if note.get('kind') != 'seen' else '')
+
+
+def _text_lines(words):
+    """Words grouped into lines, split where a wide gap separates columns."""
+    rows = {}
+    for w in words:
+        rows.setdefault(round(w['y0'] * 90), []).append(w)
+    out = []
+    for key in sorted(rows):
+        run = []
+        for w in sorted(rows[key], key=lambda w: w['x0']):
+            if run and w['x0'] - run[-1]['x1'] > 0.07:
+                out.append(run)
+                run = []
+            run.append(w)
+        out.append(run)
+    return out
+
+
+def _is_marked(line, rects):
+    for w in line:
+        cx, cy = (w['x0'] + w['x1']) / 2, (w['y0'] + w['y1']) / 2
+        if any(r[0] <= cx <= r[2] and r[1] <= cy <= r[3] for _, r in rects):
+            return True
+    return False
+
+
+def cover_points(words, notes, rects, title):
+    """Extra marks so every point on the slide is linked to the note that explains it.
+
+    A term a note explains in bold gets marked, and a bullet with no mark gets its first line marked, linked to the
+    note that shares the most words with it (else the nearest note before it)."""
+    texts = [_note_text(n) for n in notes]
+    if not words or not any(texts):
+        return []
+    added = []
+    pad_x, pad_y = 0.003, 0.004
+    for i, text in enumerate(texts, 1):
+        for term in re.findall(r'\*\*(.+?)\*\*', text):
+            term = term.strip(' .,:;')
+            if len(norm(term)) < 3 or len(term) > 60:
+                continue
+            for occ in range(4):
+                got = find(words, term, occ)
+                if got is None:
+                    break
+                boxes = [(max(0, b['x0'] - pad_x), max(0, b['y0'] - pad_y), min(1, b['x1'] + pad_x), min(1, b['y1'] + pad_y)) for b in got]
+                probe = [dict(x0=b[0], x1=b[2], y0=b[1], y1=b[3]) for b in boxes]
+                if _is_marked(probe, rects + added):
+                    continue
+                in_title = boxes[0][1] < 0.2 and _stems(term) <= _stems(title or '')
+                if not in_title:
+                    added += [(i, b) for b in boxes]
+                break
+    stems = [_stems(t) for t in texts]
+    title_stems = _stems(title or '')
+    lines = _text_lines(words)
+    points, prev = [], None
+    for line in lines:
+        text = ' '.join(w['t'] for w in line)
+        if len(re.sub(r'[^A-Za-z]', '', text)) < 3 or re.search(r'copyright|https?:|www\.', text, re.I):
+            continue
+        first = next((c for c in text if c.isalnum()), '')
+        bullet = not text[0].isalnum()
+        continues = prev is not None and not bullet and first.islower() and abs(line[0]['x0'] - prev[-1][0]['x0']) < 0.2
+        if continues:
+            prev.append(line)
+        else:
+            prev = [line]
+            points.append(prev)
+    last_note = None
+    for point in points:
+        line = point[0]
+        text = ' '.join(w['t'] for ln in point for w in ln)
+        s = _stems(text)
+        if not s or (line[0]['y0'] < 0.2 and title_stems and len(s & title_stems) >= 0.7 * len(s)):
+            continue
+        scores = [(len(s & st), i) for i, st in enumerate(stems, 1) if st]
+        best, note = max(scores, key=lambda x: (x[0], -x[1])) if scores else (0, None)
+        if _is_marked([w for ln in point for w in ln], rects + added):
+            hit = [n for n, r in rects + added if any(r[0] <= (w['x0'] + w['x1']) / 2 <= r[2] and r[1] <= (w['y0'] + w['y1']) / 2 <= r[3] for ln in point for w in ln)]
+            last_note = hit[-1] if hit else last_note
+            # a short bullet that is only half marked ("Data assets"): mark all of it
+            if len(point) == 1 and len(line) <= 5 and hit and not all(_is_marked([w], rects + added) for w in line if norm(w['t'])):
+                added.append((hit[-1], (max(0, line[0]['x0'] - pad_x), max(0, min(w['y0'] for w in line) - pad_y),
+                                        min(1, line[-1]['x1'] + pad_x), min(1, max(w['y1'] for w in line) + pad_y))))
+            continue
+        if not (best >= 2 or (best and best >= 0.5 * len(s))):
+            note = last_note or next((i for i, t in enumerate(texts, 1) if t), None)
+        if note is None:
+            continue
+        box = (max(0, line[0]['x0'] - pad_x), max(0, min(w['y0'] for w in line) - pad_y),
+               min(1, line[-1]['x1'] + pad_x), min(1, max(w['y1'] for w in line) + pad_y))
+        added.append((note, box))
+        last_note = note
+    return added
+
+
 def ocr_words(src, n):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(['pdftoppm', '-f', str(n), '-l', str(n), '-scale-to-x', '1920', '-scale-to-y', '-1', '-png',
@@ -476,6 +583,20 @@ def build(spec):
                 continue
             pad_x, pad_y = 0.003, 0.004
             rects += [(note, (max(0, b['x0'] - pad_x), max(0, b['y0'] - pad_y), min(1, b['x1'] + pad_x), min(1, b['y1'] + pad_y))) for b in got]
+        t_for_cover = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or ''
+        if is_pick(spec) and sd.get('notes'):
+            page_words = pwords[n - 1]
+            if len(page_words) < 12:  # a picture slide: the real text is only readable with OCR
+                if n not in ocr:
+                    ocr[n] = ocr_words(src, n)
+                page_words = ocr[n]
+            rects += cover_points(page_words, sd['notes'], rects, t_for_cover)
+            # titles aren't points: drop a mark on the title when its note is marked elsewhere too
+            tstems = _stems(t_for_cover)
+            def on_title(r):
+                inside = [w['t'] for w in page_words if r[0] <= (w['x0'] + w['x1']) / 2 <= r[2] and r[1] <= (w['y0'] + w['y1']) / 2 <= r[3]]
+                return r[3] < 0.2 and bool(inside) and _stems(' '.join(inside)) <= tstems
+            rects = [(i, r) for i, r in rects if not on_title(r) or not any(j == i and not on_title(q) for j, q in rects)]
         n_hl += len(rects)
         t = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or 'Slide %d' % n
         titles.append((n, t))
