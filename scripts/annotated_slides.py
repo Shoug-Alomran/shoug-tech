@@ -844,6 +844,14 @@ def build_page(deck, mod, out):
         slide = dict(spec['slides'].get(n, {}))
         slide['tips'] = list(slide.get('tips', ())) + tips
         spec['slides'][n] = slide
+    try:
+        extra_questions = importlib.import_module('%s.questions' % C.package).QUESTIONS.get(deck['key'], {})
+    except ModuleNotFoundError:
+        extra_questions = {}
+    for n, questions in extra_questions.items():
+        slide = dict(spec['slides'].get(n, {}))
+        slide['exam'] = list(slide.get('exam', ())) + questions
+        spec['slides'][n] = slide
     spec['head_title'] = '%s · %s · Annotated Slides' % (C.code, deck['chapter'])
     spec['description'] = ('%s %s annotated slides: every original slide with numbered study notes linked to the highlighted '
                            'words, past-exam links and practice questions.' % (C.code, deck['chapter']))
