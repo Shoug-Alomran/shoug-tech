@@ -827,7 +827,7 @@ def build_page(deck, mod, out):
         page = importlib.import_module('%s.%s' % (C.package, deck['page']))
         spec.update(src=os.path.join(REPO, deck['src']) if deck.get('src') else deck_pdf(deck['key']),
                     title=page.TITLE, chapter=page.CHAPTER, overview=page.OVERVIEW, slides=page.SLIDES,
-                    titles=getattr(page, 'TITLES', {}), strict=True, pdf='--no-pdf' not in sys.argv,
+                    titles=getattr(page, 'TITLES', {}), strict='--lenient' not in sys.argv, pdf='--no-pdf' not in sys.argv,
                     width=deck.get('width', annotated_page.WIDTH))
         spec['footer'] = getattr(page, 'FOOTER', spec['footer'])
     else:

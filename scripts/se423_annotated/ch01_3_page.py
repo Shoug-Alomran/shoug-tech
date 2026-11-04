@@ -248,3 +248,10 @@ SLIDES = {
     40: dict(notes=[TABLE + ' Hierarchy charts, baselines and visual data (e.g. burn charts serve measurement).']),
     41: dict(notes=[TABLE + ' Reports, agreements and contracts.']),
 }
+
+
+# Notes rewritten to explain rather than repeat the slide.
+from .common import apply_notes  # noqa: E402
+from .ch01_3_notes import NOTES  # noqa: E402
+
+apply_notes(SLIDES, NOTES)

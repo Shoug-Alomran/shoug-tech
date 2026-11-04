@@ -113,3 +113,12 @@ def pick(q, right, why, *wrongs):
 def truth(q, value, why, wrong):
     """A predicted true/false question: why the answer is right, and what to fix if the other one was picked."""
     return likely(q, tf=value, why=why, wrong=wrong)
+
+
+def apply_notes(slides, notes):
+    """Swap in rewritten notes. A list keeps its slide's length and order (highlights link to note numbers); None keeps that note."""
+    for n, new in notes.items():
+        old = slides[n]['notes']
+        if len(new) != len(old):
+            raise SystemExit('notes for slide %d: %d given, %d expected' % (n, len(new), len(old)))
+        slides[n]['notes'] = [o if x is None else x for x, o in zip(new, old)]
