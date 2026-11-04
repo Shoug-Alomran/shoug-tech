@@ -845,9 +845,16 @@ def build_page(deck, mod, out):
         slide['tips'] = list(slide.get('tips', ())) + tips
         spec['slides'][n] = slide
     try:
-        extra_questions = importlib.import_module('%s.questions' % C.package).QUESTIONS.get(deck['key'], {})
+        bank = importlib.import_module('%s.questions' % C.package)
+        extra_questions = bank.QUESTIONS.get(deck['key'], {})
+        extra_notes = getattr(bank, 'NOTES', {}).get(deck['key'], {})
     except ModuleNotFoundError:
-        extra_questions = {}
+        extra_questions, extra_notes = {}, {}
+    for n, new_notes in extra_notes.items():  # explaining notes replace a slide's first notes, so note numbers stay valid
+        slide = dict(spec['slides'].get(n, {}))
+        old_notes = list(slide.get('notes', ()))
+        slide['notes'] = [new if new is not None else old_notes[i] for i, new in enumerate(new_notes)] + old_notes[len(new_notes):]
+        spec['slides'][n] = slide
     for n, questions in extra_questions.items():
         slide = dict(spec['slides'].get(n, {}))
         slide['exam'] = list(slide.get('exam', ())) + questions
