@@ -156,7 +156,7 @@ ANN = {
              notes=['(The slide title says “Inventible”: it means inevitable.)', 'Installing a system changes its environment, which changes the requirements.']),
     22: dict(hl=['Corrective Maintenance', 'Adaptive Maintenance', 'Perfective Maintenance'], refs=['( Corrective Maintenance )', '( Adaptive Maintenance )', '( Perfective Maintenance )'],
              notes=['Corrective = fix faults.', 'Adaptive = new environment (OS, hardware, platform).', 'Perfective = new or changed functionality.'],
-             tips=[trick('C-A-P: Correct it, Adapt it, Perfect it.'),
+             tips=[trick('CAP: Correct it, Adapt it, Perfect it.'),
                    trap('Porting to a new OS is ADAPTIVE, not perfective. Adding a feature is PERFECTIVE.')],
              exam=[mcq('Updating an app so it runs on a new version of the operating system is:', ['Adaptive maintenance', 'Corrective maintenance', 'Perfective maintenance', 'Re-engineering'], 0, ''),
                    mcq('Adding a new report requested by users is:', ['Perfective maintenance', 'Adaptive maintenance', 'Corrective maintenance', 'Preventive testing'], 0, ''),
