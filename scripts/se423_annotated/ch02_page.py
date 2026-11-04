@@ -206,3 +206,10 @@ SLIDES = {
         exam=[likely('Your team pads every estimate by 50% because missing a date is punished. Which effect of culture is this, and how would you address it?',
                      a='Culture affecting project planning: a culture that punishes lateness reinforces inflated estimates. Build a culture of trust in which honest estimates are not punished, handle uncertainty openly with risk reserves, and estimates become realistic.')]),
 }
+
+
+# Notes rewritten to explain rather than repeat the slide.
+from .common import apply_notes  # noqa: E402
+from .ch02_notes import NOTES  # noqa: E402
+
+apply_notes(SLIDES, NOTES)

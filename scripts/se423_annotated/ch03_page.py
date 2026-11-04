@@ -521,3 +521,10 @@ SLIDES = {
                'Groups should be **small and cohesive**; group communication is affected by **status, group size**, composition and organization.',
                'The **working environment** affects productivity, and the PM should **monitor the project culture** and technical status early and throughout.']),
 }
+
+
+# Notes rewritten to explain rather than repeat the slide.
+from .common import apply_notes  # noqa: E402
+from .ch03_notes import NOTES  # noqa: E402
+
+apply_notes(SLIDES, NOTES)

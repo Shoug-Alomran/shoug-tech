@@ -585,3 +585,10 @@ SLIDES = {
         exam=[likely('Your organization wants to move a waterfall team to DevOps. As the PM, what would you change first and why?',
                      a='Treat development and operations as one team with shared goals and tools, to stop hand-offs and finger-pointing. Start with a small project and an MVP so there is a deliverable every sprint; build a CI/CD pipeline with automated tests; map and track dependencies; use shared dashboards (Jira, Jenkins) for real-time visibility; and track metrics such as deployment frequency, lead time, change failure rate and MTTR to show improvement.')]),
 }
+
+
+# Notes rewritten to explain rather than repeat the slide.
+from .common import apply_notes  # noqa: E402
+from .ch04_notes import NOTES  # noqa: E402
+
+apply_notes(SLIDES, NOTES)

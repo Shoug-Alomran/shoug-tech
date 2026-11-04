@@ -146,6 +146,66 @@ def _is_marked(line, rects):
     return False
 
 
+LEAD_IN = re.compile(r'^(?:of|as|include|includes|including|are|is|to|for|by|like|with|on|in|such)$', re.I)
+LIST_SKIP = {'and', 'or', 'a', 'an', 'the', 'etc', 'etc.', 'so', 'forth', 'forth.'}
+
+
+def _list_items(flat):
+    """The items of a list written inside a sentence ("a, b, and c"), each as a run of words. Needs at least three."""
+    sentences, cur = [], []
+    for w in flat:
+        cur.append(w)
+        if re.search(r'[.:;!?]$', w['t']) and not re.fullmatch(r'(?:e\.g|i\.e|ex|etc)\.?', w['t'], re.I):
+            sentences.append(cur)
+            cur = []
+    if cur:
+        sentences.append(cur)
+    out = []
+    for sent in sentences:
+        parts, cur = [], []
+        for w in sent:
+            cur.append(w)
+            if w['t'].endswith(','):
+                parts.append(cur)
+                cur = []
+        if cur:
+            parts.append(cur)
+        if len(parts) < 3:
+            continue
+        # "X, which is Y, is usually Z" is a sentence with commas, not a list
+        if any(re.match(r'(?:is|are|was|were|which|that|who|has|have|will|can|may|must)$', p[0]['t'], re.I) for p in parts[1:]):
+            continue
+        cleaned = []
+        for i, part in enumerate(parts):
+            words_ = list(part)
+            if i == 0:  # "... take the form of fixed delivery dates": keep what follows the lead-in
+                cut = max((k for k, w in enumerate(words_[:-1]) if LEAD_IN.match(w['t'].strip(',.'))), default=-1)
+                words_ = words_[cut + 1:]
+                words_ = [w for w in words_ if norm(w['t'])]  # no bullet glyphs
+                if cut < 0 and len(words_) > 3:  # no lead-in word to cut at: the item is at the end
+                    words_ = words_[-2:]
+            while len(words_) > 1 and words_[0]['t'].lower() in ('such', 'as', 'having'):
+                words_ = words_[1:]
+            while words_ and norm(words_[0]['t']) in {norm(x) for x in LIST_SKIP}:
+                words_ = words_[1:]
+            while words_ and norm(words_[-1]['t']) in {norm(x) for x in LIST_SKIP}:
+                words_ = words_[:-1]
+            if words_:
+                cleaned.append(words_)
+        short = [c for c in cleaned if len(c) <= 6]
+        if len(short) >= 3 and len(short) >= len(cleaned) - 1:
+            out.extend(short)
+    return out
+
+
+def _boxes(run, pad_x=0.003, pad_y=0.004):
+    rows = {}
+    for w in run:
+        rows.setdefault(round(w['y0'] * 90), []).append(w)
+    return [(max(0, min(w['x0'] for w in r) - pad_x), max(0, min(w['y0'] for w in r) - pad_y),
+             min(1, max(w['x1'] for w in r) + pad_x), min(1, max(w['y1'] for w in r) + pad_y)) for r in rows.values()]
+
+
 def cover_points(words, notes, rects, title):
     """Extra marks so every point on the slide is linked to the note that explains it.
 
@@ -196,6 +256,17 @@ def cover_points(words, notes, rects, title):
         s = _stems(text)
         if not s or (line[0]['y0'] < 0.2 and title_stems and len(s & title_stems) >= 0.7 * len(s)):
             continue
+        # every item of a list inside a sentence gets its own mark, not only the ones a note put in bold
+        flat = [w for ln in point for w in ln]
+        for item in _list_items(flat):
+            if _is_marked(item, rects + added):
+                continue
+            item_stems = _stems(' '.join(w['t'] for w in item))
+            ranked = sorted(((len(item_stems & st), -i) for i, st in enumerate(stems, 1) if st), reverse=True)
+            near = [n for n, r in rects + added if any(r[0] <= (w['x0'] + w['x1']) / 2 <= r[2] and r[1] <= (w['y0'] + w['y1']) / 2 <= r[3] for w in flat)]
+            target = -ranked[0][1] if ranked and ranked[0][0] else (near[-1] if near else last_note)
+            if target:
+                added += [(target, b) for b in _boxes(item)]
         scores = [(len(s & st), i) for i, st in enumerate(stems, 1) if st]
         best, note = max(scores, key=lambda x: (x[0], -x[1])) if scores else (0, None)
         if _is_marked([w for ln in point for w in ln], rects + added):
