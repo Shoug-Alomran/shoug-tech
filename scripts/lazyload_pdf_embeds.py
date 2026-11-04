@@ -77,7 +77,7 @@ def rewrite(text: str) -> tuple[str, int, int]:
 def ensure_loader(text: str) -> str:
     if LOADER in text:
         return text
-    tag = f'<script src="{LOADER}" defer></script>\n'
+    tag = f'<script src="{LOADER}" defer></script>\n<script src="/javascripts/slide-bookmarks.js?v=1" defer></script>\n'
     if "</body>" in text:
         return text.replace("</body>", tag + "</body>", 1)
     return text + tag
