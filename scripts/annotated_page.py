@@ -411,7 +411,7 @@ def page_html(spec, cards, titles, has_pdf):
 <footer class="end">%(footer)s</footer>
 <script>%(js)s</script>
 %(se322_mcq_js)s
-<script src="/javascripts/annotated-search.js"></script>
+<script src="/javascripts/annotated-search.js?v=1"></script>
 </body>
 </html>
 ''' % dict(head=e(spec['head_title']), desc=e(spec['description']), url=e(spec['url']), boot=THEME_BOOT,
