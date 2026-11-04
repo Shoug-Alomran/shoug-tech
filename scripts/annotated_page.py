@@ -429,11 +429,12 @@ def slide_html(n, total, title, sd, rects, size, pick=False):
 
 
 # Courses whose exam questions are answered by picking an option instead of revealing the answer.
-PICK_COURSES = ('se423-',)
+# SE322 keeps its own pick-an-answer script (se322-mcq-practice.js); every other course uses the engine's.
+NO_PICK_COURSES = ('se322-',)
 
 
 def is_pick(spec):
-    return spec.get('key', '').startswith(PICK_COURSES)
+    return not spec.get('key', '').startswith(NO_PICK_COURSES)
 
 
 def overview_html(spec, titles):
@@ -585,7 +586,7 @@ def build(spec):
             pad_x, pad_y = 0.003, 0.004
             rects += [(note, (max(0, b['x0'] - pad_x), max(0, b['y0'] - pad_y), min(1, b['x1'] + pad_x), min(1, b['y1'] + pad_y))) for b in got]
         t_for_cover = (spec.get('titles') or {}).get(n) or sd.get('title') or slide_title(pdf, n) or ''
-        if is_pick(spec) and sd.get('notes'):
+        if sd.get('notes'):
             page_words = pwords[n - 1]
             if len(page_words) < 12:  # a picture slide: the real text is only readable with OCR
                 if n not in ocr:

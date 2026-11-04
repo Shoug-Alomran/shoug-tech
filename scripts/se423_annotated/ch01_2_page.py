@@ -671,3 +671,12 @@ SLIDES = {
                '**Frequent demonstrations** of increments, interim designs or proofs of concept also surface threats and opportunities early.']),
     107: dict(hl=[('An awareness of the environment', 1, 0, 'ocr'), ('Proactively exploring', 1, 0, 'ocr'), ('anticipate threats', 1, 0, 'ocr'), ('Realized opportunities', 1, 0, 'ocr'), ('Cost and schedule reserves', 1, 0, 'ocr')], notes=[CHECK + ' Uncertainty: awareness of the environment (environmental factors considered in estimates and plans), proactive responses (risk register and responses kept current), awareness of interdependencies, anticipation of threats and opportunities, little impact from surprises, realized opportunities, and effective use of reserves.']),
 }
+
+
+# Notes rewritten to explain rather than repeat the slide (see ch01_2_notes.py).
+from .ch01_2_notes import NOTES  # noqa: E402
+
+for _n, _notes in NOTES.items():
+    if len(_notes) != len(SLIDES[_n]['notes']):
+        raise SystemExit('ch01_2_notes: slide %d has %d notes, expected %d' % (_n, len(_notes), len(SLIDES[_n]['notes'])))
+    SLIDES[_n]['notes'] = _notes
