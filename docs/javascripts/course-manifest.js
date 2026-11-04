@@ -10499,6 +10499,15 @@ var COURSE_PAGES = [
     courseTitle: "SE423 // Software Project Management",
   },
   {
+    url: "/academics/software-engineering/se423/extra-resources/listing-vault/",
+    title: "SE423 | Listing Vault",
+    track: "software-engineering",
+    course: "se423",
+    section: "extra-resources",
+    courseUrl: "/academics/software-engineering/se423/",
+    courseTitle: "SE423 // Software Project Management",
+  },
+  {
     url: "/academics/software-engineering/se423/extra-resources/midterm-cheat-sheet/",
     title: "SE423 | Midterm Cheat Sheet (Chapters 1–3)",
     track: "software-engineering",
