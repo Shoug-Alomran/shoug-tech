@@ -747,11 +747,13 @@
         C.items.find(function (i) {
           return i.id === e.itemId;
         });
-      // The plan being rebuilt doesn't block itself.
+      // The plan being rebuilt doesn't block itself, except sessions it
+      // keeps: ones you moved or edited yourself, or already ticked off.
       if (
         raw &&
         raw.planSource === "study-plan" &&
-        (raw.planSeason === sid || sid === "remaining")
+        (sid === "remaining" ||
+          (raw.planSeason === sid && !raw.planPinned && !raw.planDone))
       )
         return;
       if (!e.start) {
@@ -854,6 +856,7 @@
           end: C.toTime(st + len),
           minutes: len,
           kind: sess.kind,
+          chapter: sess.chapter || "",
           title:
             sess.title +
             (sess.cont && !/\(continued\)$/.test(sess.title)
@@ -982,12 +985,9 @@
         return;
       }
       if (exam.date <= first) return;
-      jobs.push({
-        course: course,
-        exam: exam,
-        a: a,
-        s: sessionsFor(course, a, exam, sid),
-      });
+      var s = sessionsFor(course, a, exam, sid);
+      credit(s, course, a, exam, sid, first);
+      jobs.push({ course: course, exam: exam, a: a, s: s });
     });
     if (!jobs.length) return { jobs: [], placed: [], skipped: skipped };
     var lastDay = jobs.reduce(function (m, j) {
@@ -1026,6 +1026,79 @@
       skipped: skipped,
     };
   }
+  // Sessions a rebuild keeps: days already behind you (a missed session
+  // you didn't delete counts as studied), ones you moved or edited, and
+  // ones ticked off. Everything else from today on is replaced.
+  function kept(i, sid, first) {
+    return (
+      i.planSource === "study-plan" &&
+      i.planSeason === sid &&
+      (i.date < first || i.planPinned || i.planDone)
+    );
+  }
+  function sessionChapter(i, course, a, sid) {
+    if (i.planChapter) return i.planChapter;
+    var noun = seasonInfo(sid).noun,
+      title = String(i.title || "").replace(/ \(continued\)$/, ""),
+      ch = a.chapters.find(function (c) {
+        var name = course + " " + noun + " · ";
+        return (
+          title === name + chapterName(c) ||
+          title === name + "Review " + chapterName(c)
+        );
+      });
+    return ch ? ch.id : "";
+  }
+  // Take the kept sessions' work out of what's left, so a rebuild only
+  // schedules what hasn't been covered yet.
+  function credit(s, course, a, exam, sid, first) {
+    var learnt = {};
+    C.items.forEach(function (i) {
+      if (!kept(i, sid, first)) return;
+      if (
+        i.linkedExamId
+          ? i.linkedExamId !== exam.id
+          : C.courseLabel(i.course) !== course
+      )
+        return;
+      if (i.planKind === "final") {
+        s.final = null;
+        return;
+      }
+      var ch = sessionChapter(i, course, a, sid);
+      if (!ch) return;
+      if (i.planKind === "review") {
+        delete s.reviews[ch];
+        return;
+      }
+      var m =
+        i.start && i.end ? C.minutes(i.end) - C.minutes(i.start) : MIN_SESSION;
+      s.learn.forEach(function (x) {
+        if (x.chapter !== ch || m <= 0) return;
+        var used = Math.min(m, x.minutes);
+        x.minutes -= used;
+        m -= used;
+      });
+      s.learn = s.learn.filter(function (x) {
+        return x.minutes >= 15;
+      });
+      if (!learnt[ch] || i.date > learnt[ch]) learnt[ch] = i.date;
+    });
+    // A chapter you've finished learning gets its review a few days on.
+    Object.keys(learnt).forEach(function (ch) {
+      var r = s.reviews[ch];
+      if (
+        !r ||
+        s.learn.some(function (x) {
+          return x.chapter === ch;
+        })
+      )
+        return;
+      var nb = C.addDays(learnt[ch], REVIEW_GAP),
+        last = C.addDays(exam.date, -1);
+      r.notBefore = nb < first ? first : nb > last ? last : nb;
+    });
+  }
   function plannedItems(sid) {
     var today = C.todayKey();
     return C.items.filter(function (i) {
@@ -1040,15 +1113,27 @@
       if (drop.indexOf(C.items[i]) > -1) C.items.splice(i, 1);
     return drop.length;
   }
-  function commitPreview() {
-    var sid = season(),
-      pv = ui.preview;
-    if (!pv || !pv.placed.length) return;
-    if (!C.signedIn) {
-      C.toast("Sign in to save your study plan");
-      return;
+  // Swap the season's replaceable sessions for a fresh schedule. Sessions
+  // for courses the schedule couldn't build stay put.
+  function applySchedule(sid, pv) {
+    var built = pv.jobs.map(function (j) {
+        return j.exam.id;
+      }),
+      first = pv.first || C.todayKey(),
+      n = 0;
+    for (var i = C.items.length - 1; i >= 0; i--) {
+      var it = C.items[i];
+      if (
+        it.planSource === "study-plan" &&
+        it.planSeason === sid &&
+        it.date >= first &&
+        !kept(it, sid, first) &&
+        (!it.linkedExamId || built.indexOf(it.linkedExamId) > -1)
+      ) {
+        C.items.splice(i, 1);
+        n++;
+      }
     }
-    removePlanned(sid);
     pv.placed.forEach(function (p) {
       C.items.push({
         id: C.uid(),
@@ -1065,8 +1150,20 @@
         planSource: "study-plan",
         planSeason: sid,
         planKind: p.kind,
+        planChapter: p.chapter || "",
       });
     });
+    return n;
+  }
+  function commitPreview() {
+    var sid = season(),
+      pv = ui.preview;
+    if (!pv || !pv.placed.length) return;
+    if (!C.signedIn) {
+      C.toast("Sign in to save your study plan");
+      return;
+    }
+    applySchedule(sid, pv);
     var n = pv.placed.length;
     ui.preview = null;
     C.persist().then(function () {
@@ -1074,6 +1171,67 @@
       C.toast(
         n + " study session" + (n === 1 ? "" : "s") + " added to your calendar",
       );
+    });
+  }
+  // Course analyses load on demand; a rebuild waits for the season's.
+  function whenLoaded(sid) {
+    return new Promise(function (resolve) {
+      var tries = 0;
+      (function check() {
+        loadIndex();
+        var done =
+          index &&
+          seasonExams(sid).every(function (e) {
+            return analysis(C.courseLabel(e.course), sid) !== undefined;
+          });
+        if (done || ++tries > 150) resolve(Boolean(done));
+        else setTimeout(check, 100);
+      })();
+    });
+  }
+  // Called by the calendar after you delete, move or edit a planned
+  // session: the rest of that season's plan is rebuilt around the change,
+  // and a deleted session's work goes back into the schedule.
+  function replan(sid, what) {
+    if (!sid || !SEASONS.some(function (x) { return x.id === sid; }))
+      return Promise.resolve(false);
+    return whenLoaded(sid).then(function (ok) {
+      if (!ok) return false;
+      var pv = buildSchedule(sid);
+      applySchedule(sid, pv);
+      ui.preview = null;
+      return C.persist().then(function () {
+        C.renderAll();
+        C.toast(
+          (what ? what + " · " : "") +
+            "study plan updated" +
+            (pv.short > 0 ? ", but not everything fits before the exam" : ""),
+        );
+        return true;
+      });
+    });
+  }
+  function deleteAll() {
+    var n = C.items.filter(function (i) {
+      return i.planSource === "study-plan";
+    }).length;
+    if (!n) return;
+    if (
+      !window.confirm(
+        "Delete all " +
+          n +
+          " study plan session" +
+          (n === 1 ? "" : "s") +
+          " from your calendar, past and upcoming, for every exam season? Your readiness marks stay.",
+      )
+    )
+      return;
+    for (var i = C.items.length - 1; i >= 0; i--)
+      if (C.items[i].planSource === "study-plan") C.items.splice(i, 1);
+    ui.preview = null;
+    C.persist().then(function () {
+      C.renderAll();
+      C.toast("Study plan deleted");
     });
   }
   function clearPlanned() {
@@ -1418,9 +1576,18 @@
       (planned.length ? "Re-plan" : "Build schedule") +
       "</button>" +
       (planned.length
-        ? '<button class="btn muted" type="button" data-sp-clear>Remove planned sessions</button>'
+        ? '<button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button>'
         : "") +
-      "</div></div>" +
+      (C.items.some(function (i) {
+        return i.planSource === "study-plan";
+      })
+        ? '<button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button>'
+        : "") +
+      "</div>" +
+      (planned.length
+        ? '<div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it. A deleted session’s work is rescheduled.</div>'
+        : "") +
+      "</div>" +
       '<label class="sp-commute">Drive to and from uni<input type="number" min="0" max="240" step="5" data-sp-commute value="' +
       commute() +
       '" aria-label="Minutes of driving each way" /><span>min each way</span></label>' +
@@ -2819,6 +2986,7 @@
       ui.preview = null;
       render();
     } else if (t.hasAttribute("data-sp-clear")) clearPlanned();
+    else if (t.hasAttribute("data-sp-delete-all")) deleteAll();
     else if (d.spLevel !== undefined) {
       var a = analysis(ui.course, season());
       if (!a) return;
@@ -3030,6 +3198,6 @@
     });
     render();
   }
-  window.__shougStudyPlan = { render: render };
+  window.__shougStudyPlan = { render: render, replan: replan };
   boot();
 })();

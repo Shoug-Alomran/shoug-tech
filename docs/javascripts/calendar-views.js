@@ -618,6 +618,14 @@
     if (start) it.start = start;
     if (end) it.end = end;
     C.renderAll();
+    // A dragged plan session stays put and the rest of the plan reflows.
+    if (it.planSource === "study-plan" && C.replanAfter) {
+      it.planPinned = true;
+      C.replanAfter(it, "Session moved").then(function (done) {
+        if (!done) C.persist();
+      });
+      return;
+    }
     C.persist().then(function () {
       C.toast(
         onlyEnd
