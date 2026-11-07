@@ -4152,7 +4152,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
-    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261025f" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261107a" />
   </head>
 
   <body>
@@ -7874,8 +7874,10 @@
             .querySelectorAll("[data-event]")
             .forEach(function (b) {
               b.addEventListener("click", function () {
-                items.splice(Number(b.dataset.event), 1);
-                persist().then(renderAll);
+                var removed = items.splice(Number(b.dataset.event), 1)[0];
+                replanAfter(removed, "Session deleted").then(function (done) {
+                  if (!done) persist().then(renderAll);
+                });
               });
             });
           renderAssignmentsPanel();
@@ -10085,7 +10087,13 @@
                   (missed ? "Missed · " : "") +
                   esc(when) +
                   (i.start ? " · " + esc(timeRange(i.start, i.end)) : "") +
-                  "</div></div></div>"
+                  "</div></div>" +
+                  (missed
+                    ? '<button class="remove-btn edit" type="button" data-plan-missed="' +
+                      esc(i.id) +
+                      '" title="Delete this session and fit its work into the rest of the plan">Reschedule</button>'
+                    : "") +
+                  "</div>"
                 );
               })
               .join("") +
@@ -10171,6 +10179,21 @@
               if (!it) return;
               it.planDone = c.checked;
               persist().then(renderAll);
+            });
+          });
+          list.querySelectorAll("[data-plan-missed]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              var i = items.findIndex(function (x) {
+                  return x.id === b.dataset.planMissed;
+                }),
+                removed = i > -1 ? items.splice(i, 1)[0] : null;
+              if (!removed) return;
+              b.disabled = true;
+              replanAfter(removed, "Missed session rescheduled").then(
+                function (done) {
+                  if (!done) persist().then(renderAll);
+                },
+              );
             });
           });
           list.querySelectorAll("[data-plan-more]").forEach(function (b) {
@@ -10660,6 +10683,18 @@
             }) || null
           );
         }
+        // Deleting, moving or editing a study plan session rebuilds the rest
+        // of its season's plan (study-plan.js), which saves and re-renders.
+        // Resolves false when there's nothing to rebuild, so the caller
+        // saves as usual.
+        function replanAfter(item, what) {
+          var sp = window.__shougStudyPlan;
+          if (!item || item.planSource !== "study-plan" || !sp || !sp.replan)
+            return Promise.resolve(false);
+          return sp.replan(item.planSeason, what).catch(function () {
+            return false;
+          });
+        }
         function deleteEventById(id) {
           var index = items.findIndex(function (i) {
             return i.id === id;
@@ -10670,12 +10705,18 @@
           }
           var deletedNoun = isWork(items[index])
             ? workNoun(items[index])
-            : "Event";
-          items.splice(index, 1);
-          persist().then(function () {
-            renderAll();
-            if (activeDayKey) openDay(activeDayKey);
-            toast(deletedNoun + " deleted");
+            : "Event",
+            removed = items.splice(index, 1)[0];
+          replanAfter(removed, "Session deleted").then(function (done) {
+            if (done) {
+              if (activeDayKey) openDay(activeDayKey);
+              return;
+            }
+            return persist().then(function () {
+              renderAll();
+              if (activeDayKey) openDay(activeDayKey);
+              toast(deletedNoun + " deleted");
+            });
           });
         }
         function assignmentDueLabel(item) {
@@ -12866,14 +12907,23 @@
             return;
           }
           Object.assign(item, data);
-          persist().then(function () {
-            renderAll();
-            if (activeDayKey) openDay(activeDayKey);
-            document.dispatchEvent(
-              new CustomEvent("shoug:calendar-reminders-changed"),
-            );
-            closeEventEditor();
-            toast(noun + " updated");
+          // An edited plan session stays where you put it on a rebuild.
+          if (item.planSource === "study-plan") item.planPinned = true;
+          replanAfter(item, "Session updated").then(function (done) {
+            if (done) {
+              if (activeDayKey) openDay(activeDayKey);
+              closeEventEditor();
+              return;
+            }
+            return persist().then(function () {
+              renderAll();
+              if (activeDayKey) openDay(activeDayKey);
+              document.dispatchEvent(
+                new CustomEvent("shoug:calendar-reminders-changed"),
+              );
+              closeEventEditor();
+              toast(noun + " updated");
+            });
           });
         }
         function exportDateBounds() {
@@ -13605,6 +13655,7 @@
           get studyPlan() {
             return studyPlan;
           },
+          replanAfter: replanAfter,
           saveStudyPlan: function (plan) {
             studyPlan = plan || {};
             return persist();
@@ -13851,8 +13902,8 @@
       src="/javascripts/calendar-assistant.js?v=20260902-2"
       defer
     ></script>
-    <script src="/javascripts/calendar-views.js?v=20261021b" defer></script>
-    <script src="/javascripts/study-plan.js?v=20261025f" defer></script>
+    <script src="/javascripts/calendar-views.js?v=20261107a" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261107a" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=2" defer></script>
   </body>
