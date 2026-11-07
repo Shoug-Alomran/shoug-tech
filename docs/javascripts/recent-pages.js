@@ -263,3 +263,12 @@
   g.async = true;
   document.head.appendChild(g);
 })();
+
+// Thumbs up/down on resources, % on listings (see resource-ratings.js).
+(function () {
+  if (window.location.pathname.indexOf("/academics/") !== 0) return;
+  var s = document.createElement("script");
+  s.src = "/javascripts/resource-ratings.js?v=2";
+  s.async = true;
+  document.head.appendChild(s);
+})();

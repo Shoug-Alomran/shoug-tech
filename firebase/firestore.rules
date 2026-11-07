@@ -195,5 +195,42 @@ service cloud.firestore {
       allow update: if validHelpfulVote();
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
+
+    // Resource thumbs up/down: same block as firebase/resource-ratings.rules.
+    function validResourceRatingCreate(docId) {
+      let d = request.resource.data;
+      let vote = d.votes.get(request.auth.uid, 0);
+      return request.auth != null
+        && d.keys().hasAll(['path', 'course', 'up', 'down', 'votes', 'updatedAt'])
+        && d.keys().hasOnly(['path', 'course', 'up', 'down', 'votes', 'updatedAt'])
+        && d.course is string && d.course.matches('[a-z]+[0-9]{3}')
+        && d.path is string && d.path.size() <= 300
+        && d.path.matches('/academics/([^/|]+/)+' + d.course + '/[^|]+')
+        && docId == d.path.replace('/', '|')
+        && d.votes is map && d.votes.size() == 1
+        && ((vote == 1 && d.up == 1 && d.down == 0)
+          || (vote == -1 && d.up == 0 && d.down == 1))
+        && d.updatedAt == request.time;
+    }
+    function validResourceRatingUpdate() {
+      let uid = request.auth.uid;
+      let d = request.resource.data;
+      let oldVote = resource.data.votes.get(uid, 0);
+      let newVote = d.votes.get(uid, 0);
+      return request.auth != null
+        && d.diff(resource.data).affectedKeys().hasOnly(['up', 'down', 'votes', 'updatedAt'])
+        && d.votes is map
+        && d.votes.diff(resource.data.votes).affectedKeys().hasOnly([uid])
+        && (newVote == 1 || newVote == -1 || !(uid in d.votes))
+        && d.up == resource.data.up + (newVote == 1 ? 1 : 0) - (oldVote == 1 ? 1 : 0)
+        && d.down == resource.data.down + (newVote == -1 ? 1 : 0) - (oldVote == -1 ? 1 : 0)
+        && d.updatedAt == request.time;
+    }
+    match /resourceRatings/{docId} {
+      allow read: if true;
+      allow create: if validResourceRatingCreate(docId);
+      allow update: if validResourceRatingUpdate();
+      allow delete: if false;
+    }
   }
 }
