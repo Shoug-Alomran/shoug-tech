@@ -1069,13 +1069,16 @@
           <article class="q exam reveal" id="e2">
             <div class="qh">
               <span class="qnum">Q2</span>
-              <h3>Booking service: paper vs digital tickets</h3>
+              <h3>Booking service: paper boarding passes</h3>
               <span class="tag">UML</span>
             </div>
             <p class="prompt">
-              A booking service checks availability and issues a ticket. It
-              currently uses a paper-based ticket class. The business now wants
-              to offer <b>digital</b> tickets as well.
+              A booking service gives a passenger a boarding pass with their
+              flight details. The current design uses a
+              <code>PaperBoardingPass</code> class, which contains the details
+              for a paper boarding pass and provides
+              <code>printPaperBoardingPass()</code>. The service should also be
+              able to give passengers other kinds of boarding passes.
             </p>
             <div class="uml before">
               <div class="cap">Given design</div>
@@ -1096,42 +1099,47 @@
                   ><span class="chip">DIP: Dependency Inversion</span>
                 </div>
                 <p>
-                  <b>Why (OCP):</b> to add digital tickets you would have to
-                  <b>modify</b> <code>BookingService</code>, which already
-                  works, instead of <b>extending</b> the system with a new
-                  class.
+                  <b>Why (OCP):</b> if the service is tied to
+                  <code>PaperBoardingPass</code>, adding another kind of
+                  boarding pass would require changing the service instead of
+                  extending the system with a new class.
                 </p>
                 <p>
                   <b>Why (DIP):</b> <code>BookingService</code> is a high-level
                   class that depends directly on the concrete class
-                  <code>PaperTicket</code> rather than on an abstraction.
+                  <code>PaperBoardingPass</code> rather than on an abstraction.
                 </p>
                 <p>
-                  <b>Fix:</b> Add an interface <code>TicketIssuer</code> with
-                  <code>issue()</code>. <code>PaperTicket</code> and
-                  <code>DigitalTicket</code> implement it.
-                  <code>BookingService</code>'s field changes type from
-                  <code>PaperTicket</code> to <code>TicketIssuer</code>.
+                  <b>Fix:</b> Add an interface <code>BoardingPass</code> with
+                  an operation for providing a pass. <code>PaperBoardingPass</code>
+                  implements it and keeps its paper-specific
+                  <code>printPaperBoardingPass()</code> operation. Other pass
+                  types can implement the same interface.
                 </p>
                 <div class="uml after">
                   <div class="cap">Corrected design</div>
                   <div data-uml="e2b"></div>
                 </div>
-                <pre><code class="java">interface TicketIssuer { void issue(Booking b); }
+                <pre><code class="java">interface BoardingPass { void provide(Booking b); }
 
-class PaperTicket   implements TicketIssuer { public void issue(Booking b) { /* print */ } }
-class DigitalTicket implements TicketIssuer { public void issue(Booking b) { /* email / app */ } }
+class PaperBoardingPass implements BoardingPass {
+    public void provide(Booking b) { printPaperBoardingPass(); }
+    public void printPaperBoardingPass() { /* print flight details */ }
+}
+
+class DigitalBoardingPass implements BoardingPass {
+    public void provide(Booking b) { /* send digital pass with flight details */ }
+}
 
 class BookingService {
-    private TicketIssuer issuer;
-    BookingService(TicketIssuer issuer) { this.issuer = issuer; }
-    void book(Booking b) { /* check availability */ issuer.issue(b); }
+    private BoardingPass boardingPass;
+    BookingService(BoardingPass boardingPass) { this.boardingPass = boardingPass; }
+    void book(Booking b) { boardingPass.provide(b); }
 }</code></pre>
                 <p class="tip">
-                  <b>Exam point:</b> adding an SMS ticket later is just one new
-                  class, and <code>BookingService</code> never changes. Write
-                  that sentence, because it shows the examiner you understand
-                  <i>why</i> the fix works.
+                  <b>Exam point:</b> a new boarding pass type can be added as a
+                  new class that implements <code>BoardingPass</code>, without
+                  changing <code>BookingService</code>.
                 </p>
               </div>
             </details>
@@ -1239,11 +1247,9 @@ class BookingService {
                 a: [
                   "- patientId : int",
                   "- patientName : String",
-                  "- bedNumber : int",
                 ],
                 m: [
                   "+ admitPatient() : void",
-                  "+ assignBed() : void",
                   "!+ generateInvoice() : void",
                   "!+ sendNotification() : void",
                   "!+ generateReport() : void",
@@ -1262,9 +1268,8 @@ class BookingService {
                 a: [
                   "- patientId : int",
                   "- patientName : String",
-                  "- bedNumber : int",
                 ],
-                m: ["+ admitPatient() : void", "+ assignBed() : void"],
+                m: ["+ admitPatient() : void"],
               },
               inv: {
                 x: 70,
@@ -1313,56 +1318,58 @@ class BookingService {
           },
 
           e2a: {
-            label: "BookingService uses concrete PaperTicket",
+            label: "BookingService uses concrete PaperBoardingPass",
             b: {
               bs: {
                 x: 150,
                 y: 0,
                 n: "BookingService",
-                a: ["- availability : Map", "!- ticket : PaperTicket"],
-                m: ["+ checkAvailability() : boolean", "+ book() : void"],
+                a: ["!- boardingPass : PaperBoardingPass"],
+                m: ["+ giveBoardingPass() : void"],
               },
               pt: {
                 x: 540,
                 y: 22,
-                n: "PaperTicket",
+                n: "PaperBoardingPass",
                 c: "bad",
-                m: ["+ print() : void"],
+                a: ["- flightDetails : FlightDetails"],
+                m: ["+ printPaperBoardingPass() : void"],
               },
             },
             e: [["bs", "pt", "assoc", "«uses»"]],
           },
           e2b: {
             label:
-              "BookingService depends on TicketIssuer interface implemented by PaperTicket and DigitalTicket",
+              "BookingService depends on BoardingPass interface implemented by PaperBoardingPass and DigitalBoardingPass",
             b: {
               bs: {
                 x: 150,
                 y: 0,
                 n: "BookingService",
-                a: ["- availability : Map", "- issuer : TicketIssuer"],
-                m: ["+ checkAvailability() : boolean", "+ book() : void"],
+                a: ["- boardingPass : BoardingPass"],
+                m: ["+ giveBoardingPass() : void"],
               },
               ti: {
                 x: 540,
                 y: 10,
-                n: "TicketIssuer",
+                n: "BoardingPass",
                 st: "interface",
                 c: "hl",
-                m: ["~+ issue(b : Booking) : void"],
+                m: ["~+ provide(b : Booking) : void"],
               },
               pt: {
                 x: 430,
                 y: 220,
-                n: "PaperTicket",
-                m: ["+ issue(b) : void"],
+                n: "PaperBoardingPass",
+                a: ["- flightDetails : FlightDetails"],
+                m: ["+ provide(b) : void", "+ printPaperBoardingPass() : void"],
               },
               dt: {
                 x: 650,
                 y: 220,
-                n: "DigitalTicket",
+                n: "DigitalBoardingPass",
                 c: "hl",
-                m: ["+ issue(b) : void"],
+                m: ["+ provide(b) : void"],
               },
             },
             e: [
