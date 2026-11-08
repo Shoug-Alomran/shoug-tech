@@ -245,6 +245,9 @@
     "Your calendar syncs with your saved exam dates and personal schedule.":
       "يتزامن التقويم مع مواعيد اختباراتك وجدولك الشخصي.",
     "Sign In": "تسجيل الدخول",
+    "Remember me on this device": "تذكريني على هذا الجهاز",
+    "Signed out after 30 minutes of inactivity.":
+      "تم تسجيل خروجك بعد 30 دقيقة من عدم النشاط.",
     "Loading your calendar": "جار تحميل التقويم",
     "Your exams appear from your profile, and you can add exam dates here too.":
       "تظهر اختباراتك من ملفك، ويمكنك إضافة مواعيد الاختبارات هنا أيضا.",
@@ -715,6 +718,8 @@
 
   function applyArabic() {
     document.querySelectorAll(selectors).forEach(function (node) {
+      // The calendar translates its own screens (calendar-arabic.js).
+      if (node.closest("[data-ar-own]")) return;
       var textNode = node.children.length ? findTrailingTextNode(node) : null;
       if (textNode) {
         if (!node.dataset.arOriginal)
@@ -774,6 +779,7 @@
     document
       .querySelectorAll("input[placeholder], textarea[placeholder]")
       .forEach(function (node) {
+        if (node.closest("[data-ar-own]")) return;
         if (!node.dataset.arPlaceholderOriginal)
           node.dataset.arPlaceholderOriginal =
             node.getAttribute("placeholder") || "";
