@@ -19,8 +19,9 @@
     return isArabic() ? "سجلي الأكاديمي" : "My Transcript";
   }
 
-  // Same choice as planGridHref() in firebase-auth.js: the plan picked on the
-  // transcript page, else the grid the student has filled in, else the picker.
+  // Same choice as planGridHref() in firebase-auth.js: the account's major and
+  // track, else the plan picked on the transcript page, else the grid the
+  // student has filled in, else the picker.
   var PLAN_GRID_KEYS = {
     "cs-ai": "shoug_academic_plan_grid_cs_ai_v1",
     "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
@@ -34,6 +35,9 @@
   };
   function planGridHref() {
     try {
+      var account = localStorage.getItem("shoug-account-plan");
+      if (account && PLAN_GRID_KEYS[account])
+        return "/academic-plan-themes/" + account + "/grid.html";
       var picked = /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
         localStorage.getItem("shoug-transcript-plan") || "",
       );

@@ -18,8 +18,8 @@
  *    them, and how heavy each week looks against your free time. An
  *    overview only, with no chapters or practice.
  *  - Exam format: what the instructor said about an exam (question types,
- *    length, what's covered). It narrows the scope, picks practice prompts
- *    in that format and shapes the scheduled sessions. Saved per exam in
+ *    length, what's covered). It can narrow the exam's chapters and is noted
+ *    on the scheduled sessions. Saved per exam in
  *    plan.formats, with the previous versions kept when it changes.
  *
  * The calendar page owns the data and saving; this reads it through
@@ -61,8 +61,8 @@
   var DAY_START = 9 * 60,
     DAY_END = 22 * 60,
     BUFFER = 15,
-    MAX_SESSION = 90,
-    MIN_SESSION = 30,
+    MAX_SESSION = 120,
+    MIN_SESSION = 45,
     START_CAP = 240,
     MAX_CAP = 600,
     REVIEW_GAP = 3;
@@ -86,158 +86,67 @@
   };
   var TIER_LABEL = { core: "Must know", high: "Likely", review: "Lower" };
   // Question formats an instructor might announce. `re` picks them out of
-  // what the student types; `kinds` and `match` choose the slide topics
-  // that suit practising that way; `ask` turns a topic into a prompt.
-  var CODE_RE =
-    /code|coding|class|implement|program|method|interface|algorithm|function|query|sql|pseudo|singleton|factory|adapter|observer|iterator|composite|facade|builder|principle|responsib|substitution|segregation|inversion|open-closed/i;
-  // Topics already phrased as a task ("Write a quality attribute
-  // scenario") are used as they are.
-  var TASK_RE =
-    /^(pick|write|match|name|draw|spot|fill|list|explain|apply|find|calculate|compute|solve|identify|choose|compare|design|convert|trace)\b/i;
-  function task(i, fallback) {
-    return TASK_RE.test(i.name) ? i.name + "." : fallback;
-  }
+  // what the student types.
   var FORMATS = [
+    {
+      id: "compare",
+      label: "Compare / contrast",
+      short: "Compare",
+      re: /compar|contrast|differen|versus|\bvs\b/i,
+    },
     {
       id: "solve",
       label: "Problem solving",
       short: "Solving",
       re: /solv|problem|calculat|compute|numeric|math|work out/i,
-      kinds: ["calc", "formula", "number", "process"],
-      match: /calculat|compute|solve|apply|find|spot|scenario/i,
-      tip: "Practise on paper with a timer. Write every step; reading a worked answer doesn't count as practice.",
-      ask: function (i) {
-        return (
-          task(i, "Work a full problem on " + i.name + ".") +
-          " Write every step on paper, then check it."
-        );
-      },
-      session: "solve problems on paper, timed",
     },
     {
       id: "code",
       label: "Code",
       short: "Code",
       re: /\bcode|coding|program|implement|java|python|c\+\+|pseudo|sql/i,
-      kinds: ["calc"],
-      match: CODE_RE,
-      tip: "Write code by hand from a blank page: classes, methods and how they're called. Then compare with the slides and fix what you missed.",
-      ask: function (i) {
-        return (
-          "From a blank page, write the code for " +
-          i.name +
-          ": the classes, methods and how they're used."
-        );
-      },
-      session: "write the code by hand from a blank page",
     },
     {
       id: "diagram",
       label: "Diagrams",
       short: "Diagrams",
       re: /diagram|draw|uml|sketch/i,
-      kinds: ["calc", "process"],
-      match: /diagram|uml|draw|flow|model|pattern|architecture/i,
-      tip: "Draw each one from memory, label every part, then check it.",
-      ask: function (i) {
-        return (
-          task(i, "Draw " + i.name + " from memory.") + " Label every part."
-        );
-      },
-      session: "draw the diagrams from memory",
     },
     {
       id: "mcq",
       label: "Multiple choice",
       short: "MCQ",
       re: /multiple|mcq|choice|choose/i,
-      kinds: ["compare", "concept", "list", "number"],
-      tip: "Wrong options are usually look-alike terms. Know exactly how each topic differs from its neighbours.",
-      ask: function (i) {
-        return i.kind === "compare"
-          ? "Name the difference: " +
-              i.name +
-              ". Which detail would a wrong option swap?"
-          : "Pick " +
-              i.name +
-              " out of a one-line description, and say what it's often confused with.";
-      },
-      session: "quiz yourself on look-alike terms",
     },
     {
       id: "tf",
       label: "True / False",
       short: "T/F",
       re: /true|false|t\/f/i,
-      kinds: ["concept", "compare", "number", "list"],
-      tip: "Statements are usually one word off. For each topic, say one true statement and change one word to make it false.",
-      ask: function (i) {
-        return (
-          "Say one true statement about " +
-          i.name +
-          ", then change one word to make it false."
-        );
-      },
-      session: "turn each topic into true and false statements",
     },
     {
       id: "short",
       label: "Short answer",
       short: "Short answer",
       re: /short|defin|\blist\b|name the/i,
-      kinds: ["concept", "list", "process", "number"],
-      tip: "Answer in two or three sentences or a short list, out loud or on paper, without looking.",
-      ask: function (i) {
-        return i.kind === "list"
-          ? "List every part of " + i.name + " without looking."
-          : "Define " + i.name + " in two or three sentences.";
-      },
-      session: "answer short questions without notes",
     },
     {
       id: "essay",
       label: "Explain / essay",
       short: "Explain",
       re: /essay|discuss|long answer|explain|paragraph/i,
-      kinds: ["concept", "compare", "process"],
-      tip: "Practise full answers: the definition, why it matters, and an example.",
-      ask: function (i) {
-        return (
-          "Explain " +
-          i.name +
-          " in a paragraph: what it is, why it matters, and an example."
-        );
-      },
-      session: "write full explanations with an example",
     },
     {
       id: "fill",
       label: "Fill in / match",
       short: "Fill in",
       re: /fill|blank|match/i,
-      kinds: ["list", "concept", "number"],
-      tip: "Learn the exact terms; these questions want the word from the slides.",
-      ask: function (i) {
-        return "Fill in the exact terms for " + i.name + ".";
-      },
-      session: "fill in the exact terms",
     },
     {
       id: "case",
-      label: "Case study",
-      short: "Case study",
+      label: "Scenarios",
+      short: "Scenarios",
       re: /case|scenario|situation/i,
-      kinds: ["calc", "compare", "concept"],
-      tip: "Practise spotting which topic a scenario is about, then justify the choice.",
-      ask: function (i) {
-        return (
-          task(
-            i,
-            "Make up a short scenario where " + i.name + " is the answer.",
-          ) + " Say why the alternatives don't fit."
-        );
-      },
-      session: "apply topics to scenarios",
     },
   ];
   var BOOK = {
@@ -259,7 +168,7 @@
       revealed: {},
       open: {},
       fmtEdit: {},
-      fmtAll: {},
+      fmtCustom: {},
     };
 
   // ── Data ──────────────────────────────────────────────────────────────
@@ -317,7 +226,7 @@
     return localPlan || C.studyPlan || {};
   }
   // Readiness taps save after a short pause so a run of taps is one write.
-  function updatePlan(mutate, now) {
+  function updatePlan(mutate, now, quiet) {
     var p = JSON.parse(JSON.stringify(plan()));
     mutate(p);
     localPlan = p;
@@ -333,13 +242,14 @@
     };
     if (now) flush();
     else saveTimer = setTimeout(flush, 700);
-    render();
+    if (!quiet) render();
   }
   function season() {
     var s = plan().season;
-    return SEASONS.some(function (x) {
-      return x.id === s;
-    })
+    return s !== "remaining" &&
+      SEASONS.some(function (x) {
+        return x.id === s;
+      })
       ? s
       : "final";
   }
@@ -436,14 +346,21 @@
   // card covers every chapter.
   function examScope(a, exam) {
     var base = overviewScope(a, exam),
-      f = formatFor(C.courseLabel(a.course), exam, season());
-    if (!f || !f.chapters || !f.chapters.length) return base;
+      f = formatFor(C.courseLabel(a.course), exam, season()),
+      // Chosen on the Exams tab; older plans kept them on the format.
+      picked =
+        exam && exam.chapters && exam.chapters.length
+          ? exam.chapters
+          : f && f.chapters && f.chapters.length
+            ? f.chapters
+            : null;
+    if (!picked) return base;
     var ids = a.chapters
       .map(function (c) {
         return c.id;
       })
       .filter(function (id) {
-        return f.chapters.indexOf(id) > -1;
+        return picked.indexOf(id) > -1;
       });
     return ids.length ? { ids: ids, label: base.label, custom: true } : base;
   }
@@ -515,27 +432,6 @@
     if (f.book) parts.push(BOOK[f.book]);
     return parts.join(" · ");
   }
-  // Topics in scope that suit practising in a format, best first.
-  function formatTopics(a, exam, fid) {
-    var x = formatInfo(fid),
-      ids = scopeIds(a, exam),
-      inScope = (a.items || []).filter(function (i) {
-        return ids.indexOf(i.chapter) > -1;
-      }),
-      fits = inScope.filter(function (i) {
-        var text = i.name + " " + (i.memorize || "");
-        return x.match
-          ? x.kinds.indexOf(i.kind) > -1 || x.match.test(text)
-          : x.kinds.indexOf(i.kind) > -1;
-      });
-    if (x.id === "code")
-      fits = inScope.filter(function (i) {
-        return CODE_RE.test(i.name + " " + (i.memorize || ""));
-      });
-    return fits.sort(function (p, q) {
-      return q.score - p.score;
-    });
-  }
   function scopeIds(a, exam) {
     return examScope(a, exam).ids;
   }
@@ -591,24 +487,18 @@
       learn = [],
       reviews = {},
       fmt = formatFor(course, exam, sid),
-      fTypes = ((fmt && fmt.types) || []).map(formatInfo).filter(Boolean),
-      fitIds = {},
+      fTypes = (fmt && fmt.types) || [],
       fmtLine = fTypes.length
-        ? "Exam format: " +
-          formatSummary(fmt) +
-          ". Practise as it'll be asked: " +
-          fTypes
-            .map(function (x) {
-              return x.session;
-            })
-            .join("; ") +
-          ". "
-        : "";
-    fTypes.forEach(function (x) {
-      formatTopics(a, exam, x.id).forEach(function (i) {
-        fitIds[i.id] = true;
-      });
-    });
+        ? "Exam format: " + formatSummary(fmt) + ". "
+        : "",
+      heldForReview = null,
+      reviewChapters = a.chapters
+        .filter(function (c) {
+          return ids.indexOf(c.id) > -1 && chapterLeft(course, a, c) >= 15;
+        })
+        .map(function (c) {
+          return c.id;
+        });
     a.chapters.forEach(function (ch) {
       if (ids.indexOf(ch.id) < 0) return;
       var left = chapterLeft(course, a, ch);
@@ -621,11 +511,7 @@
             return level(course, a, i.id) < 2;
           })
           .sort(function (x, y) {
-            // Topics that suit the announced format come first.
-            return (
-              (fitIds[y.id] ? 1 : 0) - (fitIds[x.id] ? 1 : 0) ||
-              y.score - x.score
-            );
+            return y.score - x.score;
           })
           .slice(0, 5)
           .map(function (i) {
@@ -640,16 +526,26 @@
           title: name + (k ? " (continued)" : ""),
           notes: fmtLine + (focus.length ? "Focus: " + focus.join("; ") : ""),
         });
+      // Chapters are reviewed two at a time, after the second is learned.
+      var paired = heldForReview;
+      heldForReview = paired ? null : ch;
+      if (!paired && reviewChapters.indexOf(ch.id) < reviewChapters.length - 1)
+        return;
       reviews[ch.id] = {
         kind: "review",
         chapter: ch.id,
-        minutes: 30,
+        minutes: paired ? 45 : 30,
         notBefore: null,
-        title: course + " " + noun + " · Review " + chapterName(ch),
-        notes: fTypes.length
-          ? fmtLine +
-            "Close the slides and do one question of each type from this chapter, then check."
-          : "Active recall: close the slides, write what you remember, then check.",
+        title:
+          course +
+          " " +
+          noun +
+          " · Review " +
+          (paired ? chapterName(paired) + " and " : "") +
+          chapterName(ch),
+        notes:
+          fmtLine +
+          "Active recall: close the slides, write what you remember, then check.",
       };
     });
     return {
@@ -660,20 +556,11 @@
             kind: "final",
             minutes: a.curated ? 120 : 90,
             title: course + " " + noun + " · Final review",
-            notes: fTypes.length
-              ? fmtLine +
-                "Do a timed mock in that format" +
-                (fmt.minutes
-                  ? " (" +
-                    fmt.minutes +
-                    " min" +
-                    (fmt.questions ? ", " + fmt.questions + " questions" : "") +
-                    ")"
-                  : "") +
-                ", then redo anything you got wrong."
-              : a.curated
+            notes:
+              fmtLine +
+              (a.curated
                 ? "Formulas, key numbers and lists from the memorize sheet, then one timed problem of each type."
-                : "Skim every chapter's slides and redo anything marked Shaky.",
+                : "Skim every chapter's slides and redo anything marked Shaky."),
           }
         : null,
     };
@@ -793,7 +680,9 @@
   function blocksOn(day) {
     var wd = C.fromKey(day).getDay();
     return blocks().filter(function (x) {
-      return x.date ? x.date === day : (x.days || []).indexOf(wd) > -1;
+      if (x.date) return x.date === day;
+      if ((x.skips || []).indexOf(day) > -1) return false;
+      return (x.days || []).indexOf(wd) > -1;
     });
   }
   function freeSlots(day, sid, startMin) {
@@ -899,7 +788,7 @@
           left <= 3
             ? Infinity
             : Math.max(
-                60,
+                MAX_SESSION,
                 Math.ceil(((pendingMin(j) / Math.max(1, left)) * spread) / 15) *
                   15,
               );
@@ -925,6 +814,14 @@
         if (!best) break;
         var room = Math.min(cap - used, biggest(), best.limit - best.today);
         if (room < MIN_SESSION) break;
+        // Don't start a sliver of a session; leave it for a day with room.
+        var nextLen = (best.q[0] || {}).minutes || 0;
+        if (nextLen && room < Math.min(60, nextLen) && !Object.keys(best.rev).some(function (k) {
+          return best.rev[k].notBefore && best.rev[k].notBefore <= day;
+        })) {
+          resting.push(best);
+          continue;
+        }
         var reviewId = Object.keys(best.rev).find(function (k) {
           var r = best.rev[k];
           return r.notBefore && r.notBefore <= day;
@@ -955,6 +852,9 @@
         }
         var len = Math.min(sess.minutes, Math.floor(room / 15) * 15);
         if (len < MIN_SESSION) len = Math.min(sess.minutes, room);
+        // Finish it rather than leave a tiny leftover for another day.
+        if (sess.minutes - len > 0 && sess.minutes - len < 30 && room >= sess.minutes)
+          len = sess.minutes;
         if (len < 15 || !put(best, sess, len)) {
           resting.push(best);
           continue;
@@ -983,6 +883,35 @@
       short += j.left;
     });
     return { placed: placed, short: short };
+  }
+  // Back-to-back pieces of the same chapter become one longer session, and
+  // a course's reviews on the same day sit together, up to 3 hours.
+  function mergeSessions(list) {
+    var out = [];
+    list.forEach(function (p) {
+      var last = out[out.length - 1];
+      if (
+        last &&
+        last.date === p.date &&
+        last.course === p.course &&
+        last.exam === p.exam &&
+        last.kind === p.kind &&
+        p.kind !== "final" &&
+        (p.kind === "review" || last.chapter === p.chapter) &&
+        C.minutes(p.start) - C.minutes(last.end) <= BUFFER &&
+        last.minutes + p.minutes <= 180
+      ) {
+        last.end = p.end;
+        last.minutes = C.minutes(p.end) - C.minutes(last.start);
+        if (p.kind === "review") {
+          last.title = last.title + ", " + p.title.split(" · Review ")[1];
+          last.chapter = "";
+        }
+        return;
+      }
+      out.push(Object.assign({}, p));
+    });
+    return out;
   }
   function buildSchedule(sid) {
     var now = new Date(),
@@ -1023,6 +952,7 @@
     res.placed.sort(function (x, y) {
       return (x.date + x.start).localeCompare(y.date + y.start);
     });
+    res.placed = mergeSessions(res.placed);
     return {
       jobs: jobs.map(function (j) {
         var need = 0;
@@ -1182,6 +1112,7 @@
     applySchedule(sid, pv);
     var n = pv.placed.length;
     ui.preview = null;
+    ui.view = "plan";
     C.persist().then(function () {
       C.renderAll();
       C.toast(
@@ -1208,7 +1139,7 @@
   // Called by the calendar after you delete, move or edit a planned
   // session: the rest of that season's plan is rebuilt around the change,
   // and a deleted session's work goes back into the schedule.
-  function replan(sid, what) {
+  function replan(sid, what, quiet) {
     if (!sid || !SEASONS.some(function (x) { return x.id === sid; }))
       return Promise.resolve(false);
     return whenLoaded(sid).then(function (ok) {
@@ -1218,6 +1149,7 @@
       ui.preview = null;
       return C.persist().then(function () {
         C.renderAll();
+        if (quiet) return true;
         C.toast(
           (what ? what + " · " : "") +
             "study plan updated" +
@@ -1341,24 +1273,83 @@
   function shortDate(k) {
     return C.prettyDate(k).replace(/, \d{4}$/, "");
   }
-  function headHtml(sid) {
+  var VIEWS = [
+    {
+      id: "plan",
+      label: "My plan",
+      title: "What to do next",
+      sub: "Your next study sessions and the exams they lead to.",
+    },
+    {
+      id: "exams",
+      label: "Exams",
+      title: "Your exams",
+      sub: "Open an exam to see its chapters, topics and what to memorize.",
+    },
+    {
+      id: "left",
+      label: "What's left",
+      title: "Everything still ahead",
+      sub: "Every exam and deadline, in the order to start them.",
+    },
+    {
+      id: "setup",
+      label: "Setup",
+      title: "Set up your plan",
+      sub: "Three short steps, then the schedule is built for you.",
+    },
+  ];
+  function headHtml(sid, view) {
+    var v = VIEWS.find(function (x) {
+        return x.id === view;
+      }),
+      st = setupState(sid),
+      todo = (st.wk ? 0 : 1) + (st.fm || !st.rows.length ? 0 : 1) + (st.built ? 0 : 1);
     return (
-      '<div class="sp-head"><div class="sp-head-text"><div class="sp-eyebrow">Study plan</div>' +
-      "<h2>What to study, and when</h2>" +
-      "<p>Built from your registered courses, your exam dates and what each course's slides actually contain.</p></div>" +
-      '<div class="sp-season" role="tablist" aria-label="Exam season">' +
-      SEASONS.map(function (s) {
+      '<div class="sp-head"><div class="sp-head-text"><div class="sp-eyebrow">Study plan</div><h2>' +
+      esc(v.title) +
+      "</h2><p>" +
+      esc(v.sub) +
+      "</p></div>" +
+      (view === "left"
+        ? ""
+        : '<div class="sp-for"><span class="sp-wk-label">Planning for</span><div class="sp-season" role="group" aria-label="Exam season">' +
+          SEASONS.filter(function (x) {
+            return x.id !== "remaining";
+          })
+            .map(function (x) {
+              return (
+                '<button type="button" data-sp-season="' +
+                x.id +
+                '" aria-pressed="' +
+                (x.id === sid) +
+                '">' +
+                x.label +
+                "</button>"
+              );
+            })
+            .join("") +
+          "</div></div>") +
+      '</div><div class="sp-tabs" role="tablist" aria-label="Study plan sections">' +
+      VIEWS.map(function (x) {
         return (
-          '<button type="button" role="tab" data-sp-season="' +
-          s.id +
+          '<button type="button" role="tab" data-sp-view="' +
+          x.id +
           '" aria-selected="' +
-          (s.id === sid) +
+          (x.id === view) +
           '">' +
-          s.label +
+          esc(x.label) +
+          (x.id === "setup" && todo
+            ? '<span class="sp-tab-count" aria-label="' +
+              todo +
+              ' steps left">' +
+              todo +
+              "</span>"
+            : "") +
           "</button>"
         );
       }).join("") +
-      "</div></div>"
+      "</div>"
     );
   }
   // The next exam up close, then every exam of the season on one track.
@@ -1554,47 +1545,127 @@
           ". The day before the first one goes to its final review, so the second one's final review comes after the first exam ends.</div>"
       : "";
   }
+  // plan.uni stays one entry per weekday; the panel shows the times most
+  // days share, and "Repeats every" is the days using them.
+  function uniUsual() {
+    var all = plan().uni || {},
+      groups = {};
+    UNI_DAYS.forEach(function (d) {
+      var t = all[d];
+      if (!t || (!t.leave && !t.back)) return;
+      var key = (t.leave || "") + "|" + (t.back || "");
+      (groups[key] = groups[key] || []).push(d);
+    });
+    var keys = Object.keys(groups);
+    if (!keys.length)
+      return ui.uniDraft || { leave: "", back: "", days: UNI_DAYS.slice(0, 5) };
+    function full(k) {
+      return k.charAt(0) !== "|" && k.charAt(k.length - 1) !== "|" ? 1 : 0;
+    }
+    keys.sort(function (x, y) {
+      return groups[y].length - groups[x].length || full(y) - full(x);
+    });
+    var parts = keys[0].split("|");
+    return { leave: parts[0], back: parts[1], days: groups[keys[0]] };
+  }
+  function dayShort(d) {
+    return d.charAt(0).toUpperCase() + d.slice(1, 3);
+  }
+  function uniSummary() {
+    var u = uniUsual(),
+      all = plan().uni || {},
+      saved = UNI_DAYS.filter(function (d) {
+        return all[d] && (all[d].leave || all[d].back);
+      });
+    if (!saved.length) return "";
+    var extra = saved.length - u.days.length,
+      times = [u.leave, u.back].filter(Boolean).map(C.timeLabel).join(" to ");
+    return (
+      u.days.map(dayShort).join(", ") +
+      (times ? " · " + times : "") +
+      (extra ? " · " + extra + " different" : "")
+    );
+  }
   function uniTimesHtml() {
     var all = plan().uni || {},
-      n = Object.keys(all).filter(function (k) {
-        return all[k] && (all[k].leave || all[k].back);
-      }).length;
+      u = uniUsual();
     return (
-      '<details class="sp-uni"' +
-      (ui.uniOpen ? " open" : "") +
-      "><summary>When you leave home and uni" +
-      (n ? " · set for " + n + " day" + (n === 1 ? "" : "s") : "") +
-      '</summary><p class="sp-muted">Leave a day blank to work it out from your classes. Study isn\'t scheduled while you\'re driving.</p><div class="sp-uni-grid"><span></span><span>Leave home</span><span>Leave uni</span><span></span>' +
-      UNI_DAYS.slice(0, 5)
-        .map(function (d) {
-          var t = all[d] || {};
-          return (
-            "<b>" +
-            d.charAt(0).toUpperCase() +
-            d.slice(1, 3) +
-            '</b><input type="time" data-sp-uni="' +
-            d +
-            '" data-f="leave" value="' +
-            esc(t.leave || "") +
-            '" aria-label="' +
-            d +
-            ' leave home" /><input type="time" data-sp-uni="' +
-            d +
-            '" data-f="back" value="' +
-            esc(t.back || "") +
-            '" aria-label="' +
-            d +
-            ' leave uni" />' +
-            (t.leave || t.back
-              ? '<button type="button" class="sp-link-btn" data-sp-uni-clear="' +
-                d +
-                '">Clear</button>'
-              : "<span></span>")
-          );
-        })
-        .join("") +
-      "</div></details>"
+      '<div class="sp-uni"><div class="sp-wk-q"><span class="sp-wk-label">Drive each way</span><label class="sp-commute"><input type="number" min="0" max="240" step="5" data-sp-commute value="' +
+      commute() +
+      '" aria-label="Minutes of driving each way" /><span>minutes</span></label></div><div class="sp-uni-usual"><label>Leave home<input type="time" data-sp-uni-usual="leave" value="' +
+      esc(u.leave) +
+      '" /></label><label>Leave uni<input type="time" data-sp-uni-usual="back" value="' +
+      esc(u.back) +
+      '" /></label></div><div class="sp-wk-q"><span class="sp-wk-label" id="sp-uni-repeat-label">Days you go in</span><div class="sp-block-days" role="group" aria-labelledby="sp-uni-repeat-label">' +
+      UNI_DAYS.map(function (d) {
+        return (
+          '<label><input type="checkbox" data-sp-uni-day="' +
+          d +
+          '"' +
+          (u.days.indexOf(d) > -1 ? " checked" : "") +
+          " /><span>" +
+          dayShort(d) +
+          "</span></label>"
+        );
+      }).join("") +
+      '</div></div><details class="sp-uni-except"' +
+      (ui.uniExceptOpen ? " open" : "") +
+      '><summary>One day is different</summary><div class="sp-uni-grid"><span></span><span>Leave home</span><span>Leave uni</span><span></span>' +
+      UNI_DAYS.map(function (d) {
+        var t = all[d] || {};
+        return (
+          "<b>" +
+          dayShort(d) +
+          '</b><input type="time" data-sp-uni="' +
+          d +
+          '" data-f="leave" value="' +
+          esc(t.leave || "") +
+          '" aria-label="' +
+          d +
+          ' leave home" /><input type="time" data-sp-uni="' +
+          d +
+          '" data-f="back" value="' +
+          esc(t.back || "") +
+          '" aria-label="' +
+          d +
+          ' leave uni" /><button type="button" class="sp-link-btn" data-sp-uni-clear="' +
+          d +
+          '"' +
+          (t.leave || t.back ? "" : " hidden") +
+          ">Clear</button>"
+        );
+      }).join("") +
+      "</div></details></div>"
     );
+  }
+  // Refreshes the panel in place: re-rendering while a time is being typed
+  // would throw away the half-entered value.
+  function syncUniPanel() {
+    var panel = $("study-plan-root").querySelector(".sp-uni"),
+      all = plan().uni || {},
+      u = uniUsual(),
+      active = document.activeElement;
+    if (!panel) return;
+    function put(input, value) {
+      if (input !== active) input.value = value;
+    }
+    panel.querySelectorAll("[data-sp-uni-usual]").forEach(function (x) {
+      put(x, u[x.dataset.spUniUsual]);
+    });
+    panel.querySelectorAll("[data-sp-uni-day]").forEach(function (x) {
+      x.checked = u.days.indexOf(x.dataset.spUniDay) > -1;
+    });
+    panel.querySelectorAll("[data-sp-uni]").forEach(function (x) {
+      put(x, (all[x.dataset.spUni] || {})[x.dataset.f] || "");
+    });
+    panel.querySelectorAll("[data-sp-uni-clear]").forEach(function (x) {
+      var t = all[x.dataset.spUniClear] || {};
+      x.hidden = !(t.leave || t.back);
+    });
+  }
+  function refreshAfterUni() {
+    if (ui.preview) ui.preview = buildSchedule(season());
+    render();
   }
   var WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   function blockLabel(x) {
@@ -1614,27 +1685,25 @@
   function blockedHtml() {
     var list = blocks();
     return (
-      '<details class="sp-uni sp-blocked"' +
-      (ui.blockOpen ? " open" : "") +
-      "><summary>Times you can't study" +
-      (list.length ? " · " + list.length + " set" : "") +
-      '</summary><p class="sp-muted">Work, gym, family time… No sessions are planned in these. Leave the times empty to block the whole day.</p>' +
+      '<div class="sp-blocked">' +
       (list.length
-        ? '<div class="sp-block-list">' +
+        ? '<ul class="sp-block-list">' +
           list
             .map(function (x) {
               return (
-                '<div class="sp-block-row"><span>' +
+                '<li class="sp-block-row"><span class="sp-block-tag">' +
+                (x.date ? "Once" : "Weekly") +
+                "</span><span>" +
                 esc(blockLabel(x)) +
                 '</span><button type="button" class="sp-link-btn" data-sp-block-remove="' +
                 esc(x.id) +
-                '">Remove</button></div>'
+                '">Remove</button></li>'
               );
             })
             .join("") +
-          "</div>"
+          "</ul>"
         : "") +
-      '<form class="sp-block-form" data-sp-block-form><div class="sp-block-days" role="group" aria-label="Weekdays">' +
+      '<form class="sp-block-form" data-sp-block-form><div class="sp-seg" role="radiogroup" aria-label="How often"><label><input type="radio" name="when" value="week" checked /><span>Every week</span></label><label><input type="radio" name="when" value="date" /><span>One date only</span></label></div><div class="sp-when-week"><span class="sp-wk-label">Which days</span><div class="sp-block-days" role="group" aria-label="Weekdays">' +
       WEEK.map(function (d, i) {
         return (
           '<label><input type="checkbox" name="day" value="' +
@@ -1644,13 +1713,12 @@
           "</span></label>"
         );
       }).join("") +
-      '</div><div class="sp-block-fields"><label>Or one date<input type="date" name="date" /></label><label>From<input type="time" name="start" /></label><label>To<input type="time" name="end" /></label><label>Note<input type="text" name="label" maxlength="40" placeholder="Optional, e.g. Work" /></label><button class="btn" type="submit">Add</button></div></form></details>'
+      '</div></div><label class="sp-when-date"><span class="sp-wk-label">Date</span><input type="date" name="date" /></label><div class="sp-seg" role="radiogroup" aria-label="How long"><label><input type="radio" name="span" value="times" checked /><span>Set times</span></label><label><input type="radio" name="span" value="all" /><span>Whole day</span></label></div><div class="sp-block-fields"><label class="sp-span-time">From<input type="time" name="start" /></label><label class="sp-span-time">To<input type="time" name="end" /></label><label class="sp-block-note">What is it?<input type="text" name="label" maxlength="40" placeholder="Optional, e.g. Grandma" /></label><button class="btn" type="submit">Add</button></div></form></div>'
     );
   }
   // Saving a change to your unavailable times rebuilds the plan around them.
   function saveBlocks(mutate, what) {
     var sid = season();
-    ui.blockOpen = true;
     updatePlan(mutate, true);
     if (plannedItems(sid).length) replan(sid, what);
     else if (ui.preview) {
@@ -1660,17 +1728,23 @@
   }
   function addBlock(form) {
     var f = new FormData(form),
-      days = f.getAll("day").map(Number),
-      date = f.get("date") || "",
-      start = f.get("start") || "",
-      end = f.get("end") || "",
+      weekly = f.get("when") !== "date",
+      wholeDay = f.get("span") === "all",
+      days = weekly ? f.getAll("day").map(Number) : [],
+      date = weekly ? "" : f.get("date") || "",
+      start = wholeDay ? "" : f.get("start") || "",
+      end = wholeDay ? "" : f.get("end") || "",
       label = String(f.get("label") || "").trim();
-    if (!days.length && !date) {
-      C.toast("Pick the weekdays or a date");
+    if (weekly ? !days.length : !date) {
+      C.toast(weekly ? "Pick at least one day" : "Pick the date");
+      return;
+    }
+    if (!wholeDay && !start && !end) {
+      C.toast("Add the times, or choose Whole day");
       return;
     }
     if (Boolean(start) !== Boolean(end)) {
-      C.toast("Add both times, or leave both empty for the whole day");
+      C.toast("Add both a start and an end time");
       return;
     }
     if (start && end <= start) {
@@ -1680,82 +1754,116 @@
     var x = { id: C.uid(), start: start, end: end, label: label };
     if (date) x.date = date;
     else x.days = days.sort();
+    form.reset();
     saveBlocks(function (p) {
       p.blocked = (Array.isArray(p.blocked) ? p.blocked : []).concat([x]);
     }, "Unavailable time added");
   }
-  function saveUni(day, patch) {
-    var rebuild = Boolean(ui.preview);
-    ui.uniOpen = true;
-    updatePlan(function (p) {
-      p.uni = p.uni || {};
-      var t = Object.assign({}, p.uni[day], patch);
-      Object.keys(t).forEach(function (k) {
-        if (!t[k]) delete t[k];
-      });
-      if (Object.keys(t).length) p.uni[day] = t;
-      else delete p.uni[day];
-    }, true);
-    if (rebuild) {
-      ui.preview = buildSchedule(season());
-      render();
-    }
+  // typing: a time field is still being edited, so save without re-rendering.
+  function saveUni(days, patch, typing) {
+    updatePlan(
+      function (p) {
+        p.uni = p.uni || {};
+        [].concat(days).forEach(function (day) {
+          var t = Object.assign({}, p.uni[day], patch);
+          Object.keys(t).forEach(function (k) {
+            if (!t[k]) delete t[k];
+          });
+          if (Object.keys(t).length) p.uni[day] = t;
+          else delete p.uni[day];
+        });
+      },
+      !typing,
+      Boolean(typing),
+    );
+    if (typing) {
+      ui.uniDirty = true;
+      syncUniPanel();
+    } else if (ui.preview) refreshAfterUni();
   }
-  function plannerHtml(sid) {
+  function setUniDay(day, on) {
+    var u = uniUsual(),
+      hasTimes = Boolean(u.leave || u.back);
+    if (on) {
+      if (hasTimes) saveUni(day, { leave: u.leave, back: u.back });
+      else {
+        ui.uniDraft = { leave: "", back: "", days: u.days.concat(day) };
+        render();
+      }
+    } else if (!hasTimes) {
+      ui.uniDraft = {
+        leave: "",
+        back: "",
+        days: u.days.filter(function (d) {
+          return d !== day;
+        }),
+      };
+      render();
+    } else {
+      // Unticking the last day keeps its times ready for the next tick.
+      if (u.days.length === 1 && u.days[0] === day)
+        ui.uniDraft = { leave: u.leave, back: u.back, days: [] };
+      saveUni(day, { leave: "", back: "" });
+    }
+    var box = $("study-plan-root").querySelector('[data-sp-uni-day="' + day + '"]');
+    if (box) box.focus();
+  }
+  function setUniUsual(field, value) {
+    var u = uniUsual(),
+      patch = {};
+    patch[field] = value;
+    if (u.days.length) return saveUni(u.days, patch, true);
+    ui.uniDraft = Object.assign({}, u, patch);
+    syncUniPanel();
+  }
+  function plannerHtml(sid, ready) {
     var ex = seasonExams(sid),
       noun = seasonInfo(sid).noun.toLowerCase(),
       planned = plannedItems(sid),
       pv = ui.preview,
       out =
-        '<div class="sp-box sp-planner"><div class="sp-box-head"><h3>Schedule</h3>';
+        '<div class="sp-planner">';
     if (!ex.length)
       return (
         out +
-        '</div><div class="empty">No upcoming ' +
+        '<div class="empty">No upcoming ' +
         noun +
         "s on your calendar. Add the dates and the plan will fill your free time before each one.</div></div>"
       );
-    out +=
-      '<div class="sp-actions"><button class="btn solid" type="button" data-sp-build>' +
-      (planned.length ? "Re-plan" : "Build schedule") +
-      "</button>" +
-      (planned.length
-        ? '<button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button>'
-        : "") +
-      (C.items.some(function (i) {
-        return i.planSource === "study-plan";
-      })
-        ? '<button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button>'
-        : "") +
-      "</div>" +
-      (planned.length
-        ? '<div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it. A deleted session’s work is rescheduled.</div>'
-        : "") +
-      "</div>" +
-      '<label class="sp-commute">Drive to and from uni<input type="number" min="0" max="240" step="5" data-sp-commute value="' +
-      commute() +
-      '" aria-label="Minutes of driving each way" /><span>min each way</span></label>' +
-      uniTimesHtml() +
-      blockedHtml();
     if (planned.length && !pv) {
       var next = planned.slice().sort(function (x, y) {
         return (x.date + x.start).localeCompare(y.date + y.start);
       })[0];
       out +=
-        '<p class="sp-muted">' +
+        '<div class="sp-built"><h4>' +
         planned.length +
-        " study session" +
-        (planned.length === 1 ? " is" : "s are") +
-        " on your calendar. Next: <b>" +
+        " session" +
+        (planned.length === 1 ? "" : "s") +
+        ' on your calendar</h4><p class="sp-muted">Next: <b>' +
         esc(next.title) +
-        "</b>, " +
-        esc(C.prettyDate(next.date).replace(/, \d{4}$/, "")) +
-        " at " +
-        esc(C.timeLabel(next.start)) +
-        ". Mark items Solid as you go and re-plan whenever you fall behind or finish early.</p>";
+        "</b></p><p class=\"sp-muted\">" +
+        esc(shortDate(next.date)) +
+        (next.start ? " · " + esc(C.timeLabel(next.start)) : "") +
+        '</p><div class="sp-actions"><button class="btn solid" type="button" data-sp-build>Re-plan</button><button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button><button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button></div><div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.</div></div>';
     } else if (!pv)
       out +=
-        '<p class="sp-muted">Builds learn sessions chapter by chapter, a review three days after each chapter, and a final review the day before each exam, all in your free time between 9 AM and 10 PM around classes, exams, events and the drive to and from uni.</p>';
+        '<div class="sp-build-start"><h4>Ready to build your schedule</h4><p class="sp-muted">Study sessions go into your free time before each exam, around your classes, events and the drive.</p><ul class="sp-build-list">' +
+        ex
+          .map(function (e) {
+            return (
+              "<li" +
+              hue(C.courseLabel(e.course)) +
+              "><b>" +
+              esc(C.courseLabel(e.course)) +
+              "</b><span>" +
+              esc(examLabel(e)) +
+              "</span></li>"
+            );
+          })
+          .join("") +
+        '</ul><button class="btn solid sp-build-go" type="button" data-sp-build' +
+        (ready ? "" : " disabled") +
+        ">Build my schedule</button></div>";
     if (pv) {
       out += '<div class="sp-preview">';
       if (pv.skipped.length)
@@ -2007,19 +2115,59 @@
       '</tbody></table><p class="sp-muted">Both columns assume the same average on everything still ahead. Do better on one and you need less on the other. PSU rounds the coursework total to a whole mark before adding the final.</p></div>'
     );
   }
-  function formatEditorHtml(course, a, exam, sid, f) {
+  // Question types you typed yourself sit beside the built-in ones. They
+  // are stored by name in the same list.
+  function customTypes(key, types) {
+    return types
+      .filter(function (t) {
+        return !formatInfo(t);
+      })
+      .concat(ui.fmtCustom[key] || [])
+      .filter(function (t, n, all) {
+        return all.indexOf(t) === n;
+      });
+  }
+  function customChipHtml(name, checked) {
+    return (
+      '<label class="sp-fmt-chip"><input type="checkbox" name="type" value="' +
+      esc(name) +
+      '"' +
+      (checked ? " checked" : "") +
+      "><span>" +
+      esc(name) +
+      "</span></label>"
+    );
+  }
+  function addCustomType(form) {
+    var input = form.querySelector("[data-sp-type-input]"),
+      name = input.value.trim().replace(/\s+/g, " "),
+      key = form.dataset.spFormatForm;
+    if (!name) return;
+    var known = [].some.call(form.querySelectorAll('input[name="type"]'), function (box) {
+      var label = (formatInfo(box.value) || {}).label || box.value;
+      if (label.toLowerCase() !== name.toLowerCase()) return false;
+      box.checked = true;
+      return true;
+    });
+    if (!known) {
+      ui.fmtCustom[key] = (ui.fmtCustom[key] || []).concat(name);
+      form
+        .querySelector(".sp-fmt-chips")
+        .insertAdjacentHTML("beforeend", customChipHtml(name, true));
+    }
+    input.value = "";
+    input.focus();
+  }
+  function formatEditorHtml(course, a, exam, sid, f, inSetup) {
     var key = formatKeys(course, exam, sid)[0],
       noun = seasonInfo(sid).noun,
       types = (f && f.types) || [],
       base = a ? overviewScope(a, exam) : null,
-      chosen =
-        f && f.chapters && f.chapters.length
-          ? f.chapters
-          : base
-            ? base.ids
-            : [];
+      chosen = a ? examScope(a, exam).ids : [];
     return (
-      '<form class="sp-fmt-form" data-sp-format-form="' +
+      '<form class="sp-fmt-form" data-sp-format-course="' +
+      esc(course) +
+      '" data-sp-format-form="' +
       esc(key) +
       '"><label class="sp-fmt-field wide"><span>What did your instructor say?</span><textarea name="notes" rows="2" placeholder="e.g. All problem solving and code, 5 questions, 30 minutes, closed book">' +
       esc((f && f.notes) || "") +
@@ -2036,7 +2184,16 @@
           "</span></label>"
         );
       }).join("") +
-      '</div></fieldset><div class="sp-fmt-row"><label class="sp-fmt-field"><span>Questions</span><input type="number" name="questions" min="1" max="200" placeholder="Not said" value="' +
+      customTypes(key, types)
+        .map(function (name) {
+          return customChipHtml(name, types.indexOf(name) > -1 || (ui.fmtCustom[key] || []).indexOf(name) > -1);
+        })
+        .join("") +
+      '</div><div class="sp-fmt-addtype"><input type="text" maxlength="40" data-sp-type-input placeholder="Another question type, e.g. Case analysis" aria-label="Another question type" /><button class="sp-chip-btn" type="button" data-sp-type-add>Add type</button></div></fieldset><details class="sp-fmt-more"' +
+      (f && (f.questions || f.minutes || f.book || f.topics || (f.chapters && f.chapters.length))
+        ? " open"
+        : "") +
+      '><summary>More details (optional)</summary><div class="sp-fmt-row"><label class="sp-fmt-field"><span>Questions</span><input type="number" name="questions" min="1" max="200" placeholder="Not said" value="' +
       esc((f && f.questions) || "") +
       '"></label><label class="sp-fmt-field"><span>Minutes</span><input type="number" name="minutes" min="5" max="600" step="5" placeholder="Not said" value="' +
       esc((f && f.minutes) || "") +
@@ -2080,14 +2237,18 @@
         : "") +
       '<label class="sp-fmt-field wide"><span>Topics to focus on or skip (optional)</span><input name="topics" placeholder="e.g. Focus on Liskov and DIP; no Observer" value="' +
       esc((f && f.topics) || "") +
-      '"></label><div class="sp-fmt-actions"><button class="btn solid" type="submit">Save format</button>' +
-      (f
+      '"></label></details><div class="sp-fmt-actions"><button class="btn solid" type="submit">' +
+      (inSetup ? "Save and next" : "Save format") +
+      "</button>" +
+      (f && !inSetup
         ? '<button class="btn" type="button" data-sp-fmt-cancel="' +
           esc(key) +
           '">Cancel</button>'
         : "") +
       (f
-        ? '<button class="sp-link-btn" type="button" data-sp-fmt-remove="' +
+        ? '<button class="sp-link-btn" type="button" data-sp-fmt-course="' +
+          esc(course) +
+          '" data-sp-fmt-remove="' +
           esc(key) +
           '">Remove format</button>'
         : "") +
@@ -2111,7 +2272,7 @@
           esc(shortDate(f.updated || C.todayKey())) +
           (sc && sc.custom ? " · covers your updated chapters" : "") +
           "</p>"
-        : '<p class="sp-muted">Tell it what your instructor said. Practice and study sessions switch to that format.</p>') +
+        : '<p class="sp-muted">Note what your instructor said.</p>') +
       "</div>" +
       (f && !editing
         ? '<button class="sp-chip-btn" type="button" data-sp-fmt-edit="' +
@@ -2151,7 +2312,7 @@
       f.minutes && f.questions
         ? '<div class="sp-note">About <b>' +
           Math.max(1, Math.round(f.minutes / f.questions)) +
-          " min per question</b>. Time your practice at that pace.</div>"
+          " min per question</b>.</div>"
         : "";
     var history = (f.history || []).length
       ? '<details class="sp-fmt-history"><summary>Earlier versions (' +
@@ -2175,95 +2336,8 @@
       head +
       said +
       pace +
-      (a && a.curated ? formatPrepHtml(course, a, exam, f) : "") +
       history +
       "</section>"
-    );
-  }
-  function formatPrepHtml(course, a, exam, f) {
-    var types = (f.types || []).map(formatInfo).filter(Boolean);
-    if (!types.length) return "";
-    return (
-      '<div class="sp-fmt-prep">' +
-      types
-        .map(function (x) {
-          var list = formatTopics(a, exam, x.id),
-            k = x.id,
-            all = ui.fmtAll[k],
-            shown = all ? list : list.slice(0, 5),
-            solid = list.filter(function (i) {
-              return level(course, a, i.id) === 2;
-            }).length;
-          return (
-            '<div class="sp-fmt-type"><div class="sp-fmt-type-head"><h4>' +
-            esc(x.label) +
-            "</h4><span>" +
-            (list.length ? solid + " of " + list.length + " solid" : "") +
-            '</span></div><p class="sp-muted">' +
-            esc(x.tip) +
-            "</p>" +
-            (list.length
-              ? '<ol class="sp-fmt-list">' +
-                shown
-                  .map(function (i) {
-                    var rid = "fmt:" + k + ":" + i.id,
-                      open = ui.revealed[rid],
-                      ch = a.chapters.find(function (c) {
-                        return c.id === i.chapter;
-                      }),
-                      link = ch && (ch.links || [])[0];
-                    return (
-                      '<li class="sp-item l' +
-                      level(course, a, i.id) +
-                      '"><div class="sp-item-text"><div class="sp-item-name">' +
-                      esc(x.ask(i)) +
-                      '</div><div class="sp-item-tags"><span class="sp-kind">' +
-                      esc(ch ? chapterName(ch) : "") +
-                      "</span>" +
-                      (i.memorize || link
-                        ? '<button type="button" class="sp-link-btn" data-sp-reveal="' +
-                          esc(rid) +
-                          '" aria-expanded="' +
-                          Boolean(open) +
-                          '">' +
-                          (open ? "Hide check" : "Check answer") +
-                          "</button>"
-                        : "") +
-                      "</div>" +
-                      (open
-                        ? '<div class="sp-item-mem">' +
-                          (i.memorize
-                            ? esc(i.memorize)
-                            : "Check it against the slides.") +
-                          (link
-                            ? ' <a href="' +
-                              esc(link.url) +
-                              '">Open ' +
-                              esc(link.label) +
-                              "</a>"
-                            : "") +
-                          "</div>"
-                        : "") +
-                      "</div>" +
-                      levelButtons(i.id, level(course, a, i.id)) +
-                      "</li>"
-                    );
-                  })
-                  .join("") +
-                "</ol>" +
-                (list.length > 5
-                  ? '<button type="button" class="sp-link-btn" data-sp-fmt-all="' +
-                    k +
-                    '">' +
-                    (all ? "Show fewer" : "Show all " + list.length) +
-                    "</button>"
-                  : "")
-              : '<p class="sp-muted">Nothing in these chapters\' slides is tagged for this type. Use the past papers and practice on the course page.</p>') +
-            "</div>"
-          );
-        })
-        .join("") +
-      "</div>"
     );
   }
   function itemById(a, id) {
@@ -2459,13 +2533,31 @@
       "</section>"
     );
   }
+  // "Slides · Slides" reads as "Slides"; other labels name the part.
+  function linkLabel(l) {
+    var parts = String(l.label).split(" · ");
+    return parts[1] === "Slides" ? parts[0] : l.label;
+  }
+  function studyLinksHtml(ch) {
+    return (ch.links || []).length
+      ? '<div class="sp-links">' +
+          ch.links
+            .map(function (l) {
+              return (
+                '<a href="' + esc(l.url) + '">' + esc(linkLabel(l)) + "</a>"
+              );
+            })
+            .join("") +
+          "</div>"
+      : "";
+  }
   function chaptersHtml(course, a, exam) {
     var ids = scopeIds(a, exam);
     return (
-      '<section class="sp-box"><div class="sp-box-head"><div><h3>Chapters</h3><p class="sp-muted">' +
+      '<section class="sp-box"><div class="sp-box-head"><div><h3>What to study</h3><p class="sp-muted">' +
       (a.curated
-        ? "Open a chapter and mark each topic as you learn it."
-        : "Mark each chapter as you get through it.") +
+        ? "Every chapter on this exam, with its slide count and pages. Open one to see its topics."
+        : "Every chapter on this exam, with its slide count and pages.") +
       "</p></div></div>" +
       (function () {
         var sc = examScope(a, exam),
@@ -2525,7 +2617,9 @@
             " · " +
             hours(left) +
             " left" +
-            "</span></div>" +
+            "</span>" +
+            studyLinksHtml(ch) +
+            "</div>" +
             (a.curated
               ? '<button type="button" class="sp-chev" data-sp-open="' +
                 esc(ch.id) +
@@ -2538,17 +2632,6 @@
                 '"></button>'
               : levelButtons("ch:" + ch.id, level(course, a, "ch:" + ch.id))) +
             "</div>";
-          var links = (ch.links || []).length
-            ? '<div class="sp-links">' +
-              ch.links
-                .map(function (l) {
-                  return (
-                    '<a href="' + esc(l.url) + '">' + esc(l.label) + "</a>"
-                  );
-                })
-                .join("") +
-              "</div>"
-            : "";
           if (!a.curated) return head;
           if (!open) return head;
           return (
@@ -2591,7 +2674,6 @@
                 );
               })
               .join("") +
-            links +
             "</div>"
           );
         })
@@ -3067,31 +3149,756 @@
       "</div>"
     );
   }
+  // ── Tabs ──────────────────────────────────────────────────────────────
+  // My plan is the day-to-day view, Setup is the one-step-at-a-time wizard
+  // (your week, each exam's format, build), and course detail opens from Exams.
+  function formatSkipped(key) {
+    return Boolean((plan().formatSkip || {})[key]);
+  }
+  function examRows(sid) {
+    return seasonExams(sid).map(function (e) {
+      var course = C.courseLabel(e.course),
+        key = formatKeys(course, e, sid)[0],
+        f = formatFor(course, e, sid);
+      return {
+        exam: e,
+        course: course,
+        key: key,
+        format: f,
+        skipped: !f && formatSkipped(key),
+      };
+    });
+  }
+  function hasAnyPlan() {
+    return C.items.some(function (i) {
+      return i.planSource === "study-plan";
+    });
+  }
+  function weekDone() {
+    return Boolean((plan().setup || {}).week) || hasAnyPlan();
+  }
+  function weekSummary() {
+    var parts = ["Drive " + commute() + " min each way"],
+      uni = uniSummary(),
+      n = blocks().length;
+    if (uni) parts.push(uni);
+    if (n) parts.push(n + " time" + (n === 1 ? "" : "s") + " you can't study");
+    return parts.join(" · ");
+  }
+  function weekBodyHtml() {
+    return (
+      '<div class="sp-wk"><div class="sp-wk-part"><h4>Getting to uni</h4><p class="sp-muted">Set a normal day once. Days you leave off are worked out from your classes.</p>' +
+      uniTimesHtml() +
+      '</div><div class="sp-wk-part"><h4>Times you can\'t study</h4><p class="sp-muted">Work, gym, family. No study is planned in these.</p>' +
+      blockedHtml() +
+      '</div></div><div class="sp-wiz-foot"><span></span><button class="btn solid" type="button" data-sp-week-done>Next: exam formats</button></div>'
+    );
+  }
+  function formatStatus(r) {
+    return r.format
+      ? formatSummary(r.format, true) || "Saved"
+      : r.skipped
+        ? "Not announced yet"
+        : "Not set";
+  }
+  // One exam at a time: the list on the left, its details on the right.
+  function formatsBodyHtml(sid, rows) {
+    if (!rows.length)
+      return (
+        '<p class="sp-muted">No upcoming ' +
+        esc(seasonInfo(sid).noun.toLowerCase()) +
+        's on your calendar yet. Add the dates from the Exams tab, or switch season above.</p><div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="1">Back</button><button class="btn solid" type="button" data-sp-view="exams">Go to Exams</button></div>'
+      );
+    var sel =
+        rows.find(function (r) {
+          return r.key === ui.fmtOpen;
+        }) ||
+        rows.find(function (r) {
+          return !r.format && !r.skipped;
+        }) ||
+        rows[0],
+      left = rows.filter(function (r) {
+        return !r.format && !r.skipped;
+      }).length,
+      a = analysis(sel.course, sid);
+    return (
+      '<div class="sp-fmt-pane"><div class="sp-fmt-exams" role="group" aria-label="Exams">' +
+      rows
+        .map(function (r) {
+          return (
+            '<button type="button" class="' +
+            (r.format ? "set" : r.skipped ? "later" : "") +
+            '" data-sp-fmt-open="' +
+            esc(r.key) +
+            '" aria-pressed="' +
+            (r === sel) +
+            '"' +
+            hue(r.course) +
+            '><span class="sp-fmt-dot"></span><span class="sp-fmt-exam-text"><b>' +
+            esc(r.course) +
+            "</b><span>" +
+            esc(formatStatus(r)) +
+            "</span></span></button>"
+          );
+        })
+        .join("") +
+      '</div><div class="sp-fmt-detail"' +
+      hue(sel.course) +
+      '><div class="sp-fmt-detail-head"><div><h4>' +
+      esc(sel.course) +
+      '</h4><p class="sp-muted">' +
+      esc(examLabel(sel.exam)) +
+      "</p></div>" +
+      (sel.format || sel.skipped
+        ? ""
+        : '<button type="button" class="sp-chip-btn" data-sp-fmt-later="' +
+          esc(sel.key) +
+          '">Instructor hasn\'t said yet</button>') +
+      "</div>" +
+      formatEditorHtml(sel.course, a || null, sel.exam, sid, sel.format, true) +
+      '</div></div><div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="1">Back</button>' +
+      (left
+        ? '<span class="sp-muted">' +
+          left +
+          " exam" +
+          (left === 1 ? "" : "s") +
+          " still to go</span>"
+        : "<span></span>") +
+      '<button class="btn solid" type="button" data-sp-step="3"' +
+      (left ? " disabled" : "") +
+      ">Next: build your plan</button></div>"
+    );
+  }
+  // Upcoming dates of weekly unavailable times, each of which can be freed.
+  function comingUpHtml(sid) {
+    if (!plannedItems(sid).length) return "";
+    var today = C.todayKey(),
+      rows = [];
+    blocks().forEach(function (x) {
+      if (x.date) return;
+      for (var i = 0; i < 14; i++) {
+        var d = C.addDays(today, i);
+        if ((x.days || []).indexOf(C.fromKey(d).getDay()) > -1)
+          rows.push({ x: x, date: d, skipped: (x.skips || []).indexOf(d) > -1 });
+      }
+    });
+    if (!rows.length) return "";
+    rows.sort(function (p, q) {
+      return p.date.localeCompare(q.date);
+    });
+    return (
+      '<div class="sp-coming"><h4>Plans changed?</h4><p class="sp-muted">Not going to something this time? Study then instead, and the next day\'s study moves up to it.</p><ul>' +
+      rows
+        .slice(0, 5)
+        .map(function (r) {
+          return (
+            '<li><span><b>' +
+            esc(shortDate(r.date)) +
+            "</b> " +
+            esc(r.x.label || "Unavailable") +
+            (r.x.start ? " · " + esc(C.timeRange(r.x.start, r.x.end)) : " · All day") +
+            "</span>" +
+            (r.skipped
+              ? '<span class="sp-coming-free">Studying instead</span><button type="button" class="sp-link-btn" data-sp-unskip="' +
+                esc(r.x.id + "|" + r.date) +
+                '">Undo</button>'
+              : '<button type="button" class="sp-chip-btn" data-sp-skip="' +
+                esc(r.x.id + "|" + r.date) +
+                '">Study instead</button>') +
+            "</li>"
+          );
+        })
+        .join("") +
+      "</ul></div>"
+    );
+  }
+  // The chapters an exam can cover, for the picker on the Exams tab: the
+  // study plan's list when the course has one (so both stay in step), else
+  // the syllabus's list, else nothing and the student writes them in.
+  var syllabi = null;
+  function loadSyllabi() {
+    if (!syllabi)
+      syllabi = fetchJson("/academic-plan-themes/course-syllabi.json").catch(
+        function () {
+          return {};
+        },
+      );
+    return syllabi;
+  }
+  function examChapters(exam) {
+    var course = C.courseLabel(exam.course),
+      type = C.canonicalExamType(exam.type),
+      sid = type === "bonus-quiz" ? "quiz" : type;
+    return new Promise(function (resolve) {
+      var tries = 0;
+      (function wait() {
+        loadIndex();
+        var a = analysis(course, sid);
+        if (a === undefined && ++tries < 100) return setTimeout(wait, 100);
+        resolve(a || null);
+      })();
+    }).then(function (a) {
+      if (a)
+        return {
+          source: "plan",
+          defaults: overviewScope(a, exam).ids,
+          chapters: a.chapters.map(function (c) {
+            return { id: c.id, label: chapterName(c) };
+          }),
+        };
+      return loadSyllabi().then(function (all) {
+        var key = course.replace(/\s+/g, ""),
+          entry = all[key] || all[key.replace("ETHCS", "ETHC")],
+          list = (entry && entry.chapters) || [];
+        return {
+          source: list.length ? "syllabus" : "none",
+          defaults: [],
+          chapters: list.map(function (c) {
+            return {
+              id: "s" + c.n,
+              label: (/^\d/.test(c.n) ? "Ch " + c.n + " " : c.n + " ") + c.title,
+            };
+          }),
+        };
+      });
+    });
+  }
+  function setupState(sid) {
+    var rows = examRows(sid),
+      built = plannedItems(sid).length > 0,
+      wk = weekDone(),
+      left = rows.filter(function (r) {
+        return !r.format && !r.skipped;
+      }).length,
+      fm = rows.length > 0 && !left;
+    return {
+      rows: rows,
+      built: built,
+      wk: wk,
+      left: left,
+      fm: fm,
+      ready: (wk && fm) || built,
+      auto: !wk ? 1 : !fm && !built ? 2 : 3,
+    };
+  }
+  function currentView(sid) {
+    if (ui.view) return ui.view;
+    if (plan().season === "remaining") return "left";
+    var st = setupState(sid);
+    return st.built || !st.rows.length ? "plan" : "setup";
+  }
+  function setupHtml(sid) {
+    var st = setupState(sid),
+      active = ui.step || st.auto,
+      steps = [
+        { n: 1, label: "Your week", done: st.wk },
+        { n: 2, label: "Exam formats", done: st.fm },
+        { n: 3, label: "Build your plan", done: st.built },
+      ],
+      body =
+        active === 1
+          ? '<p class="sp-wiz-lead">When are you at uni, and when can\'t you study?</p>' +
+            weekBodyHtml()
+          : active === 2
+            ? '<p class="sp-wiz-lead">How will each exam ask?</p>' +
+              formatsBodyHtml(sid, st.rows)
+            : (st.ready
+                ? ""
+                : '<div class="sp-note">Finish ' +
+                  (!st.wk && !st.fm
+                    ? "Your week and Exam formats"
+                    : !st.wk
+                      ? "Your week"
+                      : "Exam formats") +
+                  " first, so the plan fits your real week.</div>") +
+              plannerHtml(sid, st.ready) +
+              '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="2">Back</button><span></span>' +
+              (st.built
+                ? '<button class="btn solid" type="button" data-sp-view="plan">Go to my plan</button>'
+                : "<span></span>") +
+              "</div>";
+    return (
+      '<ol class="sp-wiz-steps">' +
+      steps
+        .map(function (x) {
+          return (
+            '<li><button type="button" class="' +
+            (x.n === active ? "current" : x.done ? "done" : "") +
+            '" data-sp-step="' +
+            x.n +
+            '"' +
+            (x.n === active ? ' aria-current="step"' : "") +
+            '><span class="sp-wiz-num">' +
+            (x.done && x.n !== active ? '<span class="sp-step-tick"></span>' : x.n) +
+            "</span>" +
+            esc(x.label) +
+            "</button></li>"
+          );
+        })
+        .join("") +
+      '</ol><div class="sp-wiz-body">' +
+      body +
+      "</div>"
+    );
+  }
+  // ── My plan ───────────────────────────────────────────────────────────
+  function dayName(k) {
+    var today = C.todayKey();
+    return k === today
+      ? "Today"
+      : k === C.addDays(today, 1)
+        ? "Tomorrow"
+        : shortDate(k);
+  }
+  function sessionParts(i) {
+    var cut = String(i.title || "Study").split(" · ");
+    return {
+      head: cut.length > 1 ? cut[0] : i.course || "",
+      name: cut.length > 1 ? cut.slice(1).join(" · ") : cut[0],
+    };
+  }
+  function upcomingSessions(sid) {
+    var today = C.todayKey(),
+      now = nowMinutes();
+    return plannedItems(sid)
+      .filter(function (i) {
+        return (
+          !i.planDone &&
+          i.start &&
+          (i.date > today || (i.end && C.minutes(i.end) > now))
+        );
+      })
+      .sort(function (a, b) {
+        return (a.date + a.start).localeCompare(b.date + b.start);
+      });
+  }
+  function examListHtml(sid, st) {
+    return (
+      '<section class="sp-box"><h3>Exams</h3><div class="sp-plan-exams">' +
+      st.rows
+        .map(function (r) {
+          var a = analysis(r.course, sid),
+            prog = a ? courseProgress(r.course, a, r.exam) : null,
+            d = daysUntil(r.exam.date);
+          return (
+            '<button type="button" data-sp-open-course="' +
+            esc(r.course) +
+            '"' +
+            hue(r.course) +
+            ">" +
+            (prog ? ring(prog.ready, undefined, "sm") : ring(0, "–", "sm")) +
+            '<span class="sp-plan-exam-text"><b>' +
+            esc(r.course) +
+            "</b><span>" +
+            esc(examLabel(r.exam)) +
+            '</span></span><span class="sp-days' +
+            (d <= 7 ? " soon" : "") +
+            '">' +
+            d +
+            "d</span></button>"
+          );
+        })
+        .join("") +
+      "</div>" +
+      (st.left
+        ? '<button type="button" class="sp-link-btn" data-sp-goto-step="2">' +
+          st.left +
+          " exam" +
+          (st.left === 1 ? "" : "s") +
+          " without a format. Set them</button>"
+        : "") +
+      "</section>"
+    );
+  }
+  function planViewHtml(sid) {
+    var st = setupState(sid),
+      noun = seasonInfo(sid).noun.toLowerCase();
+    if (!st.rows.length)
+      return (
+        '<div class="sp-plan-empty"><h3>No upcoming ' +
+        esc(noun) +
+        's</h3><p class="sp-muted">Add the dates in the Exams tab, or choose another season above.</p><button class="btn solid" type="button" data-sp-view="exams">Go to Exams</button></div>'
+      );
+    var list = upcomingSessions(sid),
+      main;
+    if (!st.built)
+      main =
+        '<div class="sp-plan-empty"><h3>No plan for your ' +
+        esc(noun) +
+        's yet</h3><p class="sp-muted">Tell it about your week and how each exam will ask, and it builds the schedule around your calendar.</p><button class="btn solid" type="button" data-sp-view="setup">' +
+        (st.wk ? "Continue setup" : "Set up my plan") +
+        "</button></div>";
+    else if (!list.length)
+      main =
+        '<div class="sp-plan-empty"><h3>All caught up</h3><p class="sp-muted">Every planned session is done. Re-plan from Setup if you want more practice.</p></div>';
+    else {
+      var first = list[0],
+        fp = sessionParts(first),
+        mins = C.minutes(first.end) - C.minutes(first.start),
+        rest = list.slice(1),
+        shownDays = rest
+          .map(function (i) {
+            return i.date;
+          })
+          .filter(function (d, n, all) {
+            return all.indexOf(d) === n;
+          })
+          .slice(0, 3),
+        // A short look ahead; the full list lives on the calendar.
+        week = rest
+          .filter(function (i) {
+            return shownDays.indexOf(i.date) > -1;
+          })
+          .slice(0, 8),
+        later = rest.length - week.length,
+        byDay = {};
+      week.forEach(function (i) {
+        (byDay[i.date] = byDay[i.date] || []).push(i);
+      });
+      main =
+        '<section class="sp-next"' +
+        hue(first.course) +
+        '><div class="sp-eyebrow">Next up</div><h3>' +
+        esc(fp.name) +
+        '</h3><p class="sp-next-when"><b>' +
+        esc(dayName(first.date)) +
+        ", " +
+        esc(C.timeLabel(first.start)) +
+        "</b> · " +
+        esc(aboutHours(mins)) +
+        (fp.head ? " · " + esc(fp.head) : "") +
+        "</p>" +
+        (first.notes ? '<p class="sp-muted">' + esc(first.notes) + "</p>" : "") +
+        (function () {
+          var fa = analysis(first.course, sid),
+            fch =
+              fa &&
+              first.planChapter &&
+              fa.chapters.find(function (c) {
+                return c.id === first.planChapter;
+              });
+          return fch
+            ? studyLinksHtml(fch)
+            : fa && fa.course_page
+              ? '<div class="sp-links"><a href="' +
+                  esc(fa.course_page) +
+                  '">Course page</a></div>'
+              : "";
+        })() +
+        '<button class="btn solid" type="button" data-sp-sess-done="' +
+        esc(first.id) +
+        '">Mark done</button></section>' +
+        (week.length
+          ? '<section class="sp-box"><h3>Coming up</h3>' +
+            Object.keys(byDay)
+              .sort()
+              .map(function (d) {
+                return (
+                  '<h4 class="sp-week-day">' +
+                  esc(dayName(d)) +
+                  '</h4><ul class="sp-week-list">' +
+                  byDay[d]
+                    .map(function (i) {
+                      var ip = sessionParts(i);
+                      return (
+                        "<li" +
+                        hue(i.course) +
+                        '><input type="checkbox" data-sp-sess-done="' +
+                        esc(i.id) +
+                        '" aria-label="Mark done: ' +
+                        esc(i.title) +
+                        '" /><span class="sp-week-time">' +
+                        esc(C.timeLabel(i.start)) +
+                        '</span><span class="sp-week-text"><b>' +
+                        esc(ip.name) +
+                        "</b><span>" +
+                        esc(ip.head) +
+                        "</span></span></li>"
+                      );
+                    })
+                    .join("") +
+                  "</ul>"
+                );
+              })
+              .join("") +
+            (later
+              ? '<p class="sp-muted">And ' +
+                later +
+                " more on your calendar.</p>"
+              : "") +
+            "</section>"
+          : "");
+    }
+    var coming = comingUpHtml(sid);
+    return (
+      '<div class="sp-plan-grid"><div class="sp-plan-main">' +
+      main +
+      '</div><div class="sp-plan-side">' +
+      examListHtml(sid, st) +
+      (coming ? '<section class="sp-box">' + coming + "</section>" : "") +
+      "</div></div>"
+    );
+  }
+  // A weekly unavailable time is cancelled for one date: that time opens
+  // up, and the next study day's sessions move onto it.
+  function nowMinutes() {
+    var n = new Date();
+    return n.getHours() * 60 + n.getMinutes();
+  }
+  function isOpenSession(i) {
+    if (i.planSource !== "study-plan" || i.planDone || !i.start || !i.end) return false;
+    var today = C.todayKey();
+    return i.date > today || (i.date === today && C.minutes(i.start) > nowMinutes());
+  }
+  // The freed time itself fills first, then the rest of that day.
+  function pullForward(day, block) {
+    var today = C.todayKey(),
+      open = C.items.filter(isOpenSession),
+      next = "";
+    open.forEach(function (i) {
+      if (i.date > day && i.date <= C.addDays(day, 7) && (!next || i.date < next)) next = i.date;
+    });
+    if (!next) return { moved: 0, from: "" };
+    var start =
+        day === today
+          ? Math.max(DAY_START, Math.ceil((nowMinutes() + 15) / 15) * 15)
+          : DAY_START,
+      slots = freeSlots(day, "remaining", start).map(function (x) {
+        return x.slice();
+      });
+    function take(s, e) {
+      var out = [];
+      slots.forEach(function (x) {
+        if (e <= x[0] || s >= x[1]) out.push(x);
+        else {
+          if (s > x[0]) out.push([x[0], s]);
+          if (e < x[1]) out.push([e, x[1]]);
+        }
+      });
+      slots = out;
+    }
+    C.items.forEach(function (i) {
+      if (i.planSource === "study-plan" && i.date === day && i.start && i.end)
+        take(C.minutes(i.start) - BUFFER, C.minutes(i.end) + BUFFER);
+    });
+    var moved = 0;
+    open
+      .filter(function (i) {
+        return i.date === next;
+      })
+      .sort(function (p, q) {
+        return p.start.localeCompare(q.start);
+      })
+      .forEach(function (i) {
+        var len = C.minutes(i.end) - C.minutes(i.start),
+          from = block && block.start ? C.minutes(block.start) : null,
+          to = block && block.end ? C.minutes(block.end) : null,
+          inFreed =
+            from === null
+              ? null
+              : slots.find(function (x) {
+                  return Math.min(x[1], to) - Math.max(x[0], from) >= len;
+                }),
+          slot =
+            inFreed ||
+            slots.find(function (x) {
+              return x[1] - x[0] >= len;
+            });
+        if (!slot) return;
+        var st = inFreed ? Math.max(slot[0], from) : slot[0];
+        i.date = day;
+        i.endDate = day;
+        i.start = C.toTime(st);
+        i.end = C.toTime(st + len);
+        i.planPinned = true;
+        delete i.planOverlapOk;
+        take(st, st + len + BUFFER);
+        moved++;
+      });
+    return { moved: moved, from: next };
+  }
+  function setBlockSkip(id, date, on) {
+    updatePlan(
+      function (p) {
+        (p.blocked || []).forEach(function (x) {
+          if (x.id !== id) return;
+          var list = (x.skips || []).filter(function (d) {
+            return d !== date && d >= C.todayKey();
+          });
+          if (on) list.push(date);
+          x.skips = list;
+        });
+      },
+      true,
+      true,
+    );
+    ui.preview = null;
+    var r = on
+      ? pullForward(
+          date,
+          blocks().find(function (x) {
+            return x.id === id;
+          }),
+        )
+      : { moved: 0 };
+    C.persist().then(function () {
+      C.renderAll();
+      if (on)
+        C.toast(
+          r.moved
+            ? shortDate(date) +
+                " is free. " +
+                r.moved +
+                " session" +
+                (r.moved === 1 ? "" : "s") +
+                " moved up from " +
+                shortDate(r.from)
+            : shortDate(date) + " is free. No later sessions to move up.",
+        );
+    });
+  }
+  // Does this session sit on top of something real (an event, class, exam,
+  // the drive or an unavailable time)? Other study sessions don't count.
+  function overlaps(i) {
+    if (!i.start || !i.end) return false;
+    var b = busyFor(i.date, "remaining"),
+      s = C.minutes(i.start),
+      e = C.minutes(i.end);
+    return (
+      b.all ||
+      b.busy.some(function (x) {
+        return s < x[1] && e > x[0];
+      })
+    );
+  }
+  // Runs after every calendar change. A session now clashing with something
+  // new is released, and its season is rebuilt around the change. A session
+  // you placed on top of something yourself is left where you put it.
+  var reflowing = false,
+    reflowTimer = null,
+    lastClash = "";
+  function scheduleReflow() {
+    if (reflowing || reflowTimer || !C.signedIn) return;
+    reflowTimer = setTimeout(function () {
+      reflowTimer = null;
+      reflow();
+    }, 0);
+  }
+  function reflow() {
+    var hit = C.items.filter(function (i) {
+      return isOpenSession(i) && !i.planOverlapOk && overlaps(i);
+    });
+    var sig = hit
+      .map(function (i) {
+        return i.id + i.date + i.start;
+      })
+      .join();
+    if (!hit.length || sig === lastClash) {
+      lastClash = sig;
+      return;
+    }
+    lastClash = sig;
+    reflowing = true;
+    var seasons = {},
+      before = JSON.parse(
+        JSON.stringify(
+          C.items.filter(function (i) {
+            return i.planSource === "study-plan";
+          }),
+        ),
+      ),
+      hitIds = hit.map(function (i) {
+        return i.id;
+      });
+    hit.forEach(function (i) {
+      seasons[i.planSeason] = true;
+      delete i.planPinned;
+    });
+    var n = hit.length,
+      what =
+        n + " study session" + (n === 1 ? "" : "s") + " moved around your calendar";
+    Object.keys(seasons)
+      .reduce(function (chain, sid) {
+        return chain.then(function () {
+          return replan(sid, what, true);
+        });
+      }, Promise.resolve())
+      .then(
+        function () {
+          reflowing = false;
+          C.toastUndo(what, function () {
+            for (var n = C.items.length - 1; n >= 0; n--)
+              if (C.items[n].planSource === "study-plan") C.items.splice(n, 1);
+            before.forEach(function (i) {
+              // Left where it was on purpose, so it won't be moved again.
+              if (hitIds.indexOf(i.id) > -1) i.planOverlapOk = true;
+              C.items.push(i);
+            });
+            C.persist().then(C.renderAll);
+          });
+        },
+        function () {
+          reflowing = false;
+        },
+      );
+  }
+  // Anything half-typed in a form survives a re-render of the tab.
+  function formKey(form) {
+    return form.dataset.spFormatForm || "block";
+  }
+  function captureForms(root) {
+    var saved = {},
+      active = document.activeElement;
+    root
+      .querySelectorAll("[data-sp-format-form], [data-sp-block-form]")
+      .forEach(function (form) {
+        saved[formKey(form)] = [].map.call(form.elements, function (el) {
+          return { value: el.value, checked: el.checked, focused: el === active };
+        });
+      });
+    return saved;
+  }
+  function restoreForms(root, saved) {
+    root
+      .querySelectorAll("[data-sp-format-form], [data-sp-block-form]")
+      .forEach(function (form) {
+        var state = saved[formKey(form)];
+        if (!state || state.length !== form.elements.length) return;
+        [].forEach.call(form.elements, function (el, n) {
+          if (el.type === "checkbox" || el.type === "radio") el.checked = state[n].checked;
+          else if (el.tagName !== "BUTTON") el.value = state[n].value;
+          if (state[n].focused) el.focus();
+        });
+      });
+  }
   function render() {
     var root = $("study-plan-root");
     if (!root || !C) return;
     loadIndex();
-    var sid = season();
-    if (sid === "remaining") {
-      var y = window.scrollY;
-      root.innerHTML =
-        headHtml(sid) + '<div class="sp-body">' + remainingHtml() + "</div>";
-      if (Math.abs(window.scrollY - y) > 2) window.scrollTo(0, y);
-      return;
-    }
-    var courses = courseList(sid);
-    if (!ui.course || courses.indexOf(ui.course) < 0)
-      ui.course = courses[0] || "";
-    var scrollY = window.scrollY;
+    scheduleReflow();
+    var sid = season(),
+      view = currentView(sid),
+      courses = courseList(sid);
+    if (ui.course && courses.indexOf(ui.course) < 0) ui.course = "";
+    var scrollY = window.scrollY,
+      drafts = captureForms(root),
+      body =
+        view === "left"
+          ? remainingHtml()
+          : view === "setup"
+            ? setupHtml(sid)
+            : view === "exams"
+              ? ui.course
+                ? '<div class="sp-back-row"><button type="button" class="sp-chip-btn" data-sp-home>All exams</button></div>' +
+                  examCardsHtml(sid, courses) +
+                  courseHtml(ui.course, sid)
+                : heroHtml(sid) +
+                  examCardsHtml(sid, courses) +
+                  clashHtml(sid)
+              : planViewHtml(sid);
     root.innerHTML =
-      headHtml(sid) +
-      '<div class="sp-body">' +
-      heroHtml(sid) +
-      examCardsHtml(sid, courses) +
-      clashHtml(sid) +
-      plannerHtml(sid) +
-      (ui.course ? courseHtml(ui.course, sid) : "") +
-      "</div>";
+      headHtml(sid, view) + '<div class="sp-body">' + body + "</div>";
+    restoreForms(root, drafts);
     if (Math.abs(window.scrollY - scrollY) > 2) window.scrollTo(0, scrollY);
   }
 
@@ -3100,8 +3907,33 @@
     var t = ev.target.closest("button, input, a, [data-sp-course]");
     if (!t || !$("study-plan-root").contains(t)) return;
     var d = t.dataset;
-    if (d.spSeason) {
+    if (d.spView) {
+      ui.view = d.spView;
+      if (d.spView !== "exams") ui.course = "";
+      render();
+      window.scrollTo(
+        0,
+        $("study-plan-root").getBoundingClientRect().top + window.scrollY - 20,
+      );
+    } else if (d.spOpenCourse) {
+      ui.view = "exams";
+      ui.course = d.spOpenCourse;
+      render();
+    } else if (d.spGotoStep) {
+      ui.view = "setup";
+      ui.step = Number(d.spGotoStep);
+      render();
+    } else if (d.spSessDone) {
+      var sess = C.items.find(function (i) {
+        return i.id === d.spSessDone;
+      });
+      if (!sess) return;
+      sess.planDone = true;
+      C.persist().then(C.renderAll);
+    } else if (d.spSeason) {
       ui.preview = null;
+      ui.step = undefined;
+      ui.fmtOpen = "";
       updatePlan(function (p) {
         p.season = d.spSeason;
       }, true);
@@ -3124,8 +3956,12 @@
         else delete p.done[ds][dc];
       }, true);
     } else if (t.hasAttribute("data-sp-build")) {
-      ui.preview = buildSchedule(season());
-      render();
+      // Setup may be the first screen to need these courses' analyses.
+      var buildFor = season();
+      whenLoaded(buildFor).then(function () {
+        ui.preview = buildSchedule(buildFor);
+        render();
+      });
     } else if (t.hasAttribute("data-sp-commit")) commitPreview();
     else if (t.hasAttribute("data-sp-discard")) {
       ui.preview = null;
@@ -3161,11 +3997,12 @@
       render();
     } else if (d.spFmtCancel) {
       delete ui.fmtEdit[d.spFmtCancel];
+      ui.fmtOpen = "";
       render();
     } else if (d.spFmtRemove) {
       if (
         !window.confirm(
-          "Remove this exam format? Practice goes back to the general view.",
+          "Remove this exam format?",
         )
       )
         return;
@@ -3174,7 +4011,8 @@
       ui.preview = null;
       updatePlan(function (p) {
         p.formats = p.formats || {};
-        formatKeys(ui.course, examFor(ui.course, season()), season()).forEach(
+        var fc = d.spFmtCourse || ui.course;
+        formatKeys(fc, examFor(fc, season()), season()).forEach(
           function (k) {
             delete p.formats[k];
           },
@@ -3182,6 +4020,7 @@
       }, true);
     } else if (d.spGoto) {
       var g = d.spGoto.split("|");
+      ui.view = "exams";
       ui.course = g[1];
       ui.preview = null;
       updatePlan(function (p) {
@@ -3191,11 +4030,34 @@
         0,
         $("study-plan-root").getBoundingClientRect().top + window.scrollY - 20,
       );
+    } else if (t.hasAttribute("data-sp-home")) {
+      ui.course = "";
+      render();
+    } else if (d.spStep) {
+      ui.step = Number(d.spStep);
+      render();
+    } else if (t.hasAttribute("data-sp-week-done")) {
+      ui.step = 2;
+      updatePlan(function (p) {
+        p.setup = Object.assign({}, p.setup, { week: true });
+      }, true);
+    } else if (t.hasAttribute("data-sp-type-add")) {
+      addCustomType(t.closest("form"));
+    } else if (d.spFmtOpen) {
+      ui.fmtOpen = d.spFmtOpen;
+      render();
+    } else if (d.spFmtLater) {
+      var later = d.spFmtLater;
+      ui.fmtOpen = "";
+      updatePlan(function (p) {
+        p.formatSkip = p.formatSkip || {};
+        p.formatSkip[later] = true;
+      }, true);
+    } else if (d.spSkip || d.spUnskip) {
+      var sk = (d.spSkip || d.spUnskip).split("|");
+      setBlockSkip(sk[0], sk[1], Boolean(d.spSkip));
     } else if (d.spUniClear) {
       saveUni(d.spUniClear, { leave: "", back: "" });
-    } else if (d.spFmtAll) {
-      ui.fmtAll[d.spFmtAll] = !ui.fmtAll[d.spFmtAll];
-      render();
     } else if (d.spReveal) {
       ui.revealed[d.spReveal] = !ui.revealed[d.spReveal];
       render();
@@ -3214,9 +4076,10 @@
         return isFinite(v) && v > 0 ? v : "";
       },
       sid = season(),
-      exam = examFor(ui.course, sid),
-      prev = formatFor(ui.course, exam, sid),
-      a = analysis(ui.course, sid),
+      course = form.dataset.spFormatCourse || ui.course,
+      exam = examFor(course, sid),
+      prev = formatFor(course, exam, sid),
+      a = analysis(course, sid),
       base = a ? overviewScope(a, exam).ids : [],
       chapters = fd.getAll("ch"),
       next = {
@@ -3226,14 +4089,31 @@
         minutes: num("minutes"),
         book: String(fd.get("book") || ""),
         topics: String(fd.get("topics") || "").trim(),
-        // Only a change from the overview's chapters is stored.
+        // Only a change from the overview's chapters is stored, and an exam
+        // with a date keeps it on the exam itself.
         chapters:
+          !exam &&
           chapters.length &&
           chapters.sort().join() !== base.slice().sort().join()
             ? chapters
             : null,
         updated: C.todayKey(),
       };
+    if (exam && a && C.setExamChapters) {
+      var changed =
+        chapters.length &&
+        chapters.slice().sort().join() !== base.slice().sort().join();
+      C.setExamChapters(exam.id, {
+        chapters: changed ? chapters : [],
+        chapterLabels: changed
+          ? a.chapters
+              .filter(function (c) {
+                return chapters.indexOf(c.id) > -1;
+              })
+              .map(chapterName)
+          : [],
+      });
+    }
     if (!next.types.length) next.types = detectFormats(next.notes);
     if (!next.types.length && !next.notes) {
       C.toast(
@@ -3260,14 +4140,16 @@
     }
     next.history = history;
     delete ui.fmtEdit[key];
+    ui.fmtOpen = "";
     ui.preview = null;
     updatePlan(function (p) {
       p.formats = p.formats || {};
       // A course-level format moves onto the exam once it has a date.
-      formatKeys(ui.course, exam, sid).forEach(function (k) {
+      formatKeys(course, exam, sid).forEach(function (k) {
         delete p.formats[k];
       });
       p.formats[key] = next;
+      if (p.formatSkip) delete p.formatSkip[key];
     }, true);
     C.toast(
       (prev ? "Exam format updated" : "Exam format saved") +
@@ -3281,24 +4163,41 @@
     if (!$("study-plan-root")) return;
     C = window.__shougCal;
     $("study-plan-root").addEventListener("click", onClick);
-    // Keep the leave-times panel open across re-renders once opened.
+    // Keep the "one day is different" list open across re-renders.
     $("study-plan-root").addEventListener(
       "toggle",
       function (ev) {
         if (!ev.target.classList) return;
-        if (ev.target.classList.contains("sp-blocked"))
-          ui.blockOpen = ev.target.open;
-        else if (ev.target.classList.contains("sp-uni"))
-          ui.uniOpen = ev.target.open;
+        if (ev.target.classList.contains("sp-uni-except"))
+          ui.uniExceptOpen = ev.target.open;
       },
       true,
     );
+    // Once a time field is left, bring the rest of the tab up to date. The
+    // delay lets a click on another control land before anything re-renders.
+    $("study-plan-root").addEventListener("focusout", function (ev) {
+      if (!ui.uniDirty || ev.target.type !== "time") return;
+      setTimeout(function () {
+        var a = document.activeElement;
+        if (!ui.uniDirty || (a && a.type === "time" && a.closest(".sp-uni"))) return;
+        ui.uniDirty = false;
+        refreshAfterUni();
+      }, 200);
+    });
     $("study-plan-root").addEventListener("change", function (ev) {
       var ud = ev.target.dataset && ev.target.dataset.spUni;
       if (ud) {
         var patch = {};
         patch[ev.target.dataset.f] = ev.target.value;
-        saveUni(ud, patch);
+        saveUni(ud, patch, true);
+        return;
+      }
+      if (ev.target.dataset && ev.target.dataset.spUniUsual) {
+        setUniUsual(ev.target.dataset.spUniUsual, ev.target.value);
+        return;
+      }
+      if (ev.target.dataset && ev.target.dataset.spUniDay) {
+        setUniDay(ev.target.dataset.spUniDay, ev.target.checked);
         return;
       }
       if (!ev.target.hasAttribute("data-sp-commute")) return;
@@ -3327,6 +4226,13 @@
       if (!form) return;
       ev.preventDefault();
       saveFormat(form);
+    });
+    // Enter in "another question type" adds it instead of saving the form.
+    $("study-plan-root").addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" && ev.target.hasAttribute("data-sp-type-input")) {
+        ev.preventDefault();
+        addCustomType(ev.target.closest("form"));
+      }
     });
     // Ticks the question types it recognises in what was typed.
     $("study-plan-root").addEventListener("input", function (ev) {
@@ -3363,6 +4269,8 @@
   window.__shougStudyPlan = {
     render: render,
     replan: replan,
+    overlaps: overlaps,
+    examChapters: examChapters,
     deleteAll: deleteAll,
     startOver: startOver,
   };

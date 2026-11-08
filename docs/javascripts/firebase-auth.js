@@ -77,6 +77,7 @@
       }),
     ])
       .then(function (snaps) {
+        rememberAccountPlan(snaps[0].exists ? snaps[0].data() : {});
         if (snaps[1] === BLOCKED) return main;
         var shared = snaps[0].exists ? snaps[0].data() : {},
           mine = snaps[1].exists ? snaps[1].data() : {},
@@ -253,6 +254,46 @@
       ? "/assets/avatars/" + AVATAR_PRESETS[i]
       : null;
   }
+  // Each preset has a copy in avatars/light/ on a light background. Pages build
+  // avatar markup themselves, so the swap watches the DOM rather than each one.
+  var AVATAR_SRC = /\/assets\/avatars\/(light\/)?(av-[a-z0-9]+\.webp)/;
+  var AVATAR_IMG = 'img[src*="/assets/avatars/"]';
+
+  function syncAvatarImage(img) {
+    var src = img.getAttribute("src") || "";
+    var match = AVATAR_SRC.exec(src);
+    if (!match) return;
+    var light = document.body.classList.contains("shoug-light-mode");
+    if (Boolean(match[1]) === light) return;
+    img.setAttribute(
+      "src",
+      src.replace(match[0], "/assets/avatars/" + (light ? "light/" : "") + match[2]),
+    );
+  }
+
+  function syncAvatarImages(root) {
+    root.querySelectorAll(AVATAR_IMG).forEach(syncAvatarImage);
+  }
+
+  function watchAvatarTheme() {
+    syncAvatarImages(document);
+    new MutationObserver(function () {
+      syncAvatarImages(document);
+    }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    new MutationObserver(function (records) {
+      records.forEach(function (record) {
+        record.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.matches(AVATAR_IMG)) syncAvatarImage(node);
+          else syncAvatarImages(node);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.body) watchAvatarTheme();
+  else document.addEventListener("DOMContentLoaded", watchAvatarTheme);
+
   function avatarBlock(className, preset, color, initial) {
     var url = avatarUrl(preset);
     if (url)
@@ -308,6 +349,10 @@
       ".shoug-drop-email{padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#4a4258;border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".shoug-drop-link{display:block;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#f8f7fb;text-decoration:none;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:background 120ms,color 120ms;box-sizing:border-box}",
       "html[dir='rtl'] .shoug-drop-link,body.shoug-arabic-mode .shoug-drop-link{text-align:right}",
+      // One type style for the whole menu. The class pair also outranks the
+      // site header's button rules, which otherwise restyle Sign Out.
+      ".shoug-user-dropdown :is(.shoug-notif-hdr,.shoug-notif-empty,.shoug-notif-text,.shoug-notif-text strong,.shoug-notif-preview,.shoug-notif-time,.shoug-drop-email,.shoug-drop-link){font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:800;line-height:1.4;letter-spacing:.06em;text-transform:none}",
+      ".shoug-user-dropdown .shoug-drop-link{padding:10px 14px}",
       ".shoug-drop-link:hover{background:rgba(184,41,234,.1);color:#b829ea}",
       ".shoug-drop-link.red:hover{background:rgba(255,42,75,.1);color:#ff2a4b}",
       /* notification badge */
@@ -344,6 +389,8 @@
       ".auth-error{font-size:.63rem;color:#ff2a4b;min-height:14px;letter-spacing:.04em}",
       ".auth-submit{background:#b829ea;color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:12px;cursor:pointer;transition:background 150ms;width:100%}",
       ".auth-submit:hover{background:#c940f5}",
+      "body.shoug-light-mode #shoug-auth-box .auth-submit{background:#b829ea!important;color:#fff!important;-webkit-text-fill-color:#fff}",
+      "body.shoug-light-mode #shoug-auth-box .auth-submit:hover{background:#a01fd0!important}",
       ".auth-submit:disabled{opacity:.5;cursor:not-allowed}",
       ".auth-oauth{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:background 150ms,border-color 150ms}",
       ".auth-oauth:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}",
@@ -503,20 +550,27 @@
       "#shoug-theme-toggle svg{width:15px;height:15px;display:block;}",
       "body.shoug-light-mode #shoug-theme-toggle{border-color:rgba(0,0,0,.12);background:transparent;color:#16111f;}",
       /* app-section tab bar */
-      "#shoug-app-nav{position:sticky;top:0;left:0;right:0;width:100%;max-width:100vw;height:40px;z-index:1000;margin:0;background:rgba(5,5,8,.96);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}",
+      "#shoug-app-nav{position:sticky;top:0;left:0;right:0;width:100%;max-width:100vw;height:58px;z-index:1000;margin:0;background:rgba(5,5,8,.96);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}",
       "#shoug-app-nav::-webkit-scrollbar{display:none;}",
-      ".shoug-app-tab{display:flex;align-items:center;flex-shrink:0;padding:0 20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4a4258;text-decoration:none;border-bottom:2px solid transparent;transition:color 150ms,border-color 150ms;white-space:nowrap;}",
+      ".shoug-app-tab{display:flex;align-items:center;flex-shrink:0;padding:0 22px;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4a4258;text-decoration:none;border-bottom:2px solid transparent;transition:color 150ms,border-color 150ms;white-space:nowrap;}",
       ".shoug-app-tab:hover{color:#b829ea;}",
       ".shoug-app-tab.active{color:#b829ea;border-bottom-color:#b829ea;}",
       "body.shoug-light-mode #shoug-app-nav{background:rgba(255,255,255,.96);border-bottom-color:rgba(0,0,0,.08);}",
       "body.shoug-light-mode .shoug-app-tab.active{color:#b829ea;}",
-      "@media(max-width:480px){#shoug-app-nav{height:38px;}.shoug-app-tab{padding:0 14px;font-size:.54rem;}#shoug-theme-toggle{margin-right:14px;}}",
-      "#shoug-app-nav .shoug-lang-btn{position:static!important;z-index:auto!important;flex:0 0 34px;margin-inline-end:8px;align-self:center;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:900;letter-spacing:.08em;cursor:pointer;}",
+      "#shoug-app-nav .shoug-app-signout{flex:0 0 auto;align-self:center;height:40px;margin-inline-end:8px;padding:0 14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#a7a2b3;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;cursor:pointer;}",
+      "#shoug-app-nav .shoug-app-signout:hover{color:#ff2a4b;border-color:rgba(255,42,75,.55);background:rgba(255,42,75,.08);}",
+      "body.shoug-light-mode #shoug-app-nav .shoug-app-signout{border-color:rgba(0,0,0,.12);background:transparent;color:#16111f;}",
+      "body.shoug-light-mode #shoug-app-nav .shoug-app-signout:hover{color:#d11a3a;border-color:rgba(209,26,58,.5);}",
+      "#shoug-app-nav #shoug-theme-toggle{width:40px;height:40px;align-self:center;}@media(max-width:480px){#shoug-app-nav{height:50px;}.shoug-app-tab{padding:0 14px;font-size:.66rem;}#shoug-theme-toggle{margin-right:14px;}}",
+      "#shoug-app-nav .shoug-lang-btn{position:static!important;z-index:auto!important;flex:0 0 40px;margin-inline-end:8px;align-self:center;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:900;letter-spacing:.08em;cursor:pointer;}",
       "#shoug-app-nav .shoug-lang-btn:hover{color:#b829ea;border-color:rgba(184,41,234,.55);background:rgba(184,41,234,.08);}",
       "body.shoug-light-mode #shoug-app-nav .shoug-lang-btn{border-color:rgba(0,0,0,.12);background:transparent;color:#16111f;}",
       /* forgot password / reset link */
       ".auth-forgot{background:transparent;border:none;color:#4a4258;font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;padding:0;text-align:left;letter-spacing:.04em;transition:color 120ms;}",
       ".auth-forgot:hover{color:#b829ea;}",
+      ".auth-remember{display:flex;align-items:center;gap:8px;padding:4px 0;color:#a79db8;font-size:.68rem;cursor:pointer}",
+      ".auth-remember input{width:15px;height:15px;margin:0;flex:none;accent-color:#b829ea;cursor:pointer}",
+      "body.shoug-light-mode .auth-remember{color:#4a4258}",
       /* update-email mini modal */
       "#shoug-ue-modal{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 150ms;}",
       "#shoug-ue-modal.open{opacity:1;display:flex;}",
@@ -568,6 +622,7 @@
       '    <div class="auth-divider"><span>or</span></div>',
       '    <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" id="auth-email" type="email" placeholder="your@email.com" autocomplete="email"></div>',
       '    <div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>',
+      '    <label class="auth-remember" id="auth-remember-row"><input type="checkbox" id="auth-remember"><span>Remember me on this device</span></label>',
       '    <button class="auth-forgot" id="auth-forgot">Forgot password?</button>',
       '    <div class="auth-error" id="auth-error"></div>',
       '    <button class="auth-submit" id="auth-submit">Sign In</button>',
@@ -693,6 +748,11 @@
 
   function openModal() {
     buildModal();
+    // Signed-in visitors only use this box to link a provider, which starts no new session.
+    document.getElementById("auth-remember-row").style.display =
+      window.firebase && firebase.apps.length && firebase.auth().currentUser
+        ? "none"
+        : "";
     modal.style.display = "flex";
     requestAnimationFrame(function () {
       modal.classList.add("open");
@@ -714,6 +774,108 @@
     }, 150);
   }
 
+  // ── Remember me / inactivity sign-out ─────────────────────────────────────
+  // Sessions stay in Firebase's default local storage, so they work across
+  // tabs. A device that isn't remembered is signed out after 30 minutes with
+  // no activity in any tab; the shared timestamp also catches a closed browser.
+  var REMEMBER_KEY = "shoug-remember-device";
+  var LAST_ACTIVE_KEY = "shoug-last-active";
+  var IDLE_LIMIT_MS = 30 * 60 * 1000;
+  var ACTIVITY_EVENTS = [
+    "pointerdown",
+    "mousemove",
+    "keydown",
+    "wheel",
+    "touchstart",
+    "scroll",
+  ];
+  var idleWatchOn = false;
+  var lastActivityWrite = 0;
+
+  function saveRememberChoice() {
+    if (firebase.auth().currentUser) return;
+    var box = document.getElementById("auth-remember");
+    try {
+      if (box && box.checked) localStorage.setItem(REMEMBER_KEY, "1");
+      else localStorage.removeItem(REMEMBER_KEY);
+      // Clear the old session's clock so this sign-in isn't counted as idle.
+      localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
+    } catch (e) {}
+  }
+
+  // Returns true when this call signed the visitor out.
+  function signOutIfIdle() {
+    if (!firebase.auth().currentUser) return false;
+    try {
+      if (localStorage.getItem(REMEMBER_KEY) === "1") return false;
+      var last = Number(localStorage.getItem(LAST_ACTIVE_KEY));
+      if (!last) {
+        localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
+        return false;
+      }
+      if (Date.now() - last < IDLE_LIMIT_MS) return false;
+    } catch (e) {
+      return false;
+    }
+    firebase
+      .auth()
+      .signOut()
+      .then(function () {
+        openModal();
+        errorEl.textContent = "Signed out after 30 minutes of inactivity.";
+      });
+    return true;
+  }
+
+  function noteActivity() {
+    var now = Date.now();
+    if (now - lastActivityWrite < 5000) return;
+    lastActivityWrite = now;
+    // Check first: the movement that wakes an idle tab must not reset its clock.
+    if (!firebase.auth().currentUser || signOutIfIdle()) return;
+    try {
+      localStorage.setItem(LAST_ACTIVE_KEY, String(now));
+    } catch (e) {}
+  }
+
+  function listenForActivity(target) {
+    ACTIVITY_EVENTS.forEach(function (name) {
+      target.addEventListener(name, noteActivity, {
+        capture: true,
+        passive: true,
+      });
+    });
+  }
+
+  // Course content runs in same-origin iframes, whose events never reach this
+  // window. A cross-origin frame throws here and is skipped.
+  function watchFrame(frame) {
+    try {
+      var win = frame.contentWindow;
+      if (!win || win.__shougIdleWatched) return;
+      win.__shougIdleWatched = true;
+      listenForActivity(win);
+    } catch (e) {}
+  }
+
+  function startIdleWatch() {
+    if (idleWatchOn) return;
+    idleWatchOn = true;
+    listenForActivity(window);
+    document.querySelectorAll("iframe").forEach(watchFrame);
+    document.addEventListener(
+      "load",
+      function (e) {
+        if (e.target && e.target.tagName === "IFRAME") watchFrame(e.target);
+      },
+      true,
+    );
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) signOutIfIdle();
+    });
+    setInterval(signOutIfIdle, 30000);
+  }
+
   function doSubmit() {
     var email = emailInput.value.trim();
     var pass = passInput.value;
@@ -722,6 +884,7 @@
       errorEl.textContent = "Email and password required.";
       return;
     }
+    saveRememberChoice();
     submitEl.disabled = true;
     submitEl.textContent = "Loading…";
     var currentUser = firebase.auth().currentUser;
@@ -867,6 +1030,7 @@
       btn.disabled = true;
       btn.textContent = "Redirecting…";
     }
+    saveRememberChoice();
     var provider = new firebase.auth.GoogleAuthProvider();
     var user = firebase.auth().currentUser;
     if (user) {
@@ -903,6 +1067,7 @@
       btn.disabled = true;
       btn.textContent = "Redirecting…";
     }
+    saveRememberChoice();
     var provider = new firebase.auth.GithubAuthProvider();
     var user = firebase.auth().currentUser;
     if (user) {
@@ -1167,6 +1332,8 @@
   // ── Exam reminders ────────────────────────────────────────────────────────
 
   var _examReminderUid = null;
+  var _examToastTimer = null;
+  var _examToastEndsAt = 0;
   var CALENDAR_REMINDER_PREF = "shoug-calendar-reminders-enabled:";
 
   function calendarRemindersEnabled(user) {
@@ -1194,6 +1361,23 @@
     return Math.round((then - now) / 86400000);
   }
 
+  function clockMinutes(value) {
+    var match = /^(\d{1,2}):(\d{2})/.exec(value || "");
+    return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+  }
+
+  // When a timed item is over, in ms. An item with only a start runs an hour,
+  // as on the calendar. Null means no time was set, so it lasts the whole day.
+  function reminderEndsAt(dateStr, start, end) {
+    var day = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr || "");
+    var from = clockMinutes(start);
+    var to = clockMinutes(end);
+    if (!day || (from === null && to === null)) return null;
+    if (to === null) to = from + 60;
+    else if (from !== null) to = Math.max(from + 1, to);
+    return new Date(+day[1], +day[2] - 1, +day[3], 0, to).getTime();
+  }
+
   function examTypeLabel(type) {
     type = String(type || "exam").toLowerCase();
     return EXAM_TYPE_LABELS[type] || type.toUpperCase();
@@ -1216,6 +1400,8 @@
   }
 
   function removeExamToast() {
+    clearTimeout(_examToastTimer);
+    _examToastEndsAt = 0;
     var toast = document.getElementById("shoug-exam-toast");
     if (!toast) return;
     toast.classList.remove("open");
@@ -1295,7 +1481,29 @@
     requestAnimationFrame(function () {
       toast.classList.add("open");
     });
+    if (exam.endsAt) {
+      _examToastEndsAt = exam.endsAt;
+      _examToastTimer = setTimeout(
+        refreshExamReminder,
+        Math.max(0, exam.endsAt - Date.now()),
+      );
+    }
   }
+
+  function refreshExamReminder() {
+    removeExamToast();
+    _examReminderUid = null;
+    try {
+      var user = firebase.auth().currentUser;
+      if (user) startExamReminder(user);
+    } catch (e) {}
+  }
+
+  // Timers pause while a phone sleeps, so check again on return.
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && _examToastEndsAt && Date.now() >= _examToastEndsAt)
+      refreshExamReminder();
+  });
 
   function maybeFireBrowserExamNotification(user, exam) {
     if (
@@ -1367,6 +1575,7 @@
             type: e.type,
             date: e.date,
             days: days,
+            endsAt: reminderEndsAt(e.date, e.start, e.end),
             reminderKind: "exam",
           };
         });
@@ -1387,6 +1596,12 @@
               title: item.title,
               date: dueDate,
               days: daysUntilExam(dueDate),
+              // Only a presentation is an event; other work is due at its end.
+              endsAt: reminderEndsAt(
+                dueDate,
+                item.kind === "presentation" ? item.start : "",
+                item.end,
+              ),
               reminderKind: "assignment",
               workType:
                 item.kind === "presentation"
@@ -1403,6 +1618,7 @@
         upcoming = upcoming
           .filter(function (e) {
             if (e.days === null || e.days < 0 || e.days > 7) return false;
+            if (e.endsAt && e.endsAt <= Date.now()) return false;
             return (
               e.reminderKind !== "assignment" ||
               !Array.isArray(e.reminderDays) ||
@@ -2795,15 +3011,27 @@
         },
       ];
     } else if (context === "account-calendar") {
+      var calTab = function (name) {
+        return function () {
+          return document.querySelector('[data-cal-tab="' + name + '"]');
+        };
+      };
       steps = [
         {
+          target: calTab("classes"),
+          position: "bottom",
+          tag: "Calendar · Classes",
+          title: "Start With Your Classes",
+          body: "Add each class once, or import your whole EduGate schedule. Your absences are tracked here too.",
+        },
+        {
           target: function () {
-            return document.getElementById("semester-scope");
+            return document.getElementById("quick-add-btn");
           },
           position: "bottom",
-          tag: "Calendar · Semester",
-          title: "Filter by Semester",
-          body: "Use this when you want one term only. Choose <strong>All semesters</strong> to browse everything.",
+          tag: "Calendar · Add",
+          title: "Add Anything From Here",
+          body: "Events, assignments, projects, exams, classes and study sessions all start from this one button.",
         },
         {
           target: function () {
@@ -2812,7 +3040,7 @@
           position: "bottom",
           tag: "Calendar · Today",
           title: "Today at a Glance",
-          body: "These cards show today’s classes, exams, study sessions, and real exam conflicts.",
+          body: "Today’s classes, exams, study sessions and any real conflicts.",
         },
         {
           target: function () {
@@ -2824,40 +3052,35 @@
           position: "top",
           tag: "Calendar · Month",
           title: "Open Any Day",
-          body: "Click a day to see the hourly Apple-style view, edit exams, add events, or adjust a single class meeting.",
+          body: "Click a day to see its hours, add something, or change a single class meeting.",
         },
         {
-          target: function () {
-            return document.getElementById("view-filters");
-          },
-          position: "left",
-          tag: "Calendar · Focus",
-          title: "Hide Layers Temporarily",
-          body: "Turn layers on or off without deleting anything. Useful when you only want to see exams or study sessions.",
+          target: calTab("assignments"),
+          position: "bottom",
+          tag: "Calendar · Assignments",
+          title: "Everything That’s Due",
+          body: "Mark work as submitted. On group projects, use <strong>I’ve Finished My Part</strong> so your partners’ timing doesn’t count against you.",
         },
         {
-          target: function () {
-            return (
-              document.getElementById("class-title") ||
-              document.getElementById("calendar-class-panel")
-            );
-          },
-          position: "left",
-          tag: "Calendar · Classes",
-          title: "Add Class Schedules",
-          body: "Add a course once for the semester. PSU dates stop the course automatically when classes end.",
+          target: calTab("upcoming-exams"),
+          position: "bottom",
+          tag: "Calendar · Exams",
+          title: "Your Exams by Type",
+          body: "Quizzes, midterms and finals are listed separately, each with a countdown.",
         },
         {
-          target: function () {
-            return (
-              document.getElementById("study-template") ||
-              document.getElementById("calendar-study-panel")
-            );
-          },
-          position: "left",
-          tag: "Calendar · Study",
-          title: "Schedule Study Blocks",
-          body: "Pick an exam and a template to quickly create a study session before the exam.",
+          target: calTab("study-plan"),
+          position: "bottom",
+          tag: "Calendar · Study Plan",
+          title: "A Schedule Built for You",
+          body: "Open <strong>Setup</strong>, tell it about your week and how each exam will ask, and it plans your study time. If your calendar changes, the plan moves with it.",
+        },
+        {
+          target: calTab("grades"),
+          position: "bottom",
+          tag: "Calendar · Grades",
+          title: "Just Type Your Scores",
+          body: "Each course lists its assessments from the syllabus. Fill in your scores to see your GPA and what you still need.",
         },
       ];
     } else if (context === "account") {
@@ -3160,6 +3383,7 @@
     // Tooltip card — always above header
     var card = document.createElement("div");
     card.id = "shoug-ob-card";
+    card.setAttribute("data-ar-own", "");
     card.style.cssText =
       "position:fixed;z-index:" +
       CARD_Z +
@@ -3735,8 +3959,10 @@
       : "en";
   }
 
-  // The student's own grid: the plan picked on the transcript page, else the grid
-  // they've been filling in, else the plan picker. Keep in sync with account-nav.js.
+  // The student's own grid: the major and track on their account, else the plan
+  // picked on the transcript page, else the grid they've been filling in, else
+  // the plan picker. Keep in sync with account-nav.js.
+  var ACCOUNT_PLAN_KEY = "shoug-account-plan";
   var PLAN_GRID_KEYS = {
     "cs-ai": "shoug_academic_plan_grid_cs_ai_v1",
     "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
@@ -3750,6 +3976,9 @@
   };
   function planGridHref() {
     try {
+      var account = localStorage.getItem(ACCOUNT_PLAN_KEY);
+      if (account && PLAN_GRID_KEYS[account])
+        return "/academic-plan-themes/" + account + "/grid.html";
       var picked = /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
         localStorage.getItem("shoug-transcript-plan") || "",
       );
@@ -3767,6 +3996,37 @@
       if (best) return "/academic-plan-themes/" + best + "/grid.html";
     } catch (e) {}
     return "/academic-plan-themes/academic-plan/";
+  }
+
+  // Profile values look like "Software Engineering (SE)" and "Cyber Security
+  // (CYS)". A track with no grid of its own uses the major's base grid; IS has
+  // no base grid, so those students get the picker.
+  function accountPlanFor(profile) {
+    var major = /\((CS|SE|IS)\)/.exec(profile.major || "");
+    if (!major) return "";
+    var base = major[1].toLowerCase();
+    var track = /\((AI&DS|CYS|DX)\)/.exec(profile.track || "");
+    var plan = track
+      ? base + "-" + { "AI&DS": "ai", CYS: "cys", DX: "dx" }[track[1]]
+      : base;
+    return PLAN_GRID_KEYS[plan] ? plan : PLAN_GRID_KEYS[base] ? base : "";
+  }
+
+  function rememberAccountPlan(profile) {
+    try {
+      var plan = accountPlanFor(profile);
+      if (plan) localStorage.setItem(ACCOUNT_PLAN_KEY, plan);
+      else localStorage.removeItem(ACCOUNT_PLAN_KEY);
+    } catch (e) {}
+    // The header can be drawn before the profile arrives.
+    var href = planGridHref();
+    document
+      .querySelectorAll(
+        '.shoug-app-tab[href^="/academic-plan-themes/"], .shoug-drop-link[href^="/academic-plan-themes/"]',
+      )
+      .forEach(function (link) {
+        link.setAttribute("href", href);
+      });
   }
 
   var APP_NAV_LABELS = {
@@ -3812,12 +4072,44 @@
       return;
     var script = document.createElement("script");
     script.id = "shoug-arabic-localization-script";
-    script.src = "/javascripts/arabic-localization.js?v=60";
+    script.src = "/javascripts/arabic-localization.js?v=61";
     script.defer = true;
     document.head.appendChild(script);
   }
 
+  function signOutLabel() {
+    return curNavLang() === "ar" ? "تسجيل الخروج" : "Sign Out";
+  }
+
+  // Sign Out in the account header, and on the plan grids (the My Plan tab),
+  // which have their own header instead.
+  function injectSignOut() {
+    if (document.getElementById("shoug-app-signout")) return;
+    var nav = document.getElementById("shoug-app-nav"),
+      gridActions =
+        /\/grid\.html$/.test(window.location.pathname) &&
+        document.querySelector("header.page-head .actions");
+    if (!nav && !gridActions) return;
+    var btn = document.createElement("button");
+    btn.id = "shoug-app-signout";
+    btn.type = "button";
+    btn.className = nav ? "shoug-app-signout" : "lang-toggle";
+    btn.textContent = signOutLabel();
+    btn.addEventListener("click", function () {
+      firebase.auth().signOut();
+    });
+    if (nav)
+      nav.insertBefore(
+        btn,
+        nav.querySelector("[data-lang-toggle]") ||
+          document.getElementById("shoug-theme-toggle"),
+      );
+    else gridActions.appendChild(btn);
+  }
+
   function updateAppNavLang() {
+    var signOut = document.getElementById("shoug-app-signout");
+    if (signOut) signOut.textContent = signOutLabel();
     var nav = document.getElementById("shoug-app-nav");
     if (!nav) return;
     var labels = APP_NAV_LABELS[curNavLang()];
@@ -3947,6 +4239,8 @@
   }
 
   function removeAppNav() {
+    var signOut = document.getElementById("shoug-app-signout");
+    if (signOut) signOut.remove();
     var el = document.getElementById("shoug-app-nav");
     if (el) el.remove();
   }
@@ -4077,8 +4371,6 @@
         "#today-dashboard",
         "#month-grid",
         "#view-filters",
-        "#class-title",
-        "#study-template",
         "#exam-list",
         ".today-card",
         ".day[data-date]",
@@ -4201,10 +4493,17 @@
       }
       try {
         if (user) localStorage.setItem("shoug-was-signed-in", "1");
-        else localStorage.removeItem("shoug-was-signed-in");
+        else {
+          localStorage.removeItem("shoug-was-signed-in");
+          localStorage.removeItem(ACCOUNT_PLAN_KEY);
+        }
       } catch (e) {}
       // Move any private data off the shared profile as soon as possible.
       if (user) privateRecordReady(user.uid);
+      if (user) {
+        startIdleWatch();
+        signOutIfIdle();
+      }
       if (!user && _notifUnsub) {
         _notifUnsub();
         _notifUnsub = null;
@@ -4221,6 +4520,7 @@
           injectCompleteBtn(user);
           injectPageIcons(user);
           injectAppNav(user);
+          injectSignOut();
           injectCommentSection(user);
         }
         startExamReminder(user);
