@@ -772,6 +772,11 @@
       if (s === null) return;
       busy.push([s - BUFFER, Math.max(en, s + 15) + BUFFER]);
     });
+    // Times you said you can't study.
+    blocksOn(day).forEach(function (x) {
+      if (!x.start || !x.end) all = true;
+      else busy.push([C.minutes(x.start), C.minutes(x.end)]);
+    });
     // The drive there and back. Gaps on campus stay free for study.
     var trip = uniTrip(day);
     if (trip) {
@@ -779,6 +784,17 @@
       busy.push([trip.back, trip.home + BUFFER]);
     }
     return { all: all, busy: busy };
+  }
+  // Times you can't study (plan.blocked): weekly on the chosen weekdays,
+  // or one date. No times means the whole day.
+  function blocks() {
+    return Array.isArray(plan().blocked) ? plan().blocked : [];
+  }
+  function blocksOn(day) {
+    var wd = C.fromKey(day).getDay();
+    return blocks().filter(function (x) {
+      return x.date ? x.date === day : (x.days || []).indexOf(wd) > -1;
+    });
   }
   function freeSlots(day, sid, startMin) {
     var b = busyFor(day, sid);
@@ -1234,6 +1250,46 @@
       C.toast("Study plan deleted");
     });
   }
+  // Delete every study session, past and upcoming, then build a fresh plan
+  // for the season from today and save it.
+  function startOver(sid) {
+    sid = sid || season();
+    var n = C.items.filter(function (i) {
+      return i.planSource === "study-plan";
+    }).length;
+    if (
+      !window.confirm(
+        "Delete all " +
+          n +
+          " study session" +
+          (n === 1 ? "" : "s") +
+          " (including ones you moved, edited or ticked off) and build a fresh " +
+          seasonInfo(sid).noun.toLowerCase() +
+          " plan from today?",
+      )
+    )
+      return Promise.resolve(false);
+    for (var i = C.items.length - 1; i >= 0; i--)
+      if (C.items[i].planSource === "study-plan") C.items.splice(i, 1);
+    ui.preview = null;
+    return whenLoaded(sid).then(function () {
+      var pv = buildSchedule(sid);
+      applySchedule(sid, pv);
+      return C.persist().then(function () {
+        C.renderAll();
+        C.toast(
+          pv.placed.length
+            ? "Fresh plan: " +
+                pv.placed.length +
+                " session" +
+                (pv.placed.length === 1 ? "" : "s") +
+                (pv.short > 0 ? ", but not everything fits" : "")
+            : "Study plan deleted. Add exam dates to build a new one.",
+        );
+        return true;
+      });
+    });
+  }
   function clearPlanned() {
     var sid = season(),
       n = removePlanned(sid);
@@ -1540,6 +1596,94 @@
       "</div></details>"
     );
   }
+  var WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  function blockLabel(x) {
+    var when = x.date
+        ? shortDate(x.date)
+        : x.days.length === 7
+          ? "Every day"
+          : x.days
+              .map(function (d) {
+                return WEEK[d];
+              })
+              .join(", "),
+      time =
+        x.start && x.end ? C.timeRange(x.start, x.end) : "All day";
+    return when + " · " + time + (x.label ? " · " + x.label : "");
+  }
+  function blockedHtml() {
+    var list = blocks();
+    return (
+      '<details class="sp-uni sp-blocked"' +
+      (ui.blockOpen ? " open" : "") +
+      "><summary>Times you can't study" +
+      (list.length ? " · " + list.length + " set" : "") +
+      '</summary><p class="sp-muted">Work, gym, family time… No sessions are planned in these. Leave the times empty to block the whole day.</p>' +
+      (list.length
+        ? '<div class="sp-block-list">' +
+          list
+            .map(function (x) {
+              return (
+                '<div class="sp-block-row"><span>' +
+                esc(blockLabel(x)) +
+                '</span><button type="button" class="sp-link-btn" data-sp-block-remove="' +
+                esc(x.id) +
+                '">Remove</button></div>'
+              );
+            })
+            .join("") +
+          "</div>"
+        : "") +
+      '<form class="sp-block-form" data-sp-block-form><div class="sp-block-days" role="group" aria-label="Weekdays">' +
+      WEEK.map(function (d, i) {
+        return (
+          '<label><input type="checkbox" name="day" value="' +
+          i +
+          '" /><span>' +
+          d +
+          "</span></label>"
+        );
+      }).join("") +
+      '</div><div class="sp-block-fields"><label>Or one date<input type="date" name="date" /></label><label>From<input type="time" name="start" /></label><label>To<input type="time" name="end" /></label><label>Note<input type="text" name="label" maxlength="40" placeholder="Optional, e.g. Work" /></label><button class="btn" type="submit">Add</button></div></form></details>'
+    );
+  }
+  // Saving a change to your unavailable times rebuilds the plan around them.
+  function saveBlocks(mutate, what) {
+    var sid = season();
+    ui.blockOpen = true;
+    updatePlan(mutate, true);
+    if (plannedItems(sid).length) replan(sid, what);
+    else if (ui.preview) {
+      ui.preview = buildSchedule(sid);
+      render();
+    }
+  }
+  function addBlock(form) {
+    var f = new FormData(form),
+      days = f.getAll("day").map(Number),
+      date = f.get("date") || "",
+      start = f.get("start") || "",
+      end = f.get("end") || "",
+      label = String(f.get("label") || "").trim();
+    if (!days.length && !date) {
+      C.toast("Pick the weekdays or a date");
+      return;
+    }
+    if (Boolean(start) !== Boolean(end)) {
+      C.toast("Add both times, or leave both empty for the whole day");
+      return;
+    }
+    if (start && end <= start) {
+      C.toast("End time must be after start time");
+      return;
+    }
+    var x = { id: C.uid(), start: start, end: end, label: label };
+    if (date) x.date = date;
+    else x.days = days.sort();
+    saveBlocks(function (p) {
+      p.blocked = (Array.isArray(p.blocked) ? p.blocked : []).concat([x]);
+    }, "Unavailable time added");
+  }
   function saveUni(day, patch) {
     var rebuild = Boolean(ui.preview);
     ui.uniOpen = true;
@@ -1581,7 +1725,7 @@
       (C.items.some(function (i) {
         return i.planSource === "study-plan";
       })
-        ? '<button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button>'
+        ? '<button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button>'
         : "") +
       "</div>" +
       (planned.length
@@ -1591,7 +1735,8 @@
       '<label class="sp-commute">Drive to and from uni<input type="number" min="0" max="240" step="5" data-sp-commute value="' +
       commute() +
       '" aria-label="Minutes of driving each way" /><span>min each way</span></label>' +
-      uniTimesHtml();
+      uniTimesHtml() +
+      blockedHtml();
     if (planned.length && !pv) {
       var next = planned.slice().sort(function (x, y) {
         return (x.date + x.start).localeCompare(y.date + y.start);
@@ -2987,6 +3132,15 @@
       render();
     } else if (t.hasAttribute("data-sp-clear")) clearPlanned();
     else if (t.hasAttribute("data-sp-delete-all")) deleteAll();
+    else if (t.hasAttribute("data-sp-start-over")) startOver();
+    else if (d.spBlockRemove) {
+      var bid = d.spBlockRemove;
+      saveBlocks(function (p) {
+        p.blocked = (p.blocked || []).filter(function (x) {
+          return x.id !== bid;
+        });
+      }, "Unavailable time removed");
+    }
     else if (d.spLevel !== undefined) {
       var a = analysis(ui.course, season());
       if (!a) return;
@@ -3131,7 +3285,10 @@
     $("study-plan-root").addEventListener(
       "toggle",
       function (ev) {
-        if (ev.target.classList && ev.target.classList.contains("sp-uni"))
+        if (!ev.target.classList) return;
+        if (ev.target.classList.contains("sp-blocked"))
+          ui.blockOpen = ev.target.open;
+        else if (ev.target.classList.contains("sp-uni"))
           ui.uniOpen = ev.target.open;
       },
       true,
@@ -3161,6 +3318,11 @@
       }
     });
     $("study-plan-root").addEventListener("submit", function (ev) {
+      if (ev.target.hasAttribute("data-sp-block-form")) {
+        ev.preventDefault();
+        addBlock(ev.target);
+        return;
+      }
       var form = ev.target.closest("[data-sp-format-form]");
       if (!form) return;
       ev.preventDefault();
@@ -3198,6 +3360,11 @@
     });
     render();
   }
-  window.__shougStudyPlan = { render: render, replan: replan };
+  window.__shougStudyPlan = {
+    render: render,
+    replan: replan,
+    deleteAll: deleteAll,
+    startOver: startOver,
+  };
   boot();
 })();

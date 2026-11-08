@@ -1332,6 +1332,13 @@
         }
       }
 
+      .todo-plan-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
       .todo-plan-head {
         grid-column: 1 / -1;
         display: flex;
@@ -4152,7 +4159,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
-    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261107a" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261108a" />
   </head>
 
   <body>
@@ -10056,7 +10063,7 @@
           var today = todayKey(),
             shown = todoShowAllPlan ? list : list.slice(0, 6);
           return (
-            '<div class="todo-plan-head"><span>Study plan · next 7 days</span><button class="remove-btn edit" type="button" data-open-study-plan>Open study plan</button></div>' +
+            '<div class="todo-plan-head"><span>Study plan · next 7 days</span><span class="todo-plan-actions"><button class="remove-btn edit" type="button" data-open-study-plan>Open study plan</button><button class="remove-btn edit" type="button" data-plan-start-over title="Delete every study session and build a fresh plan">Start over</button><button class="remove-btn" type="button" data-plan-delete-all>Delete all</button></span></div>' +
             shown
               .map(function (i) {
                 var when =
@@ -10194,6 +10201,25 @@
                   if (!done) persist().then(renderAll);
                 },
               );
+            });
+          });
+          list.querySelectorAll("[data-plan-start-over]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              var sp = window.__shougStudyPlan,
+                last = items
+                  .filter(function (i) {
+                    return i.planSource === "study-plan" && i.planSeason;
+                  })
+                  .sort(function (x, y) {
+                    return y.date.localeCompare(x.date);
+                  })[0];
+              if (sp && sp.startOver) sp.startOver(last && last.planSeason);
+            });
+          });
+          list.querySelectorAll("[data-plan-delete-all]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              var sp = window.__shougStudyPlan;
+              if (sp && sp.deleteAll) sp.deleteAll();
             });
           });
           list.querySelectorAll("[data-plan-more]").forEach(function (b) {
@@ -13903,7 +13929,7 @@
       defer
     ></script>
     <script src="/javascripts/calendar-views.js?v=20261107a" defer></script>
-    <script src="/javascripts/study-plan.js?v=20261107a" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261108a" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=2" defer></script>
   </body>
