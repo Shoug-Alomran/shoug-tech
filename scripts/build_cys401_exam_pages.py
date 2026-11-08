@@ -22,28 +22,37 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from normalize_page_urls import normalize  # noqa: E402
+from quiz_banks.cys401_chapter_quizzes import CHAPTER_QUIZZES  # noqa: E402
 from quiz_banks.cys401_exams import EXAMS  # noqa: E402
 
 EXAMS_DIR = ROOT / "docs/academics/cybersecurity/cys401/exams"
 CHROME = EXAMS_DIR / "01-chapter-1-quiz/index.html"
 BASE = "/academics/cybersecurity/cys401/exams/"
 
+PAPER_FOOTER = ("Transcribed from the original paper for revision. Answers follow the official key; "
+                "where the key is wrong or ambiguous, the explanation says so.")
+
 PAGE_CSS = """
 :root{color-scheme:dark;--bg:#07050a;--panel:#100a12;--panel-2:#160e1a;--line:rgba(255,255,255,.12);
 --line-dim:rgba(255,255,255,.07);--text:#f4f1f6;--muted:#a49daa;--accent:#ff2e63;--accent-soft:rgba(255,46,99,.12);
 --ok:#22c55e;--ok-soft:rgba(34,197,94,.12);--bad:#ef4444;--bad-soft:rgba(239,68,68,.1);--warn:#eab308;
 --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
---sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+--bar:rgba(16,10,18,.96);--note-text:#f5e6a8}
+html[data-theme="light"]{color-scheme:light;--bg:#fbf7f7;--panel:#fff;--panel-2:#fdf0f2;--line:rgba(120,40,55,.24);
+--line-dim:rgba(120,40,55,.14);--text:#221417;--muted:#5a4a4f;--accent:#c8102e;--accent-soft:rgba(200,16,46,.08);
+--ok:#15803d;--ok-soft:rgba(21,128,61,.1);--bad:#b91c1c;--bad-soft:rgba(185,28,28,.08);--warn:#92400e;
+--bar:rgba(255,255,255,.96);--note-text:#6b4a06}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65}
-.wrap{max-width:900px;margin:0 auto;padding:clamp(20px,4vw,48px) clamp(16px,4vw,32px) 96px}
-header.exam-head{border:1px solid var(--line);background:linear-gradient(160deg,var(--panel-2),var(--panel));padding:clamp(20px,3vw,32px);margin-bottom:22px}
+.wrap{max-width:1240px;margin:0 auto;padding:clamp(20px,4vw,48px) clamp(16px,4vw,32px) 96px}
+.exam-head{border:1px solid var(--line);background:linear-gradient(160deg,var(--panel-2),var(--panel));padding:clamp(20px,3vw,32px);margin-bottom:22px}
 .kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 h1{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.2;margin:0 0 10px}
 .meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.04em}
 .intro{margin:14px 0 0;color:var(--muted);font-size:.95rem}
 .scorebar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-padding:12px 16px;margin-bottom:24px;border:1px solid var(--line);background:rgba(16,10,18,.96);backdrop-filter:blur(6px)}
+padding:12px 16px;margin-bottom:24px;border:1px solid var(--line);background:var(--bar);backdrop-filter:blur(6px)}
 .score{font-family:var(--mono);font-size:.8rem;letter-spacing:.06em}
 .score strong{color:var(--accent);font-size:1rem}
 .btn{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:10px 15px;
@@ -83,13 +92,13 @@ select:focus,input:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .feedback p:last-child{margin-bottom:0}
 .model{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-dim);color:var(--muted)}
 .model b{color:var(--text)}
-.note{margin-top:10px;padding:10px 12px;border:1px dashed rgba(234,179,8,.5);color:#f5e6a8;font-size:.87rem}
+.note{margin-top:10px;padding:10px 12px;border:1px dashed rgba(234,179,8,.5);color:var(--note-text);font-size:.87rem}
 .note b{color:var(--warn)}
 .missed{color:var(--bad)}
 .q-actions{margin-top:14px}
 footer.exam-foot{margin-top:32px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);
 font-size:.68rem;color:var(--muted);letter-spacing:.05em}
-@media(max-width:700px){.match-item{grid-template-columns:1fr}.wrap{padding-bottom:72px}
+@media(max-width:700px){.match-item{grid-template-columns:1fr}.wrap{padding-bottom:72px;padding-inline:12px}.q{padding:12px 10px}
 .scorebar{position:static}input[type=text]{max-width:none}}
 @media print{.scorebar,.q-actions,.btn{display:none}.feedback{display:block}}
 """
@@ -306,7 +315,7 @@ def render_exam(exam: dict) -> str:
     desc = html.escape(exam["intro"], quote=True)
     og_title = html.escape(f'CYS401 {exam["title"]} - interactive, with answer checking', quote=True)
     return f"""<!doctype html>
-<html lang="en">
+<html lang="en" data-sg-styled>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -324,15 +333,17 @@ def render_exam(exam: dict) -> str:
     <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png" />
     <link rel="stylesheet" href="/styles/a11y.css" />
     <style>{PAGE_CSS}</style>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
   </head>
   <body>
     <div class="wrap">
-      <header class="exam-head">
+      <div class="exam-head">
         <div class="kicker">CYS401 · Fundamentals of Cybersecurity</div>
         <h1>{esc(exam["title"])}</h1>
         <div class="meta">{esc(exam["meta"])}</div>
         <p class="intro">{esc(exam["intro"])}</p>
-      </header>
+      </div>
       <div class="scorebar">
         <span class="score" id="score"></span>
         <button type="button" class="btn btn-primary" id="check-all">Check all answers</button>
@@ -340,8 +351,7 @@ def render_exam(exam: dict) -> str:
       </div>
 {chr(10).join(body)}
       <footer class="exam-foot">
-        Transcribed from the original paper for revision. Answers follow the official key;
-        where the key is wrong or ambiguous, the explanation says so.
+        {esc(exam.get("footer", PAPER_FOOTER))}
       </footer>
     </div>
     <script>{script}</script>
@@ -357,16 +367,19 @@ def wrapper(exam: dict) -> str:
     page = re.sub(r'(?<=")(?:\./)?chapter-1-quiz\.html(?=")', exam["file"], page)
     page = re.sub(r'<title>.*?</title>',
                   f'<title>CYS401 | {esc(exam["title"])}</title>', page, count=1, flags=re.S)
-    return page
+    head, body = page.split("</head>", 1)
+    return head.replace("01-chapter-1-quiz", exam["slug"]) + "</head>" + body
 
 
 def main() -> None:
-    for exam in EXAMS:
+    for exam in EXAMS + CHAPTER_QUIZZES:
         folder = EXAMS_DIR / exam["slug"]
         folder.mkdir(parents=True, exist_ok=True)
         (folder / exam["file"]).write_text(render_exam(exam), encoding="utf-8")
         target = folder / "index.html"
-        target.write_text(normalize(wrapper(exam), target.resolve()), encoding="utf-8")
+        # Wrappers carry per-page sidebar and nav state, so only a new exam gets one.
+        if not target.exists():
+            target.write_text(normalize(wrapper(exam), target.resolve()), encoding="utf-8")
         questions = sum(len(s["questions"]) for s in exam["sections"])
         print(f'built {exam["slug"]}/ ({questions} questions)')
 

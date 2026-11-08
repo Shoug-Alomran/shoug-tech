@@ -263,7 +263,7 @@ THEME_CSS = """
             margin-bottom: 14px;
         }
 
-        .sect-intro { color: var(--text-dim); max-width: 72ch; margin-bottom: 34px; }
+        .sect-intro { color: var(--text-dim); margin-bottom: 34px; }
 
         /* ── metadata strip ─────────────────────────────────── */
         .meta-strip {
@@ -1374,6 +1374,20 @@ __FOOTER__
 
 
 
+REPORT = """
+            <section class="block" id="report">
+                <div class="sect-label">// Event report</div>
+                <h2 class="sect-title">Read the event report</h2>
+                <p class="sect-intro">The official report on ACM WebForge 2026 covers the three workshops, the Programming
+                    Jam's tasks and evaluation rubric, participation figures, the final standings, and recommendations
+                    for the next cycle. It is available as a PDF in English and Arabic.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="/workshops/webforge/report/acm-webforge-2026-event-report-english.pdf" target="_blank" rel="noopener">[ Read the report in English -&gt; ]</a>
+                    <a class="btn btn-ghost" href="/workshops/webforge/report/acm-webforge-2026-event-report-arabic.pdf" target="_blank" rel="noopener" hreflang="ar" lang="ar">[ اقرأ التقرير بالعربية ]</a>
+                </div>
+            </section>
+"""
+
 HUB_CARDS = """
             <section class="block" id="explore">
                 <div class="sect-label">// Sections</div>
@@ -1504,6 +1518,7 @@ def build_hub(chrome: dict[str, str], parts: dict[str, str]) -> str:
         parts["intro"].replace("__SUBNAV__", subnav(EVENT, ""))
         + parts["contribution"]
         + parts["journey"]
+        + REPORT
         + HUB_CARDS
         + "        </div>\n"
         + CTA
