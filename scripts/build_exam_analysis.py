@@ -228,6 +228,10 @@ def build(src_path):
                 "chapter": it["chapter"],
                 "name": it["name"],
                 "memorize": it.get("memorize", ""),
+                # Readiness asks about main ideas, comparisons, processes and
+                # grouped slide takeaways. Formulas, number tables and drills
+                # are excluded unless the inventory explicitly opts them in.
+                "readiness": bool(it.get("readiness", it["kind"] in {"concept", "compare", "process", "list"})),
                 "slides": slides,
                 "decks": decks,
                 "practice": count_hits(pats, practice) if practice else 0,
@@ -271,10 +275,11 @@ def build(src_path):
                 "slides": len(pages),
                 "decks": len(c["decks"]),
                 "syllabus_share": round(c.get("syllabus_weeks", 1) / total_weeks, 3),
-                "minutes": int(round(max(item_min, slide_min) / 5.0) * 5),
+                "minutes": int(round(max(item_min, slide_min, c.get("estimated_minutes", 0)) / 5.0) * 5),
                 "items": len(mine),
                 "kinds": {k: sum(1 for i in mine if i["kind"] == k) for k in KIND_LABELS},
                 "links": c.get("links", []),
+                "upcoming": bool(c.get("upcoming", False)),
             }
         )
 

@@ -12,7 +12,7 @@
  *    What's left to learn drives the schedule.
  *  - The scheduler fits learn, review and final-review sessions into free
  *    time before each exam, splitting hours by how much each course still
- *    needs per day left, and raises the daily cap until everything fits.
+ *    needs per day left, and only uses more of the daily cap when needed.
  *    Sessions are saved as Study events (planSource "study-plan").
  *  - Remaining: every exam and deadline still ahead, in the order to start
  *    them, and how heavy each week looks against your free time. An
@@ -55,9 +55,11 @@
   var EASY_DAY = 90;
   // How much study a day is realistic in total, for judging a week.
   var STUDY_DAY = 180;
-  var LEVELS = ["New", "Shaky", "Solid"];
+  var LEVELS = ["New", "Shaky", "Solid", "Previously studied"];
   // Share of an item's study time still needed at each readiness level.
-  var FACTOR = [1, 0.55, 0.15];
+  // Previously studied material gets the same revision time as Shaky: it
+  // needs refreshing, but should come back faster than learning it from new.
+  var FACTOR = [1, 0.55, 0.15, 0.55];
   var DAY_START = 9 * 60,
     DAY_END = 22 * 60,
     BUFFER = 15,
@@ -167,6 +169,7 @@
       drill: true,
       revealed: {},
       open: {},
+      readyOpen: {},
       fmtEdit: {},
       fmtCustom: {},
     };
@@ -225,6 +228,10 @@
   function plan() {
     return localPlan || C.studyPlan || {};
   }
+  function studyLimits() {
+    var x = plan().studyLimits || {};
+    return { daily: Number(x.daily) || 10, weekly: Number(x.weekly) || 0 };
+  }
   // Readiness taps save after a short pause so a run of taps is one write.
   function updatePlan(mutate, now, quiet) {
     var p = JSON.parse(JSON.stringify(plan()));
@@ -263,7 +270,85 @@
   }
   function level(course, a, unit) {
     var r = (plan().ready || {})[readyKey(course, a)] || {};
-    return Number(r[unit]) || 0;
+    if (Object.prototype.hasOwnProperty.call(r, unit)) return Number(r[unit]) || 0;
+    return previouslyStudied(course, a, unit) ? 3 : 0;
+  }
+  function previouslyStudied(course, a, unit) {
+    var current = examFor(course, season());
+    if (!current || !current.date) return false;
+    var chapterId = unit.indexOf("ch:") === 0 ? unit.slice(3) : null;
+    if (!chapterId) {
+      var item = itemById(a, unit);
+      chapterId = item && item.chapter;
+    }
+    if (!chapterId) return false;
+    return C.exams.some(function (earlier) {
+      if (!earlier.date || earlier.date >= current.date || C.courseLabel(earlier.course) !== course) return false;
+      var earlierType = C.canonicalExamType(earlier.type);
+      if (["quiz", "bonus-quiz", "midterm", "final"].indexOf(earlierType) < 0) return false;
+      var picked = earlier.chapters && earlier.chapters.length ? earlier.chapters : null;
+      var earlierScope = picked
+        ? a.chapters.map(function (ch) { return ch.id; }).filter(function (id) { return picked.indexOf(id) > -1; })
+        : overviewScope(a, earlier).ids;
+      return earlierScope.indexOf(chapterId) > -1;
+    });
+  }
+  function migrateLegacyReadiness(sid) {
+    if ((plan().readinessMigration || {})[sid] === "previously-studied-v1") return false;
+    var exams = seasonExams(sid), changed = false;
+    updatePlan(function (p) {
+      p.ready = p.ready || {};
+      exams.forEach(function (exam) {
+        var course = C.courseLabel(exam.course), a = analysis(course, sid);
+        if (!a) return;
+        var record = p.ready[readyKey(course, a)];
+        if (!record) return;
+        Object.keys(record).forEach(function (unit) {
+          if (Number(record[unit]) === 1 && previouslyStudied(course, a, unit)) {
+            record[unit] = 3;
+            changed = true;
+          }
+        });
+      });
+      p.readinessMigration = p.readinessMigration || {};
+      p.readinessMigration[sid] = "previously-studied-v1";
+    }, true);
+    return changed;
+  }
+  function isRated(course, a, unit) {
+    // Unselected topics use level 0 (New), so every in-scope unit has an
+    // effective readiness value even before the student changes a control.
+    return true;
+  }
+  function readinessProgress(sid) {
+    var total = 0, marked = 0;
+    seasonExams(sid).forEach(function (exam) {
+      var course = C.courseLabel(exam.course), a = analysis(course, sid);
+      if (!a) return;
+      var ids = scopeIds(a, exam);
+      a.chapters.forEach(function (ch) {
+        if (ids.indexOf(ch.id) < 0) return;
+        if (a.curated) chapterItems(a, ch.id).filter(isMainPointReadinessItem).forEach(function (item) {
+          total++;
+          marked++;
+        });
+        else {
+          total++;
+          marked++;
+        }
+      });
+    });
+    return { total: total, marked: marked, done: total > 0 && total === marked };
+  }
+  function recommendedMinutes(sid) {
+    var first = firstStudyDay();
+    return seasonExams(sid).reduce(function (sum, exam) {
+      var course = C.courseLabel(exam.course), a = analysis(course, sid);
+      if (!a || exam.date <= first) return sum;
+      var sessions = sessionsFor(course, a, exam, sid);
+      credit(sessions, course, a, exam, sid, first);
+      return sum + sessionMinutes(sessions);
+    }, 0);
   }
 
   // ── Exams and courses ─────────────────────────────────────────────────
@@ -440,6 +525,33 @@
       return i.chapter === chId;
     });
   }
+  // Readiness is a quick check of each slide's main takeaway, not every
+  // detail. Conceptual topics are included by default; inventory items such
+  // as SOLID can opt in even when their analysis kind is a list or problem.
+  // Formula drills, number tables and memorization details stay out unless
+  // explicitly marked readiness:true in the source inventory.
+  function isMainPointReadinessItem(item) {
+    if (item.readiness !== undefined) return item.readiness === true;
+    return ["concept", "compare", "process", "list"].indexOf(item.kind) > -1;
+  }
+  // Mastery is a rating, while scheduled minutes are a separate estimate.
+  // Solid means fully ready even though the plan can still reserve review time.
+  function levelReadiness(levelIndex) {
+    return [0, 50, 100, 50][levelIndex] || 0;
+  }
+  function chapterReadiness(course, a, ch) {
+    if (ch.upcoming) return null;
+    if (!a.curated) return levelReadiness(level(course, a, "ch:" + ch.id));
+    var its = chapterItems(a, ch.id).filter(isMainPointReadinessItem),
+      total = 0,
+      ready = 0;
+    its.forEach(function (i) {
+      var weight = Math.max(1, Number(i.minutes) || 0);
+      total += weight;
+      ready += weight * levelReadiness(level(course, a, i.id));
+    });
+    return total ? Math.round(ready / total) : null;
+  }
   // Minutes still needed for a chapter: its study time scaled by how much
   // of its items' time is left (curated), or by the chapter's own level.
   function chapterLeft(course, a, ch) {
@@ -456,16 +568,30 @@
   function courseProgress(course, a, exam) {
     var ids = scopeIds(a, exam),
       total = 0,
-      left = 0;
+      left = 0,
+      readinessTotal = 0,
+      readinessWeight = 0;
     a.chapters.forEach(function (ch) {
       if (ids.indexOf(ch.id) < 0) return;
       total += ch.minutes;
       left += chapterLeft(course, a, ch);
+      var readiness = chapterReadiness(course, a, ch);
+      if (readiness !== null) {
+        var weight = a.curated
+          ? chapterItems(a, ch.id).filter(isMainPointReadinessItem).reduce(function (sum, item) {
+              return sum + Math.max(1, Number(item.minutes) || 0);
+            }, 0)
+          : ch.minutes;
+        if (weight) {
+          readinessTotal += readiness * weight;
+          readinessWeight += weight;
+        }
+      }
     });
     return {
       total: total,
       left: left,
-      ready: total ? Math.round((1 - left / total) * 100) : 0,
+      ready: readinessWeight ? Math.round(readinessTotal / readinessWeight) : 0,
     };
   }
   function hours(min) {
@@ -491,24 +617,32 @@
       fmtLine = fTypes.length
         ? "Exam format: " + formatSummary(fmt) + ". "
         : "",
-      heldForReview = null,
-      reviewChapters = a.chapters
+      heldForReview = null;
+    var orderedChapters = a.chapters
         .filter(function (c) {
-          return ids.indexOf(c.id) > -1 && chapterLeft(course, a, c) >= 15;
+          return ids.indexOf(c.id) > -1;
         })
-        .map(function (c) {
-          return c.id;
+        .sort(function (x, y) {
+          var xp = x.minutes ? chapterLeft(course, a, x) / x.minutes : 0,
+            yp = y.minutes ? chapterLeft(course, a, y) / y.minutes : 0;
+          return yp - xp || chapterLeft(course, a, y) - chapterLeft(course, a, x);
         });
-    a.chapters.forEach(function (ch) {
-      if (ids.indexOf(ch.id) < 0) return;
+    var reviewChapters = orderedChapters.filter(function (c) {
+      return chapterLeft(course, a, c) >= 15;
+    }).map(function (c) { return c.id; });
+    // Put chapters with the most work still to do first. New chapters keep
+    // their full estimate and won't be left behind the revision work if the
+    // calendar runs out of room before the exam.
+    orderedChapters.forEach(function (ch) {
       var left = chapterLeft(course, a, ch);
       if (left < 15) return;
       var n = Math.ceil(left / MAX_SESSION),
-        part = Math.max(MIN_SESSION, round15(left / n)),
+        remaining = Math.ceil(left),
         name = course + " " + noun + " · " + chapterName(ch),
         focus = chapterItems(a, ch.id)
+          .filter(isMainPointReadinessItem)
           .filter(function (i) {
-            return level(course, a, i.id) < 2;
+            return level(course, a, i.id) !== 2;
           })
           .sort(function (x, y) {
             return y.score - x.score;
@@ -517,7 +651,9 @@
           .map(function (i) {
             return i.name;
           });
-      for (var k = 0; k < n; k++)
+      for (var k = 0; k < n; k++) {
+        var part = Math.ceil(remaining / (n - k));
+        remaining -= part;
         learn.push({
           kind: "learn",
           chapter: ch.id,
@@ -526,6 +662,7 @@
           title: name + (k ? " (continued)" : ""),
           notes: fmtLine + (focus.length ? "Focus: " + focus.join("; ") : ""),
         });
+      }
       // Chapters are reviewed two at a time, after the second is learned.
       var paired = heldForReview;
       heldForReview = paired ? null : ch;
@@ -547,7 +684,7 @@
           fmtLine +
           "Active recall: close the slides, write what you remember, then check.",
       };
-    });
+      });
     return {
       learn: learn,
       reviews: reviews,
@@ -564,6 +701,23 @@
           }
         : null,
     };
+  }
+  function sessionMinutes(s) {
+    var total = s.learn.reduce(function (sum, item) {
+      return sum + item.minutes;
+    }, 0);
+    Object.keys(s.reviews).forEach(function (key) {
+      total += s.reviews[key].minutes;
+    });
+    if (s.final) total += s.final.minutes;
+    return total;
+  }
+  function firstStudyDay() {
+    var now = new Date(),
+      nowMin = now.getHours() * 60 + now.getMinutes(),
+      today = C.todayKey(),
+      startToday = Math.max(DAY_START, Math.ceil((nowMin + 30) / 15) * 15);
+    return startToday > DAY_END - MIN_SESSION ? C.addDays(today, 1) : today;
   }
   // Minutes of driving each way to campus (plan.commute, 30 if never set).
   function commute() {
@@ -593,6 +747,8 @@
     "friday",
     "saturday",
   ];
+  // Days being previewed as staying home, before you've agreed to it.
+  var homeDays = {};
   // Your usual times for a weekday (plan.uni[weekday] = {leave, back}).
   function uniTimes(day) {
     return (plan().uni || {})[UNI_DAYS[C.fromKey(day).getDay()]] || {};
@@ -608,6 +764,8 @@
       leave = t.leave ? C.minutes(t.leave) : null,
       back = t.back ? C.minutes(t.back) : null;
     if (!span) {
+      // You said you'd stay home when this day's classes went online.
+      if (homeDays[day] || (plan().uniHome || {})[day]) return null;
       var anyClass = C.eventsFor(day, true).some(function (e) {
         return e.kind === "class";
       });
@@ -707,8 +865,8 @@
   // spread: how far above its even daily share a course may go in one day.
   // Low values pace the work out evenly up to each exam; the caller raises it
   // with the daily cap when the plan doesn't fit.
-  function attempt(jobs, days, sid, cap, startToday, spread) {
-    var placed = [];
+  function attempt(jobs, days, sid, cap, startToday, spread, weeklyCap) {
+    var placed = [], weekUsed = {};
     jobs.forEach(function (j) {
       j.q = j.s.learn.map(function (x) {
         return Object.assign({}, x);
@@ -731,15 +889,18 @@
       return m;
     }
     days.forEach(function (day, di) {
-      var startMin = di === 0 ? startToday : DAY_START,
+      var week = Math.floor(di / 7),
+        startMin = di === 0 ? startToday : DAY_START,
         slots = freeSlots(day, sid, startMin),
         used = 0;
+      weekUsed[week] = weekUsed[week] || 0;
       function take(len) {
         for (var i = 0; i < slots.length; i++) {
           if (slots[i][1] - slots[i][0] >= len) {
             var st = slots[i][0];
             slots[i] = [st + len + BUFFER, slots[i][1]];
             used += len;
+            weekUsed[week] += len;
             return st;
           }
         }
@@ -812,7 +973,7 @@
           }
         });
         if (!best) break;
-        var room = Math.min(cap - used, biggest(), best.limit - best.today);
+        var room = Math.min(cap - used, weeklyCap ? weeklyCap - weekUsed[week] : Infinity, biggest(), best.limit - best.today);
         if (room < MIN_SESSION) break;
         // Don't start a sliver of a session; leave it for a day with room.
         var nextLen = (best.q[0] || {}).minutes || 0;
@@ -941,13 +1102,24 @@
       }, first),
       days = [];
     for (var d = first; d <= lastDay; d = C.addDays(d, 1)) days.push(d);
-    var cap = START_CAP,
+    // Start close to an even daily pace, then raise the cap only if needed.
+    // Retries stop at the student's daily maximum, so a dense plan cannot
+    // silently exceed the limit they chose.
+    var limits = studyLimits(),
+      totalNeed = jobs.reduce(function (sum, j) {
+        return sum + sessionMinutes(j.s);
+      }, 0),
+      averageDaily = totalNeed / Math.max(1, days.length),
+      dailyCap = Math.min(Math.round(limits.daily * 60), MAX_CAP),
+      cap = Math.min(dailyCap, Math.max(START_CAP, Math.ceil(averageDaily / 30) * 30)),
       spread = 1.25,
-      res = attempt(jobs, days, sid, cap, startToday, spread);
-    while (res.short > 0 && cap < MAX_CAP) {
-      if (spread < 2) spread += 0.25;
-      else cap += 60;
-      res = attempt(jobs, days, sid, cap, startToday, spread);
+      weeklyCap = limits.weekly ? Math.round(limits.weekly * 60) : 0,
+      res = attempt(jobs, days, sid, cap, startToday, spread, weeklyCap);
+    // Start with an even daily pace. If constraints leave work unscheduled,
+    // progressively use more of the student's stated daily maximum.
+    while (res.short > 0 && cap < dailyCap) {
+      cap = Math.min(dailyCap, cap + 30);
+      res = attempt(jobs, days, sid, cap, startToday, spread, weeklyCap);
     }
     res.placed.sort(function (x, y) {
       return (x.date + x.start).localeCompare(y.date + y.start);
@@ -955,14 +1127,7 @@
     res.placed = mergeSessions(res.placed);
     return {
       jobs: jobs.map(function (j) {
-        var need = 0;
-        j.s.learn.forEach(function (x) {
-          need += x.minutes;
-        });
-        Object.keys(j.s.reviews).forEach(function (k) {
-          need += j.s.reviews[k].minutes;
-        });
-        if (j.s.final) need += j.s.final.minutes;
+        var need = sessionMinutes(j.s);
         return { course: j.course, exam: j.exam, need: need, left: j.left };
       }),
       placed: res.placed,
@@ -1545,6 +1710,19 @@
           ". The day before the first one goes to its final review, so the second one's final review comes after the first exam ends.</div>"
       : "";
   }
+  // Weekdays you have an in-person class, for ticking the right days at first.
+  function classDays() {
+    var seen = {};
+    C.classes.forEach(function (c) {
+      if (c.onlineOnly) return;
+      (c.days || []).forEach(function (d) {
+        seen[d] = true;
+      });
+    });
+    return UNI_DAYS.filter(function (d) {
+      return seen[d];
+    });
+  }
   // plan.uni stays one entry per weekday; the panel shows the times most
   // days share, and "Repeats every" is the days using them.
   function uniUsual() {
@@ -1552,13 +1730,20 @@
       groups = {};
     UNI_DAYS.forEach(function (d) {
       var t = all[d];
-      if (!t || (!t.leave && !t.back)) return;
+      if (!t) return;
       var key = (t.leave || "") + "|" + (t.back || "");
       (groups[key] = groups[key] || []).push(d);
     });
     var keys = Object.keys(groups);
-    if (!keys.length)
-      return ui.uniDraft || { leave: "", back: "", days: UNI_DAYS.slice(0, 5) };
+    if (!keys.length) {
+      if (ui.uniDraft) return ui.uniDraft;
+      var known = classDays();
+      return {
+        leave: "",
+        back: "",
+        days: known.length ? known : UNI_DAYS.slice(0, 5),
+      };
+    }
     function full(k) {
       return k.charAt(0) !== "|" && k.charAt(k.length - 1) !== "|" ? 1 : 0;
     }
@@ -1663,9 +1848,97 @@
       x.hidden = !(t.leave || t.back);
     });
   }
-  function refreshAfterUni() {
+  function seasonsWithPlan() {
+    return SEASONS.map(function (x) {
+      return x.id;
+    }).filter(function (sid) {
+      return plannedItems(sid).length;
+    });
+  }
+  // Your week changed, so every season with a plan is rebuilt around it.
+  function rebuildPlans(what, quiet) {
+    var list = seasonsWithPlan();
+    reflowing = true;
+    return list
+      .reduce(function (chain, sid, n) {
+        return chain.then(function () {
+          return replan(sid, what, quiet || n < list.length - 1);
+        });
+      }, Promise.resolve())
+      .then(
+        function () {
+          reflowing = false;
+        },
+        function () {
+          reflowing = false;
+        },
+      );
+  }
+  function refreshAfterUni(what) {
+    if (seasonsWithPlan().length) return rebuildPlans(what || "Uni times changed");
     if (ui.preview) ui.preview = buildSchedule(season());
     render();
+    return Promise.resolve();
+  }
+  function planSnapshot() {
+    return JSON.parse(
+      JSON.stringify(
+        C.items.filter(function (i) {
+          return i.planSource === "study-plan";
+        }),
+      ),
+    );
+  }
+  function restorePlan(before) {
+    for (var n = C.items.length - 1; n >= 0; n--)
+      if (C.items[n].planSource === "study-plan") C.items.splice(n, 1);
+    before.forEach(function (i) {
+      C.items.push(i);
+    });
+  }
+  // Back to no uni days or times of your own, with an Undo for a slip.
+  function resetUni() {
+    var p = plan(),
+      fields = ["uni", "commute", "uniHome"],
+      saved = {},
+      before = planSnapshot(),
+      any = false;
+    fields.forEach(function (f) {
+      if (p[f] === undefined) return;
+      saved[f] = JSON.parse(JSON.stringify(p[f]));
+      if (f !== "uni" || Object.keys(p.uni).length) any = true;
+    });
+    if (!any && !ui.uniDraft) {
+      C.toast("Nothing to reset");
+      return;
+    }
+    ui.uniDraft = null;
+    ui.uniDirty = false;
+    ui.uniExceptOpen = false;
+    updatePlan(
+      function (x) {
+        fields.forEach(function (f) {
+          delete x[f];
+        });
+      },
+      true,
+      true,
+    );
+    rebuildPlans("Uni days reset", true).then(function () {
+      if (ui.preview) ui.preview = buildSchedule(season());
+      render();
+      C.toastUndo("Uni days reset", function () {
+        updatePlan(
+          function (x) {
+            Object.assign(x, saved);
+          },
+          true,
+          true,
+        );
+        restorePlan(before);
+        C.persist().then(C.renderAll);
+      });
+    });
   }
   var WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   function blockLabel(x) {
@@ -1720,7 +1993,7 @@
   function saveBlocks(mutate, what) {
     var sid = season();
     updatePlan(mutate, true);
-    if (plannedItems(sid).length) replan(sid, what);
+    if (seasonsWithPlan().length) rebuildPlans(what);
     else if (ui.preview) {
       ui.preview = buildSchedule(sid);
       render();
@@ -1760,7 +2033,7 @@
     }, "Unavailable time added");
   }
   // typing: a time field is still being edited, so save without re-rendering.
-  function saveUni(days, patch, typing) {
+  function saveUni(days, patch, typing, what) {
     updatePlan(
       function (p) {
         p.uni = p.uni || {};
@@ -1779,34 +2052,23 @@
     if (typing) {
       ui.uniDirty = true;
       syncUniPanel();
-    } else if (ui.preview) refreshAfterUni();
+      return Promise.resolve();
+    }
+    return refreshAfterUni(what);
   }
   function setUniDay(day, on) {
     var u = uniUsual(),
-      hasTimes = Boolean(u.leave || u.back);
+      hasTimes = Boolean(u.leave || u.back),
+      saving = Promise.resolve();
     if (on) {
-      if (hasTimes) saveUni(day, { leave: u.leave, back: u.back });
-      else {
-        ui.uniDraft = { leave: "", back: "", days: u.days.concat(day) };
-        render();
-      }
-    } else if (!hasTimes) {
-      ui.uniDraft = {
-        leave: "",
-        back: "",
-        days: u.days.filter(function (d) {
-          return d !== day;
-        }),
-      };
-      render();
+      saving = saveUni(day, hasTimes ? { leave: u.leave, back: u.back, active: true } : { active: true }, false, "Uni days changed");
     } else {
-      // Unticking the last day keeps its times ready for the next tick.
-      if (u.days.length === 1 && u.days[0] === day)
-        ui.uniDraft = { leave: u.leave, back: u.back, days: [] };
-      saveUni(day, { leave: "", back: "" });
+      saving = saveUni(day, { leave: "", back: "", active: "" }, false, "Uni days changed");
     }
-    var box = $("study-plan-root").querySelector('[data-sp-uni-day="' + day + '"]');
-    if (box) box.focus();
+    saving.then(function () {
+      var box = $("study-plan-root").querySelector('[data-sp-uni-day="' + day + '"]');
+      if (box) box.focus();
+    });
   }
   function setUniUsual(field, value) {
     var u = uniUsual(),
@@ -1818,6 +2080,8 @@
   }
   function plannerHtml(sid, ready) {
     var ex = seasonExams(sid),
+      limits = studyLimits(),
+      ratings = readinessProgress(sid),
       noun = seasonInfo(sid).noun.toLowerCase(),
       planned = plannedItems(sid),
       pv = ui.preview,
@@ -1844,10 +2108,10 @@
         "</b></p><p class=\"sp-muted\">" +
         esc(shortDate(next.date)) +
         (next.start ? " · " + esc(C.timeLabel(next.start)) : "") +
-        '</p><div class="sp-actions"><button class="btn solid" type="button" data-sp-build>Re-plan</button><button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button><button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button></div><div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.</div></div>';
+        '</p><div class="sp-actions"><button class="btn solid" type="button" data-sp-build' + (ratings.done ? '' : ' disabled') + '>Re-plan</button><button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button><button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button></div>' + (ratings.done ? '' : '<p class="sp-note">Rate every in-scope topic before rebuilding (' + ratings.marked + ' of ' + ratings.total + ' rated).</p>') + '<div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.</div></div>';
     } else if (!pv)
       out +=
-        '<div class="sp-build-start"><h4>Ready to build your schedule</h4><p class="sp-muted">Study sessions go into your free time before each exam, around your classes, events and the drive.</p><ul class="sp-build-list">' +
+        '<div class="sp-build-start"><h4>Ready to build your schedule</h4><p class="sp-muted">Study sessions go into your free time before each exam, around your classes, events and the drive.</p><p class="sp-note">Rate every in-scope chapter or topic as New, Shaky, or Solid first (' + ratings.marked + ' of ' + ratings.total + ' rated). The estimate updates as you rate topics.</p><p class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope at your current readiness levels. This is a planning estimate, not a guaranteed 40/40.</p><ul class="sp-build-list">' +
         ex
           .map(function (e) {
             return (
@@ -1862,7 +2126,7 @@
           })
           .join("") +
         '</ul><button class="btn solid sp-build-go" type="button" data-sp-build' +
-        (ready ? "" : " disabled") +
+        (ready && ratings.done ? "" : " disabled") +
         ">Build my schedule</button></div>";
     if (pv) {
       out += '<div class="sp-preview">';
@@ -1898,9 +2162,11 @@
         (pv.short ? " warn" : "") +
         '">' +
         (pv.short
-          ? "Even at " +
-            pv.cap / 60 +
-            " h a day there isn't enough free time before these exams. Free up evenings or weekends, or mark items you already know as Solid."
+          ? "Most of this plan fits. About " +
+            hours(pv.jobs.reduce(function (total, job) { return total + (Number(job.left) || 0); }, 0)) +
+            " of study is still unscheduled before the exams at your " +
+            limits.daily + " h/day" + (limits.weekly ? " and " + limits.weekly + " h/week" : "") +
+            " limits. Increase either limit to see whether the remaining work fits, or mark chapters you already know as Solid."
           : "Busiest day needs " +
             hours(
               pv.placed.reduce(function (m, p) {
@@ -2345,7 +2611,7 @@
       return i.id === id;
     });
   }
-  function levelButtons(unit, lv) {
+  function levelButtons(unit, lv, course) {
     return (
       '<span class="sp-level" role="group" aria-label="Readiness">' +
       LEVELS.map(function (l, n) {
@@ -2354,6 +2620,8 @@
           n +
           '" data-sp-unit="' +
           esc(unit) +
+          '" data-sp-ready-course="' +
+          esc(course || ui.course) +
           '" aria-pressed="' +
           (lv === n) +
           '" class="l' +
@@ -2551,7 +2819,7 @@
           "</div>"
       : "";
   }
-  function chaptersHtml(course, a, exam) {
+  function chaptersHtml(course, a, exam, conceptsOnly) {
     var ids = scopeIds(a, exam);
     return (
       '<section class="sp-box"><div class="sp-box-head"><div><h3>What to study</h3><p class="sp-muted">' +
@@ -2594,8 +2862,9 @@
         .map(function (ch) {
           var inScope = ids.indexOf(ch.id) > -1,
             left = chapterLeft(course, a, ch),
-            ready = ch.minutes ? Math.round((1 - left / ch.minutes) * 100) : 0,
+            ready = chapterReadiness(course, a, ch) || 0,
             its = chapterItems(a, ch.id),
+            ratingItems = conceptsOnly ? its.filter(isMainPointReadinessItem) : its,
             open = ui.open[ch.id],
             parts = String(ch.title).split(" · "),
             num = parts.length > 1 ? parts[0] : "",
@@ -2611,8 +2880,7 @@
             '<span class="sp-ch-title">' +
             esc(name) +
             '</span><span class="sp-ch-meta">' +
-            ch.slides +
-            " slides" +
+            (ch.upcoming ? "Syllabus topic · slides not provided yet" : ch.slides + " slides") +
             (its.length ? " · " + its.length + " topics" : "") +
             " · " +
             hours(left) +
@@ -2620,7 +2888,9 @@
             "</span>" +
             studyLinksHtml(ch) +
             "</div>" +
-            (a.curated
+            (ch.upcoming
+              ? '<span class="sp-upcoming-badge">UPCOMING · SYLLABUS</span>'
+              : a.curated
               ? '<button type="button" class="sp-chev" data-sp-open="' +
                 esc(ch.id) +
                 '" aria-expanded="' +
@@ -2630,14 +2900,14 @@
                 " topics in " +
                 esc(ch.title) +
                 '"></button>'
-              : levelButtons("ch:" + ch.id, level(course, a, "ch:" + ch.id))) +
+              : levelButtons("ch:" + ch.id, level(course, a, "ch:" + ch.id), course)) +
             "</div>";
-          if (!a.curated) return head;
+          if (!a.curated || ch.upcoming) return head;
           if (!open) return head;
           return (
             head +
             '<div class="sp-items">' +
-            its
+            ratingItems
               .slice()
               .sort(function (x, y) {
                 return (
@@ -2669,7 +2939,7 @@
                     ? '<div class="sp-item-mem">' + esc(i.memorize) + "</div>"
                     : "") +
                   "</div>" +
-                  levelButtons(i.id, lv) +
+                  levelButtons(i.id, lv, course) +
                   "</div>"
                 );
               })
@@ -2810,11 +3080,12 @@
   }
   // Everything still ahead: exams with the study left for them, and
   // Unsubmitted assignments, projects and presentations with estimated hours.
+  // Anything dated today is 0 days away and no longer counts as ahead.
   function remainingEntries() {
     var today = C.todayKey(),
       out = [];
     C.exams.forEach(function (e) {
-      if (!e.date || e.date < today) return;
+      if (!e.date || e.date <= today) return;
       var course = C.courseLabel(e.course),
         sid = examSeason(e),
         a = analysis(course, sid),
@@ -2843,7 +3114,7 @@
           i.kind !== "presentation") ||
         i.submitted ||
         !i.date ||
-        i.date < today
+        i.date <= today
       )
         return;
       out.push({
@@ -3155,6 +3426,18 @@
   function formatSkipped(key) {
     return Boolean((plan().formatSkip || {})[key]);
   }
+  function readinessBodyHtml(sid, st) {
+    var rows = st.rows, ratings = readinessProgress(sid);
+    return '<p class="sp-wiz-lead"></p>' +
+      '<div class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope. Unchanged topics count as New. Choose Previously studied for material you learned before and need to refresh; it receives the same revision time as Shaky. Solid topics count as 100% ready, while the schedule still reserves a short review. Use this as a planning estimate, not a 40/40 guarantee.</div>' +
+      rows.map(function (r, n) {
+        var a = analysis(r.course, sid);
+        if (!a) return '<div class="sp-note">No topic analysis is available for ' + esc(r.course) + '; it cannot be rated here.</div>';
+        var key = sid + ':' + n, opened = Boolean(ui.readyOpen[key]), prog = courseProgress(r.course, a, r.exam);
+        return '<section class="sp-course sp-readiness-course' + (opened ? ' open' : '') + '"' + hue(r.course) + '><button class="sp-course-head sp-readiness-toggle" type="button" data-sp-readiness="' + key + '" aria-expanded="' + opened + '">' + ring(prog ? prog.ready : 0, undefined, 'sm') + '<span class="sp-course-title"><span class="sp-eyebrow">' + esc(examLabel(r.exam)) + '</span><b>' + esc(r.course) + '</b><small>' + (prog ? Math.round(prog.ready) + '% topic readiness' : 'Readiness not available') + '</small></span><span class="sp-readiness-chevron" aria-hidden="true">' + (opened ? '−' : '+') + '</span></button>' + (opened ? '<div class="sp-readiness-content">' + chaptersHtml(r.course, a, r.exam, true) + '</div>' : '') + '</section>';
+      }).join('') +
+      '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="2">Back</button><span>' + ratings.marked + ' of ' + ratings.total + ' rated</span><button class="btn solid" type="button" data-sp-step="4"' + (ratings.done ? '' : ' disabled') + '>Next: build schedule</button></div>';
+  }
   function examRows(sid) {
     return seasonExams(sid).map(function (e) {
       var course = C.courseLabel(e.course),
@@ -3187,7 +3470,7 @@
   }
   function weekBodyHtml() {
     return (
-      '<div class="sp-wk"><div class="sp-wk-part"><h4>Getting to uni</h4><p class="sp-muted">Set a normal day once. Days you leave off are worked out from your classes.</p>' +
+      '<div class="sp-wk"><div class="sp-wk-part sp-study-limits"><h4>Study time limits</h4><p class="sp-muted">Set your maximum study time. Leave the weekly limit empty for no weekly cap.</p><div class="sp-limit-fields"><label>Hours per day<input type="number" min="1" max="10" step="0.5" data-sp-study-daily value="' + studyLimits().daily + '" /></label><label>Hours per week<input type="number" min="0.5" max="70" step="0.5" data-sp-study-weekly value="' + (studyLimits().weekly || "") + '" placeholder="No limit" /></label></div></div><div class="sp-wk-part"><div class="sp-wk-head"><h4>Getting to uni</h4><button type="button" class="sp-chip-btn" data-sp-uni-reset>Reset</button></div><p class="sp-muted">Set a normal day once. Days you leave off are worked out from your classes.</p>' +
       uniTimesHtml() +
       '</div><div class="sp-wk-part"><h4>Times you can\'t study</h4><p class="sp-muted">Work, gym, family. No study is planned in these.</p>' +
       blockedHtml() +
@@ -3266,7 +3549,7 @@
         : "<span></span>") +
       '<button class="btn solid" type="button" data-sp-step="3"' +
       (left ? " disabled" : "") +
-      ">Next: build your plan</button></div>"
+      ">Next: rate your readiness</button></div>"
     );
   }
   // Upcoming dates of weekly unavailable times, each of which can be freed.
@@ -3371,14 +3654,17 @@
         return !r.format && !r.skipped;
       }).length,
       fm = rows.length > 0 && !left;
+    var ratings = readinessProgress(sid),
+      readinessDone = ratings.done;
     return {
       rows: rows,
       built: built,
       wk: wk,
       left: left,
       fm: fm,
-      ready: (wk && fm) || built,
-      auto: !wk ? 1 : !fm && !built ? 2 : 3,
+      readinessDone: readinessDone,
+      ready: (wk && fm && readinessDone) || built,
+      auto: !wk ? 1 : !fm && !built ? 2 : !readinessDone && !built ? 3 : 4,
     };
   }
   function currentView(sid) {
@@ -3393,7 +3679,8 @@
       steps = [
         { n: 1, label: "Your week", done: st.wk },
         { n: 2, label: "Exam formats", done: st.fm },
-        { n: 3, label: "Build your plan", done: st.built },
+        { n: 3, label: "Your readiness", done: st.readinessDone },
+        { n: 4, label: "Build your plan", done: st.built },
       ],
       body =
         active === 1
@@ -3402,7 +3689,9 @@
           : active === 2
             ? '<p class="sp-wiz-lead">How will each exam ask?</p>' +
               formatsBodyHtml(sid, st.rows)
-            : (st.ready
+            : active === 3
+              ? readinessBodyHtml(sid, st)
+              : (st.ready
                 ? ""
                 : '<div class="sp-note">Finish ' +
                   (!st.wk && !st.fm
@@ -3412,7 +3701,7 @@
                       : "Exam formats") +
                   " first, so the plan fits your real week.</div>") +
               plannerHtml(sid, st.ready) +
-              '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="2">Back</button><span></span>' +
+              '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="3">Back</button><span></span>' +
               (st.built
                 ? '<button class="btn solid" type="button" data-sp-view="plan">Go to my plan</button>'
                 : "<span></span>") +
@@ -3587,7 +3876,9 @@
         })() +
         '<button class="btn solid" type="button" data-sp-sess-done="' +
         esc(first.id) +
-        '">Mark done</button></section>' +
+        '">Finished early · update plan</button><button class="btn muted" type="button" data-sp-sess-more="' +
+        esc(first.id) +
+        '">I need more time</button></section>' +
         (week.length
           ? '<section class="sp-box"><h3>Coming up</h3>' +
             Object.keys(byDay)
@@ -3842,6 +4133,229 @@
         },
       );
   }
+  // A class that's cancelled, skipped or moved online frees up time, so offer
+  // to move study into it. Only new changes count: whatever was already marked
+  // when the page loaded has had its chance.
+  var freedKnown = null,
+    freedOpen = false,
+    freedTimer = null;
+  function classWindow(c, x) {
+    return { start: x.start || c.start || "", end: x.end || c.end || "" };
+  }
+  function freedNow() {
+    var today = C.todayKey(),
+      out = {},
+      gone = {};
+    function classOf(id) {
+      return C.classes.find(function (c) {
+        return c.id === id;
+      });
+    }
+    function add(key, c, x, why) {
+      var w = classWindow(c, x);
+      // Later today, or nothing is actually gained.
+      if (x.date === today && w.end && C.minutes(w.end) <= nowMinutes()) return;
+      out[key] = {
+        date: x.date,
+        title: c.title || "Class",
+        why: why,
+        start: w.start,
+        end: w.end,
+      };
+    }
+    C.classAttendance.forEach(function (r) {
+      if (r.date < today || (r.reason !== "cancelled" && r.reason !== "skipped")) return;
+      var c = classOf(r.classId);
+      if (!c) return;
+      gone[r.classId + "|" + r.date] = true;
+      add("a|" + r.classId + "|" + r.date + "|" + r.reason, c, r, r.reason);
+    });
+    C.classOverrides.forEach(function (o) {
+      if (o.date < today || o.movedTo || !(o.mode === "online" || o.onlineOnly)) return;
+      var c = classOf(o.classId);
+      if (!c || c.onlineOnly || gone[o.classId + "|" + o.date]) return;
+      add("o|" + o.classId + "|" + o.date, c, o, "online");
+    });
+    return out;
+  }
+  function scheduleFreedCheck() {
+    if (freedTimer || !C.loaded) return;
+    freedTimer = setTimeout(function () {
+      freedTimer = null;
+      checkFreed();
+    }, 0);
+  }
+  function checkFreed() {
+    if (freedOpen || reflowing) return;
+    var now = freedNow(),
+      fresh = freedKnown
+        ? Object.keys(now).filter(function (k) {
+            return !freedKnown[k];
+          })
+        : [];
+    freedKnown = now;
+    if (fresh.length)
+      offerFreed(
+        fresh.map(function (k) {
+          return now[k];
+        }),
+      );
+  }
+  function freedLine(x) {
+    var when = shortDate(x.date);
+    return x.why === "cancelled"
+      ? x.title + " on " + when + " is cancelled."
+      : x.why === "skipped"
+        ? "You're skipping " + x.title + " on " + when + "."
+        : x.title + " on " + when + " moved online.";
+  }
+  function offerFreed(list) {
+    var days = {},
+      home = {};
+    list.forEach(function (x) {
+      var d = (days[x.date] = days[x.date] || { date: x.date, start: "", end: "" });
+      if (x.start && (!d.start || x.start < d.start)) d.start = x.start;
+      if (x.end && x.end > d.end) d.end = x.end;
+      if (x.why === "online" && !campusSpan(x.date) && uniTimes(x.date).leave)
+        home[x.date] = true;
+    });
+    var order = Object.keys(days)
+      .sort()
+      .map(function (k) {
+        return days[k];
+      });
+    function pullAll() {
+      order.forEach(function (d) {
+        pullForward(d.date, d.start && d.end ? d : null);
+      });
+    }
+    // Try it, note what would move, and put everything back before asking.
+    var before = planSnapshot(),
+      was = {};
+    before.forEach(function (i) {
+      was[i.id] = i;
+    });
+    homeDays = home;
+    pullAll();
+    homeDays = {};
+    var moves = C.items
+      .filter(function (i) {
+        var b = was[i.id];
+        return b && (b.date !== i.date || b.start !== i.start);
+      })
+      .map(function (i) {
+        return { title: i.title || "Study session", from: was[i.id], date: i.date, start: i.start };
+      });
+    restorePlan(before);
+    if (moves.length) showFreed(list, order, home, moves, pullAll);
+  }
+  function showFreed(list, order, home, moves, pullAll) {
+    function when(date, start) {
+      return shortDate(date) + " · " + C.timeLabel(start);
+    }
+    var prior = document.activeElement,
+      one = moves.length === 1,
+      hasHome = Object.keys(home).length > 0,
+      wrap = document.createElement("div");
+    wrap.className = "sp-free-overlay";
+    wrap.setAttribute("data-ar-own", "");
+    wrap.innerHTML =
+      '<section class="sp-free-dialog" role="dialog" aria-modal="true" aria-labelledby="sp-free-title"><h3 id="sp-free-title">' +
+      esc(
+        order.length === 1
+          ? "You have free time on " + shortDate(order[0].date)
+          : "You have free time on " + order.length + " days",
+      ) +
+      "</h3>" +
+      list
+        .map(function (x) {
+          return "<p>" + esc(freedLine(x)) + "</p>";
+        })
+        .join("") +
+      (hasHome ? "<p>This assumes you stay home that day.</p>" : "") +
+      '<p class="sp-free-ask">' +
+      (one
+        ? "Want to move this up so a later day is lighter?"
+        : "Want to move these up so later days are lighter?") +
+      '</p><ul class="sp-free-list">' +
+      moves
+        .map(function (m) {
+          return (
+            "<li><b>" +
+            esc(m.title) +
+            "</b><span>From " +
+            esc(when(m.from.date, m.from.start)) +
+            " to " +
+            esc(when(m.date, m.start)) +
+            "</span></li>"
+          );
+        })
+        .join("") +
+      '</ul><div class="sp-free-actions"><button type="button" class="btn" data-free-keep>Keep my plan</button><button type="button" class="btn solid" data-free-move>' +
+      (one ? "Move it" : "Move them") +
+      "</button></div></section>";
+    function close() {
+      freedOpen = false;
+      document.removeEventListener("keydown", onKey, true);
+      wrap.remove();
+      if (prior && prior.focus) prior.focus();
+    }
+    function onKey(ev) {
+      if (ev.key !== "Escape") return;
+      ev.stopPropagation();
+      close();
+    }
+    function accept() {
+      close();
+      var before = planSnapshot(),
+        dates = Object.keys(home);
+      if (dates.length)
+        updatePlan(
+          function (p) {
+            var kept = {},
+              today = C.todayKey();
+            Object.keys(p.uniHome || {}).forEach(function (d) {
+              if (d >= today) kept[d] = true;
+            });
+            dates.forEach(function (d) {
+              kept[d] = true;
+            });
+            p.uniHome = kept;
+          },
+          true,
+          true,
+        );
+      pullAll();
+      C.persist().then(function () {
+        C.renderAll();
+        C.toastUndo(
+          moves.length + " study session" + (one ? "" : "s") + " moved up",
+          function () {
+            if (dates.length)
+              updatePlan(
+                function (p) {
+                  dates.forEach(function (d) {
+                    if (p.uniHome) delete p.uniHome[d];
+                  });
+                },
+                true,
+                true,
+              );
+            restorePlan(before);
+            C.persist().then(C.renderAll);
+          },
+        );
+      });
+    }
+    wrap.addEventListener("click", function (ev) {
+      if (ev.target === wrap || ev.target.hasAttribute("data-free-keep")) close();
+      else if (ev.target.hasAttribute("data-free-move")) accept();
+    });
+    document.addEventListener("keydown", onKey, true);
+    freedOpen = true;
+    document.body.appendChild(wrap);
+    wrap.querySelector("[data-free-move]").focus();
+  }
   // Anything half-typed in a form survives a re-render of the tab.
   function formKey(form) {
     return form.dataset.spFormatForm || "block";
@@ -3876,6 +4390,7 @@
     if (!root || !C) return;
     loadIndex();
     scheduleReflow();
+    scheduleFreedCheck();
     var sid = season(),
       view = currentView(sid),
       courses = courseList(sid);
@@ -3919,6 +4434,9 @@
       ui.view = "exams";
       ui.course = d.spOpenCourse;
       render();
+    } else if (d.spReadiness) {
+      ui.readyOpen[d.spReadiness] = !ui.readyOpen[d.spReadiness];
+      render();
     } else if (d.spGotoStep) {
       ui.view = "setup";
       ui.step = Number(d.spGotoStep);
@@ -3929,7 +4447,21 @@
       });
       if (!sess) return;
       sess.planDone = true;
-      C.persist().then(C.renderAll);
+      C.persist().then(function () { return replan(sess.planSeason, "Session finished early"); });
+    } else if (d.spSessMore) {
+      var sess = C.items.find(function (i) { return i.id === d.spSessMore; });
+      if (!sess) return;
+      var length = C.minutes(sess.end) - C.minutes(sess.start),
+        day = sess.date,
+        slot = null;
+      for (var n = 0; n < 14 && !slot; n++) {
+        day = C.addDays(day, 1);
+        var start = day === C.todayKey() ? Math.max(DAY_START, nowMinutes() + 15) : DAY_START;
+        slot = freeSlots(day, sess.planSeason, start).find(function (s) { return s[1] - s[0] >= length; }) || null;
+      }
+      if (!slot) { C.toast("No later free slot found before the exam"); return; }
+      sess.date = day; sess.endDate = day; sess.start = C.toTime(slot[0]); sess.end = C.toTime(slot[0] + length); sess.planPinned = true;
+      C.persist().then(function () { return replan(sess.planSeason, "Session moved back"); });
     } else if (d.spSeason) {
       ui.preview = null;
       ui.step = undefined;
@@ -3958,9 +4490,24 @@
     } else if (t.hasAttribute("data-sp-build")) {
       // Setup may be the first screen to need these courses' analyses.
       var buildFor = season();
-      whenLoaded(buildFor).then(function () {
+      t.disabled = true;
+      t.textContent = "BUILDING…";
+      whenLoaded(buildFor).then(function (ok) {
+        if (!ok) {
+          C.toast("Could not load the exam chapter plans. Check your connection and try again.");
+          return;
+        }
         ui.preview = buildSchedule(buildFor);
+        if (!ui.preview.placed.length) {
+          C.toast("No study sessions could be scheduled. Check the exam dates and available study time.");
+          return;
+        }
         render();
+      }).catch(function (err) {
+        console.error("Study plan build failed", err);
+        C.toast("The study plan could not be built. Please try again.");
+      }).finally(function () {
+        if (t.isConnected) { t.disabled = false; t.textContent = "BUILD MY SCHEDULE"; }
       });
     } else if (t.hasAttribute("data-sp-commit")) commitPreview();
     else if (t.hasAttribute("data-sp-discard")) {
@@ -3978,16 +4525,18 @@
       }, "Unavailable time removed");
     }
     else if (d.spLevel !== undefined) {
-      var a = analysis(ui.course, season());
+      var readinessCourse = d.spReadyCourse || ui.course,
+        a = analysis(readinessCourse, season());
       if (!a) return;
-      var key = readyKey(ui.course, a),
+      var key = readyKey(readinessCourse, a),
         lv = Number(d.spLevel);
       ui.preview = null;
       updatePlan(function (p) {
         p.ready = p.ready || {};
         p.ready[key] = p.ready[key] || {};
-        if (lv) p.ready[key][d.spUnit] = lv;
-        else delete p.ready[key][d.spUnit];
+        // Store New (0) as an explicit override when prior exams would
+        // otherwise infer Previously studied for this chapter/topic.
+        p.ready[key][d.spUnit] = lv;
       });
     } else if (d.spOpen) {
       ui.open[d.spOpen] = !ui.open[d.spOpen];
@@ -4035,7 +4584,13 @@
       render();
     } else if (d.spStep) {
       ui.step = Number(d.spStep);
-      render();
+      if (ui.step === 3) {
+        var readinessSeason = season();
+        whenLoaded(readinessSeason).then(function (loaded) {
+          if (loaded) migrateLegacyReadiness(readinessSeason);
+          render();
+        });
+      } else render();
     } else if (t.hasAttribute("data-sp-week-done")) {
       ui.step = 2;
       updatePlan(function (p) {
@@ -4056,6 +4611,8 @@
     } else if (d.spSkip || d.spUnskip) {
       var sk = (d.spSkip || d.spUnskip).split("|");
       setBlockSkip(sk[0], sk[1], Boolean(d.spSkip));
+    } else if (t.hasAttribute("data-sp-uni-reset")) {
+      resetUni();
     } else if (d.spUniClear) {
       saveUni(d.spUniClear, { leave: "", back: "" });
     } else if (d.spReveal) {
@@ -4185,6 +4742,15 @@
       }, 200);
     });
     $("study-plan-root").addEventListener("change", function (ev) {
+      if (ev.target.dataset && (ev.target.dataset.spStudyDaily !== undefined || ev.target.dataset.spStudyWeekly !== undefined)) {
+        var daily = ev.target.dataset.spStudyDaily !== undefined ? Number(ev.target.value) : studyLimits().daily;
+        var weekly = ev.target.dataset.spStudyWeekly !== undefined ? (ev.target.value.trim() ? Number(ev.target.value) : 0) : studyLimits().weekly;
+        if (!isFinite(daily) || daily < 1 || daily > 10 || !isFinite(weekly) || weekly < 0 || weekly > 70) { C.toast("Daily limit: 1–10 hours; weekly limit: up to 70 hours"); render(); return; }
+        updatePlan(function (p) { p.studyLimits = { daily: daily, weekly: weekly }; }, true);
+        if (seasonsWithPlan().length) rebuildPlans("Study time limit changed");
+        else render();
+        return;
+      }
       var ud = ev.target.dataset && ev.target.dataset.spUni;
       if (ud) {
         var patch = {};
@@ -4207,14 +4773,10 @@
         ev.target.value = commute();
         return;
       }
-      var rebuild = Boolean(ui.preview);
       updatePlan(function (p) {
         p.commute = v;
       }, true);
-      if (rebuild) {
-        ui.preview = buildSchedule(season());
-        render();
-      }
+      refreshAfterUni("Drive time changed");
     });
     $("study-plan-root").addEventListener("submit", function (ev) {
       if (ev.target.hasAttribute("data-sp-block-form")) {

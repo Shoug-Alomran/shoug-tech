@@ -4976,7 +4976,7 @@
       }
     </style>
     <link rel="stylesheet" href="/styles/account-header.css?v=1" />
-    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261108m" />
+    <link rel="stylesheet" href="/styles/calendar-study-plan.css?v=20261109b" />
   </head>
 
   <body>
@@ -7669,7 +7669,11 @@
           if (!profileRef) return Promise.resolve();
           var write;
           try {
-            write = profileRef.set(payload, { merge: true });
+            // mergeFields replaces each field whole. Plain merge combines maps
+            // key by key, so anything deleted inside the study plan came back.
+            write = profileRef.set(payload, {
+              mergeFields: Object.keys(payload),
+            });
           } catch (e) {
             write = Promise.reject(e);
           }
@@ -15205,9 +15209,19 @@
 
         // Bridge for calendar-views.js (Week/Day views, phone month, quick
         // add, drag, search, shortcuts, course colours).
+        var dataLoaded = false;
         window.__shougCal = {
           get items() {
             return items;
+          },
+          get classAttendance() {
+            return classAttendance;
+          },
+          get classOverrides() {
+            return classOverrides;
+          },
+          get loaded() {
+            return dataLoaded;
           },
           get exams() {
             return exams;
@@ -15440,6 +15454,7 @@
             profileUnsub = profileRef.onSnapshot(
               function (doc) {
                 hydrate(doc.exists ? doc.data() : {});
+                dataLoaded = true;
                 show("calendar-app");
                 renderDayChecks();
                 renderAll();
@@ -15477,8 +15492,8 @@
       defer
     ></script>
     <script src="/javascripts/calendar-views.js?v=20261107a" defer></script>
-    <script src="/javascripts/calendar-arabic.js?v=20261108f" defer></script>
-    <script src="/javascripts/study-plan.js?v=20261108m" defer></script>
+    <script src="/javascripts/calendar-arabic.js?v=20261108g" defer></script>
+    <script src="/javascripts/study-plan.js?v=20261109q" defer></script>
     <script src="/javascripts/register-sw.js" defer></script>
     <script src="/javascripts/account-nav.js?v=2" defer></script>
   </body>
