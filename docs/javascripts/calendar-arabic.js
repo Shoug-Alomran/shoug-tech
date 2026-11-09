@@ -365,6 +365,7 @@
     "Days you go in": "أيام الذهاب",
     "One day is different": "يوم مختلف",
     "Reset": "إعادة ضبط",
+    " to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven't covered. If you've forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.": " لتغطية نطاق الاختبار المحلل. المواضيع التي لم تغيريها تُحسب جديدة. «درستها سابقا» للمادة التي تعلمتها من قبل وتحتاجين إلى تنشيطها، وتأخذ وقتا أقل من «جديد» أو «غير متأكدة» حتى يذهب معظم وقتك إلى ما لم تغطيه بعد. إذا نسيتِ موضوعا فقيّميه «غير متأكدة» أو «جديد». المواضيع المتقنة تُحسب جاهزة 100%، ويبقى في الجدول وقت لمراجعة قصيرة. هذا تقدير للتخطيط وليس ضمانا للعلامة الكاملة.",
     "Nothing to reset": "لا يوجد ما يحتاج إلى إعادة ضبط",
     "Uni days reset": "تمت إعادة ضبط أيام الجامعة",
     "Uni days changed": "تم تغيير أيام الجامعة",
@@ -658,6 +659,8 @@
     Dec: "ديسمبر",
   };
   var PATTERNS = [
+    [/^Estimated minimum: (.+)$/, function (h) { return "الحد الأدنى المقدر: " + translate(h); }],
+    [/^(Most|Less than half) of this plan fits\. About (.+) of study is still unscheduled before the exams at your (\d+) h\/day( and (\d+) h\/week)? limits\. Increase either limit to see whether the remaining work fits, or mark chapters you already know as Solid\.$/, function (m, h, d, w, wk) { return (m === "Most" ? "معظم هذه الخطة يتسع. " : "أقل من نصف هذه الخطة يتسع. ") + "يبقى نحو " + translate(h) + " من المذاكرة دون جدولة قبل الاختبارات بحدودك: " + d + " ساعات في اليوم" + (w ? " و" + wk + " ساعة في الأسبوع" : "") + ". زيدي أحد الحدين لتري هل يتسع الباقي، أو حددي الفصول التي تعرفينها على أنها متقنة."; }],
     [/^You have free time on (\d+) days$/, function (n) { return "لديك وقت فراغ في " + n + " أيام"; }],
     [/^You have free time on (.+)$/, function (a) { return "لديك وقت فراغ يوم " + translate(a); }],
     [/^(.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) is cancelled\.$/, function (c, d) { return "أُلغي " + c + " يوم " + translate(d) + "."; }],

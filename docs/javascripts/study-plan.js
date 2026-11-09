@@ -57,17 +57,26 @@
   var STUDY_DAY = 180;
   var LEVELS = ["New", "Shaky", "Solid", "Previously studied"];
   // Share of an item's study time still needed at each readiness level.
-  // Previously studied material gets the same revision time as Shaky: it
-  // needs refreshing, but should come back faster than learning it from new.
-  var FACTOR = [1, 0.55, 0.15, 0.55];
+  // New material gets the most. Previously studied comes back faster than
+  // learning it from scratch, so it gets less than Shaky, which you've said
+  // you're unsure of. Rate a forgotten topic Shaky or New to give it more.
+  var FACTOR = [1, 0.55, 0.15, 0.4];
   var DAY_START = 9 * 60,
     DAY_END = 22 * 60,
     BUFFER = 15,
     MAX_SESSION = 120,
     MIN_SESSION = 45,
     START_CAP = 240,
-    MAX_CAP = 600,
-    REVIEW_GAP = 3;
+    FINAL_REACH = 5,
+    MAX_CAP = 600;
+  // A chapter counts as new when at least this share of its time is still to do.
+  var NEW_SHARE = 0.7,
+    RETEST = ":retest",
+    QUICK = "quick",
+    METHOD_NEW =
+      "New material: explain each idea in your own words as you go, then spend the last 15 minutes writing what you remember with the slides closed.",
+    METHOD_KNOWN =
+      "Revision: test yourself from memory first, and only reopen the slides for what you missed.";
   var KIND_ORDER = [
     "calc",
     "formula",
@@ -225,6 +234,21 @@
     return undefined;
   }
 
+  // The season being worked out, which may not be the one on screen: a
+  // change to your week rebuilds every season that has a plan.
+  var planningSid = null;
+  function activeSeason() {
+    return planningSid || season();
+  }
+  function withSeason(sid, fn) {
+    var was = planningSid;
+    planningSid = sid;
+    try {
+      return fn();
+    } finally {
+      planningSid = was;
+    }
+  }
   function plan() {
     return localPlan || C.studyPlan || {};
   }
@@ -274,7 +298,7 @@
     return previouslyStudied(course, a, unit) ? 3 : 0;
   }
   function previouslyStudied(course, a, unit) {
-    var current = examFor(course, season());
+    var current = examFor(course, activeSeason());
     if (!current || !current.date) return false;
     var chapterId = unit.indexOf("ch:") === 0 ? unit.slice(3) : null;
     if (!chapterId) {
@@ -289,7 +313,7 @@
       var picked = earlier.chapters && earlier.chapters.length ? earlier.chapters : null;
       var earlierScope = picked
         ? a.chapters.map(function (ch) { return ch.id; }).filter(function (id) { return picked.indexOf(id) > -1; })
-        : overviewScope(a, earlier).ids;
+        : knownScope(a, earlier);
       return earlierScope.indexOf(chapterId) > -1;
     });
   }
@@ -345,10 +369,17 @@
     return seasonExams(sid).reduce(function (sum, exam) {
       var course = C.courseLabel(exam.course), a = analysis(course, sid);
       if (!a || exam.date <= first) return sum;
-      var sessions = sessionsFor(course, a, exam, sid);
-      credit(sessions, course, a, exam, sid, first);
-      return sum + sessionMinutes(sessions);
+      return sum + workMinutes(course, a, exam, sid);
     }, 0);
+  }
+  // Everything still to do for an exam: learning, reviews and the final
+  // review, less what's already been covered.
+  function workMinutes(course, a, exam, sid) {
+    return withSeason(sid, function () {
+      var sessions = sessionsFor(course, a, exam, sid);
+      credit(sessions, course, a, exam, sid, firstStudyDay());
+      return sessionMinutes(sessions);
+    });
   }
 
   // ── Exams and courses ─────────────────────────────────────────────────
@@ -431,7 +462,7 @@
   // card covers every chapter.
   function examScope(a, exam) {
     var base = overviewScope(a, exam),
-      f = formatFor(C.courseLabel(a.course), exam, season()),
+      f = formatFor(C.courseLabel(a.course), exam, activeSeason()),
       // Chosen on the Exams tab; older plans kept them on the format.
       picked =
         exam && exam.chapters && exam.chapters.length
@@ -453,12 +484,12 @@
     var all = a.chapters.map(function (c) {
       return c.id;
     });
-    var type = exam ? C.canonicalExamType(exam.type) : season();
+    var type = exam ? C.canonicalExamType(exam.type) : activeSeason();
     if (type === "bonus-quiz") type = "quiz";
     var cards = (a.exam_scopes || []).filter(function (x) {
       return x.type === type;
     });
-    if (!cards.length) return { ids: all, label: "" };
+    if (!cards.length) return { ids: all, label: "", assumed: true };
     var n = 0;
     if (exam) {
       var course = C.courseLabel(exam.course),
@@ -480,6 +511,12 @@
         return card.chapters.indexOf(id) > -1;
       });
     return { ids: ids.length ? ids : all, label: card.label };
+  }
+  // What an earlier exam is known to have covered. With no chapters picked
+  // and no card for it, that's unknown, so nothing counts as studied.
+  function knownScope(a, exam) {
+    var scope = overviewScope(a, exam);
+    return scope.assumed ? [] : scope.ids;
   }
   // ── Exam format ──────────────────────────────────────────────────────
   // Saved per calendar exam; before the exam has a date it's saved per
@@ -591,6 +628,7 @@
     return {
       total: total,
       left: left,
+      work: exam ? workMinutes(course, a, exam, examSeason(exam)) : left,
       ready: readinessWeight ? Math.round(readinessTotal / readinessWeight) : 0,
     };
   }
@@ -625,19 +663,32 @@
         .sort(function (x, y) {
           var xp = x.minutes ? chapterLeft(course, a, x) / x.minutes : 0,
             yp = y.minutes ? chapterLeft(course, a, y) / y.minutes : 0;
-          return yp - xp || chapterLeft(course, a, y) - chapterLeft(course, a, x);
+          return yp - xp || a.chapters.indexOf(x) - a.chapters.indexOf(y);
         });
     var reviewChapters = orderedChapters.filter(function (c) {
       return chapterLeft(course, a, c) >= 15;
     }).map(function (c) { return c.id; });
-    // Put chapters with the most work still to do first. New chapters keep
-    // their full estimate and won't be left behind the revision work if the
-    // calendar runs out of room before the exam.
+    // New chapters go first, in course order, so if the calendar runs out of
+    // room it's revision of known material that gets squeezed. Part of a new
+    // chapter's time moves from reading to a later retest, because recalling
+    // something after a gap makes it stick better than more time on the slides.
+    var quick = [],
+      quickMinutes = 0,
+      retestMinutes = 0;
     orderedChapters.forEach(function (ch) {
       var left = chapterLeft(course, a, ch);
-      if (left < 15) return;
-      var n = Math.ceil(left / MAX_SESSION),
-        remaining = Math.ceil(left),
+      if (left < 15) {
+        if (left > 0) {
+          quick.push(ch);
+          quickMinutes += left;
+        }
+        return;
+      }
+      var isNew = ch.minutes && left / ch.minutes >= NEW_SHARE && left >= 60,
+        retest = isNew ? Math.min(45, round15(left * 0.15)) : 0,
+        remaining = Math.ceil(left) - retest,
+        n = Math.ceil(remaining / MAX_SESSION),
+        method = isNew ? METHOD_NEW : METHOD_KNOWN,
         name = course + " " + noun + " · " + chapterName(ch),
         focus = chapterItems(a, ch.id)
           .filter(isMainPointReadinessItem)
@@ -660,18 +711,21 @@
           last: k === n - 1,
           minutes: part,
           title: name + (k ? " (continued)" : ""),
-          notes: fmtLine + (focus.length ? "Focus: " + focus.join("; ") : ""),
+          notes: fmtLine + method + (focus.length ? " Focus: " + focus.join("; ") : ""),
         });
       }
+      retestMinutes += retest;
       // Chapters are reviewed two at a time, after the second is learned.
       var paired = heldForReview;
       heldForReview = paired ? null : ch;
       if (!paired && reviewChapters.indexOf(ch.id) < reviewChapters.length - 1)
         return;
+      // Reviews scale with the work: a chapter you already know needs less.
+      var pairLeft = left + (paired ? chapterLeft(course, a, paired) : 0);
       reviews[ch.id] = {
         kind: "review",
         chapter: ch.id,
-        minutes: paired ? 45 : 30,
+        minutes: Math.min(paired ? 45 : 30, round15(pairLeft * 0.5)),
         notBefore: null,
         title:
           course +
@@ -684,7 +738,55 @@
           fmtLine +
           "Active recall: close the slides, write what you remember, then check.",
       };
+      if (retestMinutes) {
+        reviews[ch.id + RETEST] = {
+          kind: "review",
+          retest: true,
+          after: ch.id,
+          chapter: ch.id + RETEST,
+          minutes: retestMinutes,
+          notBefore: null,
+          title:
+            course +
+            " " +
+            noun +
+            " · Retest " +
+            (paired ? chapterName(paired) + " and " : "") +
+            chapterName(ch),
+          notes:
+            fmtLine +
+            "Retest from memory with the slides closed, mixing the chapters. Spend the time on what you still miss.",
+        };
+        retestMinutes = 0;
+      }
       });
+    if (quick.length) {
+      var quickLeft = Math.ceil(quickMinutes),
+        pieces = Math.ceil(quickLeft / MAX_SESSION),
+        quickName =
+          course +
+          " " +
+          noun +
+          " · Quick check of " +
+          quick.length +
+          " solid chapter" +
+          (quick.length === 1 ? "" : "s");
+      for (var q = 0; q < pieces; q++) {
+        var quickPart = Math.ceil(quickLeft / (pieces - q));
+        quickLeft -= quickPart;
+        learn.push({
+          kind: "learn",
+          chapter: QUICK,
+          last: false,
+          minutes: quickPart,
+          title: quickName + (q ? " (continued)" : ""),
+          notes:
+            fmtLine +
+            "Test yourself on each, from memory: " +
+            quick.map(chapterName).join("; "),
+        });
+      }
+    }
     return {
       learn: learn,
       reviews: reviews,
@@ -696,8 +798,8 @@
             notes:
               fmtLine +
               (a.curated
-                ? "Formulas, key numbers and lists from the memorize sheet, then one timed problem of each type."
-                : "Skim every chapter's slides and redo anything marked Shaky."),
+                ? "Timed practice under exam conditions, one problem of each type, then fix what you got wrong. Finish with the memorize sheet."
+                : "Timed self-test across every chapter, then go back over what you got wrong and anything marked Shaky."),
           }
         : null,
     };
@@ -711,6 +813,26 @@
     });
     if (s.final) total += s.final.minutes;
     return total;
+  }
+  function daysBetween(from, to) {
+    return Math.round((C.fromKey(to) - C.fromKey(from)) / 86400000);
+  }
+  // A gap of a fair share of the time left before the exam works best, within
+  // sensible limits. It's never later than the day before the last day.
+  function reviewDay(day, exam, share, shortest, longest) {
+    var last = C.addDays(exam.date, -1),
+      gap = Math.min(longest, Math.max(shortest, Math.round(daysBetween(day, exam.date) * share))),
+      target = C.addDays(day, gap),
+      latest = C.addDays(last, -1);
+    if (target > latest) target = latest;
+    if (target <= day) target = C.addDays(day, 1) > last ? day : C.addDays(day, 1);
+    return target;
+  }
+  function firstReviewDay(day, exam) {
+    return reviewDay(day, exam, 0.15, 2, 5);
+  }
+  function retestDay(day, exam) {
+    return reviewDay(day, exam, 0.3, 3, 10);
   }
   function firstStudyDay() {
     var now = new Date(),
@@ -865,8 +987,18 @@
   // spread: how far above its even daily share a course may go in one day.
   // Low values pace the work out evenly up to each exam; the caller raises it
   // with the daily cap when the plan doesn't fit.
-  function attempt(jobs, days, sid, cap, startToday, spread, weeklyCap) {
-    var placed = [], weekUsed = {};
+  function attempt(jobs, days, ctx, cap, spread, weeklyCap, earliestFirst) {
+    var placed = [],
+      weekUsed = Object.assign({}, ctx.weekBase),
+      dayUsed = {},
+      daySlots = {},
+      lastJob = null;
+    days.forEach(function (day) {
+      dayUsed[day] = ctx.dayBase[day] || 0;
+      daySlots[day] = ctx.slots[day].map(function (x) {
+        return x.slice();
+      });
+    });
     jobs.forEach(function (j) {
       j.q = j.s.learn.map(function (x) {
         return Object.assign({}, x);
@@ -888,32 +1020,35 @@
       });
       return m;
     }
-    days.forEach(function (day, di) {
-      var week = Math.floor(di / 7),
-        startMin = di === 0 ? startToday : DAY_START,
-        slots = freeSlots(day, sid, startMin),
-        used = 0;
-      weekUsed[week] = weekUsed[week] || 0;
-      function take(len) {
-        for (var i = 0; i < slots.length; i++) {
-          if (slots[i][1] - slots[i][0] >= len) {
-            var st = slots[i][0];
-            slots[i] = [st + len + BUFFER, slots[i][1]];
-            used += len;
-            weekUsed[week] += len;
-            return st;
-          }
-        }
-        return null;
-      }
-      function biggest() {
-        return slots.reduce(function (m, s) {
-          return Math.max(m, s[1] - s[0]);
-        }, 0);
-      }
-      function put(j, sess, len) {
-        var st = take(len);
-        if (st === null) return false;
+    function biggest(day) {
+      return daySlots[day].reduce(function (m, s) {
+        return Math.max(m, s[1] - s[0]);
+      }, 0);
+    }
+    // The most study a day can still take, inside your limits and its gaps.
+    function roomOn(day) {
+      var week = weekStart(day);
+      return Math.min(
+        cap - dayUsed[day],
+        weeklyCap ? weeklyCap - (weekUsed[week] || 0) : Infinity,
+        biggest(day),
+      );
+    }
+    // Largest piece that fits without leaving under 15 minutes behind.
+    function pieceFor(minutes, room) {
+      var len = Math.min(minutes, Math.floor(room / 15) * 15);
+      if (len < MIN_SESSION) len = Math.min(minutes, room);
+      if (len < minutes && minutes - len < 15 && len - 15 >= 15) len -= 15;
+      return len;
+    }
+    function put(j, sess, len, day) {
+      var slots = daySlots[day];
+      for (var i = 0; i < slots.length; i++) {
+        if (slots[i][1] - slots[i][0] < len) continue;
+        var st = slots[i][0];
+        slots[i] = [st + len + BUFFER, slots[i][1]];
+        dayUsed[day] += len;
+        weekUsed[weekStart(day)] = (weekUsed[weekStart(day)] || 0) + len;
         placed.push({
           exam: j.exam,
           course: j.course,
@@ -922,7 +1057,9 @@
           end: C.toTime(st + len),
           minutes: len,
           kind: sess.kind,
+          retest: Boolean(sess.retest),
           chapter: sess.chapter || "",
+          slot: i,
           title:
             sess.title +
             (sess.cont && !/\(continued\)$/.test(sess.title)
@@ -932,11 +1069,25 @@
         });
         return true;
       }
-      // The day before an exam opens with its final review.
-      jobs.forEach(function (j) {
-        if (j.fin && j.lastDay === day && put(j, j.fin, j.fin.minutes))
-          j.fin = null;
-      });
+      return false;
+    }
+    // Final reviews are placed first, so nothing crowds them out: the day
+    // before the exam if it has room, otherwise the few days leading up to it.
+    // A long one is split across days rather than breaking your limit.
+    jobs.forEach(function (j) {
+      if (!j.fin) return;
+      var left = j.fin.minutes,
+        earliest = C.addDays(j.lastDay, -FINAL_REACH);
+      for (var d = j.lastDay; left > 0 && d >= earliest; d = C.addDays(d, -1)) {
+        if (!daySlots[d]) continue;
+        var room = roomOn(d);
+        if (room < Math.min(MIN_SESSION, left)) continue;
+        var len = pieceFor(left, room);
+        if (len > 0 && put(j, j.fin, len, d)) left -= len;
+      }
+      j.fin = left > 0 ? Object.assign({}, j.fin, { minutes: left }) : null;
+    });
+    days.forEach(function (day) {
       // A course with nothing placeable today (only reviews not yet due)
       // sits out the rest of the day instead of ending it for everyone.
       var resting = [];
@@ -946,7 +1097,7 @@
           Math.round((C.fromKey(j.lastDay) - C.fromKey(day)) / 86400000) + 1;
         // The last three days before an exam have no per-course limit.
         j.limit =
-          left <= 3
+          left <= 3 || earliestFirst
             ? Infinity
             : Math.max(
                 MAX_SESSION,
@@ -966,14 +1117,19 @@
             1,
             Math.round((C.fromKey(j.lastDay) - C.fromKey(day)) / 86400000) + 1,
           );
-          var u = p / left;
+          var u = earliestFirst ? 100000 - left : p / left;
+          // Switch courses between sessions when another is nearly as urgent.
+          if (j === lastJob) {
+            if (earliestFirst) u -= 7;
+            else u *= 0.75;
+          }
           if (u > bestU) {
             bestU = u;
             best = j;
           }
         });
         if (!best) break;
-        var room = Math.min(cap - used, weeklyCap ? weeklyCap - weekUsed[week] : Infinity, biggest(), best.limit - best.today);
+        var room = Math.min(roomOn(day), best.limit - best.today);
         if (room < MIN_SESSION) break;
         // Don't start a sliver of a session; leave it for a day with room.
         var nextLen = (best.q[0] || {}).minutes || 0;
@@ -997,10 +1153,13 @@
             resting.push(best);
             continue;
           }
-          // Reviews of chapters this plan never studied (all Solid) drop.
-          var unstudied = waiting.filter(function (k) {
-            return !best.rev[k].notBefore;
-          });
+          // Reviews of chapters this plan never studied (all Solid) drop. A
+          // retest still waiting on its first review isn't one of those.
+          var course = best,
+            unstudied = waiting.filter(function (k) {
+              var r = course.rev[k];
+              return !r.notBefore && !(r.after && course.rev[r.after]);
+            });
           if (unstudied.length && !best.q.length) {
             unstudied.forEach(function (k) {
               delete best.rev[k];
@@ -1011,30 +1170,26 @@
           resting.push(best);
           continue;
         }
-        var len = Math.min(sess.minutes, Math.floor(room / 15) * 15);
-        if (len < MIN_SESSION) len = Math.min(sess.minutes, room);
-        // Finish it rather than leave a tiny leftover for another day.
-        if (sess.minutes - len > 0 && sess.minutes - len < 30 && room >= sess.minutes)
-          len = sess.minutes;
-        if (len < 15 || !put(best, sess, len)) {
+        var len = pieceFor(sess.minutes, room);
+        if (!len || !put(best, sess, len, day)) {
           resting.push(best);
           continue;
         }
         best.today += len;
+        lastJob = best;
         if (len < sess.minutes) {
           sess.cont = true;
           sess.minutes -= len;
-          if (sess.minutes < 15) sess.minutes = 15;
           continue;
         }
-        if (reviewId) delete best.rev[reviewId];
-        else {
+        if (reviewId) {
+          delete best.rev[reviewId];
+          var retest = best.rev[reviewId + RETEST];
+          if (retest) retest.notBefore = retestDay(day, best.exam);
+        } else {
           best.q.shift();
-          if (sess.last && best.rev[sess.chapter]) {
-            var nb = C.addDays(day, REVIEW_GAP);
-            if (nb > best.lastDay) nb = best.lastDay;
-            best.rev[sess.chapter].notBefore = nb;
-          }
+          if (sess.last && best.rev[sess.chapter])
+            best.rev[sess.chapter].notBefore = firstReviewDay(day, best.exam);
         }
       }
     });
@@ -1043,10 +1198,18 @@
       j.left = pendingMin(j) + (j.fin ? j.fin.minutes : 0);
       short += j.left;
     });
-    return { placed: placed, short: short };
+    return {
+      placed: placed,
+      short: short,
+      lefts: jobs.map(function (j) {
+        return j.left;
+      }),
+    };
   }
-  // Back-to-back pieces of the same chapter become one longer session, and
-  // a course's reviews on the same day sit together, up to 3 hours.
+  // Back-to-back pieces of the same chapter become one session, and a course's
+  // first reviews on the same day sit together, up to a normal session length.
+  // Only pieces in the same free stretch join, so nothing between them is
+  // covered, and the break goes: the session is exactly the study it holds.
   function mergeSessions(list) {
     var out = [];
     list.forEach(function (p) {
@@ -1054,18 +1217,22 @@
       if (
         last &&
         last.date === p.date &&
+        last.slot === p.slot &&
         last.course === p.course &&
         last.exam === p.exam &&
         last.kind === p.kind &&
         p.kind !== "final" &&
+        !last.retest &&
+        !p.retest &&
         (p.kind === "review" || last.chapter === p.chapter) &&
         C.minutes(p.start) - C.minutes(last.end) <= BUFFER &&
-        last.minutes + p.minutes <= 180
+        last.minutes + p.minutes <= MAX_SESSION
       ) {
-        last.end = p.end;
-        last.minutes = C.minutes(p.end) - C.minutes(last.start);
+        last.end = C.toTime(C.minutes(last.end) + p.minutes);
+        last.minutes += p.minutes;
         if (p.kind === "review") {
           last.title = last.title + ", " + p.title.split(" · Review ")[1];
+          last.chapters = (last.chapters || [last.chapter]).concat(p.chapter);
           last.chapter = "";
         }
         return;
@@ -1074,7 +1241,21 @@
     });
     return out;
   }
+  // Study already on the calendar that this build won't replace. It uses up
+  // your limits like anything newly planned.
+  function fixedStudyMinutes(i, sid) {
+    if ((i.kind !== "study" && i.planSource !== "study-plan") || !i.date || !i.start || !i.end)
+      return 0;
+    if (i.planSource === "study-plan" && i.planSeason === sid && !i.planPinned && !i.planDone)
+      return 0;
+    return Math.max(0, C.minutes(i.end) - C.minutes(i.start));
+  }
   function buildSchedule(sid) {
+    return withSeason(sid, function () {
+      return buildScheduleNow(sid);
+    });
+  }
+  function buildScheduleNow(sid) {
     var now = new Date(),
       nowMin = now.getHours() * 60 + now.getMinutes(),
       today = C.todayKey(),
@@ -1102,33 +1283,54 @@
       }, first),
       days = [];
     for (var d = first; d <= lastDay; d = C.addDays(d, 1)) days.push(d);
-    // Start close to an even daily pace, then raise the cap only if needed.
-    // Retries stop at the student's daily maximum, so a dense plan cannot
-    // silently exceed the limit they chose.
+    var ctx = { slots: {}, dayBase: {}, weekBase: {} };
+    days.forEach(function (day, di) {
+      ctx.slots[day] = freeSlots(day, sid, di === 0 ? startToday : DAY_START);
+    });
+    C.items.forEach(function (i) {
+      var m = fixedStudyMinutes(i, sid);
+      if (!m) return;
+      ctx.dayBase[i.date] = (ctx.dayBase[i.date] || 0) + m;
+      var w = weekStart(i.date);
+      ctx.weekBase[w] = (ctx.weekBase[w] || 0) + m;
+    });
+    // Start close to an even daily pace, and only ask more of a day when the
+    // work doesn't fit. Each step first lets a course run ahead of its even
+    // share, then tries earliest exam first, and only then raises the daily
+    // cap, stopping at the limit you chose. If it never all fits, the lowest
+    // cap that gets furthest wins.
     var limits = studyLimits(),
       totalNeed = jobs.reduce(function (sum, j) {
         return sum + sessionMinutes(j.s);
       }, 0),
       averageDaily = totalNeed / Math.max(1, days.length),
       dailyCap = Math.min(Math.round(limits.daily * 60), MAX_CAP),
-      cap = Math.min(dailyCap, Math.max(START_CAP, Math.ceil(averageDaily / 30) * 30)),
-      spread = 1.25,
       weeklyCap = limits.weekly ? Math.round(limits.weekly * 60) : 0,
-      res = attempt(jobs, days, sid, cap, startToday, spread, weeklyCap);
-    // Start with an even daily pace. If constraints leave work unscheduled,
-    // progressively use more of the student's stated daily maximum.
-    while (res.short > 0 && cap < dailyCap) {
+      PACES = [1.25, 2, 3, 4, 0],
+      cap = Math.min(dailyCap, Math.max(START_CAP, Math.ceil(averageDaily / 30) * 30)),
+      res = null,
+      usedCap = cap;
+    for (;;) {
+      for (var sp = 0; sp < PACES.length; sp++) {
+        var tried = attempt(jobs, days, ctx, cap, PACES[sp], weeklyCap, !PACES[sp]);
+        if (!res || tried.short < res.short) {
+          res = tried;
+          usedCap = cap;
+        }
+        if (!res.short) break;
+      }
+      if (!res.short || cap >= dailyCap) break;
       cap = Math.min(dailyCap, cap + 30);
-      res = attempt(jobs, days, sid, cap, startToday, spread, weeklyCap);
     }
+    cap = usedCap;
     res.placed.sort(function (x, y) {
       return (x.date + x.start).localeCompare(y.date + y.start);
     });
     res.placed = mergeSessions(res.placed);
     return {
-      jobs: jobs.map(function (j) {
+      jobs: jobs.map(function (j, n) {
         var need = sessionMinutes(j.s);
-        return { course: j.course, exam: j.exam, need: need, left: j.left };
+        return { course: j.course, exam: j.exam, need: need, left: res.lefts[n] };
       }),
       placed: res.placed,
       cap: cap,
@@ -1160,10 +1362,24 @@
       });
     return ch ? ch.id : "";
   }
+  // Which reviews a kept session covers. Reviews merged before sessions
+  // recorded their chapters are recognised by the chapter names in the title.
+  function reviewKeys(i, course, a, sid, s) {
+    if (i.planChapters && i.planChapters.length) return i.planChapters;
+    var ch = sessionChapter(i, course, a, sid);
+    if (ch) return [ch];
+    return Object.keys(s.reviews).filter(function (k) {
+      var c = a.chapters.find(function (x) {
+        return x.id === k;
+      });
+      return c && String(i.title || "").indexOf(chapterName(c)) > -1;
+    });
+  }
   // Take the kept sessions' work out of what's left, so a rebuild only
   // schedules what hasn't been covered yet.
   function credit(s, course, a, exam, sid, first) {
-    var learnt = {};
+    var learnt = {},
+      reviewed = {};
     C.items.forEach(function (i) {
       if (!kept(i, sid, first)) return;
       if (
@@ -1173,15 +1389,23 @@
       )
         return;
       if (i.planKind === "final") {
-        s.final = null;
+        if (s.final) {
+          var done =
+            i.start && i.end ? C.minutes(i.end) - C.minutes(i.start) : s.final.minutes;
+          s.final.minutes -= done;
+          if (s.final.minutes <= 0) s.final = null;
+        }
+        return;
+      }
+      if (i.planKind === "review") {
+        reviewKeys(i, course, a, sid, s).forEach(function (k) {
+          delete s.reviews[k];
+          if (!reviewed[k] || i.date > reviewed[k]) reviewed[k] = i.date;
+        });
         return;
       }
       var ch = sessionChapter(i, course, a, sid);
       if (!ch) return;
-      if (i.planKind === "review") {
-        delete s.reviews[ch];
-        return;
-      }
       var m =
         i.start && i.end ? C.minutes(i.end) - C.minutes(i.start) : MIN_SESSION;
       s.learn.forEach(function (x) {
@@ -1191,7 +1415,7 @@
         m -= used;
       });
       s.learn = s.learn.filter(function (x) {
-        return x.minutes >= 15;
+        return x.minutes > 0;
       });
       if (!learnt[ch] || i.date > learnt[ch]) learnt[ch] = i.date;
     });
@@ -1205,9 +1429,15 @@
         })
       )
         return;
-      var nb = C.addDays(learnt[ch], REVIEW_GAP),
-        last = C.addDays(exam.date, -1);
-      r.notBefore = nb < first ? first : nb > last ? last : nb;
+      var nb = firstReviewDay(learnt[ch], exam);
+      r.notBefore = nb < first ? first : nb;
+    });
+    // A retest follows its first review, once that's done.
+    Object.keys(s.reviews).forEach(function (k) {
+      var r = s.reviews[k];
+      if (!r.after || r.notBefore || s.reviews[r.after]) return;
+      var nb = reviewed[r.after] ? retestDay(reviewed[r.after], exam) : first;
+      r.notBefore = nb < first ? first : nb;
     });
   }
   function plannedItems(sid) {
@@ -1246,7 +1476,7 @@
       }
     }
     pv.placed.forEach(function (p) {
-      C.items.push({
+      var item = {
         id: C.uid(),
         title: p.title,
         date: p.date,
@@ -1262,7 +1492,9 @@
         planSeason: sid,
         planKind: p.kind,
         planChapter: p.chapter || "",
-      });
+      };
+      if (p.chapters) item.planChapters = p.chapters;
+      C.items.push(item);
     });
     return n;
   }
@@ -1578,7 +1810,7 @@
       (prog
         ? ring(prog.ready) +
           "<div><b>" +
-          hours(prog.left) +
+          hours(prog.work) +
           "</b> of study left<br><span>" +
           (planned
             ? planned + " sessions on your calendar"
@@ -1649,7 +1881,7 @@
               d +
               "d</span>" +
               (prog
-                ? hours(prog.left) + " to go"
+                ? hours(prog.work) + " to go"
                 : a === undefined
                   ? "Loading..."
                   : "No analysis yet") +
@@ -2078,6 +2310,11 @@
     ui.uniDraft = Object.assign({}, u, patch);
     syncUniPanel();
   }
+  function planMinutes(pv) {
+    return pv.placed.reduce(function (m, p) {
+      return m + p.minutes;
+    }, 0);
+  }
   function plannerHtml(sid, ready) {
     var ex = seasonExams(sid),
       limits = studyLimits(),
@@ -2162,7 +2399,9 @@
         (pv.short ? " warn" : "") +
         '">' +
         (pv.short
-          ? "Most of this plan fits. About " +
+          ? (planMinutes(pv) >= pv.short
+              ? "Most of this plan fits. About "
+              : "Less than half of this plan fits. About ") +
             hours(pv.jobs.reduce(function (total, job) { return total + (Number(job.left) || 0); }, 0)) +
             " of study is still unscheduled before the exams at your " +
             limits.daily + " h/day" + (limits.weekly ? " and " + limits.weekly + " h/week" : "") +
@@ -3101,7 +3340,7 @@
         name: name,
         date: e.date,
         time: e.start || "",
-        minutes: prog ? prog.left : null,
+        minutes: prog ? prog.work : null,
         loading: a === undefined,
         weight: a ? weightFor(a, sid) : null,
         format: formatFor(course, e, sid),
@@ -3256,7 +3495,7 @@
           state = "Working it out...";
           cls = "";
         } else if (!x.minutes) {
-          state = x.type === "exam" ? "No slide analysis" : "";
+          state = x.type === "exam" && x.minutes === null ? "No slide analysis" : "";
           cls = "";
         } else if (x.startBy <= today) {
           state =
@@ -3429,7 +3668,7 @@
   function readinessBodyHtml(sid, st) {
     var rows = st.rows, ratings = readinessProgress(sid);
     return '<p class="sp-wiz-lead"></p>' +
-      '<div class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope. Unchanged topics count as New. Choose Previously studied for material you learned before and need to refresh; it receives the same revision time as Shaky. Solid topics count as 100% ready, while the schedule still reserves a short review. Use this as a planning estimate, not a 40/40 guarantee.</div>' +
+      '<div class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven\'t covered. If you\'ve forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.</div>' +
       rows.map(function (r, n) {
         var a = analysis(r.course, sid);
         if (!a) return '<div class="sp-note">No topic analysis is available for ' + esc(r.course) + '; it cannot be rated here.</div>';
