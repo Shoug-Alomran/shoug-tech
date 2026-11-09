@@ -200,7 +200,7 @@
       .catch(function () {
         index = [];
       })
-      .then(render);
+      .then(afterData);
   }
   function entryFor(course, season) {
     var list = index || [];
@@ -229,7 +229,7 @@
         .catch(function () {
           files[e.file] = { failed: true };
         })
-        .then(render);
+        .then(afterData);
     }
     return undefined;
   }
@@ -1695,6 +1695,12 @@
       title: "Set up your plan",
       sub: "Three short steps, then the schedule is built for you.",
     },
+    {
+      id: "colors",
+      label: "Colors",
+      title: "What the colors mean",
+      sub: "What each kind of study session is for, and where it sends you.",
+    },
   ];
   function headHtml(sid, view) {
     var v = VIEWS.find(function (x) {
@@ -2456,13 +2462,15 @@
               list
                 .map(function (p) {
                   return (
-                    '<div class="sp-sess ' +
-                    p.kind +
+                    '<button type="button" class="sp-sess t-' +
+                    sessionType(sessionOf(p)) +
+                    '" data-sp-preview="' +
+                    pv.placed.indexOf(p) +
                     '"><span class="sp-sess-time">' +
                     esc(C.timeLabel(p.start)) +
                     "</span><span>" +
                     esc(p.title) +
-                    "</span></div>"
+                    "</span></button>"
                   );
                 })
                 .join("") +
@@ -4097,22 +4105,9 @@
         (fp.head ? " · " + esc(fp.head) : "") +
         "</p>" +
         (first.notes ? '<p class="sp-muted">' + esc(first.notes) + "</p>" : "") +
-        (function () {
-          var fa = analysis(first.course, sid),
-            fch =
-              fa &&
-              first.planChapter &&
-              fa.chapters.find(function (c) {
-                return c.id === first.planChapter;
-              });
-          return fch
-            ? studyLinksHtml(fch)
-            : fa && fa.course_page
-              ? '<div class="sp-links"><a href="' +
-                  esc(fa.course_page) +
-                  '">Course page</a></div>'
-              : "";
-        })() +
+        '<button class="btn" type="button" data-sp-sources="' +
+        esc(first.id) +
+        '">What to study from</button>' +
         '<button class="btn solid" type="button" data-sp-sess-done="' +
         esc(first.id) +
         '">Finished early · update plan</button><button class="btn muted" type="button" data-sp-sess-more="' +
@@ -4139,11 +4134,15 @@
                         esc(i.title) +
                         '" /><span class="sp-week-time">' +
                         esc(C.timeLabel(i.start)) +
-                        '</span><span class="sp-week-text"><b>' +
+                        '</span><button type="button" class="sp-week-text t-' +
+                        sessionType(sessionOf(i)) +
+                        '" data-sp-sources="' +
+                        esc(i.id) +
+                        '"><b>' +
                         esc(ip.name) +
                         "</b><span>" +
                         esc(ip.head) +
-                        "</span></span></li>"
+                        "</span></button></li>"
                       );
                     })
                     .join("") +
@@ -4595,6 +4594,303 @@
     document.body.appendChild(wrap);
     wrap.querySelector("[data-free-move]").focus();
   }
+  // ── What each session is, and what to study it from ───────────────────
+  // Three colours: new material, review, and practice. Worked out from the
+  // session and your current ratings, so it also covers sessions saved earlier.
+  var TYPES = {
+    new: {
+      name: "New material",
+      how: "Explain each idea in your own words as you go, then close it and write what you remember.",
+      meant: "You're learning this for the first time, so it gets the most time.",
+      opens: "Annotated slides, or the slide breakdown when a chapter's slides are repetitive.",
+      fallback: "Each chapter opens whichever page suits it best.",
+    },
+    review: {
+      name: "Review",
+      how: "Test yourself from memory first, then check only what you missed.",
+      meant: "Going back over something you've already covered, so it stays with you.",
+      opens: "Mind maps first, then slide breakdowns or notes.",
+      fallback: "Start with these and test yourself from memory.",
+    },
+    practice: {
+      name: "Practice",
+      how: "Work it out yourself under time pressure, then fix what you got wrong.",
+      meant: "Solving problems and answering exam-style questions without your notes.",
+      opens: "Chapter quizzes and past exams.",
+      fallback: "Past exams under timed conditions are the closest thing to the real one.",
+    },
+  };
+  var sourcesLoad = null,
+    sources = null,
+    typeAsked = false;
+  function loadSources() {
+    if (!sourcesLoad)
+      sourcesLoad = fetchJson(BASE + "study-sources.json")
+        .catch(function () {
+          return {};
+        })
+        .then(function (j) {
+          sources = j;
+        });
+    return sourcesLoad;
+  }
+  function afterData() {
+    render();
+    if (typeAsked) {
+      typeAsked = false;
+      C.renderCalendar();
+    }
+  }
+  // A saved session and a preview row, in one shape.
+  function sessionOf(x) {
+    return {
+      id: x.id || "",
+      course: C.courseLabel(x.course),
+      sid: x.planSeason || season(),
+      kind: x.planKind || x.kind,
+      chapter: x.planChapter !== undefined ? x.planChapter : x.chapter || "",
+      chapters: x.planChapters || x.chapters || null,
+      title: x.title || "",
+      notes: x.notes || "",
+      date: x.date,
+      start: x.start,
+      examId: x.linkedExamId || (x.exam && x.exam.id) || "",
+    };
+  }
+  function sessionChapterIds(s, a) {
+    if (s.chapter === QUICK)
+      return a.chapters
+        .filter(function (c) {
+          var left = chapterLeft(s.course, a, c);
+          return left > 0 && left < 15;
+        })
+        .map(function (c) {
+          return c.id;
+        });
+    var named = (s.chapters || [s.chapter]).map(function (id) {
+      return String(id).replace(RETEST, "");
+    });
+    return a.chapters
+      .filter(function (c) {
+        return named.indexOf(c.id) > -1 || s.title.indexOf(chapterName(c)) > -1;
+      })
+      .map(function (c) {
+        return c.id;
+      });
+  }
+  function needsSolving(s, a, ids) {
+    var calc = 0,
+      formula = 0;
+    a.chapters.forEach(function (c) {
+      if (ids.indexOf(c.id) < 0 || !c.kinds) return;
+      calc += c.kinds.calc || 0;
+      formula += c.kinds.formula || 0;
+    });
+    var exam = C.exams.find(function (e) {
+        return e.id === s.examId;
+      }),
+      f = exam ? formatFor(s.course, exam, s.sid) : null,
+      types = (f && f.types) || [];
+    return calc + formula >= 2 || (calc >= 1 && (types.indexOf("solve") > -1 || types.indexOf("code") > -1));
+  }
+  function sessionType(s) {
+    if (s.kind === "final") return "practice";
+    var a = analysis(s.course, s.sid);
+    if (!a) {
+      if (a === undefined) typeAsked = true;
+      return s.kind === "review" ? "review" : "new";
+    }
+    return withSeason(s.sid, function () {
+      var ids = sessionChapterIds(s, a);
+      if (s.kind === "review")
+        return String(s.chapter).indexOf(RETEST) > -1 && needsSolving(s, a, ids)
+          ? "practice"
+          : "review";
+      if (s.chapter === QUICK) return "review";
+      var ch = a.chapters.find(function (c) {
+        return c.id === ids[0];
+      });
+      return !ch || !ch.minutes || chapterLeft(s.course, a, ch) / ch.minutes >= NEW_SHARE
+        ? "new"
+        : "review";
+    });
+  }
+  function sessionTypeOf(id) {
+    if (!C) return "";
+    var item = C.items.find(function (i) {
+      return i.id === id;
+    });
+    return item && item.planSource === "study-plan"
+      ? "sp-" + sessionType(sessionOf(item))
+      : "";
+  }
+  function shortChapter(ch) {
+    var parts = String(ch.title).split(" · ");
+    return ch.upcoming ? parts[1].replace(/ \(upcoming.*$/, "") : parts[0];
+  }
+  // Two links called "Mind map" become "Mind map 1" and "Mind map 2".
+  function numberRepeats(list) {
+    var total = {},
+      n = {};
+    list.forEach(function (l) {
+      total[l.label] = (total[l.label] || 0) + 1;
+    });
+    list.forEach(function (l) {
+      if (total[l.label] < 2) return;
+      n[l.label] = (n[l.label] || 0) + 1;
+      l.label += " " + n[l.label];
+    });
+  }
+  function sessionPicks(s, type) {
+    var src = (sources || {})[s.course] || {},
+      out = { why: "", best: [], also: [], note: "" },
+      a = analysis(s.course, s.sid),
+      seen = {};
+    function add(list, l, prefix) {
+      if (seen[l.url]) return;
+      seen[l.url] = true;
+      list.push({ label: (prefix ? prefix + " · " : "") + l.label, url: l.url });
+    }
+    if (s.kind === "final" || !a) {
+      out.why = TYPES.practice.fallback;
+      (src.final || []).forEach(function (l) {
+        add(out.best, l);
+      });
+      (src.sheets || []).forEach(function (l) {
+        add(out.also, l);
+      });
+    } else {
+      var ids = withSeason(s.sid, function () {
+          return sessionChapterIds(s, a);
+        }),
+        key = type === "new" ? "learn" : type,
+        whys = [];
+      ids.forEach(function (id) {
+        var c = (src.chapters || {})[id],
+          ch = a.chapters.find(function (x) {
+            return x.id === id;
+          }),
+          prefix = ids.length > 1 ? shortChapter(ch) : "";
+        if (!c || !c[key]) return;
+        c[key].links.forEach(function (l) {
+          add(out.best, l, prefix);
+        });
+        if (c[key].links.length && whys.indexOf(c[key].why) < 0) whys.push(c[key].why);
+      });
+      if (key === "practice" && !out.best.length) {
+        whys = [TYPES.practice.fallback];
+        (src.final || []).forEach(function (l) {
+          add(out.best, l);
+        });
+      }
+      ids.forEach(function (id) {
+        var c = (src.chapters || {})[id],
+          ch = a.chapters.find(function (x) {
+            return x.id === id;
+          }),
+          prefix = ids.length > 1 ? shortChapter(ch) : "";
+        ((c && c.all) || []).forEach(function (l) {
+          add(out.also, l, prefix);
+        });
+      });
+      out.why = whys.length === 1 ? whys[0] : TYPES[type].fallback;
+    }
+    if (!out.best.length) {
+      out.why = "";
+      out.note =
+        "There's nothing on the site for this yet. Use your own class notes, and check back once the slides are added.";
+    }
+    out.also = out.also.slice(0, 10);
+    numberRepeats(out.best);
+    numberRepeats(out.also);
+    return out;
+  }
+  function showSession(x) {
+    var s = sessionOf(x);
+    return Promise.all([loadSources(), whenLoaded(s.sid)]).then(function () {
+      var type = sessionType(s),
+        info = TYPES[type],
+        picks = sessionPicks(s, type),
+        parts = sessionParts(x),
+        focus = (s.notes.match(/Focus: (.+)$/) || [])[1],
+        prior = document.activeElement,
+        wrap = document.createElement("div");
+      wrap.className = "sp-free-overlay";
+      wrap.setAttribute("data-ar-own", "");
+      wrap.innerHTML =
+        '<section class="sp-free-dialog" role="dialog" aria-modal="true" aria-labelledby="sp-src-title"><span class="sp-src-badge t-' +
+        type +
+        '">' +
+        esc(info.name) +
+        '</span><h3 id="sp-src-title">' +
+        esc(parts.name) +
+        "</h3><p>" +
+        esc([parts.head, s.date ? shortDate(s.date) + (s.start ? " · " + C.timeLabel(s.start) : "") : ""].filter(Boolean).join(" · ")) +
+        '</p><p class="sp-free-ask">' +
+        esc(info.how) +
+        "</p>" +
+        (focus ? '<p><b class="sp-src-focus">Focus on</b> ' + esc(focus) + "</p>" : "") +
+        (picks.best.length
+          ? '<h4 class="sp-src-head">Best for this session</h4>' +
+            (picks.why ? "<p>" + esc(picks.why) + "</p>" : "") +
+            '<div class="sp-src-best">' +
+            picks.best
+              .map(function (l) {
+                return '<a class="btn solid" href="' + esc(l.url) + '">' + esc(l.label) + "</a>";
+              })
+              .join("") +
+            "</div>"
+          : '<p class="sp-free-ask">' + esc(picks.note) + "</p>") +
+        (picks.also.length
+          ? '<h4 class="sp-src-head">Also available</h4><div class="sp-links sp-src-also">' +
+            picks.also
+              .map(function (l) {
+                return '<a href="' + esc(l.url) + '">' + esc(l.label) + "</a>";
+              })
+              .join("") +
+            "</div>"
+          : "") +
+        '<div class="sp-free-actions"><button type="button" class="btn" data-src-close>Close</button></div></section>';
+      function close() {
+        document.removeEventListener("keydown", onKey, true);
+        wrap.remove();
+        if (prior && prior.focus) prior.focus();
+      }
+      function onKey(ev) {
+        if (ev.key !== "Escape") return;
+        ev.stopPropagation();
+        close();
+      }
+      wrap.addEventListener("click", function (ev) {
+        if (ev.target === wrap || ev.target.hasAttribute("data-src-close")) close();
+      });
+      document.addEventListener("keydown", onKey, true);
+      document.body.appendChild(wrap);
+      wrap.querySelector("[data-src-close]").focus();
+    });
+  }
+  function colorsHtml() {
+    return (
+      '<section class="sp-box"><ul class="sp-color-list">' +
+      Object.keys(TYPES)
+        .map(function (k) {
+          var t = TYPES[k];
+          return (
+            '<li class="t-' +
+            k +
+            '"><span class="sp-color-swatch" aria-hidden="true"></span><div><b>' +
+            esc(t.name) +
+            "</b><p>" +
+            esc(t.meant) +
+            '</p><p class="sp-color-opens">Study from: ' +
+            esc(t.opens) +
+            "</p></div></li>"
+          );
+        })
+        .join("") +
+      '</ul><p class="sp-muted sp-color-foot">Click any study session to see exactly what to study from. The best page is chosen chapter by chapter: when many of a chapter\'s slides repeat, it sends you to the slide breakdown instead.</p></section>'
+    );
+  }
   // Anything half-typed in a form survives a re-render of the tab.
   function formKey(form) {
     return form.dataset.spFormatForm || "block";
@@ -4639,6 +4935,8 @@
       body =
         view === "left"
           ? remainingHtml()
+          : view === "colors"
+            ? colorsHtml()
           : view === "setup"
             ? setupHtml(sid)
             : view === "exams"
@@ -4850,6 +5148,8 @@
     } else if (d.spSkip || d.spUnskip) {
       var sk = (d.spSkip || d.spUnskip).split("|");
       setBlockSkip(sk[0], sk[1], Boolean(d.spSkip));
+    } else if (d.spPreview !== undefined) {
+      showSession(ui.preview.placed[Number(d.spPreview)]);
     } else if (t.hasAttribute("data-sp-uni-reset")) {
       resetUni();
     } else if (d.spUniClear) {
@@ -4958,7 +5258,37 @@
     if (!window.__shougCal) return setTimeout(boot, 50);
     if (!$("study-plan-root")) return;
     C = window.__shougCal;
+    typeAsked = true;
     $("study-plan-root").addEventListener("click", onClick);
+    // A study session in the day view opens too, unless it was being dragged
+    // or the click was on one of its own buttons.
+    var pressX = 0,
+      pressY = 0;
+    document.addEventListener(
+      "pointerdown",
+      function (ev) {
+        pressX = ev.clientX;
+        pressY = ev.clientY;
+      },
+      true,
+    );
+    document.addEventListener("click", function (ev) {
+      if (!ev.target.closest) return;
+      var b = ev.target.closest("[data-sp-sources]"),
+        card =
+          !b &&
+          !ev.target.closest("button, a, input, select") &&
+          Math.abs(ev.clientX - pressX) + Math.abs(ev.clientY - pressY) < 6 &&
+          ev.target.closest(
+            ".timeline-event.study:not(.tl-narrow)[data-item-id], .day-card.study[data-item-id]",
+          ),
+        id = b ? b.dataset.spSources : card ? card.dataset.itemId : "";
+      if (!id) return;
+      var item = C.items.find(function (i) {
+        return i.id === id;
+      });
+      if (item && item.planSource === "study-plan") showSession(item);
+    });
     // Keep the "one day is different" list open across re-renders.
     $("study-plan-root").addEventListener(
       "toggle",
@@ -5072,6 +5402,7 @@
     replan: replan,
     overlaps: overlaps,
     examChapters: examChapters,
+    sessionTypeOf: sessionTypeOf,
     deleteAll: deleteAll,
     startOver: startOver,
   };
