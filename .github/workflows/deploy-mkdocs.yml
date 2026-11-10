@@ -121,7 +121,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
         with:
-          timeout: 3600000
+          timeout: 600000
 
   # Cloudflare Pages copy of the same build (see CLOUDFLARE-MIGRATION.md). It runs
   # next to the GitHub Pages deploy, from the same sealed artifact, and a failure here
@@ -172,6 +172,34 @@ jobs:
           # The Pages project is provisioned separately. Do not run "project create"
           # on every deployment: it fails when the project already exists.
           npx --yes wrangler@4.151.1 pages deploy site --project-name shoug-tech-site --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=true
+
+  # Firebase Hosting preview for a safe hosting comparison. This does not
+  # change the production domain or replace the existing deployments.
+  firebase-preview:
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download the built site
+        uses: actions/download-artifact@v5
+        with:
+          name: github-pages
+
+      - name: Restore the built site
+        run: |
+          mkdir -p docs
+          tar -xf artifact.tar -C docs
+
+      - name: Deploy Firebase Hosting preview
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SHOUG_TECH }}
+          projectId: shoug-tech
+          channelId: codex-preview-${{ github.run_id }}
+          expires: 7d
 
   indexnow:
     needs: deploy
