@@ -7,13 +7,15 @@ A candidate replaces its original only when qpdf succeeds and the result is smal
 from __future__ import annotations
 
 import argparse
+import stat
 import subprocess
 import tempfile
 from pathlib import Path
 
 
 def optimize_pdf(path: Path) -> tuple[int, int, str]:
-    original_size = path.stat().st_size
+    original_stat = path.stat()
+    original_size = original_stat.st_size
     with tempfile.NamedTemporaryFile(
         prefix=f".{path.stem}.", suffix=".optimized.pdf", dir=path.parent, delete=False
     ) as handle:
@@ -36,7 +38,6 @@ def optimize_pdf(path: Path) -> tuple[int, int, str]:
             detail = (result.stderr or result.stdout).strip().splitlines()
             return original_size, original_size, detail[-1] if detail else "qpdf failed"
 
-        # Validate the generated file before considering replacement.
         check = subprocess.run(
             ["qpdf", "--check", str(candidate)],
             capture_output=True,
@@ -48,6 +49,7 @@ def optimize_pdf(path: Path) -> tuple[int, int, str]:
 
         optimized_size = candidate.stat().st_size
         if optimized_size < original_size:
+            candidate.chmod(stat.S_IMODE(original_stat.st_mode))
             candidate.replace(path)
             return original_size, optimized_size, "optimized"
         return original_size, original_size, "already optimal"
