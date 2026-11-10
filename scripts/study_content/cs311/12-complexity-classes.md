@@ -100,9 +100,9 @@ n b 180 75 SAT
 n c 180 150 3SAT
 n d 60 225 Vertex Cover
 n e 300 225 Clique
-n f 0 310 Set Cover
-n g 120 310 Subset Sum
-n h 240 310 Hamiltonian Cycle
+n f -60 310 Set Cover
+n g 100 310 Subset Sum
+n h 280 310 Hamiltonian Cycle
 e a b
 e b c
 e c d

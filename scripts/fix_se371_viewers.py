@@ -6,7 +6,7 @@ listing after the site shell changed from `content-area` to `sys-main`.  The
 old builder's regex then stopped matching silently, so every chapter URL showed
 the listing page even though the authored chapter HTML existed.
 
-This repair deliberately uses the CURRENT SE371 listing as chrome and replaces
+This repair deliberately uses the CURRENT SE371 Slides hub as chrome and replaces
 only its <main> region.  That keeps header/sidebar/theme behavior identical to
 the rest of the course while making every chapter route a dedicated viewer.
 """
@@ -20,6 +20,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SLIDES = ROOT / "docs" / "academics" / "software-engineering" / "se371" / "slide-breakdowns"
 BASE = "/academics/software-engineering/se371/slide-breakdowns/"
+# The old slide-breakdowns listing is now a redirect stub into the Slides hub,
+# so the hub is both the chrome template and the "back to index" target.
+HUB = ROOT / "docs" / "academics" / "software-engineering" / "se371" / "slides" / "index.html"
+HUB_URL = "/academics/software-engineering/se371/slides/#breakdowns"
+SITE = "https://shoug-tech.com"
+HUB_ABS = SITE + "/academics/software-engineering/se371/slides/"
+HUB_TITLE = "SHOUG.TECH | SE371 Slides"
 
 CHAPTERS = [
     ("01-introduction-to-the-web", "introduction-to-the-web.html", "Introduction to the Web"),
@@ -66,13 +73,13 @@ def viewer_main(i: int, slug: str, filename: str, title: str) -> str:
     return f'''<main class="sys-main" id="main-content" tabindex="-1">
 {VIEWER_STYLE}
 <div class="content-topbar">
-  <div class="breadcrumb"><a class="breadcrumb-link" href="/academics/">Academics</a> / <a class="breadcrumb-link" href="/academics/software-engineering/">Software Engineering</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se371/">SE371</a> / <a class="breadcrumb-link" href="{BASE}">Slide Breakdowns</a> / <span class="current">{safe_title}</span></div>
+  <div class="breadcrumb"><a class="breadcrumb-link" href="/academics/">Academics</a> / <a class="breadcrumb-link" href="/academics/software-engineering/">Software Engineering</a> / <a class="breadcrumb-link" href="/academics/software-engineering/se371/">SE371</a> / <a class="breadcrumb-link" href="{HUB_URL}">Slides</a> / <span class="current">{safe_title}</span></div>
   <div class="sys-time" id="live-clock">SYS_TIME [ 00 00 00 ]</div>
 </div>
 <section class="se371-viewer-head">
   <div class="se371-viewer-kicker">CHAPTER_{i + 1:02d} // SLIDE BREAKDOWN</div>
   <h1 class="se371-viewer-title">{safe_title}</h1>
-  <div class="se371-viewer-actions"><a class="btn btn-primary" href="./{filename}" target="_blank" rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a><a href="{BASE}">[ &lt;- BACK TO INDEX ]</a></div>
+  <div class="se371-viewer-actions"><a class="btn btn-primary" href="./{filename}" target="_blank" rel="noopener noreferrer">[ OPEN IN NEW TAB -&gt; ]</a><a href="{HUB_URL}">[ &lt;- BACK TO SLIDES ]</a></div>
 </section>
 <div class="se371-viewer-nav"><span>{prev_link}</span><span>{next_link}</span></div>
 <div class="embed-area-wrapper">
@@ -84,10 +91,9 @@ def viewer_main(i: int, slug: str, filename: str, title: str) -> str:
 
 
 def main() -> None:
-    template_path = SLIDES / "index.html"
-    template = template_path.read_text(encoding="utf-8")
+    template = HUB.read_text(encoding="utf-8")
     if not MAIN_RE.search(template):
-        raise SystemExit("SE371 listing shell no longer contains #main-content; refusing to generate broken viewers")
+        raise SystemExit("SE371 Slides hub no longer contains #main-content; refusing to generate broken viewers")
 
     for i, (slug, filename, title) in enumerate(CHAPTERS):
         folder = SLIDES / slug
@@ -96,7 +102,13 @@ def main() -> None:
             raise SystemExit(f"Missing authored SE371 breakdown: {source.relative_to(ROOT)}")
 
         page = MAIN_RE.sub(lambda _: viewer_main(i, slug, filename, title), template, count=1)
-        page = TITLE_RE.sub(f"<title>SHOUG.TECH | SE371 {html.escape(title)}</title>", page, count=1)
+        page_title = f"SHOUG.TECH | SE371 {html.escape(title)}"
+        page = TITLE_RE.sub(f"<title>{page_title}</title>", page, count=1)
+        # The hub's canonical/og:url/hreflang/JSON-LD and titles must name this
+        # chapter route, or the sitemap drops it as a copy of the hub.
+        page = page.replace(HUB_ABS, f"{SITE}{BASE}{slug}/").replace(HUB_TITLE, page_title)
+        if HUB_ABS in page:
+            raise SystemExit(f"{slug}: hub URL still present after metadata rewrite")
         out = folder / "index.html"
         out.write_text(page, encoding="utf-8")
         print(f"fixed {out.relative_to(ROOT)} -> ./{filename}")

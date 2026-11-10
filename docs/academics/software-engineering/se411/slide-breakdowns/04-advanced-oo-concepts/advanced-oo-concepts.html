@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-sg-styled="true">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced OO Concepts &mdash; SE411 Slide Breakdown</title>
+    <meta name="description" content="SE411 Chapter 4 explained in plain language with examples and memory tricks: Good object-oriented code hides details behind a contract, picks the right relationship between classes, lets one variable work with many object types (polymorphism), and prefers small interfaces plus composition over deep inheritance trees.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/04-advanced-oo-concepts/advanced-oo-concepts.html">
+    <meta property="og:title" content="Advanced OO Concepts &mdash; SE411 Slide Breakdown">
+    <meta property="og:description" content="SE411 Chapter 4 explained in plain language with examples and memory tricks: Good object-oriented code hides details behind a contract, picks the right relationship between classes, lets one variable work with many object types (polymorphism), and prefers small interfaces plus composition over deep inheritance trees.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/04-advanced-oo-concepts/advanced-oo-concepts.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Advanced OO Concepts &mdash; SE411 Slide Breakdown">
+    <meta name="twitter:description" content="SE411 Chapter 4 explained in plain language with examples and memory tricks: Good object-oriented code hides details behind a contract, picks the right relationship between classes, lets one variable work with many object types (polymorphism), and prefers small interfaces plus composition over deep inheritance trees.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ── palette ───────────────────────────────────────────────────────────────
+   Eight hue tokens drive the per-section colour: each <section> carries
+   --sec, and its label, rule, cards and table headers all derive from it. */
+
+:root[data-theme="dark"] {
+    --bg: #0a0611;
+    --bg2: #150d21;
+    --bg3: #1d1330;
+    --code-bg: #0d0716;
+    --border: rgba(255, 255, 255, 0.10);
+    --border2: rgba(255, 255, 255, 0.18);
+    --text: #f4f0fa;
+    --text2: #aaa2bb;
+    --text3: #756e88;
+    --accent: #c77dff;
+    --accent2: #e6b8ff;
+
+    --c1: #c77dff;   /* violet   */
+    --c2: #4cc9f0;   /* cyan     */
+    --c3: #4ade80;   /* green    */
+    --c4: #fbbf24;   /* amber    */
+    --c5: #fb7185;   /* rose     */
+    --c6: #818cf8;   /* indigo   */
+    --c7: #f472b6;   /* pink     */
+    --c8: #2dd4bf;   /* teal     */
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
+}
+
+:root[data-theme="light"] {
+    --bg: #fbf9fe;
+    --bg2: #f4eefb;
+    --bg3: #ffffff;
+    --code-bg: #f6f1fc;
+    --border: rgba(24, 12, 40, 0.10);
+    --border2: rgba(24, 12, 40, 0.18);
+    --text: #180d26;
+    --text2: #574d68;
+    --text3: #8a8299;
+    --accent: #7b2cbf;
+    --accent2: #9d4edd;
+
+    --c1: #7b2cbf;
+    --c2: #0369a1;
+    --c3: #047857;
+    --c4: #a16207;
+    --c5: #be123c;
+    --c6: #4338ca;
+    --c7: #a21caf;
+    --c8: #0f766e;
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
+}
+
+/* ── fluid scale ───────────────────────────────────────────────────────────
+   One root font-size ramp scales every rem on the page with the viewport,
+   so the layout uses a phone and a 32" monitor equally well. */
+
+html {
+    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+    scroll-behavior: smooth;
+    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+}
+
+:root {
+    --navh: 3.4rem;
+    --gutter: clamp(1rem, 3.2vw, 3rem);
+    --maxw: 74rem;
+    --radius: 0.85rem;
+    --sec: var(--c1);
+    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+   which turns the root into a scroll container and silently disables the
+   sticky TOC rail. overflow-x: clip contains the same overflow without
+   creating a scroll container; these selectors outrank the injected rule. */
+html:root { overflow-x: clip; }
+:root > body { overflow-x: clip; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    width: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── reading progress ──────────────────────────────────────────────────── */
+#progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    z-index: 200; transform-origin: left;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────
+   Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
+   used to leak their sticky positioning and gradient rule into it. */
+nav.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-inline: var(--gutter);
+    display: flex; align-items: center; gap: 1rem;
+    min-height: var(--navh);
+}
+nav.topbar::after {
+    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
+    opacity: 0.85;
+}
+.nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-links {
+    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
+    overflow-x: auto; min-width: 0; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
+    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
+}
+.toggle-btn {
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
+}
+.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero-band {
+    background: var(--hero-wash);
+    border-bottom: 1px solid var(--border);
+}
+.hero {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-eyebrow::before {
+    content: ''; width: 2rem; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+.hero h1 {
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 0.1em;
+}
+.hero-sub {
+    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+    margin-top: 1rem; max-width: 62ch;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.stat {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+}
+.stat:nth-child(1) { --sec: var(--c1); }
+.stat:nth-child(2) { --sec: var(--c2); }
+.stat:nth-child(3) { --sec: var(--c3); }
+.stat:nth-child(4) { --sec: var(--c4); }
+.stat:nth-child(5) { --sec: var(--c7); }
+
+/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+.layout {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.chapter-toc {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.9rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+.chapter-toc a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text2); text-decoration: none;
+    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
+    border: 1px solid transparent; transition: all 0.18s;
+}
+.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
+.chapter-toc a.active {
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+@media (min-width: 68rem) {
+    :root { --maxw: 88rem; }
+    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+    .toc-rail {
+        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
+        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
+    }
+    .chapter-toc {
+        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+        gap: 0.1rem; padding: 0.75rem;
+    }
+    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
+    .chapter-toc a.active { border-left-color: var(--accent); }
+}
+@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section {
+    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+    scroll-margin-top: calc(var(--navh) + 1rem);
+}
+.section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--sec); margin-bottom: 0.7rem;
+    background: var(--sec-soft);
+    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.75rem;
+}
+.section-title {
+    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
+    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+    width: 4px; border-radius: 4px;
+    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
+}
+
+h3 {
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
+}
+h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
+p { margin-bottom: 0.9rem; color: var(--text2); }
+p strong, li strong { color: var(--text); font-weight: 600; }
+ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
+li { margin-bottom: 0.4rem; }
+li::marker { color: var(--sec); }
+a { color: var(--accent); }
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius); padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; color: var(--sec); }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
+.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
+.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+
+/* ── tables ────────────────────────────────────────────────────────────── */
+.table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
+}
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
+th {
+    text-align: left; padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
+    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
+}
+td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
+td strong { color: var(--text); }
+td code, li code, p code, h4 code, th code, .cheat-col code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
+}
+th code { color: inherit; background: transparent; border: none; padding: 0; }
+.w-memorize, .w-write, .w-skim {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+}
+.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
+.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
+.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── code blocks ───────────────────────────────────────────────────────── */
+.code-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.2rem;
+    overflow: hidden; box-shadow: var(--shadow);
+}
+.code-head {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
+    border-bottom: 1px solid var(--border);
+}
+.code-file {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.code-file::before {
+    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--sec); flex-shrink: 0;
+}
+.code-note { font-size: 0.7rem; color: var(--text3); }
+.code-run {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    text-decoration: none; color: var(--sec); white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
+}
+.code-run:hover { background: var(--sec); color: var(--bg); }
+.code-block pre {
+    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
+    overflow-x: auto; background: var(--code-bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+    line-height: 1.65; color: var(--text); tab-size: 4;
+}
+.code-block pre .c { color: var(--text3); font-style: italic; }
+.code-block pre .k { color: var(--c1); }
+.code-block pre .s { color: var(--c3); }
+.code-block pre .t { color: var(--c2); }
+
+/* ── traps & hooks ─────────────────────────────────────────────────────── */
+.trap {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
+    border: 1px solid var(--border); border-left: 4px solid var(--c5);
+    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
+}
+.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+.trap p:last-child { margin-bottom: 0; }
+.trap .fix { color: var(--c3); font-weight: 700; }
+
+.hook {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--c1) 12%, transparent),
+        color-mix(in srgb, var(--c2) 10%, transparent));
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-left: 4px solid var(--c1);
+    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
+    font-size: 0.9rem; color: var(--text2);
+}
+.hook strong { color: var(--accent2); }
+
+/* ── cheat sheet ───────────────────────────────────────────────────────── */
+.cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+.cheat-col {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+}
+.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
+.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
+.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
+.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
+.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
+.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
+.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
+.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
+.cheat-col h4 {
+    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+}
+.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
+.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+
+/* ── drills ────────────────────────────────────────────────────────────── */
+.drill { counter-reset: drill; list-style: none; margin-left: 0; }
+.drill li {
+    counter-increment: drill; position: relative;
+    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
+}
+.drill li::before {
+    content: counter(drill, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
+}
+.drill li:nth-child(6n+1) { --sec: var(--c1); }
+.drill li:nth-child(6n+2) { --sec: var(--c2); }
+.drill li:nth-child(6n+3) { --sec: var(--c3); }
+.drill li:nth-child(6n+4) { --sec: var(--c4); }
+.drill li:nth-child(6n+5) { --sec: var(--c7); }
+.drill li:nth-child(6n+6) { --sec: var(--c8); }
+
+/* ── quiz ──────────────────────────────────────────────────────────────── */
+.test-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
+}
+.test-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.9rem 1.2rem;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
+    border-bottom: 1px solid var(--border);
+}
+.test-head h3 { margin: 0; font-size: 0.92rem; }
+.tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 0.2rem 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+}
+.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
+.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
+.test-options { display: grid; gap: 0.5rem; }
+.opt {
+    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
+.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.opt:disabled { cursor: default; }
+.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
+.test-feedback.show { display: block; }
+.next-btn {
+    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.next-btn:hover { background: var(--accent); color: var(--bg); }
+.next-btn.show { display: inline-block; }
+#quiz-score {
+    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
+    background: var(--hero-wash), var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+#quiz-score.show { display: block; }
+#quiz-score p {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    background: var(--hero-wash);
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+    text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+@media (max-width: 40rem) {
+    .nav-links { display: none; }
+    table { min-width: 26rem; }
+}
+
+.prose p, .prose ul, .prose ol { font-size: 1rem; line-height: 1.72; }
+.prose ul, .prose ol { margin: 0 0 1rem 1.2rem; }
+.prose li { margin-bottom: .4rem; }
+.prose strong { color: var(--text); }
+.lesson-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin: -.3rem 0 1.1rem; }
+.pill { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: .22rem .6rem; border-radius: 99px; border: 1px solid var(--border2); color: var(--text2); }
+.pill.must { color: var(--c5); border-color: color-mix(in srgb, var(--c5) 55%, transparent); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.pill.know { color: var(--c2); border-color: color-mix(in srgb, var(--c2) 55%, transparent); background: color-mix(in srgb, var(--c2) 12%, transparent); }
+.pill.skim { color: var(--text3); }
+.tldr { font-size: 1.16rem; line-height: 1.6; color: var(--text); padding: 1.15rem 1.3rem; border-radius: 12px; background: color-mix(in srgb, var(--sec) 13%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--sec) 40%, transparent); margin-bottom: 1.2rem; }
+.tldr b { display: block; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sec); margin-bottom: .4rem; font-weight: 700; }
+.start-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: .9rem; margin-bottom: 1.1rem; }
+.start-item { padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); }
+.start-item h4 { margin: 0 0 .4rem; color: var(--sec); font-size: .92rem; }
+.start-item p, .start-item ul { margin-bottom: 0; font-size: .95rem; }
+.start-item ul { margin-left: 1.1rem; }
+.slide-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: .4rem 0 1.2rem; }
+.slide-links a { font-family: 'JetBrains Mono', monospace; font-size: .74rem; padding: .45rem .8rem; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; text-decoration: none; }
+.slide-links a:hover { background: var(--accent); color: var(--bg); }
+.note, .worked, .remember, .formula { margin: 1rem 0; border-radius: 12px; }
+.note { padding: 1rem 1.15rem; border: 1px solid var(--tone-line); background: var(--tone-bg); --tone: var(--c2); --tone-line: color-mix(in srgb, var(--tone) 42%, transparent); --tone-bg: color-mix(in srgb, var(--tone) 10%, var(--bg2)); }
+.note h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--text); }
+.note p:last-child, .note ul:last-child, .note ol:last-child { margin-bottom: 0; }
+.note p, .note li { font-size: .96rem; line-height: 1.66; }
+.note ul, .note ol { margin-left: 1.15rem; }
+.note-tag { font-family: 'JetBrains Mono', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--tone, var(--sec)); margin-bottom: .45rem; }
+.n-analogy { --tone: var(--c2); } .n-mnemonic { --tone: var(--c7); } .n-tip { --tone: var(--c3); } .n-why { --tone: var(--c6); } .n-class { --tone: var(--c8); } .n-says { --tone: var(--c1); } .n-trap { --tone: var(--c5); }
+.n-mnemonic h4 { font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; color: var(--c7); font-size: 1.12rem; }
+.note-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .9rem; margin: 1rem 0; }
+.note-grid > .note { margin: 0; }
+.worked { padding: 1.1rem 1.25rem; border: 1px solid var(--border2); background: var(--bg2); border-left: 3px solid var(--c4); --tone: var(--c4); }
+.worked h4 { margin: 0 0 .65rem; font-size: 1.06rem; color: var(--text); }
+.worked p:last-child, .worked ol:last-child, .worked ul:last-child { margin-bottom: 0; }
+.worked p, .worked li { font-size: .97rem; line-height: 1.66; }
+.worked ol:not(.stepper), .worked ul { margin-left: 1.2rem; }
+.stepper { list-style: none; counter-reset: st; margin: 0; }
+.stepper li { counter-increment: st; position: relative; padding: 0 0 .75rem 2.5rem; margin: 0; }
+.stepper li:last-child { padding-bottom: 0; }
+.stepper li::before { content: counter(st); position: absolute; left: 0; top: 0; width: 1.65rem; height: 1.65rem; border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: .76rem; font-weight: 700; color: var(--bg); background: var(--c4); }
+.stepper li::after { content: ''; position: absolute; left: .79rem; top: 1.75rem; bottom: .1rem; width: 2px; background: var(--border2); }
+.stepper li:last-child::after { display: none; }
+.formula { padding: .95rem 1.15rem; background: var(--code-bg); border: 1px solid var(--border2); text-align: center; }
+.f-cap { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: .5rem; }
+.f-line { font-family: 'JetBrains Mono', monospace; font-size: 1.04rem; color: var(--text); line-height: 1.75; overflow-wrap: anywhere; }
+.remember { padding: 1rem 1.2rem; border: 1px dashed color-mix(in srgb, var(--sec) 55%, transparent); --tone: var(--sec); }
+.remember ul { margin: 0 0 0 1.1rem; }
+.remember li { margin-bottom: .32rem; font-size: .95rem; }
+.remember li:last-child { margin-bottom: 0; }
+details.try { margin: .8rem 0; border: 1px solid var(--border2); border-radius: 10px; background: var(--bg2); }
+details.try summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; color: var(--text); font-size: .97rem; list-style: none; }
+details.try summary::-webkit-details-marker { display: none; }
+details.try summary span { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--c3); padding: .14rem .45rem; border-radius: 4px; margin-right: .6rem; vertical-align: 1px; }
+details.try summary:hover { color: var(--accent); }
+details.try > div { padding: 0 1rem .9rem; border-top: 1px solid var(--border); padding-top: .75rem; }
+details.try p:last-child, details.try ul:last-child { margin-bottom: 0; }
+.diagram { margin: 1.1rem 0; text-align: center; }
+.diagram svg { width: 100%; max-width: 40rem; height: auto; }
+.diagram figcaption { font-size: .82rem; color: var(--text3); margin-top: .35rem; }
+.diagram text { font-family: 'JetBrains Mono', monospace; }
+.pl { fill: var(--text2); font-size: 13px; } .pt { fill: var(--text3); font-size: 12px; } .pn { fill: var(--text); font-size: 13.5px; font-weight: 700; } .pa { fill: var(--text); font-size: 13px; }
+.gn { fill: var(--text); font-size: 13.5px; font-weight: 600; } .gl { fill: var(--text2); font-size: 12px; }
+.table-wrap td, .table-wrap th { white-space: normal; }
+.roundup .note { margin: .8rem 0; }
+@media print { .topbar, .toc-rail, #progress { display: none !important; } .layout { display: block; } details.try > div { display: block; } }
+</style>
+<link rel="stylesheet" href="/styles/site-shell.css"><script defer src="/javascripts/site-palette.js"></script></head>
+
+<body>
+    <div id="progress"></div>
+
+    <nav class="topbar" aria-label="Chapter sections">
+        <div class="nav-title">SE411 // CHAPTER 4</div>
+        <ul class="nav-links"><li><a href="#start">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#lesson-1">Abstraction, encapsulation and class relationships</a></li><li><a href="#lesson-2">Inheritance, super and constructor chaining</a></li><li><a href="#lesson-3">Designing a class</a></li><li><a href="#lesson-4">Overriding, overloading and dynamic binding</a></li><li><a href="#lesson-5">Abstract classes and final</a></li><li><a href="#lesson-6">Interfaces</a></li><li><a href="#lesson-7">Private constructors and factory methods</a></li><li><a href="#lesson-8">Immutable objects</a></li><li><a href="#lesson-9">Comparable and Cloneable</a></li><li><a href="#traps">Exam Traps</a></li><li><a href="#tricks">Memory Tricks</a></li><li><a href="#cheat">Quick Reference</a></li><li><a href="#quiz">Quiz</a></li></ul>
+        <div class="nav-actions" data-page-search-host>
+            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+        </div>
+    </nav>
+
+    <div class="hero-band">
+        <header class="hero">
+            <div class="hero-eyebrow">Chapter 4 &middot; Slide Breakdown</div>
+            <h1>Advanced OO Concepts</h1>
+            <p class="hero-sub">The slides explained in plain language, with examples, memory tricks and practice questions.</p>
+            <div class="hero-stats"><span class="stat">191 slides</span><span class="stat">Chapter 4</span><span class="stat">9 lessons</span><span class="stat">15 min read</span></div>
+        </header>
+    </div>
+
+    <div class="layout">
+        <aside class="toc-rail">
+            <nav class="chapter-toc" aria-label="On this page"><a href="#start">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#lesson-1">03 Abstraction, encapsulation and class relationships</a><a href="#lesson-2">04 Inheritance, super and constructor chaining</a><a href="#lesson-3">05 Designing a class</a><a href="#lesson-4">06 Overriding, overloading and dynamic binding</a><a href="#lesson-5">07 Abstract classes and final</a><a href="#lesson-6">08 Interfaces</a><a href="#lesson-7">09 Private constructors and factory methods</a><a href="#lesson-8">10 Immutable objects</a><a href="#lesson-9">11 Comparable and Cloneable</a><a href="#traps">12 Exam Traps</a><a href="#tricks">13 Memory Tricks</a><a href="#cheat">14 Quick Reference</a><a href="#quiz">15 Quiz</a></nav>
+        </aside>
+
+        <main>
+        <section id="start" style="--sec: var(--c1)">
+            <div class="section-label">Read this first</div>
+            <h2 class="section-title">The big picture</h2>
+<div class="tldr"><b>In one sentence</b>Good object-oriented code hides details behind a contract, picks the right relationship between classes, lets one variable work with many object types (polymorphism), and prefers small interfaces plus composition over deep inheritance trees.</div><div class="prose"><p>This is the longest chapter (191 slides) and the one most exam questions come from: constructor-chaining traces, "will this compile?", overriding vs overloading output, dynamic binding, final, interface vs abstract class, immutability traps, compareTo and shallow vs deep copy. Every one has a worked example below.</p></div><div class="start-grid"><div class="start-item"><h4>Where this fits</h4><p>Chapter 2's generics (<code>Comparable&lt;E&gt;</code>) and functional interfaces reappear here. Chapter 5's Runnable is an interface, and Chapter 6's Spring Boot is built on "program to an interface". Chapter 7 uses final classes and immutability for security.</p></div><div class="start-item"><h4>By the end you can</h4><ul><li>Explain abstraction, encapsulation and class contracts</li><li>Tell association, aggregation, composition and inheritance apart</li><li>Trace constructor chaining and fix missing no-arg constructors</li><li>Distinguish overriding from overloading and predict output</li><li>Explain dynamic binding, upcasting, downcasting and instanceof</li><li>Use final, abstract classes, interfaces, default, static and private interface methods</li><li>Use private constructors and factory methods</li><li>Choose composition plus interfaces over inheritance where appropriate</li><li>Build immutable classes and implement Comparable and Cloneable</li></ul></div></div><div class="slide-links"><a href="/academics/software-engineering/se411/slides/chapter-4-advanced-oo-concepts/" target="_top">Open the slides: Chapter 4 &rarr;</a></div><h3>Words you need first</h3><div class="table-wrap"><table><thead><tr><th>Term</th><th>In plain English</th></tr></thead><tbody><tr><td><strong>Encapsulation</strong></td><td>Hiding a class's data and details behind public methods.</td></tr><tr><td><strong>Contract</strong></td><td>The public method signatures and constants users rely on.</td></tr><tr><td><strong>Aggregation</strong></td><td>Has-a: the whole holds parts that can live on their own.</td></tr><tr><td><strong>Composition</strong></td><td>Strong has-a: the parts die with the whole.</td></tr><tr><td><strong>Overriding</strong></td><td>A subclass replaces an inherited method with the same signature.</td></tr><tr><td><strong>Overloading</strong></td><td>Same method name, different parameter list.</td></tr><tr><td><strong>Dynamic binding</strong></td><td>The JVM picks the method from the object's actual class at run time.</td></tr><tr><td><strong>Marker interface</strong></td><td>An empty interface that tags a class, such as Cloneable.</td></tr><tr><td><strong>Immutable</strong></td><td>An object whose state can't change after construction.</td></tr></tbody></table></div>
+        </section>
+        <section id="map" style="--sec: var(--c2)">
+            <div class="section-label">Navigation</div>
+            <h2 class="section-title">Where to spend your time</h2>
+<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>4</strong></td><td><strong>Abstraction and encapsulation</strong></td><td><span class="w-memorize">Memorize</span></td><td>Black-box contract</td></tr><tr><td><strong>5-12</strong></td><td><strong>Class relationships</strong></td><td><span class="w-memorize">Memorize</span></td><td>Association to composition</td></tr><tr><td><strong>13-33</strong></td><td><strong>Inheritance, super, constructor chaining</strong></td><td><span class="w-write">Write it</span></td><td>Trace and fix exercises</td></tr><tr><td><strong>34-38</strong></td><td><strong>Designing a class</strong></td><td><span class="w-memorize">Memorize</span></td><td>Coherence, SRP, modifiers</td></tr><tr><td><strong>39-48</strong></td><td><strong>Overriding, overloading, dynamic binding</strong></td><td><span class="w-write">Write it</span></td><td>Predict output</td></tr><tr><td><strong>49-55</strong></td><td><strong>Polymorphism</strong></td><td><span class="w-memorize">Memorize</span></td><td>Compile-time vs runtime</td></tr><tr><td><strong>56-92</strong></td><td><strong>Payroll case study, downcasting</strong></td><td><span class="w-skim">Skim</span></td><td>Abstract earnings()</td></tr><tr><td><strong>93-97</strong></td><td><strong>final methods and classes</strong></td><td><span class="w-memorize">Memorize</span></td><td>Can't override / extend</td></tr><tr><td><strong>99-131</strong></td><td><strong>Interfaces and Payable</strong></td><td><span class="w-memorize">Memorize</span></td><td>default, static, private</td></tr><tr><td><strong>132-144</strong></td><td><strong>Private constructors, factories</strong></td><td><span class="w-write">Write it</span></td><td>Exercises</td></tr><tr><td><strong>145-163</strong></td><td><strong>Interface vs inheritance, composition</strong></td><td><span class="w-memorize">Memorize</span></td><td>Strong vs weak is-a</td></tr><tr><td><strong>164-176</strong></td><td><strong>Class design review, immutability</strong></td><td><span class="w-memorize">Memorize</span></td><td>No setters isn't enough</td></tr><tr><td><strong>177-191</strong></td><td><strong>Comparable, Cloneable, deep copy</strong></td><td><span class="w-write">Write it</span></td><td>compareTo exercise</td></tr></tbody></table></div>
+        </section>
+        <section id="lesson-1" style="--sec: var(--c3)">
+            <div class="section-label">Lesson 1</div>
+            <h2 class="section-title">Abstraction, encapsulation and class relationships</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 4-12</span></div><div class="prose"><p><strong>Class abstraction</strong> separates how a class is <strong>implemented</strong> from how it's <strong>used</strong>. The creator publishes a <strong>contract</strong>: the public method signatures and public constants. Users work only through that contract; the implementation is a <strong>black box</strong>, encapsulated and hidden.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A vending machine</h4><p>You know the contract: insert money, press B4, get a drink. You don't know (or care) about the motors inside. The owner can replace the whole mechanism and you'd never notice, as long as the buttons still work the same way.</p></div>
+<div class="prose"><h3>Four relationships, from weakest to strongest</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Relationship</th>
+<th>Meaning</th>
+<th>Example</th>
+<th>Lifetime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Association</strong></td>
+<td>Two independent classes interact (1-1, 1-many, many-many)</td>
+<td>Student takes Course</td>
+<td>Independent, no ownership</td>
+</tr>
+<tr>
+<td><strong>Aggregation</strong></td>
+<td>Has-a: whole contains parts</td>
+<td>Library has Books</td>
+<td>Parts survive without the whole</td>
+</tr>
+<tr>
+<td><strong>Composition</strong></td>
+<td>Strong has-a, exclusive ownership</td>
+<td>House has Rooms</td>
+<td>Parts die with the whole</td>
+</tr>
+<tr>
+<td><strong>Inheritance</strong></td>
+<td>Is-a, via <code>extends</code></td>
+<td>Circle is a GeometricObject</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Aggregation and composition are usually coded as a <strong>data field</strong> in the owning class. Aggregation can even be on the <strong>same class</strong>: a <code>JFXLayout</code> may have a <code>parentLayout</code> field of type <code>JFXLayout</code> (or a list of them if a layout can sit inside many parents).</p></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>AACI: weakest to strongest</h4><p><strong>A</strong>ssociation, <strong>A</strong>ggregation, <strong>C</strong>omposition, then <strong>I</strong>nheritance as a different kind (is-a, not has-a). Think "a library doesn't own its readers (association), holds books it could give away (aggregation), but its rooms disappear with the building (composition)".</p></div>
+<details class="try"><summary><span>Try it</span>A University and its Departments: if the university closes, the departments no longer exist. Which relationship?</summary><div><p>Composition: the parts' lifetime depends on the whole.</p></div></details>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Abstraction separates use from implementation; users rely on the contract</li><li>Association: independent classes interact</li><li>Aggregation: has-a, parts can exist alone</li><li>Composition: has-a, parts die with the whole</li><li>Inheritance: is-a, using extends</li></ul></div>
+        </section>
+        <section id="lesson-2" style="--sec: var(--c4)">
+            <div class="section-label">Lesson 2</div>
+            <h2 class="section-title">Inheritance, super and constructor chaining</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 13-33</span></div><div class="prose"><p>A subclass inherits fields and methods, can <strong>add</strong> new ones and can <strong>override</strong> inherited methods. But <strong>constructors are NOT inherited</strong>. A subclass constructor can only call them with <code>super(...)</code>.</p>
+<p><strong>The hidden rule</strong>: if a constructor doesn't explicitly call <code>this(...)</code> or <code>super(...)</code>, the compiler inserts <code>super();</code> as its <strong>first statement</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>super usage</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Call a superclass constructor</td>
+<td><code>super(width, height);</code> must be the <strong>first</strong> statement</td>
+</tr>
+<tr>
+<td>Call an overridden superclass method</td>
+<td><code>super.toString()</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Calling the superclass constructor by name</h4><p><code>GeometricObject();</code> inside a subclass is a syntax error. You must write <code>super();</code>, and it must come first.</p></div>
+<div class="prose"><p><strong>Constructor chaining</strong>: creating an object runs <strong>every</strong> constructor up the inheritance chain, top-down in output.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>class Person {
+    public Person() { System.out.println(&quot;(1) Person&#x27;s no-arg constructor&quot;); }
+}
+class Employee extends Person {
+    public Employee() {
+        this(&quot;(2) Invoke Employee&#x27;s overloaded constructor&quot;);
+        System.out.println(&quot;(3) Employee&#x27;s no-arg constructor&quot;);
+    }
+    public Employee(String s) { System.out.println(s); }   // implicit super()
+}
+public class Faculty extends Employee {
+    public Faculty() { System.out.println(&quot;(4) Faculty&#x27;s no-arg constructor&quot;); }  // implicit super()
+    public static void main(String[] args) { new Faculty(); }
+}</pre></div>
+<div class="worked"><div class="note-tag">Step by step</div><h4>Tracing new Faculty()</h4><ol class="stepper"><li>Faculty() starts and implicitly calls super(), meaning Employee().</li><li>Employee() calls this("(2)..."), meaning Employee(String).</li><li>Employee(String) implicitly calls super(), meaning Person().</li><li>Person() prints <strong>(1)</strong>, then returns.</li><li>Employee(String) prints <strong>(2)</strong>, then returns.</li><li>Employee() prints <strong>(3)</strong>, then returns.</li><li>Faculty() prints <strong>(4)</strong>.</li></ol></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Building floors</h4><p>You can't build floor 3 before floors 1 and 2. Calls go <strong>up</strong> the chain first; printing happens on the way back <strong>down</strong>, so the most general class prints first.</p></div>
+<div class="prose"><h3>The missing no-arg constructor</h3></div>
+<div class="worked"><div class="note-tag">Worked example</div><h4>Slides 31-33</h4><p><code>class Vehicle { public Vehicle(String brand) {...} }</code> and <code>class Car extends Vehicle { public Car() { System.out.println("Car constructor"); } }</code>.</p>
+<p><strong>Does it compile? No.</strong> Car() implicitly calls <code>super()</code>, meaning <code>Vehicle()</code>, which doesn't exist: once you write any constructor, Java no longer supplies a default one.</p>
+<p><strong>Fix 1</strong>: add <code>super("Toyota");</code> as the first line of Car(). <strong>Fix 2</strong>: add a no-arg <code>Vehicle()</code> constructor. Either way the output is "Vehicle constructor" then "Car constructor".</p></div>
+<div class="note n-tip"><div class="note-tag">Exam tip</div><h4>Always give a class a no-arg constructor</h4><p>If a class might be extended, provide one so subclasses don't break, as slide 30's Apple and Fruit example also shows.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Constructors are not inherited; call them with super(...)</li><li>super(...) must be the first statement</li><li>With no explicit call, the compiler inserts super()</li><li>Chaining runs all constructors; the top superclass prints first</li><li>No no-arg superclass constructor means a compile error in a subclass that relies on super()</li></ul></div>
+        </section>
+        <section id="lesson-3" style="--sec: var(--c5)">
+            <div class="section-label">Lesson 3</div>
+            <h2 class="section-title">Designing a class</h2>
+<div class="lesson-meta"><span class="pill know">Good to know</span><span class="pill">Slides 34-38, 164-169</span></div><div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Guideline</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Coherence</strong></td>
+<td>One class describes <strong>one</strong> entity, and all its operations fit together</td>
+</tr>
+<tr>
+<td><strong>Single responsibility</strong></td>
+<td>Split a class with too many jobs: String (immutable), StringBuilder (mutable) and StringBuffer (mutable, synchronized)</td>
+</tr>
+<tr>
+<td><strong>Design for reuse</strong></td>
+<td>Let users set properties in any order and call methods in any order; give a public no-arg constructor; override equals and toString</td>
+</tr>
+<tr>
+<td><strong>Style</strong></td>
+<td>Informative names; fields, then constructors, then methods; lowercase package names</td>
+</tr>
+<tr>
+<td><strong>Visibility</strong></td>
+<td><code>private</code> fields with <code>public</code> accessors for users; <code>protected</code> for extenders</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="worked"><div class="note-tag">Worked example</div><h4>Slide 164-166: the StoreOwner class</h4><p>A <code>StoreOwner</code> class held identity data, draft store-design fields (theme, banner, cover image) and login details (password, googleId, authProvider). That breaks coherence. The fix splits it into <code>StoreOwner</code>, <code>StoreDesign</code> and <code>Authentication</code>, each with one responsibility.</p></div>
+<div class="prose"><p>A class has <strong>two contracts</strong>: one for <strong>users</strong> (public) and one for <strong>extenders</strong> (protected). The extenders' contract includes the users' one. Limiting scope and exposure is a principle of defensive programming.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>A class should model one entity coherently</li><li>Split classes that carry too many responsibilities</li><li>Design for reuse: any order, no-arg constructor, equals and toString</li><li>private fields with public accessors for users; protected for extenders</li></ul></div>
+        </section>
+        <section id="lesson-4" style="--sec: var(--c6)">
+            <div class="section-label">Lesson 4</div>
+            <h2 class="section-title">Overriding, overloading and dynamic binding</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 39-55</span></div><div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Overriding</th>
+<th>Overloading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where</td>
+<td>Subclass vs superclass</td>
+<td>Same class (or inherited)</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td><strong>Same</strong> name and parameters</td>
+<td>Same name, <strong>different</strong> parameters</td>
+</tr>
+<tr>
+<td>Decided</td>
+<td>At <strong>run time</strong> (dynamic binding)</td>
+<td>At <strong>compile time</strong></td>
+</tr>
+<tr>
+<td>Polymorphism type</td>
+<td>Runtime (dynamic)</td>
+<td>Compile-time (static)</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>class B { public void p(double i) { System.out.println(i * 2); } }
+
+// Version 1: OVERRIDES (same parameter type)
+class A extends B { public void p(double i) { System.out.println(i); } }
+// a.p(10) → 10.0     a.p(10.0) → 10.0
+
+// Version 2: OVERLOADS (different parameter type)
+class A extends B { public void p(int i) { System.out.println(i); } }
+// a.p(10) → 10       a.p(10.0) → 20.0  (B&#x27;s version)</pre></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>private and static methods can't be overridden</h4><p>A <strong>private</strong> method isn't visible to the subclass, so a same-named method there is a completely unrelated method. A <strong>static</strong> method can be inherited but not overridden: redefining it <strong>hides</strong> it, and which one runs depends on the <strong>variable's declared type</strong>, not the object. No runtime polymorphism.</p></div>
+<div class="prose"><h3>Polymorphism and dynamic binding</h3>
+<p><strong>Polymorphism</strong>: a variable of a supertype can refer to an object of any subtype. So <code>m(Object x)</code> accepts a GraduateStudent, a Student, a Person or a plain Object.</p>
+<p><strong>Dynamic binding</strong>: when <code>x.toString()</code> is called, the JVM searches for the method starting at the object's <strong>actual</strong> class (the most specific, C1) and moving up (C2, C3, ... Cn). It uses the <strong>first</strong> one found.</p></div>
+<div class="worked"><div class="note-tag">Worked example</div><h4>Slide 48</h4><p><code>C3 x = new C1(); x.p();</code>. The declared type is C3, but the object is a C1. Does C1 have p()? Yes, so C1's p() runs. C2 and C3 aren't searched.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A remote that asks "who are you?"</h4><p>The variable type is the label on the remote ("Animal"). When you press speak, the remote asks the actual object what it is: a dog barks, a cat meows. The label only decides which buttons the remote has; the object decides what each button does.</p></div>
+<div class="prose"><p><strong>Upcasting</strong> (subclass to superclass) is automatic. <strong>Downcasting</strong> (superclass to subclass) needs an explicit cast and should be guarded with <code>instanceof</code>. In the payroll case study, only a <code>BasePlusCommissionEmployee</code> gets a 10% base-salary raise, so the loop downcasts it to call <code>setBaseSalary</code>:</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>for (Employee e : employees) {
+    if (e instanceof BasePlusCommissionEmployee) {
+        BasePlusCommissionEmployee b = (BasePlusCommissionEmployee) e;   // downcast
+        b.setBaseSalary(1.10 * b.getBaseSalary());
+    }
+    System.out.println(e.earnings());     // dynamic binding
+}</pre></div>
+<div class="prose"><p><strong>Rule</strong>: through a superclass reference you can only call methods the <strong>superclass declares</strong>. That's why downcasting is needed for subclass-only methods. <code>getClass().getName()</code> gives an object's actual class name.</p></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Overloading = cOmpile time; oVerRiding = Run time</h4><p>Over<strong>l</strong>oading is decided at compile time from the parameter <strong>l</strong>ist. Over<strong>r</strong>iding is decided at <strong>r</strong>un time from the object.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Overriding: same signature in a subclass, chosen at run time</li><li>Overloading: different parameters, chosen at compile time</li><li>private methods can't be overridden; static methods are hidden, not overridden</li><li>Dynamic binding searches from the object's actual class upward</li><li>Downcast with an instanceof check to reach subclass-only methods</li></ul></div>
+        </section>
+        <section id="lesson-5" style="--sec: var(--c7)">
+            <div class="section-label">Lesson 5</div>
+            <h2 class="section-title">Abstract classes and final</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 56-97</span></div><div class="prose"><p>The <strong>payroll case study</strong>: four employee types (salaried, hourly, commission, base-plus-commission). An <strong>abstract class Employee</strong> declares an <strong>abstract <code>earnings()</code></strong> method because there's no sensible general formula; each concrete subclass implements its own. The program then pays everyone in one loop, polymorphically. Hourly pay is wage times hours, with <strong>1.5 times the wage for hours over 40</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>final</code> on</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A method</td>
+<td>Can't be <strong>overridden</strong></td>
+</tr>
+<tr>
+<td>A class</td>
+<td>Can't be <strong>extended</strong>; all its methods are implicitly final</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>private</code> methods are implicitly final (they can't be overridden), and so are static methods (they're hidden, not overridden). <strong>String is a final class</strong>: nobody can subclass it and change its behaviour, so code can trust String objects and nobody can bypass its security checks.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>final ≠ abstract</h4><p>An abstract method <strong>must</strong> be overridden; a final method <strong>can't</strong> be. So a method can't be both.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>An abstract class can hold an abstract method each subclass implements</li><li>The payroll loop pays every employee type with one earnings() call</li><li>A final method can't be overridden; a final class can't be extended</li><li>String is final, so its behaviour can be trusted</li></ul></div>
+        </section>
+        <section id="lesson-6" style="--sec: var(--c8)">
+            <div class="section-label">Lesson 6</div>
+            <h2 class="section-title">Interfaces</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 99-131, 145-163</span></div><div class="prose"><p>The accounts-payable program must pay <strong>employees and invoices</strong>, which are unrelated (a person and a bill). Inheritance can't link them, but an <strong>interface</strong> can: both implement <code>Payable</code> with <code>getPaymentAmount()</code>, and one loop over <code>Payable[]</code> processes both.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public interface Payable {
+    double getPaymentAmount();       // implicitly public abstract
+}
+public class Invoice implements Payable { ... }
+public abstract class Employee implements Payable { ... }</pre></div>
+<div class="prose"><p><strong>Interface rules</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Methods with no modifier</td>
+<td>Implicitly <code>public abstract</code></td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>Implicitly <code>public static final</code> (constants)</td>
+</tr>
+<tr>
+<td><code>default</code> methods (Java 8)</td>
+<td>Have a body; implementing classes get them for free and may override them</td>
+</tr>
+<tr>
+<td><code>static</code> methods (Java 8)</td>
+<td>Helper methods called as <code>Shape.printArea(c)</code></td>
+</tr>
+<tr>
+<td><code>private</code> methods (Java 9)</td>
+<td>Helpers shared by the interface's own methods</td>
+</tr>
+<tr>
+<td>Multiple</td>
+<td>A class can <strong>extend one class but implement many interfaces</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Default methods</strong> let you add a method to an existing interface without breaking every class that already implements it.</p>
+<p>A class that implements an interface "signs a contract": implement every abstract method, or be declared abstract. Common API interfaces: <strong>Comparable</strong> (ordering), <strong>Serializable</strong> (can be saved or sent), <strong>Runnable</strong> (a task for a thread), <strong>ActionListener</strong>, <strong>Comparator</strong>. Any interface with one abstract method is a <strong>functional interface</strong> (SAM), so it works with lambdas (Chapter 2).</p>
+<h3>Interface or abstract class?</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Strong is-a</th>
+<th>Weak is-a (is-kind-of)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Meaning</td>
+<td>A true parent-child relationship</td>
+<td>Has a capability or property</td>
+</tr>
+<tr>
+<td>Model with</td>
+<td>A <strong>class</strong> (inheritance)</td>
+<td>An <strong>interface</strong></td>
+</tr>
+<tr>
+<td>Examples</td>
+<td>Dog is an Animal; Student is a Person</td>
+<td>String is Comparable; an Employee has a CompensationModel</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Family vs skills</h4><p>Inheritance is your family tree: you have one set of biological parents. Interfaces are certificates: you can be a certified driver, swimmer and first-aider at once. "Comparable" is a skill, not a parent.</p></div>
+<div class="prose"><p><strong>Conflicting interfaces</strong>: if two interfaces define the same constant with different values, or the same method signature with different return types, the compiler reports the error.</p>
+<h3>Composition plus interfaces beat deep inheritance</h3>
+<p>Implementation inheritance suits <strong>small, tightly coupled</strong> hierarchies, but tight coupling makes big hierarchies hard to change. The slides redesign payroll: employees aren't really different, <strong>their pay model is</strong>. So <code>Employee</code> <strong>has a</strong> <code>CompensationModel</code> (an interface), with <code>SalariedCompensationModel</code>, <code>HourlyCompensationModel</code> and <code>CommissionCompensationModel</code> implementations.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Inheritance hierarchy</th>
+<th>Composition + interface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commission rule changes</td>
+<td>Also affects the BasePlus subclass</td>
+<td>Edit one model class</td>
+</tr>
+<tr>
+<td>Add retirement plans</td>
+<td>Touch the whole tree</td>
+<td>Add a <code>RetirementPlan</code> interface</td>
+</tr>
+<tr>
+<td>Employee is promoted</td>
+<td>Must create a new object of another class</td>
+<td><code>setCompensationModel(newModel)</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Program to an Interface, Not an Implementation: PINI</h4><p>Declare variables and parameters by interface type, so the implementation can be swapped.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>An interface lets unrelated classes share a type, such as Payable</li><li>Interface methods are public abstract; fields are public static final</li><li>default (Java 8), static (Java 8) and private (Java 9) methods are allowed</li><li>A class extends one class but can implement many interfaces</li><li>Strong is-a: class; weak is-a capability: interface</li><li>Composition plus interfaces is more flexible than deep inheritance</li></ul></div>
+        </section>
+        <section id="lesson-7" style="--sec: var(--c1)">
+            <div class="section-label">Lesson 7</div>
+            <h2 class="section-title">Private constructors and factory methods</h2>
+<div class="lesson-meta"><span class="pill know">Good to know</span><span class="pill">Slides 132-144</span></div><div class="prose"><p>A <strong>private constructor</strong> has three uses:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Use</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prevent instantiation</strong> of a class that only has static members</td>
+<td><code>Calculator</code>, <code>UtilityLogger</code> with <code>private UtilityLogger() {}</code></td>
+</tr>
+<tr>
+<td><strong>Share initialization code</strong> among constructors</td>
+<td>Public constructors delegate with <code>this(...)</code> to one private one</td>
+</tr>
+<tr>
+<td><strong>Force factory methods</strong></td>
+<td>Clients call a <code>public static</code> method that creates the object</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public abstract class Logger {
+    public abstract void log(String message);
+
+    public static Logger getLogger(String type) {          // factory method
+        if (type == null) throw new IllegalArgumentException(&quot;Logger type cannot be null&quot;);
+        if (type.equalsIgnoreCase(&quot;console&quot;)) return new ConsoleLogger();
+        if (type.equalsIgnoreCase(&quot;file&quot;))    return new FileLogger(&quot;app.log&quot;);
+        throw new IllegalArgumentException(&quot;Unknown logger type: &quot; + type);
+    }
+}</pre></div>
+<div class="prose"><p>The return type is the abstract <code>Logger</code>, so callers never depend on <code>ConsoleLogger</code> or <code>FileLogger</code> directly: program to an interface again.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>A private constructor stops other classes using new</li><li>Utility classes with only static methods use one</li><li>Public constructors can delegate to a private one with this(...)</li><li>A factory method is a public static method that returns a new object, typed as the abstraction</li></ul></div>
+        </section>
+        <section id="lesson-8" style="--sec: var(--c2)">
+            <div class="section-label">Lesson 8</div>
+            <h2 class="section-title">Immutable objects</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 170-176</span></div><div class="prose"><p>An <strong>immutable</strong> object can't change after it's created; String is the classic example.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public class Student {
+    private String name;
+    private int[] grades;
+    public int[] getGrades() { return grades; }   // leaks the array
+}
+int[] g = student.getGrades();
+g[0] = 100;    // the Student&#x27;s grades just changed</pre></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>No setters ≠ immutable</h4><p>The getter above hands out a reference to the mutable array, so callers can change the Student. Fix: <code>return grades.clone();</code>. The same leak happens with a <code>BirthDate</code> object field.</p></div>
+<div class="formula"><div class="f-cap">Immutable class checklist</div><div class="f-line">All fields private</div><div class="f-line">No mutator (set) methods</div><div class="f-line">No accessor returns a reference to a mutable field</div></div>
+<div class="prose"><p>Returning a String field is safe because String itself is immutable: <code>x = "Ali";</code> points <code>x</code> at a new String and leaves the original untouched.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Advantage</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simplicity</td>
+<td>Only one state, so easier reasoning and debugging</td>
+</tr>
+<tr>
+<td><strong>Thread safety</strong></td>
+<td>Nothing changes, so no synchronization needed (Chapter 5)</td>
+</tr>
+<tr>
+<td>Robustness</td>
+<td>Shared references can't be corrupted</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Immutable: the state can't change after construction</li><li>Requires private fields, no setters, and no leaked mutable references</li><li>Return a copy (clone) of mutable fields</li><li>Immutable objects are simple and thread-safe</li></ul></div>
+        </section>
+        <section id="lesson-9" style="--sec: var(--c3)">
+            <div class="section-label">Lesson 9</div>
+            <h2 class="section-title">Comparable and Cloneable</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 177-191</span></div><div class="prose"><p>Operators such as <code>&lt;</code> don't work on objects. <strong><code>Comparable&lt;E&gt;</code></strong> has one method, <code>int compareTo(E o)</code>: negative if this is smaller, 0 if equal, positive if larger. Integer, String, Date and the wrapper classes implement it, which is why <code>Arrays.sort(cities)</code> works on a String array. <code>Arrays.sort</code> requires its elements to be Comparable.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public class ComparableRectangle extends Rectangle
+        implements Comparable&lt;ComparableRectangle&gt; {
+    @Override
+    public int compareTo(ComparableRectangle o) {
+        if (getArea() &gt; o.getArea()) return 1;
+        else if (getArea() &lt; o.getArea()) return -1;
+        else return 0;
+    }
+}</pre></div>
+<div class="worked"><div class="note-tag">Worked example</div><h4>Exercise: ComparableEmployee (slide 190)</h4><p>Compare by <strong>rank</strong> first; if ranks are equal, compare <strong>salary</strong>. Return 1, -1 or 0. Write the rank comparison as the outer if/else and the salary comparison inside the "ranks equal" branch.</p></div>
+<div class="prose"><h3>Cloneable: a marker interface</h3>
+<p><strong>Cloneable</strong> is <strong>empty</strong>: a <strong>marker interface</strong> that says "objects of this class may be copied with <code>clone()</code>". To support it, override <code>clone()</code> and make it <strong>public</strong> (it's protected in Object).</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>@Override
+public House clone() throws CloneNotSupportedException {
+    House cloned = (House) super.clone();               // shallow copy
+    cloned.whenBuilt = (Date) whenBuilt.clone();         // deep copy the mutable field
+    return cloned;
+}</pre></div>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Shallow copy</th>
+<th>Deep copy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What's copied</td>
+<td>Field values; object fields still <strong>point to the same objects</strong></td>
+<td>Mutable object fields are cloned too</td>
+</tr>
+<tr>
+<td>Default <code>Object.clone()</code></td>
+<td>Yes</td>
+<td>No, you add it</td>
+</tr>
+<tr>
+<td>Fine when</td>
+<td>Fields are primitives or immutable (String, Integer)</td>
+<td>Fields are mutable (Date, ArrayList)</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>calendar == calendarCopy</code> is <strong>false</strong> (different objects), but <code>calendar.equals(calendarCopy)</code> is <strong>true</strong> (same contents).</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>final fields and clone</h4><p>A <code>final</code> field can't be reassigned after cloning, so you can't deep-copy it. That often makes cloning not useful for such classes.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Photocopying a folder</h4><p>A shallow copy photocopies the cover page that says "see the drawer for documents": both copies point at the same drawer. A deep copy also photocopies everything in the drawer.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>compareTo returns negative, zero or positive</li><li>Arrays.sort needs Comparable elements</li><li>Cloneable is a marker interface with no methods</li><li>Override clone() as public; Object.clone() is a shallow copy</li><li>Deep-copy mutable fields such as Date or ArrayList</li></ul></div>
+        </section>
+        <section id="traps" style="--sec: var(--c4)">
+            <div class="section-label">Marks lost here</div>
+            <h2 class="section-title">Every trap in one place</h2>
+<div class="note-grid roundup"><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Calling the superclass constructor by name</h4><p><code>GeometricObject();</code> inside a subclass is a syntax error. You must write <code>super();</code>, and it must come first.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>private and static methods can't be overridden</h4><p>A <strong>private</strong> method isn't visible to the subclass, so a same-named method there is a completely unrelated method. A <strong>static</strong> method can be inherited but not overridden: redefining it <strong>hides</strong> it, and which one runs depends on the <strong>variable's declared type</strong>, not the object. No runtime polymorphism.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>final ≠ abstract</h4><p>An abstract method <strong>must</strong> be overridden; a final method <strong>can't</strong> be. So a method can't be both.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>No setters ≠ immutable</h4><p>The getter above hands out a reference to the mutable array, so callers can change the Student. Fix: <code>return grades.clone();</code>. The same leak happens with a <code>BirthDate</code> object field.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>final fields and clone</h4><p>A <code>final</code> field can't be reassigned after cloning, so you can't deep-copy it. That often makes cloning not useful for such classes.</p></div></div>
+        </section>
+        <section id="tricks" style="--sec: var(--c5)">
+            <div class="section-label">Make it stick</div>
+            <h2 class="section-title">Every memory trick in one place</h2>
+<div class="note-grid roundup"><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>AACI: weakest to strongest</h4><p><strong>A</strong>ssociation, <strong>A</strong>ggregation, <strong>C</strong>omposition, then <strong>I</strong>nheritance as a different kind (is-a, not has-a). Think "a library doesn't own its readers (association), holds books it could give away (aggregation), but its rooms disappear with the building (composition)".</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Overloading = cOmpile time; oVerRiding = Run time</h4><p>Over<strong>l</strong>oading is decided at compile time from the parameter <strong>l</strong>ist. Over<strong>r</strong>iding is decided at <strong>r</strong>un time from the object.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Program to an Interface, Not an Implementation: PINI</h4><p>Declare variables and parameters by interface type, so the implementation can be swapped.</p></div></div>
+        </section>
+        <section id="cheat" style="--sec: var(--c6)">
+            <div class="section-label">One screen</div>
+            <h2 class="section-title">Quick reference</h2>
+<div class="cheat"><div class="cheat-col"><h4>Relationships</h4><ul><li>Association: independent</li><li>Aggregation: has-a, parts survive</li><li>Composition: parts die with whole</li><li>Inheritance: is-a</li></ul></div><div class="cheat-col"><h4>Constructors</h4><ul><li>Not inherited; super(...) first</li><li>Implicit super() if none</li><li>Chain: top class prints first</li><li>No no-arg super → compile error</li></ul></div><div class="cheat-col"><h4>Override vs overload</h4><ul><li>Override: same signature, run time</li><li>Overload: different params, compile time</li><li>private: not overridden; static: hidden</li><li>Dynamic binding: actual class upward</li><li>Downcast after instanceof</li></ul></div><div class="cheat-col"><h4>final / abstract</h4><ul><li>final method: no override</li><li>final class: no extend (String)</li><li>abstract method: must override</li></ul></div><div class="cheat-col"><h4>Interfaces</h4><ul><li>Methods public abstract; fields public static final</li><li>default, static (8); private (9)</li><li>Extend one, implement many</li><li>Weak is-a → interface</li><li>Composition + interface &gt; deep tree</li></ul></div><div class="cheat-col"><h4>Objects</h4><ul><li>Private constructor: utility, shared init, factory</li><li>Immutable: private, no setters, no leaks</li><li>compareTo: neg / 0 / pos</li><li>Cloneable = marker; deep-copy mutable fields</li></ul></div></div>
+        </section>
+
+        <section id="quiz" style="--sec: var(--c7)">
+            <div class="section-label">Self-Check</div>
+            <h2 class="section-title">Can you answer these without scrolling up?</h2>
+            <div class="test-card">
+                <div class="test-head">
+                    <h3 id="quiz-header">Question 1</h3>
+                    <span class="tag" id="quiz-tag">&nbsp;</span>
+                </div>
+                <div class="test-body">
+                    <div class="test-question" id="quiz-q"></div>
+                    <div class="test-options" id="quiz-opts"></div>
+                    <div class="test-feedback" id="quiz-fb"></div>
+                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
+                </div>
+            </div>
+            <div id="quiz-score">
+                <p id="score-text"></p>
+                <span id="score-sub"></span><br><br>
+                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <footer>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
+        <strong>Shoug Alomran</strong>
+        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">SE411 Software Construction &mdash; Chapter 4: Advanced OO Concepts</div>
+    </footer>
+
+    <script>const questions = [{"tag": "Chapter 4", "q": "A Library holds Books that can exist without the library. This is:", "opts": ["Aggregation", "Inheritance", "Composition", "No relationship"], "a": 0, "why": "Parts' lifetime doesn't depend on the whole."}, {"tag": "Chapter 4", "q": "Which statement about constructors is true?", "opts": ["A subclass constructor never calls a superclass constructor", "Subclasses inherit all superclass constructors", "Superclass constructors are not inherited", "super() may appear anywhere in a constructor"], "a": 2, "why": "Slide 15."}, {"tag": "Chapter 4", "q": "In the Person, Employee, Faculty chain, which line prints first?", "opts": ["Employee's no-arg constructor", "Person's no-arg constructor", "Employee's overloaded constructor", "Faculty's no-arg constructor"], "a": 1, "why": "Calls go up first; printing comes back down."}, {"tag": "Chapter 4", "q": "A static method redefined in a subclass is:", "opts": ["Overridden, chosen by the object's type", "A compile error", "Made final automatically", "Hidden, chosen by the variable's declared type"], "a": 3, "why": "Slide 43."}, {"tag": "Chapter 4", "q": "A final class:", "opts": ["Must have abstract methods", "Can only have static methods", "Can't be extended", "Can't be instantiated"], "a": 2, "why": "String is final."}, {"tag": "Chapter 4", "q": "Why were default methods added to interfaces in Java 8?", "opts": ["To add methods without breaking existing implementing classes", "To allow interfaces to have constructors", "To let interfaces hold instance variables", "To replace abstract classes completely"], "a": 0, "why": "Slide 125."}, {"tag": "Chapter 4", "q": "In the redesigned payroll, promoting an employee means:", "opts": ["Deleting the Employee", "Changing the Employee superclass", "Calling setCompensationModel with a new model", "Creating an object of a different Employee subclass"], "a": 2, "why": "Composition plus interfaces."}, {"tag": "Chapter 4", "q": "A class has private fields and no setters but returns its int[] field directly. Is it immutable?", "opts": ["Yes, because the fields are private", "No, callers can change the array through the returned reference", "Only if the class is final", "Yes, because there are no setters"], "a": 1, "why": "Return a clone instead."}];
+let currentQ = 0, score = 0, answered = false;
+
+function renderQuestion() {
+    const q = questions[currentQ];
+    answered = false;
+    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+    document.getElementById('quiz-tag').textContent = q.tag;
+    document.getElementById('quiz-q').textContent = q.q;
+    const opts = document.getElementById('quiz-opts');
+    opts.innerHTML = '';
+    q.opts.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.type = 'button';
+        b.innerHTML = text;
+        b.onclick = () => answer(i, b);
+        opts.appendChild(b);
+    });
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback';
+    fb.textContent = '';
+    document.getElementById('quiz-next').className = 'next-btn';
+}
+
+function answer(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
+        b.disabled = true;
+        if (j === q.a) b.classList.add('correct');
+    });
+    if (i !== q.a) btn.classList.add('wrong'); else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback show';
+    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
+    document.getElementById('quiz-next').className = 'next-btn show';
+}
+
+function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) { renderQuestion(); return; }
+    document.querySelector('.test-card').style.display = 'none';
+    document.getElementById('quiz-score').classList.add('show');
+    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
+    document.getElementById('score-sub').textContent =
+        score === questions.length ? 'Clean sweep. Move on to the drills.'
+        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
+        : 'Go back through the slide map before the next chapter.';
+}
+
+function restartQuiz() {
+    currentQ = 0; score = 0;
+    document.getElementById('quiz-score').classList.remove('show');
+    document.querySelector('.test-card').style.display = '';
+    renderQuestion();
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    // Persist both keys: html-theme-sync.js resolves from localStorage only and
+    // runs after this file, so without agreeing with it the page would flip.
+    try {
+        localStorage.setItem('shoug-theme', theme);
+        localStorage.setItem('theme', theme);
+    } catch (e) { }
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Default to dark — matching the site chrome this page is embedded in —
+    // unless the reader has explicitly chosen light.
+    let saved = null;
+    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+    renderQuestion();
+
+    // reading progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // highlight the section currently in view, in both the rail and the nav
+    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
+    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            links.forEach(a => a.classList.remove('active'));
+            byHash(e.target.id).forEach(a => a.classList.add('active'));
+        });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+});
+</script>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+</body>
+
+</html>

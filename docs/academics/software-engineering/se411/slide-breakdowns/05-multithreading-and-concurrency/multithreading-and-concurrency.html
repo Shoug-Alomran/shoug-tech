@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-sg-styled="true">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multithreading and Concurrency &mdash; SE411 Slide Breakdown</title>
+    <meta name="description" content="SE411 Chapter 5 explained in plain language with examples and memory tricks: A thread is an independent path of execution; several threads let a program do many things at once, but threads sharing data must take turns (synchronized, locks) or the data gets corrupted.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/05-multithreading-and-concurrency/multithreading-and-concurrency.html">
+    <meta property="og:title" content="Multithreading and Concurrency &mdash; SE411 Slide Breakdown">
+    <meta property="og:description" content="SE411 Chapter 5 explained in plain language with examples and memory tricks: A thread is an independent path of execution; several threads let a program do many things at once, but threads sharing data must take turns (synchronized, locks) or the data gets corrupted.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/05-multithreading-and-concurrency/multithreading-and-concurrency.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Multithreading and Concurrency &mdash; SE411 Slide Breakdown">
+    <meta name="twitter:description" content="SE411 Chapter 5 explained in plain language with examples and memory tricks: A thread is an independent path of execution; several threads let a program do many things at once, but threads sharing data must take turns (synchronized, locks) or the data gets corrupted.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ── palette ───────────────────────────────────────────────────────────────
+   Eight hue tokens drive the per-section colour: each <section> carries
+   --sec, and its label, rule, cards and table headers all derive from it. */
+
+:root[data-theme="dark"] {
+    --bg: #0a0611;
+    --bg2: #150d21;
+    --bg3: #1d1330;
+    --code-bg: #0d0716;
+    --border: rgba(255, 255, 255, 0.10);
+    --border2: rgba(255, 255, 255, 0.18);
+    --text: #f4f0fa;
+    --text2: #aaa2bb;
+    --text3: #756e88;
+    --accent: #c77dff;
+    --accent2: #e6b8ff;
+
+    --c1: #c77dff;   /* violet   */
+    --c2: #4cc9f0;   /* cyan     */
+    --c3: #4ade80;   /* green    */
+    --c4: #fbbf24;   /* amber    */
+    --c5: #fb7185;   /* rose     */
+    --c6: #818cf8;   /* indigo   */
+    --c7: #f472b6;   /* pink     */
+    --c8: #2dd4bf;   /* teal     */
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
+}
+
+:root[data-theme="light"] {
+    --bg: #fbf9fe;
+    --bg2: #f4eefb;
+    --bg3: #ffffff;
+    --code-bg: #f6f1fc;
+    --border: rgba(24, 12, 40, 0.10);
+    --border2: rgba(24, 12, 40, 0.18);
+    --text: #180d26;
+    --text2: #574d68;
+    --text3: #8a8299;
+    --accent: #7b2cbf;
+    --accent2: #9d4edd;
+
+    --c1: #7b2cbf;
+    --c2: #0369a1;
+    --c3: #047857;
+    --c4: #a16207;
+    --c5: #be123c;
+    --c6: #4338ca;
+    --c7: #a21caf;
+    --c8: #0f766e;
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
+}
+
+/* ── fluid scale ───────────────────────────────────────────────────────────
+   One root font-size ramp scales every rem on the page with the viewport,
+   so the layout uses a phone and a 32" monitor equally well. */
+
+html {
+    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+    scroll-behavior: smooth;
+    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+}
+
+:root {
+    --navh: 3.4rem;
+    --gutter: clamp(1rem, 3.2vw, 3rem);
+    --maxw: 74rem;
+    --radius: 0.85rem;
+    --sec: var(--c1);
+    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+   which turns the root into a scroll container and silently disables the
+   sticky TOC rail. overflow-x: clip contains the same overflow without
+   creating a scroll container; these selectors outrank the injected rule. */
+html:root { overflow-x: clip; }
+:root > body { overflow-x: clip; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    width: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── reading progress ──────────────────────────────────────────────────── */
+#progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    z-index: 200; transform-origin: left;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────
+   Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
+   used to leak their sticky positioning and gradient rule into it. */
+nav.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-inline: var(--gutter);
+    display: flex; align-items: center; gap: 1rem;
+    min-height: var(--navh);
+}
+nav.topbar::after {
+    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
+    opacity: 0.85;
+}
+.nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-links {
+    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
+    overflow-x: auto; min-width: 0; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
+    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
+}
+.toggle-btn {
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
+}
+.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero-band {
+    background: var(--hero-wash);
+    border-bottom: 1px solid var(--border);
+}
+.hero {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-eyebrow::before {
+    content: ''; width: 2rem; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+.hero h1 {
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 0.1em;
+}
+.hero-sub {
+    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+    margin-top: 1rem; max-width: 62ch;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.stat {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+}
+.stat:nth-child(1) { --sec: var(--c1); }
+.stat:nth-child(2) { --sec: var(--c2); }
+.stat:nth-child(3) { --sec: var(--c3); }
+.stat:nth-child(4) { --sec: var(--c4); }
+.stat:nth-child(5) { --sec: var(--c7); }
+
+/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+.layout {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.chapter-toc {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.9rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+.chapter-toc a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text2); text-decoration: none;
+    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
+    border: 1px solid transparent; transition: all 0.18s;
+}
+.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
+.chapter-toc a.active {
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+@media (min-width: 68rem) {
+    :root { --maxw: 88rem; }
+    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+    .toc-rail {
+        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
+        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
+    }
+    .chapter-toc {
+        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+        gap: 0.1rem; padding: 0.75rem;
+    }
+    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
+    .chapter-toc a.active { border-left-color: var(--accent); }
+}
+@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section {
+    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+    scroll-margin-top: calc(var(--navh) + 1rem);
+}
+.section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--sec); margin-bottom: 0.7rem;
+    background: var(--sec-soft);
+    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.75rem;
+}
+.section-title {
+    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
+    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+    width: 4px; border-radius: 4px;
+    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
+}
+
+h3 {
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
+}
+h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
+p { margin-bottom: 0.9rem; color: var(--text2); }
+p strong, li strong { color: var(--text); font-weight: 600; }
+ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
+li { margin-bottom: 0.4rem; }
+li::marker { color: var(--sec); }
+a { color: var(--accent); }
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius); padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; color: var(--sec); }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
+.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
+.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+
+/* ── tables ────────────────────────────────────────────────────────────── */
+.table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
+}
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
+th {
+    text-align: left; padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
+    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
+}
+td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
+td strong { color: var(--text); }
+td code, li code, p code, h4 code, th code, .cheat-col code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
+}
+th code { color: inherit; background: transparent; border: none; padding: 0; }
+.w-memorize, .w-write, .w-skim {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+}
+.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
+.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
+.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── code blocks ───────────────────────────────────────────────────────── */
+.code-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.2rem;
+    overflow: hidden; box-shadow: var(--shadow);
+}
+.code-head {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
+    border-bottom: 1px solid var(--border);
+}
+.code-file {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.code-file::before {
+    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--sec); flex-shrink: 0;
+}
+.code-note { font-size: 0.7rem; color: var(--text3); }
+.code-run {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    text-decoration: none; color: var(--sec); white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
+}
+.code-run:hover { background: var(--sec); color: var(--bg); }
+.code-block pre {
+    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
+    overflow-x: auto; background: var(--code-bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+    line-height: 1.65; color: var(--text); tab-size: 4;
+}
+.code-block pre .c { color: var(--text3); font-style: italic; }
+.code-block pre .k { color: var(--c1); }
+.code-block pre .s { color: var(--c3); }
+.code-block pre .t { color: var(--c2); }
+
+/* ── traps & hooks ─────────────────────────────────────────────────────── */
+.trap {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
+    border: 1px solid var(--border); border-left: 4px solid var(--c5);
+    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
+}
+.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+.trap p:last-child { margin-bottom: 0; }
+.trap .fix { color: var(--c3); font-weight: 700; }
+
+.hook {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--c1) 12%, transparent),
+        color-mix(in srgb, var(--c2) 10%, transparent));
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-left: 4px solid var(--c1);
+    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
+    font-size: 0.9rem; color: var(--text2);
+}
+.hook strong { color: var(--accent2); }
+
+/* ── cheat sheet ───────────────────────────────────────────────────────── */
+.cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+.cheat-col {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+}
+.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
+.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
+.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
+.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
+.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
+.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
+.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
+.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
+.cheat-col h4 {
+    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+}
+.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
+.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+
+/* ── drills ────────────────────────────────────────────────────────────── */
+.drill { counter-reset: drill; list-style: none; margin-left: 0; }
+.drill li {
+    counter-increment: drill; position: relative;
+    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
+}
+.drill li::before {
+    content: counter(drill, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
+}
+.drill li:nth-child(6n+1) { --sec: var(--c1); }
+.drill li:nth-child(6n+2) { --sec: var(--c2); }
+.drill li:nth-child(6n+3) { --sec: var(--c3); }
+.drill li:nth-child(6n+4) { --sec: var(--c4); }
+.drill li:nth-child(6n+5) { --sec: var(--c7); }
+.drill li:nth-child(6n+6) { --sec: var(--c8); }
+
+/* ── quiz ──────────────────────────────────────────────────────────────── */
+.test-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
+}
+.test-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.9rem 1.2rem;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
+    border-bottom: 1px solid var(--border);
+}
+.test-head h3 { margin: 0; font-size: 0.92rem; }
+.tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 0.2rem 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+}
+.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
+.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
+.test-options { display: grid; gap: 0.5rem; }
+.opt {
+    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
+.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.opt:disabled { cursor: default; }
+.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
+.test-feedback.show { display: block; }
+.next-btn {
+    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.next-btn:hover { background: var(--accent); color: var(--bg); }
+.next-btn.show { display: inline-block; }
+#quiz-score {
+    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
+    background: var(--hero-wash), var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+#quiz-score.show { display: block; }
+#quiz-score p {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    background: var(--hero-wash);
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+    text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+@media (max-width: 40rem) {
+    .nav-links { display: none; }
+    table { min-width: 26rem; }
+}
+
+.prose p, .prose ul, .prose ol { font-size: 1rem; line-height: 1.72; }
+.prose ul, .prose ol { margin: 0 0 1rem 1.2rem; }
+.prose li { margin-bottom: .4rem; }
+.prose strong { color: var(--text); }
+.lesson-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin: -.3rem 0 1.1rem; }
+.pill { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: .22rem .6rem; border-radius: 99px; border: 1px solid var(--border2); color: var(--text2); }
+.pill.must { color: var(--c5); border-color: color-mix(in srgb, var(--c5) 55%, transparent); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.pill.know { color: var(--c2); border-color: color-mix(in srgb, var(--c2) 55%, transparent); background: color-mix(in srgb, var(--c2) 12%, transparent); }
+.pill.skim { color: var(--text3); }
+.tldr { font-size: 1.16rem; line-height: 1.6; color: var(--text); padding: 1.15rem 1.3rem; border-radius: 12px; background: color-mix(in srgb, var(--sec) 13%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--sec) 40%, transparent); margin-bottom: 1.2rem; }
+.tldr b { display: block; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sec); margin-bottom: .4rem; font-weight: 700; }
+.start-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: .9rem; margin-bottom: 1.1rem; }
+.start-item { padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); }
+.start-item h4 { margin: 0 0 .4rem; color: var(--sec); font-size: .92rem; }
+.start-item p, .start-item ul { margin-bottom: 0; font-size: .95rem; }
+.start-item ul { margin-left: 1.1rem; }
+.slide-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: .4rem 0 1.2rem; }
+.slide-links a { font-family: 'JetBrains Mono', monospace; font-size: .74rem; padding: .45rem .8rem; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; text-decoration: none; }
+.slide-links a:hover { background: var(--accent); color: var(--bg); }
+.note, .worked, .remember, .formula { margin: 1rem 0; border-radius: 12px; }
+.note { padding: 1rem 1.15rem; border: 1px solid var(--tone-line); background: var(--tone-bg); --tone: var(--c2); --tone-line: color-mix(in srgb, var(--tone) 42%, transparent); --tone-bg: color-mix(in srgb, var(--tone) 10%, var(--bg2)); }
+.note h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--text); }
+.note p:last-child, .note ul:last-child, .note ol:last-child { margin-bottom: 0; }
+.note p, .note li { font-size: .96rem; line-height: 1.66; }
+.note ul, .note ol { margin-left: 1.15rem; }
+.note-tag { font-family: 'JetBrains Mono', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--tone, var(--sec)); margin-bottom: .45rem; }
+.n-analogy { --tone: var(--c2); } .n-mnemonic { --tone: var(--c7); } .n-tip { --tone: var(--c3); } .n-why { --tone: var(--c6); } .n-class { --tone: var(--c8); } .n-says { --tone: var(--c1); } .n-trap { --tone: var(--c5); }
+.n-mnemonic h4 { font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; color: var(--c7); font-size: 1.12rem; }
+.note-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .9rem; margin: 1rem 0; }
+.note-grid > .note { margin: 0; }
+.worked { padding: 1.1rem 1.25rem; border: 1px solid var(--border2); background: var(--bg2); border-left: 3px solid var(--c4); --tone: var(--c4); }
+.worked h4 { margin: 0 0 .65rem; font-size: 1.06rem; color: var(--text); }
+.worked p:last-child, .worked ol:last-child, .worked ul:last-child { margin-bottom: 0; }
+.worked p, .worked li { font-size: .97rem; line-height: 1.66; }
+.worked ol:not(.stepper), .worked ul { margin-left: 1.2rem; }
+.stepper { list-style: none; counter-reset: st; margin: 0; }
+.stepper li { counter-increment: st; position: relative; padding: 0 0 .75rem 2.5rem; margin: 0; }
+.stepper li:last-child { padding-bottom: 0; }
+.stepper li::before { content: counter(st); position: absolute; left: 0; top: 0; width: 1.65rem; height: 1.65rem; border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: .76rem; font-weight: 700; color: var(--bg); background: var(--c4); }
+.stepper li::after { content: ''; position: absolute; left: .79rem; top: 1.75rem; bottom: .1rem; width: 2px; background: var(--border2); }
+.stepper li:last-child::after { display: none; }
+.formula { padding: .95rem 1.15rem; background: var(--code-bg); border: 1px solid var(--border2); text-align: center; }
+.f-cap { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: .5rem; }
+.f-line { font-family: 'JetBrains Mono', monospace; font-size: 1.04rem; color: var(--text); line-height: 1.75; overflow-wrap: anywhere; }
+.remember { padding: 1rem 1.2rem; border: 1px dashed color-mix(in srgb, var(--sec) 55%, transparent); --tone: var(--sec); }
+.remember ul { margin: 0 0 0 1.1rem; }
+.remember li { margin-bottom: .32rem; font-size: .95rem; }
+.remember li:last-child { margin-bottom: 0; }
+details.try { margin: .8rem 0; border: 1px solid var(--border2); border-radius: 10px; background: var(--bg2); }
+details.try summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; color: var(--text); font-size: .97rem; list-style: none; }
+details.try summary::-webkit-details-marker { display: none; }
+details.try summary span { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--c3); padding: .14rem .45rem; border-radius: 4px; margin-right: .6rem; vertical-align: 1px; }
+details.try summary:hover { color: var(--accent); }
+details.try > div { padding: 0 1rem .9rem; border-top: 1px solid var(--border); padding-top: .75rem; }
+details.try p:last-child, details.try ul:last-child { margin-bottom: 0; }
+.diagram { margin: 1.1rem 0; text-align: center; }
+.diagram svg { width: 100%; max-width: 40rem; height: auto; }
+.diagram figcaption { font-size: .82rem; color: var(--text3); margin-top: .35rem; }
+.diagram text { font-family: 'JetBrains Mono', monospace; }
+.pl { fill: var(--text2); font-size: 13px; } .pt { fill: var(--text3); font-size: 12px; } .pn { fill: var(--text); font-size: 13.5px; font-weight: 700; } .pa { fill: var(--text); font-size: 13px; }
+.gn { fill: var(--text); font-size: 13.5px; font-weight: 600; } .gl { fill: var(--text2); font-size: 12px; }
+.table-wrap td, .table-wrap th { white-space: normal; }
+.roundup .note { margin: .8rem 0; }
+@media print { .topbar, .toc-rail, #progress { display: none !important; } .layout { display: block; } details.try > div { display: block; } }
+</style>
+<link rel="stylesheet" href="/styles/site-shell.css"><script defer src="/javascripts/site-palette.js"></script></head>
+
+<body>
+    <div id="progress"></div>
+
+    <nav class="topbar" aria-label="Chapter sections">
+        <div class="nav-title">SE411 // CHAPTER 5</div>
+        <ul class="nav-links"><li><a href="#start">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#lesson-1">Threads, processes and multithreading</a></li><li><a href="#lesson-2">Creating tasks and threads</a></li><li><a href="#lesson-3">Thread methods and states</a></li><li><a href="#lesson-4">Thread pools</a></li><li><a href="#lesson-5">Race conditions and synchronized</a></li><li><a href="#lesson-6">Explicit locks and conditions</a></li><li><a href="#lesson-7">Deadlock</a></li><li><a href="#lesson-8">Thread-safe collections and Fork/Join</a></li><li><a href="#traps">Exam Traps</a></li><li><a href="#tricks">Memory Tricks</a></li><li><a href="#cheat">Quick Reference</a></li><li><a href="#quiz">Quiz</a></li></ul>
+        <div class="nav-actions" data-page-search-host>
+            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+        </div>
+    </nav>
+
+    <div class="hero-band">
+        <header class="hero">
+            <div class="hero-eyebrow">Chapter 5 &middot; Slide Breakdown</div>
+            <h1>Multithreading and Concurrency</h1>
+            <p class="hero-sub">The slides explained in plain language, with examples, memory tricks and practice questions.</p>
+            <div class="hero-stats"><span class="stat">79 slides</span><span class="stat">Chapter 5</span><span class="stat">8 lessons</span><span class="stat">10 min read</span></div>
+        </header>
+    </div>
+
+    <div class="layout">
+        <aside class="toc-rail">
+            <nav class="chapter-toc" aria-label="On this page"><a href="#start">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#lesson-1">03 Threads, processes and multithreading</a><a href="#lesson-2">04 Creating tasks and threads</a><a href="#lesson-3">05 Thread methods and states</a><a href="#lesson-4">06 Thread pools</a><a href="#lesson-5">07 Race conditions and synchronized</a><a href="#lesson-6">08 Explicit locks and conditions</a><a href="#lesson-7">09 Deadlock</a><a href="#lesson-8">10 Thread-safe collections and Fork/Join</a><a href="#traps">11 Exam Traps</a><a href="#tricks">12 Memory Tricks</a><a href="#cheat">13 Quick Reference</a><a href="#quiz">14 Quiz</a></nav>
+        </aside>
+
+        <main>
+        <section id="start" style="--sec: var(--c1)">
+            <div class="section-label">Read this first</div>
+            <h2 class="section-title">The big picture</h2>
+<div class="tldr"><b>In one sentence</b>A thread is an independent path of execution; several threads let a program do many things at once, but threads sharing data must take turns (synchronized, locks) or the data gets corrupted.</div><div class="prose"><p>Concurrency bugs are invisible until they bite: the 100-pennies account that ends with less than 100 cents is the slide example every exam reuses. Expect questions on Runnable vs Thread, start() vs run(), thread states, thread pools, race conditions, synchronized, ReentrantLock, deadlock and resource ordering.</p></div><div class="start-grid"><div class="start-item"><h4>Where this fits</h4><p>Runnable is a functional interface (Chapters 2 and 4), so a task can be a lambda. Chapter 4's immutable objects are thread-safe for free. Chapter 6's web servers handle every request on its own thread.</p></div><div class="start-item"><h4>By the end you can</h4><ul><li>Define a thread and contrast threads with processes</li><li>Distinguish concurrency from parallelism</li><li>Create threads with Runnable or by extending Thread</li><li>Explain start, sleep, yield, join, interrupt, isAlive and priorities</li><li>Use ExecutorService thread pools</li><li>Explain race conditions and fix them with synchronized or ReentrantLock</li><li>Explain deadlock and prevent it with resource ordering</li><li>Use synchronized collections and the Fork/Join framework</li></ul></div></div><div class="slide-links"><a href="/academics/software-engineering/se411/slides/chapter-5-multithreading-and-concurrency/" target="_top">Open the slides: Chapter 5 &rarr;</a></div><h3>Words you need first</h3><div class="table-wrap"><table><thead><tr><th>Term</th><th>In plain English</th></tr></thead><tbody><tr><td><strong>Thread</strong></td><td>The smallest unit of execution: an independent path inside a process.</td></tr><tr><td><strong>Process</strong></td><td>A running program with its own memory; it contains one or more threads.</td></tr><tr><td><strong>Task</strong></td><td>The work to do: a Runnable's run() method.</td></tr><tr><td><strong>Race condition</strong></td><td>The result depends on which thread happens to run first.</td></tr><tr><td><strong>Critical region</strong></td><td>Code that only one thread at a time may execute.</td></tr><tr><td><strong>Thread-safe</strong></td><td>Works correctly when used by many threads at once.</td></tr><tr><td><strong>Deadlock</strong></td><td>Threads each wait forever for a lock another one holds.</td></tr><tr><td><strong>Starvation</strong></td><td>A thread waits for a lock but never gets it.</td></tr></tbody></table></div>
+        </section>
+        <section id="map" style="--sec: var(--c2)">
+            <div class="section-label">Navigation</div>
+            <h2 class="section-title">Where to spend your time</h2>
+<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>4-10</strong></td><td><strong>Threads, processes, multithreading</strong></td><td><span class="w-memorize">Memorize</span></td><td>Concurrency vs parallelism</td></tr><tr><td><strong>11-18</strong></td><td><strong>Tasks and threads, Runnable examples</strong></td><td><span class="w-write">Write it</span></td><td>start() vs run()</td></tr><tr><td><strong>19-35</strong></td><td><strong>Thread class methods and states</strong></td><td><span class="w-memorize">Memorize</span></td><td>Five states, sleep, yield, join</td></tr><tr><td><strong>36-39</strong></td><td><strong>Thread pools</strong></td><td><span class="w-write">Write it</span></td><td>ExecutorService</td></tr><tr><td><strong>40-54</strong></td><td><strong>Race conditions and synchronized</strong></td><td><span class="w-write">Write it</span></td><td>100 pennies</td></tr><tr><td><strong>55-62</strong></td><td><strong>Locks, fairness, conditions</strong></td><td><span class="w-memorize">Memorize</span></td><td>lock / try / finally unlock</td></tr><tr><td><strong>63-66</strong></td><td><strong>Deadlock</strong></td><td><span class="w-memorize">Memorize</span></td><td>Resource ordering</td></tr><tr><td><strong>67-70</strong></td><td><strong>Synchronized collections</strong></td><td><span class="w-memorize">Memorize</span></td><td>Fail-fast iterators</td></tr><tr><td><strong>71-78</strong></td><td><strong>Fork/Join</strong></td><td><span class="w-skim">Skim</span></td><td>Parallel merge sort</td></tr></tbody></table></div>
+        </section>
+        <section id="lesson-1" style="--sec: var(--c3)">
+            <div class="section-label">Lesson 1</div>
+            <h2 class="section-title">Threads, processes and multithreading</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 4-10</span></div><div class="prose"><p>A <strong>thread</strong> is the <strong>smallest unit of execution</strong> in a program, with its own path of execution. Threads are independent: an exception in one shouldn't affect the others. They run <strong>inside a process</strong>, and the OS runs many processes at once.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Process</th>
+<th>Thread</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What</td>
+<td>A running program</td>
+<td>A path of execution inside a process</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>Its own</td>
+<td><strong>Shares</strong> the process's memory</td>
+</tr>
+<tr>
+<td>Cost to create</td>
+<td>Heavy</td>
+<td>Light</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Multithreading</strong> means running several threads concurrently. It's used for multimedia, video games, web servers and application servers. It turns messy asynchronous code into simple straight-line code and is the easiest way to use multiple processors.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Concurrency (multithreading)</th>
+<th>Parallelism (multiprocessing)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardware</td>
+<td>Threads <strong>share one CPU</strong>, taking turns quickly</td>
+<td>Threads run on <strong>multiple CPUs</strong> at the same instant</td>
+</tr>
+<tr>
+<td>Feels like</td>
+<td>Juggling</td>
+<td>Several people each holding one ball</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A kitchen</h4><p>A process is a restaurant kitchen with its own pantry (memory). Threads are the cooks: they share the pantry, which is fast and convenient, and also why two cooks can grab the last egg at the same time.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>A thread is the smallest unit of execution, inside a process</li><li>Threads in a process share its memory</li><li>Concurrency: threads share one CPU; parallelism: multiple CPUs</li><li>Used in games, media, and web and application servers</li></ul></div>
+        </section>
+        <section id="lesson-2" style="--sec: var(--c4)">
+            <div class="section-label">Lesson 2</div>
+            <h2 class="section-title">Creating tasks and threads</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 11-18, 27-29</span></div><div class="prose"><p>Separate <strong>what to do</strong> (the task: a <code>Runnable</code> with <code>run()</code>) from <strong>who does it</strong> (the <code>Thread</code>).</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>class TaskClass implements Runnable {
+    @Override
+    public void run() {
+        for (int i = 1; i &lt;= 5; i++)
+            System.out.println(Thread.currentThread().getName() + &quot; : &quot; + i);
+    }
+}
+
+Thread thread = new Thread(new TaskClass(), &quot;Worker&quot;);
+thread.start();                       // new thread runs run()
+System.out.println(&quot;Main thread continues...&quot;);</pre></div>
+<div class="prose"><p>The output order <strong>isn't fixed</strong>: "Main thread continues..." may print before, between or after the Worker's lines, because both threads run concurrently.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>start() vs run()</h4><p><code>thread.start()</code> creates a <strong>new thread</strong>, and the JVM calls <code>run()</code> on it. Calling <code>task.run()</code> directly is just a normal method call on the <strong>current</strong> thread: nothing runs in parallel.</p></div>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Plus</th>
+<th>Minus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>implements Runnable</strong></td>
+<td>Class can still extend another class; task kept separate from thread</td>
+<td>Client wraps it: <code>new Thread(task)</code></td>
+</tr>
+<tr>
+<td><strong>extends Thread</strong></td>
+<td>Cleaner client code: <code>new MyThread().start()</code></td>
+<td>Uses up your single superclass; "pollutes" the class with all Thread's methods</td>
+</tr>
+</tbody>
+</table></div>
+<p>Since Runnable has one abstract method, a lambda works too: <code>new Thread(() -&gt; System.out.println("hi")).start();</code>.</p></div>
+<div class="worked"><div class="note-tag">Worked example</div><h4>The AdditionTask frequency example (slides 15-17)</h4><p>Each task loops forever, increments a counter, then sleeps <code>1000 / frequency</code> ms. Frequency 4 → every 250 ms; frequency 10 → every 100 ms. Two threads with different frequencies interleave their output.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Runnable = the task (what); Thread = the worker (who)</li><li>start() makes a new thread that calls run()</li><li>Calling run() directly doesn't create a thread</li><li>Prefer Runnable: you keep the superclass free</li><li>Thread output order is unpredictable</li></ul></div>
+        </section>
+        <section id="lesson-3" style="--sec: var(--c5)">
+            <div class="section-label">Lesson 3</div>
+            <h2 class="section-title">Thread methods and states</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 19-35</span></div><figure class="diagram"><svg viewBox="35.0 75.0 584.0 186.0" style="max-width:min(100%,730px)" role="img" aria-label="Thread states"><defs><marker id="a13772829" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--text3)"/></marker><marker id="b13772829" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs><line x1="91.0" y1="110.0" x2="197.0" y2="110.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="113.4" y="101.0" width="61.2" height="18" rx="3" fill="var(--bg2)"/><text x="144.0" y="114.0" class="gl" text-anchor="middle">start()</text><line x1="263.0" y1="110.0" x2="369.0" y2="110.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="277.8" y="101.0" width="76.4" height="18" rx="3" fill="var(--bg2)"/><text x="316.0" y="114.0" class="gl" text-anchor="middle">scheduled</text><line x1="369.0" y1="110.0" x2="263.0" y2="110.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="255.0" y="101.0" width="122.0" height="18" rx="3" fill="var(--bg2)"/><text x="316.0" y="114.0" class="gl" text-anchor="middle">yield / time up</text><line x1="397.2" y1="127.0" x2="332.8" y2="213.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="296.4" y="161.0" width="137.2" height="18" rx="3" fill="var(--bg2)"/><text x="365.0" y="174.0" class="gl" text-anchor="middle">sleep, join, wait</text><line x1="307.2" y1="213.0" x2="242.8" y2="127.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="240.6" y="161.0" width="68.8" height="18" rx="3" fill="var(--bg2)"/><text x="275.0" y="174.0" class="gl" text-anchor="middle">wakes up</text><line x1="451.0" y1="110.0" x2="515.0" y2="110.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a13772829)"/><rect x="441.0" y="101.0" width="84.0" height="18" rx="3" fill="var(--bg2)"/><text x="483.0" y="114.0" class="gl" text-anchor="middle">run() ends</text><circle cx="70.0" cy="110.0" r="21" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="70.0" y="115.0" class="gn" text-anchor="middle">New</text><rect x="197.0" y="93.0" width="66.0" height="34.0" rx="7" fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))" stroke="var(--accent)" stroke-width="1.6"/><text x="230.0" y="115.0" class="gn" text-anchor="middle">Ready</text><rect x="369.0" y="93.0" width="82.0" height="34.0" rx="7" fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))" stroke="var(--accent)" stroke-width="1.6"/><text x="410.0" y="115.0" class="gn" text-anchor="middle">Running</text><rect x="279.0" y="213.0" width="82.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6" opacity="0.55"/><text x="320.0" y="235.0" class="gn" text-anchor="middle">Blocked</text><rect x="515.0" y="93.0" width="90.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="560.0" y="115.0" class="gn" text-anchor="middle">Finished</text></svg><figcaption>Thread states</figcaption></figure>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>start()</code></td>
+<td>Begins execution; JVM calls run() on the new thread</td>
+</tr>
+<tr>
+<td><code>isAlive()</code></td>
+<td>true if Ready, Running or Blocked; false if New or Finished</td>
+</tr>
+<tr>
+<td><code>setPriority(int)</code></td>
+<td>1 (MIN) to 10 (MAX); default <strong>NORM = 5</strong></td>
+</tr>
+<tr>
+<td><code>Thread.sleep(ms)</code> (static)</td>
+<td>Pauses the current thread; may throw <strong>InterruptedException</strong> (checked)</td>
+</tr>
+<tr>
+<td><code>Thread.yield()</code> (static)</td>
+<td>Temporarily gives the CPU to other threads</td>
+</tr>
+<tr>
+<td><code>join()</code></td>
+<td>Waits for <strong>another</strong> thread to finish</td>
+</tr>
+<tr>
+<td><code>interrupt()</code></td>
+<td>Ready/Running: sets the interrupted flag. Blocked: wakes it and throws InterruptedException</td>
+</tr>
+<tr>
+<td><code>isInterrupted()</code></td>
+<td>Tests the flag</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>New Ready Runners Become Finishers</h4><p><strong>N</strong>ew, <strong>R</strong>eady, <strong>R</strong>unning, <strong>B</strong>locked, <strong>F</strong>inished.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Priority is only a hint</h4><p><code>setPriority</code> is implemented natively and depends on the OS; if the OS ignores priorities, it does nothing. Never rely on priority for correctness.</p></div>
+<details class="try"><summary><span>Try it</span>A thread is sleeping. What does isAlive() return?</summary><div><p>true. Sleeping means Blocked, and only New and Finished threads give false.</p></div></details>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Five states: New, Ready, Running, Blocked, Finished</li><li>isAlive is false only for New and Finished</li><li>Priorities 1 to 10, default 5, and only a hint</li><li>sleep pauses; yield gives way; join waits for another thread</li><li>sleep throws the checked InterruptedException</li></ul></div>
+        </section>
+        <section id="lesson-4" style="--sec: var(--c6)">
+            <div class="section-label">Lesson 4</div>
+            <h2 class="section-title">Thread pools</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 36-39</span></div><div class="prose"><p>Creating a new thread for every task wastes time and can hurt throughput. A <strong>thread pool</strong> reuses a fixed set of threads. Java 5 added the <strong>Executor</strong> interface (run tasks) and its subinterface <strong>ExecutorService</strong> (manage them). Create one with the static <strong>Executors</strong> factory methods.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>ExecutorService executor = Executors.newFixedThreadPool(3);
+for (int i = 0; i &lt; 20; i++)
+    executor.execute(new CountingTask(&quot;Task_&quot; + i, 20, 20));
+executor.shutdown();      // no new tasks; existing ones finish</pre></div>
+<div class="prose"><p>All 20 tasks run, but <strong>only 3 at a time</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Factory</th>
+<th>Pool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>newFixedThreadPool(n)</code></td>
+<td>Exactly n threads; extra tasks wait in a queue</td>
+</tr>
+<tr>
+<td><code>newCachedThreadPool()</code></td>
+<td>Creates threads as needed and reuses idle ones</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>isTerminated()</code> returns true once every task has finished after shutdown.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A taxi rank</h4><p>Hiring and training a new driver per customer is slow. A pool is a rank with three taxis: customers queue, and each taxi takes the next customer when it returns.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>A pool reuses threads instead of creating one per task</li><li>ExecutorService manages tasks; Executors creates pools</li><li>Fixed pool: n threads; cached pool: grows as needed</li><li>shutdown stops new tasks; isTerminated checks they've all finished</li></ul></div>
+        </section>
+        <section id="lesson-5" style="--sec: var(--c7)">
+            <div class="section-label">Lesson 5</div>
+            <h2 class="section-title">Race conditions and synchronized</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 40-54</span></div><div class="prose"><p><strong>100 threads each add a penny to an empty account.</strong> Expected balance: 100. Actual: often far less.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public void deposit(int amount) {
+    int newBalance = balance + amount;   // read
+    Thread.sleep(1);                     // delay to magnify the problem
+    balance = newBalance;                // write
+}</pre></div>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>balance</th>
+<th>Task 1</th>
+<th>Task 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>newBalance = 0 + 1</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td></td>
+<td>newBalance = 0 + 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>balance = 1</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>1</strong></td>
+<td></td>
+<td>balance = 1</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two deposits, but the balance is 1: Task 2 <strong>overwrote</strong> Task 1's work. This is a <strong>race condition</strong>, and a class without this problem is <strong>thread-safe</strong>.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Two people editing a shared spreadsheet offline</h4><p>Both open it showing 0, both type 1, both save. The last save wins, and one deposit vanishes.</p></div>
+<div class="prose"><p>The fix: stop more than one thread entering the <strong>critical region</strong> at once.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public synchronized void deposit(double amount) { ... }
+
+// Same thing as a synchronized block:
+public void deposit(double amount) {
+    synchronized (this) { ... }
+}</pre></div>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>synchronized on</th>
+<th>Lock taken on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An instance method</td>
+<td><strong>The object</strong> (<code>this</code>)</td>
+</tr>
+<tr>
+<td>A static method</td>
+<td><strong>The class</strong></td>
+</tr>
+<tr>
+<td>A block <code>synchronized (expr)</code></td>
+<td>The object <code>expr</code> evaluates to</td>
+</tr>
+</tbody>
+</table></div>
+<p>A thread acquires the lock, runs the code and releases the lock. Any other thread calling it is <strong>blocked</strong> until then. A synchronized <strong>block</strong> can protect just the critical lines instead of a whole method.</p></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>RMW: Read, Modify, Write</h4><p>A race happens when another thread sneaks in between your <strong>r</strong>ead and your <strong>w</strong>rite. Make the whole read-modify-write one locked step.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>A race condition: the result depends on thread timing</li><li>Read-modify-write on shared data must be protected</li><li>synchronized makes a method or block one-thread-at-a-time</li><li>Instance method locks the object; static method locks the class</li><li>Any synchronized method can be rewritten as synchronized (this)</li></ul></div>
+        </section>
+        <section id="lesson-6" style="--sec: var(--c8)">
+            <div class="section-label">Lesson 6</div>
+            <h2 class="section-title">Explicit locks and conditions</h2>
+<div class="lesson-meta"><span class="pill know">Good to know</span><span class="pill">Slides 55-62</span></div><div class="prose"><p>Java 5 added explicit locks: the <strong>Lock</strong> interface and the <strong>ReentrantLock</strong> class in <code>java.util.concurrent.locks</code>, giving more control than synchronized.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>private Lock lock = new ReentrantLock();
+
+public void deposit(int amount) {
+    lock.lock();                       // acquire
+    try {
+        balance = balance + amount;
+    } finally {
+        lock.unlock();                 // ALWAYS release
+    }
+}</pre></div>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>synchronized</th>
+<th>ReentrantLock</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acquire / release</td>
+<td>Automatic</td>
+<td><strong>Explicit</strong> lock() / unlock()</td>
+</tr>
+<tr>
+<td>Fairness option</td>
+<td>No</td>
+<td><code>new ReentrantLock(true)</code></td>
+</tr>
+<tr>
+<td>Conditions (wait for a state)</td>
+<td>No</td>
+<td><code>lock.newCondition()</code></td>
+</tr>
+<tr>
+<td>Reentrant</td>
+<td>Yes</td>
+<td>Yes: a thread holding it can lock it again without blocking itself</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Fairness</strong>: <code>true</code> gives the lock to the <strong>longest-waiting</strong> thread, which prevents <strong>starvation</strong> but lowers overall performance. <code>false</code> (default) grants it in no particular order.</p>
+<p><strong>Conditions</strong> (slide 62, a bounded buffer): <code>put()</code> waits with <code>notFull.await()</code> while the buffer is full; <code>take()</code> waits with <code>notEmpty.await()</code> while it's empty. Each side signals the other after changing the buffer.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Forgetting unlock</h4><p>If an exception happens between lock() and unlock() without a finally, the lock is never released and every other thread waits forever. Always unlock in finally.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>ReentrantLock: explicit lock() and unlock()</li><li>Always unlock in a finally block</li><li>Fair locks prevent starvation but are slower</li><li>Conditions let threads wait until a state changes (await)</li></ul></div>
+        </section>
+        <section id="lesson-7" style="--sec: var(--c1)">
+            <div class="section-label">Lesson 7</div>
+            <h2 class="section-title">Deadlock</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 63-66</span></div><div class="prose"><p>Thread 1 holds the lock on <strong>object1</strong> and waits for <strong>object2</strong>. Thread 2 holds <strong>object2</strong> and waits for <strong>object1</strong>. Each waits for the other forever: <strong>deadlock</strong>.</p></div>
+<figure class="diagram"><svg viewBox="41.0 39.0 418.0 202.0" style="max-width:min(100%,522px)" role="img" aria-label="Deadlock: a circular wait"><defs><marker id="a26024504" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--text3)"/></marker><marker id="b26024504" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs><line x1="145.0" y1="70.0" x2="359.0" y2="70.0" stroke="var(--text3)" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#a26024504)"/><rect x="213.8" y="61.0" width="76.4" height="18" rx="3" fill="var(--bg2)"/><text x="252.0" y="74.0" class="gl" text-anchor="middle">waits for</text><line x1="400.0" y1="87.0" x2="400.0" y2="193.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a26024504)"/><rect x="369.4" y="131.0" width="61.2" height="18" rx="3" fill="var(--bg2)"/><text x="400.0" y="144.0" class="gl" text-anchor="middle">held by</text><line x1="355.0" y1="210.0" x2="141.0" y2="210.0" stroke="var(--text3)" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#a26024504)"/><rect x="209.8" y="201.0" width="76.4" height="18" rx="3" fill="var(--bg2)"/><text x="248.0" y="214.0" class="gl" text-anchor="middle">waits for</text><line x1="100.0" y1="193.0" x2="100.0" y2="87.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a26024504)"/><rect x="69.4" y="131.0" width="61.2" height="18" rx="3" fill="var(--bg2)"/><text x="100.0" y="144.0" class="gl" text-anchor="middle">held by</text><rect x="55.0" y="53.0" width="90.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="100.0" y="75.0" class="gn" text-anchor="middle">Thread 1</text><rect x="359.0" y="53.0" width="82.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="400.0" y="75.0" class="gn" text-anchor="middle">object2</text><rect x="355.0" y="193.0" width="90.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="400.0" y="215.0" class="gn" text-anchor="middle">Thread 2</text><rect x="59.0" y="193.0" width="82.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="100.0" y="215.0" class="gn" text-anchor="middle">object1</text></svg><figcaption>Deadlock: a circular wait</figcaption></figure>
+<div class="prose"><p><strong>Prevention: resource ordering.</strong> Give every lock a global order (Lock A &lt; Lock B &lt; Lock C) and make <strong>every</strong> thread acquire locks in that order. Then Thread 2 must also ask for object1 first; it waits, Thread 1 gets both, finishes and releases them. No cycle can form, so the <strong>circular wait</strong> condition, one of the four required for deadlock, is gone.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Two people, two chopsticks</h4><p>If each person grabs the chopstick on their left and waits for the right one, nobody eats. The rule "always pick up the lower-numbered chopstick first" breaks the circle.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Deadlock: each thread holds one lock and waits for another's</li><li>Resource ordering: acquire locks in one global order</li><li>It removes circular wait, so deadlock is impossible</li></ul></div>
+        </section>
+        <section id="lesson-8" style="--sec: var(--c2)">
+            <div class="section-label">Lesson 8</div>
+            <h2 class="section-title">Thread-safe collections and Fork/Join</h2>
+<div class="lesson-meta"><span class="pill know">Good to know</span><span class="pill">Slides 67-78</span></div><div class="prose"><p>The Java Collections Framework classes (ArrayList, HashSet...) are <strong>not thread-safe</strong>. Wrap them:</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>List&lt;String&gt; syncList = Collections.synchronizedList(new ArrayList&lt;&gt;());
+syncList.add(&quot;Apple&quot;);
+synchronized (syncList) {                 // lock while iterating
+    for (String fruit : syncList) System.out.println(fruit);
+}</pre></div>
+<div class="prose"><p>The <code>Collections</code> class has six such <strong>synchronization wrappers</strong>. <strong>Vector, Stack and Hashtable</strong> are old classes whose methods are already synchronized.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Iterators are fail-fast</h4><p>If another thread modifies the collection while you iterate, the iterator throws <strong>ConcurrentModificationException</strong> (a RuntimeException). That's why you lock the collection during traversal.</p></div>
+<div class="prose"><p><strong>Fork/Join</strong> (Java 7) splits a big problem into independent subtasks that run in parallel on multiple cores. Tasks extend <strong>ForkJoinTask</strong>, usually through <code>RecursiveAction</code> (no result) or <code>RecursiveTask</code> (returns a result), and run in a <strong>ForkJoinPool</strong>, an ExecutorService that manages worker threads. In the parallel merge sort, <code>compute()</code> sorts directly below a <strong>threshold</strong> of 500 elements; otherwise it splits the array in half, runs both halves in parallel and merges them.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>JCF collections aren't thread-safe; use Collections.synchronizedXxx</li><li>Lock the collection while iterating, since iterators are fail-fast</li><li>Vector, Stack and Hashtable are already synchronized</li><li>Fork/Join splits work into parallel subtasks in a ForkJoinPool</li><li>Below a threshold, solve directly instead of splitting</li></ul></div>
+        </section>
+        <section id="traps" style="--sec: var(--c3)">
+            <div class="section-label">Marks lost here</div>
+            <h2 class="section-title">Every trap in one place</h2>
+<div class="note-grid roundup"><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>start() vs run()</h4><p><code>thread.start()</code> creates a <strong>new thread</strong>, and the JVM calls <code>run()</code> on it. Calling <code>task.run()</code> directly is just a normal method call on the <strong>current</strong> thread: nothing runs in parallel.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Priority is only a hint</h4><p><code>setPriority</code> is implemented natively and depends on the OS; if the OS ignores priorities, it does nothing. Never rely on priority for correctness.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Forgetting unlock</h4><p>If an exception happens between lock() and unlock() without a finally, the lock is never released and every other thread waits forever. Always unlock in finally.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Iterators are fail-fast</h4><p>If another thread modifies the collection while you iterate, the iterator throws <strong>ConcurrentModificationException</strong> (a RuntimeException). That's why you lock the collection during traversal.</p></div></div>
+        </section>
+        <section id="tricks" style="--sec: var(--c4)">
+            <div class="section-label">Make it stick</div>
+            <h2 class="section-title">Every memory trick in one place</h2>
+<div class="note-grid roundup"><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>New Ready Runners Become Finishers</h4><p><strong>N</strong>ew, <strong>R</strong>eady, <strong>R</strong>unning, <strong>B</strong>locked, <strong>F</strong>inished.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>RMW: Read, Modify, Write</h4><p>A race happens when another thread sneaks in between your <strong>r</strong>ead and your <strong>w</strong>rite. Make the whole read-modify-write one locked step.</p></div></div>
+        </section>
+        <section id="cheat" style="--sec: var(--c5)">
+            <div class="section-label">One screen</div>
+            <h2 class="section-title">Quick reference</h2>
+<div class="cheat"><div class="cheat-col"><h4>Basics</h4><ul><li>Thread: smallest unit, shares process memory</li><li>Concurrency: one CPU; parallelism: many</li><li>Runnable = task; Thread = worker</li><li>start() → new thread; run() = normal call</li></ul></div><div class="cheat-col"><h4>Methods</h4><ul><li>States: New, Ready, Running, Blocked, Finished</li><li>isAlive false only New / Finished</li><li>Priority 1-10, default 5, a hint</li><li>sleep, yield, join, interrupt</li></ul></div><div class="cheat-col"><h4>Pools</h4><ul><li>Executors.newFixedThreadPool(n)</li><li>newCachedThreadPool()</li><li>execute, shutdown, isTerminated</li></ul></div><div class="cheat-col"><h4>Races</h4><ul><li>Read-modify-write interleaving</li><li>synchronized method: lock on object</li><li>static synchronized: lock on class</li><li>synchronized (this) { }</li></ul></div><div class="cheat-col"><h4>Locks</h4><ul><li>lock(); try { } finally { unlock(); }</li><li>Fair = longest waiter, no starvation</li><li>Conditions: await / signal</li></ul></div><div class="cheat-col"><h4>Deadlock and more</h4><ul><li>Circular wait on locks</li><li>Fix: resource ordering</li><li>Collections.synchronizedList</li><li>Fail-fast → ConcurrentModificationException</li><li>Fork/Join: RecursiveAction, ForkJoinPool</li></ul></div></div>
+        </section>
+
+        <section id="quiz" style="--sec: var(--c7)">
+            <div class="section-label">Self-Check</div>
+            <h2 class="section-title">Can you answer these without scrolling up?</h2>
+            <div class="test-card">
+                <div class="test-head">
+                    <h3 id="quiz-header">Question 1</h3>
+                    <span class="tag" id="quiz-tag">&nbsp;</span>
+                </div>
+                <div class="test-body">
+                    <div class="test-question" id="quiz-q"></div>
+                    <div class="test-options" id="quiz-opts"></div>
+                    <div class="test-feedback" id="quiz-fb"></div>
+                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
+                </div>
+            </div>
+            <div id="quiz-score">
+                <p id="score-text"></p>
+                <span id="score-sub"></span><br><br>
+                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <footer>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
+        <strong>Shoug Alomran</strong>
+        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">SE411 Software Construction &mdash; Chapter 5: Multithreading and Concurrency</div>
+    </footer>
+
+    <script>const questions = [{"tag": "Chapter 5", "q": "A thread is best defined as:", "opts": ["A Maven plugin", "A running program with its own memory", "A type of exception", "The smallest unit of execution within a program"], "a": 3, "why": "Slide 4."}, {"tag": "Chapter 5", "q": "Multiple threads sharing a single CPU is called:", "opts": ["Synchronization", "Concurrency", "Parallelism", "Deadlock"], "a": 1, "why": "Slide 10."}, {"tag": "Chapter 5", "q": "A downside of extending Thread instead of implementing Runnable is:", "opts": ["run() can't be overridden", "The thread can't be started", "The class can't extend any other class", "It can't print output"], "a": 2, "why": "Java allows one superclass."}, {"tag": "Chapter 5", "q": "The default thread priority is:", "opts": ["1", "0", "5 (NORM_PRIORITY)", "10"], "a": 2, "why": "Slide 24."}, {"tag": "Chapter 5", "q": "100 threads each add a penny without synchronization, and the balance ends below 100. This is:", "opts": ["A deadlock", "A fail-fast iterator", "A race condition", "Starvation"], "a": 2, "why": "Slide 46."}, {"tag": "Chapter 5", "q": "A synchronized static method acquires a lock on:", "opts": ["The object", "No lock", "Every object of the class", "The class"], "a": 3, "why": "Slide 48."}, {"tag": "Chapter 5", "q": "A fair ReentrantLock gives the lock to:", "opts": ["The newest thread", "The longest-waiting thread", "A random thread", "The highest-priority thread"], "a": 1, "why": "Prevents starvation."}, {"tag": "Chapter 5", "q": "Modifying a synchronized collection while another thread iterates it throws:", "opts": ["InterruptedException", "ConcurrentModificationException", "IOException", "NullPointerException"], "a": 1, "why": "Iterators are fail-fast."}];
+let currentQ = 0, score = 0, answered = false;
+
+function renderQuestion() {
+    const q = questions[currentQ];
+    answered = false;
+    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+    document.getElementById('quiz-tag').textContent = q.tag;
+    document.getElementById('quiz-q').textContent = q.q;
+    const opts = document.getElementById('quiz-opts');
+    opts.innerHTML = '';
+    q.opts.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.type = 'button';
+        b.innerHTML = text;
+        b.onclick = () => answer(i, b);
+        opts.appendChild(b);
+    });
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback';
+    fb.textContent = '';
+    document.getElementById('quiz-next').className = 'next-btn';
+}
+
+function answer(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
+        b.disabled = true;
+        if (j === q.a) b.classList.add('correct');
+    });
+    if (i !== q.a) btn.classList.add('wrong'); else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback show';
+    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
+    document.getElementById('quiz-next').className = 'next-btn show';
+}
+
+function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) { renderQuestion(); return; }
+    document.querySelector('.test-card').style.display = 'none';
+    document.getElementById('quiz-score').classList.add('show');
+    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
+    document.getElementById('score-sub').textContent =
+        score === questions.length ? 'Clean sweep. Move on to the drills.'
+        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
+        : 'Go back through the slide map before the next chapter.';
+}
+
+function restartQuiz() {
+    currentQ = 0; score = 0;
+    document.getElementById('quiz-score').classList.remove('show');
+    document.querySelector('.test-card').style.display = '';
+    renderQuestion();
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    // Persist both keys: html-theme-sync.js resolves from localStorage only and
+    // runs after this file, so without agreeing with it the page would flip.
+    try {
+        localStorage.setItem('shoug-theme', theme);
+        localStorage.setItem('theme', theme);
+    } catch (e) { }
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Default to dark — matching the site chrome this page is embedded in —
+    // unless the reader has explicitly chosen light.
+    let saved = null;
+    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+    renderQuestion();
+
+    // reading progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // highlight the section currently in view, in both the rail and the nav
+    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
+    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            links.forEach(a => a.classList.remove('active'));
+            byHash(e.target.id).forEach(a => a.classList.add('active'));
+        });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+});
+</script>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+</body>
+
+</html>

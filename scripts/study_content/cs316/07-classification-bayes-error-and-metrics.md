@@ -39,9 +39,11 @@ g*(x) = argmax<sub>y</sub> P[Y = y | X = x]
 Even so, that rule is wrong 30% of the time *on patients like this one*. Averaged across all patients, this unavoidable error is the **Bayes error rate**.
 
 ::plot Where the two classes overlap, even the best boundary makes errors | feature value | density | 14 | 10
-fn healthy 2: 9*exp(-((x-5)/1.6)**2)
-fn sick 5: 8*exp(-((x-9)/1.6)**2)
-area overlap 4: 6.3,3.8 7,3.8 7.7,3.4 7.7,0.4 6.3,0.4
+area - 4: 5.6,0.09 5.8,0.15 6.0,0.24 6.2,0.37 6.4,0.57 6.6,0.84 6.8,1.21 7.0,1.68 7.2,1.36 7.4,0.95 7.6,0.64 7.8,0.42 8.0,0.27 8.2,0.16 8.4,0.10 8.6,0.06 8.8,0.03 9.0,0.02 9.2,0.01 9.2,0 5.6,0
+fn - 2: 9*exp(-((x-5)/1.6)**2)
+fn - 5: 8*exp(-((x-9)/1.6)**2)
+text healthy: 5,9.5
+text sick: 9,8.5
 ::
 
 ::analogy Lemon or lime, judged by weight alone

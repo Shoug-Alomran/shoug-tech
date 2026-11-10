@@ -55,10 +55,16 @@ EXAMS = {
     "ECON101": [("major-1", "Major 1", (2, 3, 4), 8),
                 ("major-2", "Major 2", (6, 8, 9), 8),
                 ("final", "Final Exam", (3, 4, 5, 6, 8, 9, 11, 12, 13, 14), 3)],
+    # No SE411 syllabus yet, so one sheet covers every chapter until exam coverage is known.
+    "SE411": [("final", "Final Exam", None, 3)],
     "CS316": [("major", "Major Exam", (1, 2, 3, 4, 5, 10, 11, 12), 4),
               ("final", "Final Exam", None, 3)],
 }
 CHEAT_PATH = "extra-resources/cheat-sheets/"
+# Single resources kept in Study Material next to the generated folders: (folder, title).
+EXTRA_RESOURCES = {
+    "ECON101": [("chapter-11-qamar-bakery-step-by-step", "Chapter 11 Worked Example: Qamar Bakery, Step by Step")],
+}
 
 
 def esc(text):
@@ -106,7 +112,11 @@ class Course:
     def slide_links(self, deck):
         out = []
         sources = [s.strip() for s in deck["sources"].split(",")]
+        extras = dict(EXTRA_RESOURCES.get(self.c["code"], []))
         for slug in sources:
+            if slug in extras:
+                out.append(("Worked example", "%sextra-resources/%s/" % (self.url, slug)))
+                continue
             if slug not in self.titles:
                 raise SystemExit("%s: unknown slide folder %s" % (deck["path"], slug))
             title = self.titles[slug]
@@ -179,7 +189,7 @@ class Course:
         text = block.sub(lambda _m: "const DATA = " + data + ";", text, count=1)
         text = re.sub(r"Moral\s+Systems,\s+Ethical\s+Concepts,\s+and\s+Theories", deck["title"], text)
         text = re.sub(r"Introduction\s+to\s+Software\s+Design\s+and\s+Architecture", deck["title"], text)
-        return self.identity_for(text.replace("SE322", self.c["code"]), "mindmap", deck)
+        return engine.with_theme_assets(self.identity_for(text.replace("SE322", self.c["code"]), "mindmap", deck))
 
     def cheat_columns(self, deck):
         columns = list(deck["cheat"])
@@ -224,7 +234,7 @@ class Course:
         text = re.sub(r"SE401 Chapter %d\b" % i, "%s %s" % (self.c["code"], head), text)
         path = self.url.strip("/").replace("academics/", "", 1)
         text = text.replace("software-engineering/se401", path)
-        return text.replace("SE401", self.c["code"]).replace("se401", self.c["code"].lower())
+        return engine.with_theme_assets(text.replace("SE401", self.c["code"]).replace("se401", self.c["code"].lower()))
 
     @staticmethod
     def bank(mcqs, shorts):
@@ -324,7 +334,8 @@ class Course:
         data["children"][self.url + "extra-resources/"] = [
             {"url": self.url + "extra-resources/mindmaps/", "attrs": "", "label": "Mind Maps"},
             {"url": self.url + "extra-resources/cheat-sheets/", "attrs": "", "label": "Cheat Sheets"},
-        ]
+        ] + [{"url": "%sextra-resources/%s/" % (self.url, slug), "attrs": "", "label": title}
+             for slug, title in EXTRA_RESOURCES.get(self.c["code"], [])]
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
             f.write("\n")
@@ -368,8 +379,11 @@ class Course:
             '<a href="%sextra-resources/%s/" class="dir-row"><div class="dir-num">%02d</div><div class="dir-title">%s %s</div>'
             '<div class="dir-status"><span class="status-tag available">%d FILES</span></div><div class="dir-arrow">%s</div></a>'
             % (self.url, slug, n, FOLDER_ICON, label, count, nc.ARROW))
+        extra_rows = "".join(self.row("%sextra-resources/%s/" % (self.url, slug), n, title)
+                             for n, (slug, title) in enumerate(EXTRA_RESOURCES.get(self.c["code"], []), 3))
         self.listing(data, "extra-resources/", "Study Material", "المواد الدراسية",
-                     folder_row(1, "mindmaps", "Mind Maps", total) + folder_row(2, "cheat-sheets", "Cheat Sheets", len(EXAMS[self.c["code"]])))
+                     folder_row(1, "mindmaps", "Mind Maps", total) + folder_row(2, "cheat-sheets", "Cheat Sheets", len(EXAMS[self.c["code"]]))
+                     + extra_rows)
         self.coming_soon(data)
         self.restamp(data)
         return total
@@ -424,7 +438,8 @@ def main():
     wanted = {a.upper() for a in sys.argv[1:]}
     if not wanted or "CS316" in wanted:
         build_cs316()
-    for c in nc.COURSES:
+    import build_se411_slides
+    for c in nc.COURSES + [build_se411_slides.COURSE]:
         if wanted and c["code"] not in wanted:
             continue
         course = Course(c)

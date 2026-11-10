@@ -50,6 +50,11 @@ def tokens(text):
     return {w for w in re.findall(r"[a-z؀-ۿ0-9]{3,}", text.lower()) if w not in STOP}
 
 
+def is_redirect(path):
+    with open(path, encoding="utf-8", errors="ignore") as f:
+        return bool(re.search(r'http-equiv=["\']?refresh', f.read(4000), re.I))
+
+
 def page_title(path):
     with open(path, encoding="utf-8", errors="ignore") as f:
         text = f.read(250000)
@@ -247,6 +252,8 @@ def build_course(slug, base):
     # Pages made for learning things by heart.
     memorize = []
     for path in sorted(glob.glob(os.path.join(home, "extra-resources", "*", "index.html"))):
+        if is_redirect(path):  # a stub left behind when a sheet moved
+            continue
         if re.search(r"cheat|formula|listing|vault|summary|table", path.split(os.sep)[-2], re.I):
             memorize.append(link(page_title(path) or path.split(os.sep)[-2].replace("-", " "), url_of(path)))
     memorize = memorize[:4]
