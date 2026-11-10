@@ -9,7 +9,7 @@ DECK = {
     'file': 'local-area-networks',
     'title': 'Local Area Networks: Ethernet',
     'chapter': 'Chapter 4',
-    'pdf': '/academics/computer-science/cs331/slides/data-link-layer-part-3/',
+    'pdf': '/academics/computer-science/cs331/slides/local-area-networks/',
     'lede': ('Ethernet from top to bottom: IEEE 802 and its LLC/MAC split, every field of the frame and its size, '
              'the 48-bit MAC address and how to tell unicast, multicast and broadcast apart, the four generations '
              'from 10 Mbps to 10 Gbps, and why full-duplex switched Ethernet no longer needs CSMA/CD. (On the '
