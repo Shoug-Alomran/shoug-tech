@@ -268,7 +268,7 @@
 (function () {
   if (window.location.pathname.indexOf("/academics/") !== 0) return;
   var s = document.createElement("script");
-  s.src = "/javascripts/resource-ratings.js?v=3";
+  s.src = "/javascripts/resource-ratings.js?v=4";
   s.async = true;
   document.head.appendChild(s);
 })();

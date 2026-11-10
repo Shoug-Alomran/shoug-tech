@@ -29,14 +29,6 @@ from PIL import Image, ImageChops, ImageStat
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "docs")
 ANALYSIS = os.path.join(ROOT, "account", "calendar", "exam-analysis")
-COURSES = {
-    "cs331": "computer-science/cs331",
-    "cys401": "cybersecurity/cys401",
-    "isc213": "other-courses/isc213",
-    "se322": "software-engineering/se322",
-    "se371": "software-engineering/se371",
-    "se423": "software-engineering/se423",
-}
 # At or above this share of repeated slides, the breakdown is the better read.
 REPEAT_LIMIT = 0.2
 STOP = set("the a an and of for to in on with is are this that quiz".split())
@@ -71,7 +63,8 @@ def url_of(path):
 
 
 def exists(url):
-    return os.path.isfile(os.path.join(ROOT, url.strip("/"), "index.html"))
+    target = os.path.join(ROOT, url.strip("/"))
+    return os.path.isfile(target if url.endswith(".pdf") else os.path.join(target, "index.html"))
 
 
 def text_repeats(pdf):
@@ -108,7 +101,7 @@ def image_repeats(pdf):
 
 def deck_repeats(url):
     folder = os.path.join(ROOT, url.strip("/"))
-    pdfs = sorted(glob.glob(os.path.join(folder, "*.pdf")))
+    pdfs = [folder] if url.endswith(".pdf") else sorted(glob.glob(os.path.join(folder, "*.pdf")))
     if not pdfs:
         return None
     pages, dup, sparse = text_repeats(pdfs[0])
@@ -174,7 +167,10 @@ def build_course(slug, base):
                 tail = re.split(r"[:·]", label, maxsplit=1)
                 extra = tail[1].strip() if len(tail) > 1 else ""
                 generic = not extra or re.match(r"(slides|ch\b)", extra, re.I)
-                got["breakdown"].append(link("Slide breakdown" + ("" if generic else " · " + extra), url))
+                if not any(x["url"] == url for x in got["breakdown"]):
+                    got["breakdown"].append(link("Slide breakdown" + ("" if generic else " · " + extra), url))
+            elif low.startswith("annotated"):
+                got["annotated"].append(link("Annotated slides", url))
             elif low.startswith("lesson notes"):
                 got["notes"].append(link("Lesson notes", url))
             elif "practice" in low:
@@ -186,14 +182,15 @@ def build_course(slug, base):
                     repeats[ch["id"]][0] += r[0]
                     repeats[ch["id"]][1] += r[1]
 
-    for path in sorted(glob.glob(os.path.join(home, "annotated-slides", "*", "index.html"))):
+    baseline = a.get("baseline")
+    for path in [] if baseline else sorted(glob.glob(os.path.join(home, "annotated-slides", "*", "index.html"))):
         title = page_title(path)
         for ch in chapters_for(title_number(title), title, by_number):
             part = part_of(title)
             found[ch["id"]]["annotated"].append(link("Annotated slides" + (" · " + part if part else ""), url_of(path)))
 
     # Breakdowns the chapter's own links miss, by the chapter in the folder name.
-    for path in sorted(glob.glob(os.path.join(home, "slide-breakdowns", "*", "index.html"))):
+    for path in [] if baseline else sorted(glob.glob(os.path.join(home, "slide-breakdowns", "*", "index.html"))):
         m = re.match(r"\d+-chapter-(\d+)-", path.split(os.sep)[-2])
         if m:
             for ch in by_number.get(str(float(m.group(1))), []):
@@ -240,12 +237,19 @@ def build_course(slug, base):
         if not exists(r["url"]):
             continue
         low = r["label"].lower()
-        if re.search(r"past|final|midterm|paper|quiz|exam|tutorial", low):
+        if re.search(r"past|final|midterm|paper|quiz|exam|tutorial|worksheet|lab", low):
             past.append(link(r["label"], r["url"]))
         else:
             sheets.append(link(r["label"], r["url"]))
     seen = {x["url"] for x in past}
     past += [x for x in finals if x["url"] not in seen and len(past) < 5]
+
+    # Pages made for learning things by heart.
+    memorize = []
+    for path in sorted(glob.glob(os.path.join(home, "extra-resources", "*", "index.html"))):
+        if re.search(r"cheat|formula|listing|vault|summary|table", path.split(os.sep)[-2], re.I):
+            memorize.append(link(page_title(path) or path.split(os.sep)[-2].replace("-", " "), url_of(path)))
+    memorize = memorize[:4]
 
     out = {"chapters": {}, "final": past[:5], "sheets": sheets, "page": a.get("course_page", "")}
     for ch in a["chapters"]:
@@ -282,6 +286,7 @@ def build_course(slug, base):
             "learn": {"why": why if learn else "", "links": learn},
             "review": {"why": rwhy if review else "", "links": review},
             "practice": {"why": "Test yourself with this first, then check what you missed." if practice else "", "links": practice},
+            "memorize": {"why": "Cover the answers and recite them from memory, then check. Repeat only what you missed." if (memorize or review) else "", "links": memorize or review},
             "all": everything,
         }
     return a["course"], out
@@ -289,7 +294,10 @@ def build_course(slug, base):
 
 def main():
     data = {}
-    for slug, base in COURSES.items():
+    for path in sorted(glob.glob(os.path.join(ANALYSIS, "*-final.json"))):
+        slug = os.path.basename(path)[: -len("-final.json")]
+        page = json.load(open(path, encoding="utf-8")).get("course_page", "")
+        base = page.replace("/academics/", "", 1).strip("/")
         course, out = build_course(slug, base)
         data[course] = out
         print("==", course, "| past", len(out["final"]), "| sheets", len(out["sheets"]))

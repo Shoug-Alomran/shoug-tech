@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en" data-sg-styled data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CS316 Chapter 4 Demo: Gradient Descent Visualization</title>
+    <meta
+      name="description"
+      content="CS316 Chapter 4 Demo: Gradient Descent Visualization, Introduction to AI and Data Science."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/interactive-gradient-descent-visualization/interactive-gradient-descent-visualization.html"
+    />
+    <meta
+      property="og:title"
+      content="CS316 Chapter 4 Demo: Gradient Descent Visualization"
+    />
+    <meta
+      property="og:description"
+      content="CS316 Chapter 4 Demo: Gradient Descent Visualization, Introduction to AI and Data Science."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/interactive-gradient-descent-visualization/interactive-gradient-descent-visualization.html"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="CS316 Chapter 4 Demo: Gradient Descent Visualization"
+    />
+    <meta
+      name="twitter:description"
+      content="CS316 Chapter 4 Demo: Gradient Descent Visualization, Introduction to AI and Data Science."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/interactive-gradient-descent-visualization/interactive-gradient-descent-visualization.html",
+        "name": "Chapter 4 Demo: Gradient Descent Visualization"
+      }
+    </script>
+    <script>
+      (function () {
+        var d = "dark";
+        try {
+          if (window.parent !== window) {
+            var b = parent.document.body;
+            if (!b.classList.contains("shoug-light-mode")) d = "dark";
+            else d = "light";
+          } else if (localStorage.getItem("theme") === "light") {
+            d = "light";
+          }
+        } catch (e) {}
+        document.documentElement.setAttribute("data-theme", d);
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #f6f5fb;
+        --panel: #fff;
+        --code: #f0eef8;
+        --text: #1c2435;
+        --muted: #5b6478;
+        --line: #d8d5e6;
+        --accent: #7a3fd0;
+      }
+      html[data-theme="dark"] {
+        --bg: #0b0912;
+        --panel: #14111e;
+        --code: #1b1727;
+        --text: #ece9f5;
+        --muted: #a59fb8;
+        --line: #2e2840;
+        --accent: #c084fc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+      body {
+        font:
+          16px/1.65 Inter,
+          system-ui,
+          sans-serif;
+        overflow-wrap: anywhere;
+      }
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 28px clamp(14px, 4vw, 40px) 60px;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.25;
+        margin: 1.4em 0 0.5em;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+      h3 {
+        font-size: 1.15rem;
+      }
+      a {
+        color: var(--accent);
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        background: #fff;
+        border-radius: 6px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+      }
+      .cell {
+        margin: 14px 0;
+      }
+      pre {
+        margin: 0;
+        padding: 12px 14px;
+        background: var(--code);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow-x: auto;
+        font:
+          13px/1.5 "JetBrains Mono",
+          ui-monospace,
+          monospace;
+        white-space: pre;
+      }
+      .out {
+        margin-top: 6px;
+      }
+      .out pre {
+        background: transparent;
+        border-style: dashed;
+        color: var(--muted);
+      }
+      .tw {
+        overflow-x: auto;
+        margin: 8px 0;
+      }
+      table {
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 4px 9px;
+        text-align: left;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css"
+    />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"
+      onload="
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false,
+        })
+      "
+    ></script>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Chapter 4 Demo: Gradient Descent Visualization</h1>
+      <p class="note">
+        Read-only copy of the course notebook.
+        <a href="./interactive-gradient-descent-visualization.ipynb" download
+          >Download the .ipynb</a
+        >
+        to run it in Jupyter or Colab.
+      </p>
+      <div class="cell">
+        <h1>
+          Understanding Gradient Descent Through Interactive Visualization
+        </h1>
+        <p>Developed by Anis Koubaa</p>
+        <h2>Introduction</h2>
+        <p>
+          This notebook provides an interactive visualization of gradient
+          descent algorithm - one of the fundamental optimization techniques in
+          machine learning. We'll use a simple linear regression problem to
+          understand how gradient descent works.
+        </p>
+        <h2>Learning Objectives</h2>
+        <p>
+          After completing this notebook, you will: - Understand what gradient
+          descent is and how it works - Visualize how the algorithm converges to
+          the optimal solution - Learn the impact of learning rate on model
+          training - See how gradient descent minimizes the cost function -
+          Connect theoretical concepts to practical implementation
+        </p>
+        <h2>The Problem Setup</h2>
+        <p>
+          We'll work with a simple linear regression problem: 1. We have data
+          points that roughly follow a linear pattern 2. Our goal is to find the
+          best-fitting line (y = mx + b) 3. We'll use gradient descent to find
+          the optimal slope (m) 4. For simplicity, we'll keep the intercept (b)
+          fixed at 1
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+import numpy as np
+import matplotlib.pyplot as plt
+from ipywidgets import interactive, FloatSlider, IntSlider
+import ipywidgets as widgets</pre>
+      </div>
+      <div class="cell">
+        <h2>Data Generation for Linear Regression</h2>
+        <p>
+          This code generates synthetic data for our linear regression example:
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+# Generate sample data
+np.random.seed(42)
+X = np.linspace(0, 10, 20)
+y = 2 * X + 1 + np.random.normal(0, 1, 20)</pre>
+      </div>
+      <div class="cell">
+        <pre>
+plt.scatter(X, y)
+plt.xlabel(&#x27;X&#x27;)
+plt.ylabel(&#x27;y&#x27;)
+plt.title(&#x27;Generated Data Points&#x27;)
+plt.show()</pre>
+        <div class="out">
+          <img
+            alt="Notebook output"
+            loading="lazy"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAHHCAYAAABXx+fLAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvlHJYcgAAAAlwSFlzAAAPYQAAD2EBqD+naQAAPvdJREFUeJzt3Xl4VPX9/v97kkCCmAwGEibRAAFRDGFHKIsVSjAgpgKKkgsE3Oo3BQUpLmghRK0p2rpCg7YV/JSiSFUQ1FwiIhRZIsZQA4qAYZOEVWZCbAJkzu8PfpkyZIFAZj3Px3Wd63LOvM+Z1xmUuT3v5VgMwzAEAABgIiG+LgAAAMDbCEAAAMB0CEAAAMB0CEAAAMB0CEAAAMB0CEAAAMB0CEAAAMB0CEAAAMB0CEAAAMB0CEAAgkqbNm00YcIEX5fh92bNmiWLxeLrMgCfIQABfqKoqEiTJk3SNddco8suu0yXXXaZkpKSNHHiRP3nP//xdXkN6qOPPtKsWbN8WoPFYnFtYWFhio6OVo8ePTR58mRt27btos/7888/a9asWfr8888brlhJu3fvdqs5NDRUrVq10ogRI1RQUNCgn3U+69ev16xZs3T8+HGvfi7QkCw8CwzwvRUrVujOO+9UWFiYxowZoy5duigkJETfffed3nvvPe3Zs0dFRUVq3bq1r0ttEJMmTdLcuXPlib9+2rRpowEDBmjBggV1trNYLBo8eLDGjRsnwzBkt9u1ZcsWLVmyRGVlZZo9e7amTp1a788/cuSIYmJilJmZ2aAhb/fu3UpMTFR6erpuvvlmVVZW6ttvv1VOTo4qKiq0ceNGde3a9YLPd/r0aZ0+fVoRERH1ruVPf/qTHnnkERUVFalNmzb1Ph7wB2G+LgAwu127dmn06NFq3bq1Vq1apbi4OLf3Z8+erb/85S8KCfHfG7ZlZWVq2rSpr8uot2uuuUZjx4512/fHP/5RaWlp+t3vfqcOHTro5ptv9lF1Nevevbtbzf369dOvf/1r5eTk6LXXXrvg84SFhSksjJ8AmJf//o0KmMRzzz2nsrIyzZ8/v1r4kc78UD300ENKSEhw2//dd9/p9ttvV3R0tCIiItSzZ0998MEHbm0WLFggi8WiL774QlOnTlVMTIyaNm2qESNG6PDhw9U+6+OPP9YNN9ygpk2bKjIyUsOGDdPWrVvd2kyYMEGXX365du3apZtvvlmRkZEaM2aMJOnf//63Ro0apVatWik8PFwJCQl6+OGH9d///tft+Llz50py74aq4nQ69dJLL6ljx46KiIhQy5Yt9cADD+inn35yq8MwDD3zzDO66qqrdNlll2ngwIHVar0YzZs319tvv62wsDD94Q9/cO0/efKkZs6cqR49eshqtapp06a64YYbtHr1aleb3bt3KyYmRpKUlZXluraqO0H/+c9/NGHCBLVt21YRERGy2Wy65557dPTo0Yuu91e/+pWkM12oVZYsWaIePXqoSZMmatGihcaOHasff/zR7biaxgBZLBZNmjRJS5cuVXJyssLDw9WxY0fl5ua6HffII49IkhITE13XuHv3bknSypUr1b9/fzVr1kyXX365rr32Wj3xxBMXfX2ApxD/AR9bsWKFrr76avXu3fuCj9m6dav69eunK6+8Uo8//riaNm2qd955R8OHD9e7776rESNGuLV/8MEHdcUVVygzM1O7d+/WSy+9pEmTJmnx4sWuNv/4xz80fvx4paamavbs2fr555+Vk5Oj/v376+uvv3br6jh9+rRSU1PVv39//elPf9Jll10m6cwP788//6yMjAw1b95ceXl5evXVV7V//34tWbJEkvTAAw/owIEDWrlypf7xj39Uu7YHHnhACxYs0N13362HHnpIRUVFmjNnjr7++mt98cUXatSokSRp5syZeuaZZ3TzzTfr5ptvVn5+vm666SadPHnygr/H2rRq1Uo33nijVq9eLYfDoaioKDkcDv3tb39Tenq67r//fpWWlurvf/+7UlNTlZeXp65duyomJkY5OTnKyMjQiBEjNHLkSElS586dJZ0JBz/88IPuvvtu2Ww2bd26Va+//rq2bt2qjRs3XtSg5F27dkk6E9wkub6766+/XtnZ2Tp48KBefvllffHFF/r666/VrFmzOs+3bt06vffee/rtb3+ryMhIvfLKK7rtttu0d+9eNW/eXCNHjtT333+vt956Sy+++KJatGghSYqJidHWrVt1yy23qHPnznrqqacUHh6unTt36osvvqj3dQEeZwDwGbvdbkgyhg8fXu29n376yTh8+LBr+/nnn13vDRo0yOjUqZNRXl7u2ud0Oo2+ffsa7du3d+2bP3++IclISUkxnE6na//DDz9shIaGGsePHzcMwzBKS0uNZs2aGffff79bDSUl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dVlBpbKyUjNmzFBiYqKaNGmidu3a6emnn76g50mhdmvXrlVaWpri4+NlsVi0dOlSt/cNw9DMmTMVFxenJk2aKCUlRTt27PBafQQgL1m8eLGmTp2qzMxM5efnq0uXLkpNTdWhQ4d8XVrQWLNmjSZOnKiNGzdq5cqVOnXqlG666SaVlZX5urSg9eWXX+q1115T586dfV1KUPrpp5/Ur18/NWrUSB9//LG2bdumP//5z7riiit8XVpQmT17tnJycjRnzhx9++23mj17tp577jm9+uqrvi4toJWVlalLly6aO3duje8/99xzeuWVVzRv3jxt2rRJTZs2VWpqqsrLy71ToAGv6NWrlzFx4kTX68rKSiM+Pt7Izs72YVXB7dChQ4YkY82aNb4uJSiVlpYa7du3N1auXGnceOONxuTJk31dUtB57LHHjP79+/u6jKA3bNgw45577nHbN3LkSGPMmDE+qij4SDLef/9912un02nYbDbj+eefd+07fvy4ER4ebrz11lteqYk7QF5w8uRJffXVV0pJSXHtCwkJUUpKijZs2ODDyoKb3W6XJEVHR/u4kuA0ceJEDRs2zO3fazSsDz74QD179tSoUaMUGxurbt266a9//auvywo6ffv21apVq/T9999LkrZs2aJ169Zp6NChPq4seBUVFamkpMTt7w+r1arevXt77XeRh6F6wZEjR1RZWamWLVu67W/ZsqW+++47H1UV3JxOp6ZMmaJ+/fopOTnZ1+UEnbffflv5+fn68ssvfV1KUPvhhx+Uk5OjqVOn6oknntCXX36phx56SI0bN9b48eN9XV7QePzxx+VwONShQweFhoaqsrJSf/jDHzRmzBhflxa0SkpKJKnG38Wq9zyNAISgNHHiRBUWFmrdunW+LiXo7Nu3T5MnT9bKlSsVERHh63KCmtPpVM+ePfXss89Kkrp166bCwkLNmzePANSA3nnnHf3zn//UokWL1LFjRxUUFGjKlCmKj4/new5idIF5QYsWLRQaGqqDBw+67T948KBsNpuPqgpekyZN0ooVK7R69WpdddVVvi4n6Hz11Vc6dOiQunfvrrCwMIWFhWnNmjV65ZVXFBYWpsrKSl+XGDTi4uKUlJTktu+6667T3r17fVRRcHrkkUf0+OOPa/To0erUqZPuuusuPfzww8rOzvZ1aUGr6rfPl7+LBCAvaNy4sXr06KFVq1a59jmdTq1atUp9+vTxYWXBxTAMTZo0Se+//74+++wzJSYm+rqkoDRo0CB98803KigocG09e/bUmDFjVFBQoNDQUF+XGDT69etXbSmH77//Xq1bt/ZRRcHp559/VkiI+89haGionE6njyoKfomJibLZbG6/iw6HQ5s2bfLa7yJdYF4ydepUjR8/Xj179lSvXr300ksvqaysTHfffbevSwsaEydO1KJFi7Rs2TJFRka6+pGtVquaNGni4+qCR2RkZLVxVU2bNlXz5s0Zb9XAHn74YfXt21fPPvus7rjjDuXl5en111/X66+/7uvSgkpaWpr+8Ic/qFWrVurYsaO+/vprvfDCC7rnnnt8XVpAO3HihHbu3Ol6XVRUpIKCAkVHR6tVq1aaMmWKnnnmGbVv316JiYmaMWOG4uPjNXz4cO8U6JW5ZjAMwzBeffVVo1WrVkbjxo2NXr16GRs3bvR1SUFFUo3b/PnzfV1a0GMavOcsX77cSE5ONsLDw40OHToYr7/+uq9LCjoOh8OYPHmy0apVKyMiIsJo27at8eSTTxoVFRW+Li2grV69usa/k8ePH28Yxpmp8DNmzDBatmxphIeHG4MGDTK2b9/utfoshsFSlwAAwFwYAwQAAEyHAAQAAEyHAAQAAEyHAAQAAEyHAAQAAEyHAAQAAEyHAAQAAEyHAAQAAEyHAAQg6FVWVqpv374aOXKk23673a6EhAQ9+eSTPqoMgK+wEjQAU/j+++/VtWtX/fWvf9WYMWMkSePGjdOWLVv05ZdfqnHjxj6uEIA3EYAAmMYrr7yiWbNmaevWrcrLy9OoUaP05ZdfqkuXLr4uDYCXEYAAmIZhGPrVr36l0NBQffPNN3rwwQf1+9//3tdlAfABAhAAU/nuu+903XXXqVOnTsrPz1dYWJivSwLgAwyCBmAqb7zxhi677DIVFRVp//79vi4HgI9wBwiAaaxfv1433nijPvnkEz3zzDOSpE8//VQWi8XHlQHwNu4AATCFn3/+WRMmTFBGRoYGDhyov//978rLy9O8efN8XRoAH+AOEABTmDx5sj766CNt2bJFl112mSTptdde07Rp0/TNN9+oTZs2vi0QgFcRgAAEvTVr1mjQoEH6/PPP1b9/f7f3UlNTdfr0abrCAJMhAAEAANNhDBAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADAdAhAAADCd/w/rH5SSMSuR5gAAAABJRU5ErkJggg=="
+          />
+        </div>
+      </div>
+      <div class="cell">
+        <h2>Loss Function in Linear Regression</h2>
+        <pre><code class="language-python">def compute_loss(w, b):
+    y_pred = w * X + b  # Linear model: y = wx + b
+    return np.mean((y_pred - y) ** 2)
+</code></pre>
+        <h3>Components:</h3>
+        <ol>
+          <li>
+            <p>
+              <strong>Model Prediction</strong>:
+              <code>y_pred = w * X + b</code> - <code>w</code>: weight parameter
+              (slope) - <code>X</code>: input features - <code>b</code>: bias
+              parameter (intercept)
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Mean Squared Error (MSE)</strong>:
+              <code>np.mean((y_pred - y) ** 2)</code> - Calculates
+              <code>(prediction - actual)²</code> - Takes mean across all
+              samples - Lower loss = better model fit
+            </p>
+          </li>
+        </ol>
+        <h3>Mathematical Form:</h3>
+        <p>$$ \text{Loss} = \frac{1}{n}\sum_{i=1}^{n}(wx_i + b - y_i)^2 $$</p>
+        <p>where n is the number of training examples.</p>
+      </div>
+      <div class="cell">
+        <pre>
+#MSE function
+def compute_loss(w, b):
+    &quot;&quot;&quot;Compute Mean Squared Error Loss for given weight w and bias b&quot;&quot;&quot;
+    y_pred = w * X + b  # Linear model: y = wx + b
+    return np.mean((y_pred - y) ** 2)</pre>
+      </div>
+      <div class="cell">
+        <h2>Computing Gradients for Linear Regression</h2>
+        <h3>Gradient Calculations:</h3>
+        <ol>
+          <li>
+            <p>
+              <strong>Step 1</strong>: Calculate prediction error -
+              <code>error = (wx + b) - y</code>
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Weight Gradient</strong>: $\frac{\partial
+              \text{Loss}}{\partial w}$ - Formula:
+              $\frac{2}{n}\sum_{i=1}^{n}(wx_i + b - y_i)x_i$ - Code:
+              <code>dw = 2 * np.mean(error * X)</code>
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Bias Gradient</strong>: $\frac{\partial
+              \text{Loss}}{\partial b}$ - Formula:
+              $\frac{2}{n}\sum_{i=1}^{n}(wx_i + b - y_i)$ - Code:
+              <code>db = 2 * np.mean(error)</code>
+            </p>
+          </li>
+        </ol>
+        <p>
+          These gradients tell us how to adjust w and b to minimize the loss. -
+          Negative gradient = direction of steepest descent - Multiply by
+          learning rate to control step size
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+def compute_gradients(w, b):
+    &quot;&quot;&quot;
+    Compute gradients of Mean Squared Error loss with respect to weight (w) and bias (b).
+
+    This function helps us know how to update our model parameters:
+    - How much to change the weight (w)
+    - How much to change the bias (b)
+    &quot;&quot;&quot;
+    # Step 1: Make predictions with current model
+    # For each input X, predict using y = wx + b
+    y_pred = w * X + b
+
+    # Step 2: Calculate prediction errors
+    # How far off is each prediction from the true value?
+    # Positive error = prediction too high
+    # Negative error = prediction too low
+    errors = y_pred - y
+
+    # Step 3: Calculate weight gradient (dw)
+    # - Multiply each error by its corresponding X value
+    # - This tells us how the error changes with X
+    # - Larger X values have more impact on weight updates
+    # - The 2 comes from derivative of squared error
+    error_times_x = errors * X
+    dw = 2 * np.mean(error_times_x)
+
+    # Step 4: Calculate bias gradient (db)
+    # - Use raw errors for bias
+    # - Bias affects all predictions equally (doesn&#x27;t depend on X)
+    # - The 2 comes from derivative of squared error
+    db = 2 * np.mean(errors)
+
+    # Return how we should adjust w and b:
+    # - Negative gradient = we should decrease the parameter
+    # - Positive gradient = we should increase the parameter
+    return dw, db</pre>
+      </div>
+      <div class="cell">
+        <h2>Gradient Descent Visualization Function</h2>
+        <p>
+          This function creates two plots to visualize the learning process:
+        </p>
+        <h3>Plot 1: Data and Predictions</h3>
+        <ul>
+          <li>Blue dots: Training data points</li>
+          <li>Red line: Model's current prediction (y = wx + b)</li>
+          <li>Watch how the line adjusts to fit the data better</li>
+        </ul>
+        <h3>Plot 2: Training History</h3>
+        <ul>
+          <li>Green line: Loss over time (should decrease)</li>
+          <li>Blue line: Weight (w) evolution</li>
+          <li>Red line: Bias (b) evolution</li>
+        </ul>
+        <h3>Training Process:</h3>
+        <pre><code class="language-python"># Each iteration:
+1. Calculate gradients (dw, db)
+2. Update parameters:
+   w = w - learning_rate * dw
+   b = b - learning_rate * db
+3. Track progress (loss, w, b)
+</code></pre>
+        <p>
+          Adjust <code>learning_rate</code> and <code>num_iterations</code> to
+          see how they affect learning!
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+def plot_gradient_descent(learning_rate=0.01, num_iterations=10):
+    plt.figure(figsize=(15, 4))
+
+    # Plot 1: Data and Model Predictions (left)
+    plt.subplot(1, 3, 1)
+    plt.scatter(X, y, color=&#x27;blue&#x27;, alpha=0.5, label=&#x27;Training data&#x27;, s=50)
+
+    # Initialize parameters
+    current_w = 0  # Initial weight
+    current_b = 0  # Initial bias
+
+    weights = [current_w]
+    biases = [current_b]
+    losses = [compute_loss(current_w, current_b)]
+
+    # Training loop
+    for i in range(num_iterations):
+        dw, db = compute_gradients(current_w, current_b)
+        current_w = current_w - learning_rate * dw
+        current_b = current_b - learning_rate * db
+
+        weights.append(current_w)
+        biases.append(current_b)
+        losses.append(compute_loss(current_w, current_b))
+
+    # Plot final prediction line
+    y_pred = current_w * X + current_b
+    plt.plot(X, y_pred, color=&#x27;red&#x27;, linewidth=2,
+            label=f&#x27;Prediction\n(w={current_w:.2f}, b={current_b:.2f})&#x27;)
+    plt.xlabel(&#x27;Input (X)&#x27;, fontsize=10)
+    plt.ylabel(&#x27;Target (y)&#x27;, fontsize=10)
+    plt.title(&#x27;Model Fitting&#x27;, fontsize=12)
+    plt.legend(fontsize=8)
+    plt.grid(True, alpha=0.3)
+
+    # Plot 2: Loss Surface (middle)
+    plt.subplot(1, 3, 2)
+
+    # Create mesh grid for weight values
+    w_range = np.linspace(-1, 4, 100)
+    loss_surface = [compute_loss(w, current_b) for w in w_range]
+
+    # Plot loss surface
+    plt.plot(w_range, loss_surface, &#x27;b-&#x27;, label=&#x27;Loss Surface&#x27;, linewidth=2)
+
+    # Plot optimization path
+    plt.scatter(weights, [compute_loss(w, current_b) for w in weights],
+                color=&#x27;red&#x27;, s=100, alpha=0.5, label=&#x27;Gradient Steps&#x27;)
+
+    # Add arrows to show descent direction
+    for i in range(len(weights)-1):
+        plt.arrow(weights[i], compute_loss(weights[i], current_b),
+                 weights[i+1] - weights[i],
+                 compute_loss(weights[i+1], current_b) - compute_loss(weights[i], current_b),
+                 head_width=0.05, head_length=0.1, fc=&#x27;g&#x27;, ec=&#x27;g&#x27;, length_includes_head=True)
+
+    plt.xlabel(&#x27;Weight (w)&#x27;, fontsize=10)
+    plt.ylabel(&#x27;Loss&#x27;, fontsize=10)
+    plt.title(&#x27;Loss Surface (Quadratic)&#x27;, fontsize=12)
+    plt.legend(fontsize=8)
+    plt.grid(True, alpha=0.3)
+
+    # Plot 3: Training History (right)
+    plt.subplot(1, 3, 3)
+    plt.plot(range(num_iterations + 1), losses, &#x27;g-&#x27;, label=&#x27;Loss&#x27;, linewidth=2)
+    plt.plot(range(num_iterations + 1), weights, &#x27;b-&#x27;, label=&#x27;Weight (w)&#x27;, linewidth=2)
+    plt.plot(range(num_iterations + 1), biases, &#x27;r-&#x27;, label=&#x27;Bias (b)&#x27;, linewidth=2)
+    plt.xlabel(&#x27;Iteration&#x27;, fontsize=10)
+    plt.ylabel(&#x27;Value&#x27;, fontsize=10)
+    plt.title(&#x27;Training Progress&#x27;, fontsize=12)
+    plt.legend(fontsize=8)
+    plt.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+    # Print results
+    print(&quot;\nTraining Results:&quot;)
+    print(f&quot;Final weight (w): {current_w:.4f} (True: 2.0000)&quot;)
+    print(f&quot;Final bias (b): {current_b:.4f} (True: 1.0000)&quot;)
+    print(f&quot;Final loss: {compute_loss(current_w, current_b):.4f}&quot;)
+
+# Create interactive widgets
+interactive_plot = interactive(
+    plot_gradient_descent,
+    learning_rate=FloatSlider(
+        min=0.001, max=0.1, step=0.001,
+        value=0.01, description=&#x27;Learning Rate&#x27;
+    ),
+    num_iterations=IntSlider(
+        min=1, max=50, step=1,
+        value=10, description=&#x27;Iterations&#x27;
+    )
+)
+
+display(interactive_plot)</pre>
+        <div class="out">
+          <pre>
+interactive(children=(FloatSlider(value=0.01, description=&#x27;Learning Rate&#x27;, max=0.1, min=0.001, step=0.001), In…</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <pre>
+def plot_gradient_descent(learning_rate=0.01, num_iterations=10):
+    plt.figure(figsize=(15, 4))
+
+    # Plot 1: Data and Model Predictions (left)
+    plt.subplot(1, 3, 1)
+    plt.scatter(X, y, color=&#x27;blue&#x27;, alpha=0.5, label=&#x27;Training data&#x27;, s=50)
+
+    # Initialize parameters
+    current_w = 0  # Initial weight
+    current_b = 0  # Initial bias
+
+    weights = [current_w]
+    biases = [current_b]
+    losses = [compute_loss(current_w, current_b)]
+
+    # Training loop
+    for i in range(num_iterations):
+        dw, db = compute_gradients(current_w, current_b)
+        current_w = current_w - learning_rate * dw
+        current_b = current_b - learning_rate * db
+
+        weights.append(current_w)
+        biases.append(current_b)
+        losses.append(compute_loss(current_w, current_b))
+
+    # Plot final prediction line
+    y_pred = current_w * X + current_b
+    plt.plot(X, y_pred, color=&#x27;red&#x27;, linewidth=2,
+            label=f&#x27;Prediction\n(w={current_w:.2f}, b={current_b:.2f})&#x27;)
+    plt.xlabel(&#x27;Input (X)&#x27;, fontsize=10)
+    plt.ylabel(&#x27;Target (y)&#x27;, fontsize=10)
+    plt.title(&#x27;Model Fitting&#x27;, fontsize=12)
+    plt.legend(fontsize=8)
+    plt.grid(True, alpha=0.3)
+
+    # Plot 2: Loss Surface (middle)
+    plt.subplot(1, 3, 2)
+
+    # Create mesh grid for weight values
+    w_range = np.linspace(-1, 4, 100)
+    loss_surface = [compute_loss(w, current_b) for w in w_range]
+
+    # Plot loss surface (normal scale)
+    plt.plot(w_range, loss_surface, &#x27;b-&#x27;, label=&#x27;Loss Surface&#x27;, linewidth=2)
+
+    # Plot optimization path
+    plt.scatter(weights, [compute_loss(w, current_b) for w in weights],
+                color=&#x27;red&#x27;, s=100, alpha=0.5, label=&#x27;Gradient Steps&#x27;)
+
+    # Add arrows to show descent direction
+    for i in range(len(weights)-1):
+        plt.arrow(weights[i], compute_loss(weights[i], current_b),
+                 weights[i+1] - weights[i],
+                 compute_loss(weights[i+1], current_b) - compute_loss(weights[i], current_b),
+                 head_width=0.05, head_length=0.1, fc=&#x27;g&#x27;, ec=&#x27;g&#x27;, length_includes_head=True)
+
+    plt.xlabel(&#x27;Weight (w)&#x27;, fontsize=10)
+    plt.ylabel(&#x27;Loss&#x27;, fontsize=10)
+    plt.title(&#x27;Loss Surface (Quadratic)&#x27;, fontsize=12)
+    plt.legend(fontsize=8)
+    plt.grid(True, alpha=0.3)
+
+    # Plot 3: Training History with Log Scale (right)
+    plt.subplot(1, 3, 3)
+
+    # Create twin axes for different scales
+    ax1 = plt.gca()
+    ax2 = ax1.twinx()
+
+    # Plot loss on log scale (green)
+    ln1 = ax1.semilogy(range(num_iterations + 1), losses, &#x27;g-&#x27;,
+                      label=&#x27;Loss (log scale)&#x27;, linewidth=2)
+    ax1.set_ylabel(&#x27;Loss (log scale)&#x27;, color=&#x27;g&#x27;, fontsize=10)
+    ax1.tick_params(axis=&#x27;y&#x27;, labelcolor=&#x27;g&#x27;)
+    ax1.grid(True, alpha=0.3, which=&quot;both&quot;)
+
+    # Plot parameters on linear scale (blue and red)
+    ln2 = ax2.plot(range(num_iterations + 1), weights, &#x27;b-&#x27;,
+                  label=&#x27;Weight (w)&#x27;, linewidth=2)
+    ln3 = ax2.plot(range(num_iterations + 1), biases, &#x27;r-&#x27;,
+                  label=&#x27;Bias (b)&#x27;, linewidth=2)
+    ax2.set_ylabel(&#x27;Parameter Values&#x27;, fontsize=10)
+
+    # Combine legends from both axes
+    lns = ln1 + ln2 + ln3
+    labs = [l.get_label() for l in lns]
+    ax1.legend(lns, labs, fontsize=8, loc=&#x27;upper right&#x27;)
+
+    plt.xlabel(&#x27;Iteration&#x27;, fontsize=10)
+    plt.title(&#x27;Training Progress&#x27;, fontsize=12)
+
+    plt.tight_layout()
+    plt.show()
+
+    # Print results
+    print(&quot;\nTraining Results:&quot;)
+    print(f&quot;Final weight (w): {current_w:.4f} (True: 2.0000)&quot;)
+    print(f&quot;Final bias (b): {current_b:.4f} (True: 1.0000)&quot;)
+    print(f&quot;Final loss: {compute_loss(current_w, current_b):.2e}&quot;)  # Scientific notation
+
+</pre>
+      </div>
+      <div class="cell">
+        <pre>
+# Create interactive widgets
+interactive_plot = interactive(
+    plot_gradient_descent,
+    learning_rate=FloatSlider(
+        min=0.001, max=0.1, step=0.001,
+        value=0.01, description=&#x27;Learning Rate&#x27;
+    ),
+    num_iterations=IntSlider(
+        min=1, max=50, step=1,
+        value=10, description=&#x27;Iterations&#x27;
+    )
+)
+
+display(interactive_plot)</pre>
+        <div class="out">
+          <pre>
+interactive(children=(FloatSlider(value=0.01, description=&#x27;Learning Rate&#x27;, max=0.1, min=0.001, step=0.001), In…</pre>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

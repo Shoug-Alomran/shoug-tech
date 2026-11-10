@@ -50,14 +50,17 @@ after(() => env.cleanup());
 beforeEach(async () => {
   await env.clearFirestore();
   await env.withSecurityRulesDisabled((ctx) =>
-    ctx.firestore().doc(DOC).set({
-      path: PATH,
-      course: "se423",
-      up: 1,
-      down: 1,
-      votes: { sara: 1, noor: -1 },
-      updatedAt: new Date(0),
-    }),
+    ctx
+      .firestore()
+      .doc(DOC)
+      .set({
+        path: PATH,
+        course: "se423",
+        up: 1,
+        down: 1,
+        votes: { sara: 1, noor: -1 },
+        updatedAt: new Date(0),
+      }),
   );
 });
 
@@ -102,7 +105,11 @@ test("create rejects stuffed or mismatched tallies", async () => {
 test("create rejects a doc id, path or course that disagree", async () => {
   await env.clearFirestore();
   await assertFails(as("amal").doc("resourceRatings/whatever").set(fresh()));
-  await assertFails(as("amal").doc(DOC).set(fresh({ course: "cs101" })));
+  await assertFails(
+    as("amal")
+      .doc(DOC)
+      .set(fresh({ course: "cs101" })),
+  );
   const outside = "/about/se423/x/";
   await assertFails(
     as("amal")
@@ -128,7 +135,11 @@ test("a vote must move the tallies by exactly itself", async () => {
   await assertFails(db.update(change({ up: 3, "votes.amal": 2 })));
   await assertFails(db.update(change({ up: 50 })));
   // Already voted: re-sending the same vote can't count twice.
-  await assertFails(as("sara").doc(DOC).update(change({ up: 2 })));
+  await assertFails(
+    as("sara")
+      .doc(DOC)
+      .update(change({ up: 2 })),
+  );
 });
 
 test("a student cannot touch someone else's vote", async () => {

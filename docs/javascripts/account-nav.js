@@ -38,15 +38,19 @@
       var account = localStorage.getItem("shoug-account-plan");
       if (account && PLAN_GRID_KEYS[account])
         return "/academic-plan-themes/" + account + "/grid.html";
-      var picked = /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
-        localStorage.getItem("shoug-transcript-plan") || "",
-      );
+      var picked =
+        /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+          localStorage.getItem("shoug-transcript-plan") || "",
+        );
       if (picked) return "/academic-plan-themes/" + picked[1] + "/grid.html";
       var best = null,
         bestCount = 0;
       Object.keys(PLAN_GRID_KEYS).forEach(function (plan) {
-        var saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[plan]) || "null");
-        var count = saved && saved.statusMap ? Object.keys(saved.statusMap).length : 0;
+        var saved = JSON.parse(
+          localStorage.getItem(PLAN_GRID_KEYS[plan]) || "null",
+        );
+        var count =
+          saved && saved.statusMap ? Object.keys(saved.statusMap).length : 0;
         if (count > bestCount) {
           best = plan;
           bestCount = count;
@@ -58,7 +62,9 @@
   }
 
   function addPlanTab(nav, transcriptTab) {
-    var tab = nav.querySelector('.shoug-app-tab[href^="/academic-plan-themes/"]');
+    var tab = nav.querySelector(
+      '.shoug-app-tab[href^="/academic-plan-themes/"]',
+    );
     if (!tab) {
       tab = document.createElement("a");
       tab.className = "shoug-app-tab";

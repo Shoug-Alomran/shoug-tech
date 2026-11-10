@@ -192,6 +192,14 @@ def link(url, label, attrs='', active=False, classes='tree-item'):
     return '<li class="%s"><a class="tree-file" href="%s"%s>%s</a></li>' % (cls, url, extra, body)
 
 
+def on_entry(entry, url):
+    """Is this page under the entry? `match` adds folders that live elsewhere;
+    a #group of a merged page is never active on that page itself."""
+    if '#' in entry['url'] and url == entry['url'].split('#')[0]:
+        return False
+    return any(url.startswith(p) for p in [entry['url']] + entry.get('match', []))
+
+
 def render_children(data, parent, url):
     """Nested item lists along the active path (slides, chapters, labs, ...)."""
     entries = data['children'].get(parent)
@@ -200,7 +208,7 @@ def render_children(data, parent, url):
     out = ['<ul class="tree-children item-children is-open">']
     descend = None
     for e in entries:
-        active = url.startswith(e['url'])
+        active = on_entry(e, url)
         if active and (descend is None or len(e['url']) > len(descend['url'])):
             descend = e
     for e in entries:
@@ -220,7 +228,7 @@ def render_sections(data, course_url, url):
     # The active section is the longest section url that prefixes this page.
     active = None
     for e in entries:
-        if url.startswith(e['url']) and (active is None or len(e['url']) > len(active)):
+        if on_entry(e, url) and (active is None or len(e['url']) > len(active)):
             active = e['url']
     if url == course_url:
         active = course_url

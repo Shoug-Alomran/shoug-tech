@@ -73,6 +73,12 @@ OFFICE_EXT = {'docx': 'DOCX', 'xlsx': 'XLSX'}
 # Office files linked as the original file instead of rendered: Word documents
 # are shared as-is (the rendering drops layout), so their rows open the .docx.
 RAW_EXT = {'docx'}
+# Courses whose Word files open on a viewer page instead of downloading. The
+# original .docx is shown untouched by Microsoft's public Office viewer, which
+# fetches it from the live site, so the layout survives and nothing is converted.
+OFFICE_EMBED_COURSES = {'se322'}
+SITE_ORIGIN = 'https://shoug-tech.com'
+OFFICE_EMBED_URL = 'https://view.officeapps.live.com/op/embed.aspx?src='
 
 
 # --------------------------------------------------------------------------- #
@@ -82,6 +88,12 @@ RAW_EXT = {'docx'}
 def rel(path):
     """Path under docs/academics/, the key used in resource-titles.json."""
     return os.path.relpath(path, ACADEMICS).replace(os.sep, '/')
+
+
+def office_embedded(path):
+    """True for a Word file whose course shows it in the Office viewer."""
+    parts = rel(path).split('/')
+    return path.lower().endswith('.docx') and len(parts) > 1 and parts[1] in OFFICE_EMBED_COURSES
 
 
 def url_of(path):
@@ -128,6 +140,26 @@ def same_sidebar(old_bytes, new_bytes):
     return squash(a.group(0)) == squash(b.group(0))
 
 
+def row_items(page):
+    """Link targets of a generated listing's rows."""
+    return {m.group(1) for row in re.findall(r'<a\b[^>]*class="dir-row[^"]*"[^>]*>', page)
+            for m in [re.search(r'href="([^"]+)"', row)] if m}
+
+
+def preview_items(page):
+    """Link targets of a preview grid (scripts/build_slide_hub.py)."""
+    return {m.group(1) for row in re.findall(r'<a\b[^>]*class="deck-preview[^"]*"[^>]*>', page)
+            for m in [re.search(r'href="([^"]+)"', row)] if m}
+
+
+# sync_site_shell.py adds these to every page at publish time, so a generated
+# page without them is not out of date.
+SHELL_ASSET_RE = re.compile(
+    r'[ \t]*<(?:link rel="stylesheet" href="/styles/site-shell\.css"\s*/?|'
+    r'script defer src="/javascripts/site-palette\.js"\s*></script)>[ \t]*\n?'
+)
+
+
 def same_markup(old, new):
     """Same page once the sidebar and formatter-only differences are set aside.
 
@@ -136,7 +168,7 @@ def same_markup(old, new):
     def norm(text):
         text = re.sub(r'\s+', '', NAV_RE.sub('', text)).replace('/>', '>')
         return re.sub(r'(?<![\w.])0\.(\d)', r'.\1', text.replace(';}', '}'))  # minified CSS
-    return norm(old) == norm(new)
+    return norm(SHELL_ASSET_RE.sub('', old)) == norm(SHELL_ASSET_RE.sub('', new))
 
 
 def is_viewer_dir(path):
@@ -343,7 +375,8 @@ def listing_html(url, ctx, type_label, trail, body, meta_title):
     page = re.sub(r'<div class="type-label">.*?</div>',
                   lambda _m: '<div class="type-label">%s</div>' % type_label, page, count=1, flags=re.S)
     page = re.sub(r'<nav class="content-tabs">.*?</nav>', lambda _m: ctx['tabs'], page, count=1, flags=re.S)
-    return re.sub(r'<div class="directory-container">.*?</div>\s*</main>',
+    # The template page may itself have become a preview grid (build_slide_hub.py).
+    return re.sub(r'<div class="directory-container[^"]*"[^>]*>.*?</div>\s*</main>',
                   lambda _m: body + '\n      </main>', page, count=1, flags=re.S)
 
 
@@ -422,6 +455,29 @@ def document_html(url, ctx, item_label, title, trail, doc_name, back_url, body, 
     return page
 
 
+def office_embed_html(url, ctx, item_label, title, trail, doc_path, back_url, inline=False):
+    """A viewer page showing the original Word file through the Office viewer.
+
+    The file must be live on the site for the viewer to fetch it, so a brand new
+    document only displays once it has been deployed."""
+    name = quote(os.path.basename(doc_path))
+    src = ('./%s' if inline else '../%s') % name
+    page = viewer_html(url, ctx, item_label, title, trail, src, back_url)
+    frame = OFFICE_EMBED_URL + quote(SITE_ORIGIN + url_of(doc_path), safe='')
+    label = html.escape('%s %s' % (ctx['code'], title), quote=True)
+    page = re.sub(r'<div class="embed-area-wrapper">.*?</div>\s*</main>',
+                  lambda _m: ('<div class="embed-area-wrapper">\n'
+                              '          <div class="embed-container" data-doc-src="%s">\n'
+                              '            <iframe src="%s" width="100%%" height="100%%" title="%s" '
+                              'allowfullscreen></iframe>\n'
+                              '          </div>\n        </div>\n      </main>') % (src, frame, label),
+                  page, count=1, flags=re.S)
+    # The header button would otherwise promise a tab and start a download.
+    return re.sub(r'<a\s+class="btn btn-primary"[^>]*>.*?</a\s*>',
+                  lambda _m: '<a class="btn btn-primary" href="%s" download>[ DOWNLOAD WORD FILE ]</a>' % src,
+                  page, count=1, flags=re.S)
+
+
 def viewer_slug(pdf, taken):
     stem = os.path.splitext(os.path.basename(pdf))[0]
     parent = os.path.basename(os.path.dirname(pdf))
@@ -441,8 +497,9 @@ def viewer_slug(pdf, taken):
 # --------------------------------------------------------------------------- #
 
 class Build:
-    def __init__(self, check, allowed):
+    def __init__(self, check, allowed, only=None):
         self.check = check
+        self.only = only
         self.allowed = allowed
         self.changed = []          # paths written or removed
         self.stale = []            # --check: paths that would change
@@ -460,6 +517,8 @@ class Build:
             old = read(path)
             if same_markup(old, text):
                 return
+            if 'data-preview-grid' in old and preview_items(old) == row_items(text):
+                return   # build_slide_hub.py's grid of the same items; re-run it if they change
             nav = NAV_RE.search(old)
             if nav:                      # keep the stamped sidebar until the builder reruns
                 text = NAV_RE.sub(lambda _m: nav.group(0), text, count=1)
@@ -541,7 +600,7 @@ class Build:
                 doc = owned_doc(f)
                 t = title_for(doc, folder, self.titles, self.notes)
                 doc_ext = os.path.splitext(doc or '')[1].lstrip('.').lower()
-                if doc_ext in RAW_EXT:
+                if doc_ext in RAW_EXT and not office_embedded(doc):
                     # still a file row, but it links the document itself: no viewer page
                     page = os.path.join(f, 'index.html')
                     if os.path.isfile(page) and viewer_src(read(page)):
@@ -563,7 +622,10 @@ class Build:
                     src = quote(os.path.basename(lone_doc(f)))
                     head = '%s // %s' % (sec_title.upper(), labels[0].upper())
                     crumbs = trail[:-1] + [(trail[-1][0], url), (t, None)]
-                    if doc_ext in OFFICE_EXT:
+                    if office_embedded(doc):
+                        self.put(os.path.join(f, 'index.html'), office_embed_html(
+                            url_of(f), ctx, head, t, crumbs, lone_doc(f), url, inline=True))
+                    elif doc_ext in OFFICE_EXT:
                         self.put(os.path.join(f, 'index.html'), document_html(
                             url_of(f), ctx, head, t, crumbs, src, url,
                             office_to_html.convert(lone_doc(f)), inline=True))
@@ -589,6 +651,16 @@ class Build:
                     v_url, ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
                     trail[:-1] + [(trail[-1][0], url), (t, None)],
                     '../%s' % quote(os.path.basename(f)), url))
+            elif office_embedded(f):
+                slug = viewer_slug(f, taken)
+                taken.add(slug)
+                viewers.add(slug)
+                v_url = url + slug + '/'
+                rows.append((t, './%s/' % slug, OFFICE_EXT[ext], ext, False, False))
+                sidebar_rows.append((v_url, t))
+                self.put(os.path.join(folder, slug, 'index.html'), office_embed_html(
+                    v_url, ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
+                    trail[:-1] + [(trail[-1][0], url), (t, None)], f, url))
             elif ext in OFFICE_EXT and ext not in RAW_EXT:
                 # Render Excel inline; a bare link would just download them.
                 try:
@@ -634,13 +706,14 @@ class Build:
         page = ctx['study']
         text = read(page)
         name = os.path.basename(sec)
-        if re.search(r'href="(?:\./|%s)%s/"' % (re.escape(url_of(os.path.dirname(sec))), re.escape(name)), text):
-            return
+        if re.search(r'href="(?:\./|%s)%s/"' % (re.escape(url_of(os.path.dirname(sec))), re.escape(name)), NAV_RE.sub('', text)):
+            return   # the sidebar links every section, so only the page body counts
         rows = list(ROW_RE.finditer(text))
         if not rows:
             self.notes.append('could not add a %s row to %s (no directory rows found)' % (sec_title, rel(page)))
             return
-        end = text.index('</a>', rows[-1].end()) + len('</a>')
+        # formatted pages break the closing tag over two lines (`</a\n>`)
+        end = re.compile(r'</a\s*>').search(text, rows[-1].end()).end()
         row = ('<a class="dir-row directory-folder" href="%s">'
                '<div class="dir-num">%02d</div><div class="dir-title">%s<span class="dir-title-text">%s</span></div>'
                '<div class="dir-status"><span class="status-tag available">AVAILABLE</span></div>'
@@ -671,7 +744,8 @@ class Build:
 
     # -- run ---------------------------------------------------------------- #
     def run(self):
-        sections = find_sections()
+        sections = [s for s in find_sections()
+                    if not self.only or rel(s).split('/')[1] == self.only]
         added = harvest(sections, self.titles)
         if added:
             self.notes.append('harvested %d existing title(s) into scripts/resource-titles.json' % added)
@@ -729,9 +803,10 @@ def main():
     ap.add_argument('--from-index', action='store_true',
                     help='only embed files present in the git index (what the commit will contain)')
     ap.add_argument('--changed-list', metavar='FILE', help='write every touched path to FILE')
+    ap.add_argument('--only', metavar='COURSE', help='limit the run to one course, e.g. se322')
     args = ap.parse_args()
 
-    build = Build(args.check, indexed_files() if args.from_index else None)
+    build = Build(args.check, indexed_files() if args.from_index else None, args.only)
     build.run()
 
     for note in build.notes:

@@ -72,7 +72,24 @@
   // A chapter counts as new when at least this share of its time is still to do.
   var NEW_SHARE = 0.7,
     RETEST = ":retest",
+    MEMORIZE = ":memorize",
+    PRACTICE = ":practice",
     QUICK = "quick",
+    PRACTICE_LABEL = {
+      solve: "Solve",
+      code: "Code",
+      diagram: "Diagrams",
+      case: "Scenarios",
+    },
+    METHOD_MEMORIZE =
+      "Memorize: cover the answers and recite them from memory, then check. Repeat only what you got wrong.",
+    METHOD_PRACTICE = {
+      solve:
+        "Practice: work the problems yourself with the slides closed, then check each step.",
+      code: "Practice: write the code yourself without looking, run it, then fix it.",
+      diagram: "Practice: draw it from memory, then compare and correct it.",
+      case: "Practice: for each scenario, decide your answer and why before checking.",
+    },
     METHOD_NEW =
       "New material: explain each idea in your own words as you go, then spend the last 15 minutes writing what you remember with the slides closed.",
     METHOD_KNOWN =
@@ -294,7 +311,8 @@
   }
   function level(course, a, unit) {
     var r = (plan().ready || {})[readyKey(course, a)] || {};
-    if (Object.prototype.hasOwnProperty.call(r, unit)) return Number(r[unit]) || 0;
+    if (Object.prototype.hasOwnProperty.call(r, unit))
+      return Number(r[unit]) || 0;
     return previouslyStudied(course, a, unit) ? 3 : 0;
   }
   function previouslyStudied(course, a, unit) {
@@ -307,28 +325,47 @@
     }
     if (!chapterId) return false;
     return C.exams.some(function (earlier) {
-      if (!earlier.date || earlier.date >= current.date || C.courseLabel(earlier.course) !== course) return false;
+      if (
+        !earlier.date ||
+        earlier.date >= current.date ||
+        C.courseLabel(earlier.course) !== course
+      )
+        return false;
       var earlierType = C.canonicalExamType(earlier.type);
-      if (["quiz", "bonus-quiz", "midterm", "final"].indexOf(earlierType) < 0) return false;
-      var picked = earlier.chapters && earlier.chapters.length ? earlier.chapters : null;
+      if (["quiz", "bonus-quiz", "midterm", "final"].indexOf(earlierType) < 0)
+        return false;
+      var picked =
+        earlier.chapters && earlier.chapters.length ? earlier.chapters : null;
       var earlierScope = picked
-        ? a.chapters.map(function (ch) { return ch.id; }).filter(function (id) { return picked.indexOf(id) > -1; })
+        ? a.chapters
+            .map(function (ch) {
+              return ch.id;
+            })
+            .filter(function (id) {
+              return picked.indexOf(id) > -1;
+            })
         : knownScope(a, earlier);
       return earlierScope.indexOf(chapterId) > -1;
     });
   }
   function migrateLegacyReadiness(sid) {
-    if ((plan().readinessMigration || {})[sid] === "previously-studied-v1") return false;
-    var exams = seasonExams(sid), changed = false;
+    if ((plan().readinessMigration || {})[sid] === "previously-studied-v1")
+      return false;
+    var exams = seasonExams(sid),
+      changed = false;
     updatePlan(function (p) {
       p.ready = p.ready || {};
       exams.forEach(function (exam) {
-        var course = C.courseLabel(exam.course), a = analysis(course, sid);
+        var course = C.courseLabel(exam.course),
+          a = analysis(course, sid);
         if (!a) return;
         var record = p.ready[readyKey(course, a)];
         if (!record) return;
         Object.keys(record).forEach(function (unit) {
-          if (Number(record[unit]) === 1 && previouslyStudied(course, a, unit)) {
+          if (
+            Number(record[unit]) === 1 &&
+            previouslyStudied(course, a, unit)
+          ) {
             record[unit] = 3;
             changed = true;
           }
@@ -345,29 +382,39 @@
     return true;
   }
   function readinessProgress(sid) {
-    var total = 0, marked = 0;
+    var total = 0,
+      marked = 0;
     seasonExams(sid).forEach(function (exam) {
-      var course = C.courseLabel(exam.course), a = analysis(course, sid);
+      var course = C.courseLabel(exam.course),
+        a = analysis(course, sid);
       if (!a) return;
       var ids = scopeIds(a, exam);
       a.chapters.forEach(function (ch) {
         if (ids.indexOf(ch.id) < 0) return;
-        if (a.curated) chapterItems(a, ch.id).filter(isMainPointReadinessItem).forEach(function (item) {
-          total++;
-          marked++;
-        });
+        if (a.curated)
+          chapterItems(a, ch.id)
+            .filter(isMainPointReadinessItem)
+            .forEach(function (item) {
+              total++;
+              marked++;
+            });
         else {
           total++;
           marked++;
         }
       });
     });
-    return { total: total, marked: marked, done: total > 0 && total === marked };
+    return {
+      total: total,
+      marked: marked,
+      done: total > 0 && total === marked,
+    };
   }
   function recommendedMinutes(sid) {
     var first = firstStudyDay();
     return seasonExams(sid).reduce(function (sum, exam) {
-      var course = C.courseLabel(exam.course), a = analysis(course, sid);
+      var course = C.courseLabel(exam.course),
+        a = analysis(course, sid);
       if (!a || exam.date <= first) return sum;
       return sum + workMinutes(course, a, exam, sid);
     }, 0);
@@ -615,9 +662,11 @@
       var readiness = chapterReadiness(course, a, ch);
       if (readiness !== null) {
         var weight = a.curated
-          ? chapterItems(a, ch.id).filter(isMainPointReadinessItem).reduce(function (sum, item) {
-              return sum + Math.max(1, Number(item.minutes) || 0);
-            }, 0)
+          ? chapterItems(a, ch.id)
+              .filter(isMainPointReadinessItem)
+              .reduce(function (sum, item) {
+                return sum + Math.max(1, Number(item.minutes) || 0);
+              }, 0)
           : ch.minutes;
         if (weight) {
           readinessTotal += readiness * weight;
@@ -645,6 +694,110 @@
   function chapterName(ch) {
     return String(ch.title).replace(" · ", " ");
   }
+  function chapterBase(id) {
+    return String(id).replace(/:(retest|memorize|practice)$/, "");
+  }
+  function round5(m) {
+    return Math.round(m / 5) * 5;
+  }
+  // Courses with no topic detail, by what their exams mostly ask for.
+  function courseProfile(course) {
+    if (/^(MATH|PHY|STAT|SCI) |^CS (223|285)$/.test(course))
+      return { practice: 0.4, memorize: 0.1, kind: "solve" };
+    if (/^CS (101|102|210|340)$|^SE 371$/.test(course))
+      return { practice: 0.4, memorize: 0.05, kind: "code" };
+    return { practice: 0, memorize: 0.3, kind: "solve" };
+  }
+  // What a chapter's study time is for: understanding it, learning it by
+  // heart, or practising it. Each share counts only what's still to do.
+  function contentShares(course, a, ch, types) {
+    var its = a.curated ? chapterItems(a, ch.id) : [];
+    if (a.curated) {
+      var sum = { understand: 0, memorize: 0, solve: 0 },
+        all = 0;
+      its.forEach(function (i) {
+        var m = i.minutes * FACTOR[level(course, a, i.id)],
+          key =
+            i.kind === "calc"
+              ? "solve"
+              : ["list", "number", "formula"].indexOf(i.kind) > -1
+                ? "memorize"
+                : "understand";
+        sum[key] += m;
+        all += m;
+      });
+      return all
+        ? {
+            understand: sum.understand / all,
+            memorize: sum.memorize / all,
+            solve: sum.solve / all,
+          }
+        : { understand: 1, memorize: 0, solve: 0 };
+    }
+    if (ch.upcoming) return { understand: 1, memorize: 0, solve: 0 };
+    var p = courseProfile(course),
+      asked = types.some(function (t) {
+        return PRACTICE_LABEL[t];
+      }),
+      practice = p.practice || (asked ? 0.25 : 0);
+    return {
+      understand: 1 - practice - p.memorize,
+      memorize: p.memorize,
+      solve: practice,
+    };
+  }
+  // Which kind of practice: what the exam asks for that this chapter's
+  // problems look like, or else what suits the course.
+  function practiceKind(course, a, ch, types) {
+    var asked = types.filter(function (t) {
+        return PRACTICE_LABEL[t];
+      }),
+      names = chapterItems(a, ch.id)
+        .filter(function (i) {
+          return i.kind === "calc";
+        })
+        .map(function (i) {
+          return i.name;
+        }),
+      options = asked.length ? asked : Object.keys(PRACTICE_LABEL),
+      best = "",
+      top = 0;
+    options.forEach(function (t) {
+      var re = formatInfo(t).re,
+        n = names.filter(function (x) {
+          return re.test(x);
+        }).length;
+      if (n > top) {
+        top = n;
+        best = t;
+      }
+    });
+    if (best) return best;
+    if (asked.length)
+      return asked.indexOf("solve") > -1 && a.curated ? "solve" : asked[0];
+    return a.curated ? "solve" : courseProfile(course).kind;
+  }
+  // Time left after a chapter's retest, divided by what the chapter needs. A
+  // new chapter still gets real time for first understanding it, however
+  // problem-heavy it is. Pieces too small to be a session stay in learning.
+  function splitChapter(course, a, ch, minutes, isNew, types) {
+    var share = contentShares(course, a, ch, types),
+      learnShare = Math.max(share.understand, isNew ? 0.4 : 0.15),
+      rest = 1 - learnShare,
+      active = share.memorize + share.solve,
+      memorize = active
+        ? round5((minutes * rest * share.memorize) / active)
+        : 0,
+      practice = active ? round5((minutes * rest * share.solve) / active) : 0;
+    if (memorize < 15) memorize = 0;
+    if (practice < 15) practice = 0;
+    return {
+      learn: minutes - memorize - practice,
+      memorize: memorize,
+      practice: practice,
+      kind: practice ? practiceKind(course, a, ch, types) : "",
+    };
+  }
   function sessionsFor(course, a, exam, sid) {
     var noun = seasonInfo(sid).noun,
       ids = scopeIds(a, exam),
@@ -657,17 +810,21 @@
         : "",
       heldForReview = null;
     var orderedChapters = a.chapters
-        .filter(function (c) {
-          return ids.indexOf(c.id) > -1;
-        })
-        .sort(function (x, y) {
-          var xp = x.minutes ? chapterLeft(course, a, x) / x.minutes : 0,
-            yp = y.minutes ? chapterLeft(course, a, y) / y.minutes : 0;
-          return yp - xp || a.chapters.indexOf(x) - a.chapters.indexOf(y);
-        });
-    var reviewChapters = orderedChapters.filter(function (c) {
-      return chapterLeft(course, a, c) >= 15;
-    }).map(function (c) { return c.id; });
+      .filter(function (c) {
+        return ids.indexOf(c.id) > -1;
+      })
+      .sort(function (x, y) {
+        var xp = x.minutes ? chapterLeft(course, a, x) / x.minutes : 0,
+          yp = y.minutes ? chapterLeft(course, a, y) / y.minutes : 0;
+        return yp - xp || a.chapters.indexOf(x) - a.chapters.indexOf(y);
+      });
+    var reviewChapters = orderedChapters
+      .filter(function (c) {
+        return chapterLeft(course, a, c) >= 15;
+      })
+      .map(function (c) {
+        return c.id;
+      });
     // New chapters go first, in course order, so if the calendar runs out of
     // room it's revision of known material that gets squeezed. Part of a new
     // chapter's time moves from reading to a later retest, because recalling
@@ -686,8 +843,14 @@
       }
       var isNew = ch.minutes && left / ch.minutes >= NEW_SHARE && left >= 60,
         retest = isNew ? Math.min(45, round15(left * 0.15)) : 0,
-        remaining = Math.ceil(left) - retest,
-        n = Math.ceil(remaining / MAX_SESSION),
+        split = splitChapter(
+          course,
+          a,
+          ch,
+          Math.ceil(left) - retest,
+          isNew,
+          fTypes,
+        ),
         method = isNew ? METHOD_NEW : METHOD_KNOWN,
         name = course + " " + noun + " · " + chapterName(ch),
         focus = chapterItems(a, ch.id)
@@ -702,18 +865,71 @@
           .map(function (i) {
             return i.name;
           });
-      for (var k = 0; k < n; k++) {
-        var part = Math.ceil(remaining / (n - k));
-        remaining -= part;
-        learn.push({
-          kind: "learn",
-          chapter: ch.id,
-          last: k === n - 1,
-          minutes: part,
-          title: name + (k ? " (continued)" : ""),
-          notes: fmtLine + method + (focus.length ? " Focus: " + focus.join("; ") : ""),
-        });
+      function topics(kinds) {
+        var names = chapterItems(a, ch.id)
+          .filter(function (i) {
+            return kinds.indexOf(i.kind) > -1 && level(course, a, i.id) !== 2;
+          })
+          .sort(function (x, y) {
+            return y.score - x.score;
+          })
+          .slice(0, 5)
+          .map(function (i) {
+            return i.name;
+          });
+        return names.length ? " Focus: " + names.join("; ") : "";
       }
+      var prefix = course + " " + noun + " · ",
+        stages = [
+          {
+            kind: "learn",
+            key: ch.id,
+            minutes: split.learn,
+            title: name,
+            notes:
+              fmtLine +
+              method +
+              (focus.length ? " Focus: " + focus.join("; ") : ""),
+          },
+        ];
+      if (split.memorize)
+        stages.push({
+          kind: "memorize",
+          key: ch.id + MEMORIZE,
+          minutes: split.memorize,
+          title: prefix + "Memorize " + chapterName(ch),
+          notes:
+            fmtLine + METHOD_MEMORIZE + topics(["list", "number", "formula"]),
+        });
+      if (split.practice)
+        stages.push({
+          kind: "practice",
+          key: ch.id + PRACTICE,
+          minutes: split.practice,
+          title:
+            prefix +
+            "Practice (" +
+            PRACTICE_LABEL[split.kind] +
+            ") " +
+            chapterName(ch),
+          notes: fmtLine + METHOD_PRACTICE[split.kind] + topics(["calc"]),
+        });
+      stages.forEach(function (st, stage) {
+        var pieces = Math.ceil(st.minutes / MAX_SESSION),
+          remaining = st.minutes;
+        for (var k = 0; k < pieces; k++) {
+          var part = Math.ceil(remaining / (pieces - k));
+          remaining -= part;
+          learn.push({
+            kind: st.kind,
+            chapter: st.key,
+            last: stage === stages.length - 1 && k === pieces - 1,
+            minutes: part,
+            title: st.title + (k ? " (continued)" : ""),
+            notes: st.notes,
+          });
+        }
+      });
       retestMinutes += retest;
       // Chapters are reviewed two at a time, after the second is learned.
       var paired = heldForReview;
@@ -759,7 +975,7 @@
         };
         retestMinutes = 0;
       }
-      });
+    });
     if (quick.length) {
       var quickLeft = Math.ceil(quickMinutes),
         pieces = Math.ceil(quickLeft / MAX_SESSION),
@@ -821,11 +1037,15 @@
   // sensible limits. It's never later than the day before the last day.
   function reviewDay(day, exam, share, shortest, longest) {
     var last = C.addDays(exam.date, -1),
-      gap = Math.min(longest, Math.max(shortest, Math.round(daysBetween(day, exam.date) * share))),
+      gap = Math.min(
+        longest,
+        Math.max(shortest, Math.round(daysBetween(day, exam.date) * share)),
+      ),
       target = C.addDays(day, gap),
       latest = C.addDays(last, -1);
     if (target > latest) target = latest;
-    if (target <= day) target = C.addDays(day, 1) > last ? day : C.addDays(day, 1);
+    if (target <= day)
+      target = C.addDays(day, 1) > last ? day : C.addDays(day, 1);
     return target;
   }
   function firstReviewDay(day, exam) {
@@ -1133,9 +1353,13 @@
         if (room < MIN_SESSION) break;
         // Don't start a sliver of a session; leave it for a day with room.
         var nextLen = (best.q[0] || {}).minutes || 0;
-        if (nextLen && room < Math.min(60, nextLen) && !Object.keys(best.rev).some(function (k) {
-          return best.rev[k].notBefore && best.rev[k].notBefore <= day;
-        })) {
+        if (
+          nextLen &&
+          room < Math.min(60, nextLen) &&
+          !Object.keys(best.rev).some(function (k) {
+            return best.rev[k].notBefore && best.rev[k].notBefore <= day;
+          })
+        ) {
           resting.push(best);
           continue;
         }
@@ -1188,8 +1412,11 @@
           if (retest) retest.notBefore = retestDay(day, best.exam);
         } else {
           best.q.shift();
-          if (sess.last && best.rev[sess.chapter])
-            best.rev[sess.chapter].notBefore = firstReviewDay(day, best.exam);
+          if (sess.last && best.rev[chapterBase(sess.chapter)])
+            best.rev[chapterBase(sess.chapter)].notBefore = firstReviewDay(
+              day,
+              best.exam,
+            );
         }
       }
     });
@@ -1244,9 +1471,19 @@
   // Study already on the calendar that this build won't replace. It uses up
   // your limits like anything newly planned.
   function fixedStudyMinutes(i, sid) {
-    if ((i.kind !== "study" && i.planSource !== "study-plan") || !i.date || !i.start || !i.end)
+    if (
+      (i.kind !== "study" && i.planSource !== "study-plan") ||
+      !i.date ||
+      !i.start ||
+      !i.end
+    )
       return 0;
-    if (i.planSource === "study-plan" && i.planSeason === sid && !i.planPinned && !i.planDone)
+    if (
+      i.planSource === "study-plan" &&
+      i.planSeason === sid &&
+      !i.planPinned &&
+      !i.planDone
+    )
       return 0;
     return Math.max(0, C.minutes(i.end) - C.minutes(i.start));
   }
@@ -1307,12 +1544,23 @@
       dailyCap = Math.min(Math.round(limits.daily * 60), MAX_CAP),
       weeklyCap = limits.weekly ? Math.round(limits.weekly * 60) : 0,
       PACES = [1.25, 2, 3, 4, 0],
-      cap = Math.min(dailyCap, Math.max(START_CAP, Math.ceil(averageDaily / 30) * 30)),
+      cap = Math.min(
+        dailyCap,
+        Math.max(START_CAP, Math.ceil(averageDaily / 30) * 30),
+      ),
       res = null,
       usedCap = cap;
     for (;;) {
       for (var sp = 0; sp < PACES.length; sp++) {
-        var tried = attempt(jobs, days, ctx, cap, PACES[sp], weeklyCap, !PACES[sp]);
+        var tried = attempt(
+          jobs,
+          days,
+          ctx,
+          cap,
+          PACES[sp],
+          weeklyCap,
+          !PACES[sp],
+        );
         if (!res || tried.short < res.short) {
           res = tried;
           usedCap = cap;
@@ -1330,7 +1578,12 @@
     return {
       jobs: jobs.map(function (j, n) {
         var need = sessionMinutes(j.s);
-        return { course: j.course, exam: j.exam, need: need, left: res.lefts[n] };
+        return {
+          course: j.course,
+          exam: j.exam,
+          need: need,
+          left: res.lefts[n],
+        };
       }),
       placed: res.placed,
       cap: cap,
@@ -1391,7 +1644,9 @@
       if (i.planKind === "final") {
         if (s.final) {
           var done =
-            i.start && i.end ? C.minutes(i.end) - C.minutes(i.start) : s.final.minutes;
+            i.start && i.end
+              ? C.minutes(i.end) - C.minutes(i.start)
+              : s.final.minutes;
           s.final.minutes -= done;
           if (s.final.minutes <= 0) s.final = null;
         }
@@ -1408,8 +1663,14 @@
       if (!ch) return;
       var m =
         i.start && i.end ? C.minutes(i.end) - C.minutes(i.start) : MIN_SESSION;
+      // A learning session's time carries over to its chapter's later stages.
+      var exact = ch !== chapterBase(ch);
       s.learn.forEach(function (x) {
-        if (x.chapter !== ch || m <= 0) return;
+        if (
+          (exact ? x.chapter !== ch : chapterBase(x.chapter) !== ch) ||
+          m <= 0
+        )
+          return;
         var used = Math.min(m, x.minutes);
         x.minutes -= used;
         m -= used;
@@ -1417,7 +1678,8 @@
       s.learn = s.learn.filter(function (x) {
         return x.minutes > 0;
       });
-      if (!learnt[ch] || i.date > learnt[ch]) learnt[ch] = i.date;
+      var whole = chapterBase(ch);
+      if (!learnt[whole] || i.date > learnt[whole]) learnt[whole] = i.date;
     });
     // A chapter you've finished learning gets its review a few days on.
     Object.keys(learnt).forEach(function (ch) {
@@ -1425,7 +1687,7 @@
       if (
         !r ||
         s.learn.some(function (x) {
-          return x.chapter === ch;
+          return chapterBase(x.chapter) === ch;
         })
       )
         return;
@@ -1537,7 +1799,12 @@
   // session: the rest of that season's plan is rebuilt around the change,
   // and a deleted session's work goes back into the schedule.
   function replan(sid, what, quiet) {
-    if (!sid || !SEASONS.some(function (x) { return x.id === sid; }))
+    if (
+      !sid ||
+      !SEASONS.some(function (x) {
+        return x.id === sid;
+      })
+    )
       return Promise.resolve(false);
     return whenLoaded(sid).then(function (ok) {
       if (!ok) return false;
@@ -1707,7 +1974,10 @@
         return x.id === view;
       }),
       st = setupState(sid),
-      todo = (st.wk ? 0 : 1) + (st.fm || !st.rows.length ? 0 : 1) + (st.built ? 0 : 1);
+      todo =
+        (st.wk ? 0 : 1) +
+        (st.fm || !st.rows.length ? 0 : 1) +
+        (st.built ? 0 : 1);
     return (
       '<div class="sp-head"><div class="sp-head-text"><div class="sp-eyebrow">Study plan</div><h2>' +
       esc(v.title) +
@@ -2113,7 +2383,8 @@
       );
   }
   function refreshAfterUni(what) {
-    if (seasonsWithPlan().length) return rebuildPlans(what || "Uni times changed");
+    if (seasonsWithPlan().length)
+      return rebuildPlans(what || "Uni times changed");
     if (ui.preview) ui.preview = buildSchedule(season());
     render();
     return Promise.resolve();
@@ -2189,8 +2460,7 @@
                 return WEEK[d];
               })
               .join(", "),
-      time =
-        x.start && x.end ? C.timeRange(x.start, x.end) : "All day";
+      time = x.start && x.end ? C.timeRange(x.start, x.end) : "All day";
     return when + " · " + time + (x.label ? " · " + x.label : "");
   }
   function blockedHtml() {
@@ -2299,12 +2569,26 @@
       hasTimes = Boolean(u.leave || u.back),
       saving = Promise.resolve();
     if (on) {
-      saving = saveUni(day, hasTimes ? { leave: u.leave, back: u.back, active: true } : { active: true }, false, "Uni days changed");
+      saving = saveUni(
+        day,
+        hasTimes
+          ? { leave: u.leave, back: u.back, active: true }
+          : { active: true },
+        false,
+        "Uni days changed",
+      );
     } else {
-      saving = saveUni(day, { leave: "", back: "", active: "" }, false, "Uni days changed");
+      saving = saveUni(
+        day,
+        { leave: "", back: "", active: "" },
+        false,
+        "Uni days changed",
+      );
     }
     saving.then(function () {
-      var box = $("study-plan-root").querySelector('[data-sp-uni-day="' + day + '"]');
+      var box = $("study-plan-root").querySelector(
+        '[data-sp-uni-day="' + day + '"]',
+      );
       if (box) box.focus();
     });
   }
@@ -2328,8 +2612,7 @@
       noun = seasonInfo(sid).noun.toLowerCase(),
       planned = plannedItems(sid),
       pv = ui.preview,
-      out =
-        '<div class="sp-planner">';
+      out = '<div class="sp-planner">';
     if (!ex.length)
       return (
         out +
@@ -2348,13 +2631,29 @@
         (planned.length === 1 ? "" : "s") +
         ' on your calendar</h4><p class="sp-muted">Next: <b>' +
         esc(next.title) +
-        "</b></p><p class=\"sp-muted\">" +
+        '</b></p><p class="sp-muted">' +
         esc(shortDate(next.date)) +
         (next.start ? " · " + esc(C.timeLabel(next.start)) : "") +
-        '</p><div class="sp-actions"><button class="btn solid" type="button" data-sp-build' + (ratings.done ? '' : ' disabled') + '>Re-plan</button><button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button><button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button></div>' + (ratings.done ? '' : '<p class="sp-note">Rate every in-scope topic before rebuilding (' + ratings.marked + ' of ' + ratings.total + ' rated).</p>') + '<div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.</div></div>';
+        '</p><div class="sp-actions"><button class="btn solid" type="button" data-sp-build' +
+        (ratings.done ? "" : " disabled") +
+        '>Re-plan</button><button class="btn muted" type="button" data-sp-clear>Remove upcoming sessions</button><button class="btn muted" type="button" data-sp-start-over>Start over</button><button class="btn muted sp-danger" type="button" data-sp-delete-all>Delete entire study plan</button></div>' +
+        (ratings.done
+          ? ""
+          : '<p class="sp-note">Rate every in-scope topic before rebuilding (' +
+            ratings.marked +
+            " of " +
+            ratings.total +
+            " rated).</p>") +
+        '<div class="sp-hint">Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.</div></div>';
     } else if (!pv)
       out +=
-        '<div class="sp-build-start"><h4>Ready to build your schedule</h4><p class="sp-muted">Study sessions go into your free time before each exam, around your classes, events and the drive.</p><p class="sp-note">Rate every in-scope chapter or topic as New, Shaky, or Solid first (' + ratings.marked + ' of ' + ratings.total + ' rated). The estimate updates as you rate topics.</p><p class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope at your current readiness levels. This is a planning estimate, not a guaranteed 40/40.</p><ul class="sp-build-list">' +
+        '<div class="sp-build-start"><h4>Ready to build your schedule</h4><p class="sp-muted">Study sessions go into your free time before each exam, around your classes, events and the drive.</p><p class="sp-note">Rate every in-scope chapter or topic as New, Shaky, or Solid first (' +
+        ratings.marked +
+        " of " +
+        ratings.total +
+        ' rated). The estimate updates as you rate topics.</p><p class="sp-note"><b>Estimated minimum: ' +
+        hours(recommendedMinutes(sid)) +
+        '</b> to cover the analyzed exam scope at your current readiness levels. This is a planning estimate, not a guaranteed 40/40.</p><ul class="sp-build-list">' +
         ex
           .map(function (e) {
             return (
@@ -2408,9 +2707,15 @@
           ? (planMinutes(pv) >= pv.short
               ? "Most of this plan fits. About "
               : "Less than half of this plan fits. About ") +
-            hours(pv.jobs.reduce(function (total, job) { return total + (Number(job.left) || 0); }, 0)) +
+            hours(
+              pv.jobs.reduce(function (total, job) {
+                return total + (Number(job.left) || 0);
+              }, 0),
+            ) +
             " of study is still unscheduled before the exams at your " +
-            limits.daily + " h/day" + (limits.weekly ? " and " + limits.weekly + " h/week" : "") +
+            limits.daily +
+            " h/day" +
+            (limits.weekly ? " and " + limits.weekly + " h/week" : "") +
             " limits. Increase either limit to see whether the remaining work fits, or mark chapters you already know as Solid."
           : "Busiest day needs " +
             hours(
@@ -2433,6 +2738,7 @@
         (byDay[p.date] || (byDay[p.date] = [])).push(p);
       });
       out +=
+        sessionLegendHtml() +
         '<div class="sp-days">' +
         Object.keys(byDay)
           .map(function (d) {
@@ -2656,12 +2962,15 @@
       name = input.value.trim().replace(/\s+/g, " "),
       key = form.dataset.spFormatForm;
     if (!name) return;
-    var known = [].some.call(form.querySelectorAll('input[name="type"]'), function (box) {
-      var label = (formatInfo(box.value) || {}).label || box.value;
-      if (label.toLowerCase() !== name.toLowerCase()) return false;
-      box.checked = true;
-      return true;
-    });
+    var known = [].some.call(
+      form.querySelectorAll('input[name="type"]'),
+      function (box) {
+        var label = (formatInfo(box.value) || {}).label || box.value;
+        if (label.toLowerCase() !== name.toLowerCase()) return false;
+        box.checked = true;
+        return true;
+      },
+    );
     if (!known) {
       ui.fmtCustom[key] = (ui.fmtCustom[key] || []).concat(name);
       form
@@ -2699,11 +3008,20 @@
       }).join("") +
       customTypes(key, types)
         .map(function (name) {
-          return customChipHtml(name, types.indexOf(name) > -1 || (ui.fmtCustom[key] || []).indexOf(name) > -1);
+          return customChipHtml(
+            name,
+            types.indexOf(name) > -1 ||
+              (ui.fmtCustom[key] || []).indexOf(name) > -1,
+          );
         })
         .join("") +
       '</div><div class="sp-fmt-addtype"><input type="text" maxlength="40" data-sp-type-input placeholder="Another question type, e.g. Case analysis" aria-label="Another question type" /><button class="sp-chip-btn" type="button" data-sp-type-add>Add type</button></div></fieldset><details class="sp-fmt-more"' +
-      (f && (f.questions || f.minutes || f.book || f.topics || (f.chapters && f.chapters.length))
+      (f &&
+      (f.questions ||
+        f.minutes ||
+        f.book ||
+        f.topics ||
+        (f.chapters && f.chapters.length))
         ? " open"
         : "") +
       '><summary>More details (optional)</summary><div class="sp-fmt-row"><label class="sp-fmt-field"><span>Questions</span><input type="number" name="questions" min="1" max="200" placeholder="Not said" value="' +
@@ -3111,7 +3429,9 @@
             left = chapterLeft(course, a, ch),
             ready = chapterReadiness(course, a, ch) || 0,
             its = chapterItems(a, ch.id),
-            ratingItems = conceptsOnly ? its.filter(isMainPointReadinessItem) : its,
+            ratingItems = conceptsOnly
+              ? its.filter(isMainPointReadinessItem)
+              : its,
             open = ui.open[ch.id],
             parts = String(ch.title).split(" · "),
             num = parts.length > 1 ? parts[0] : "",
@@ -3127,7 +3447,9 @@
             '<span class="sp-ch-title">' +
             esc(name) +
             '</span><span class="sp-ch-meta">' +
-            (ch.upcoming ? "Syllabus topic · slides not provided yet" : ch.slides + " slides") +
+            (ch.upcoming
+              ? "Syllabus topic · slides not provided yet"
+              : ch.slides + " slides") +
             (its.length ? " · " + its.length + " topics" : "") +
             " · " +
             hours(left) +
@@ -3138,16 +3460,20 @@
             (ch.upcoming
               ? '<span class="sp-upcoming-badge">UPCOMING · SYLLABUS</span>'
               : a.curated
-              ? '<button type="button" class="sp-chev" data-sp-open="' +
-                esc(ch.id) +
-                '" aria-expanded="' +
-                Boolean(open) +
-                '" aria-label="' +
-                (open ? "Hide" : "Show") +
-                " topics in " +
-                esc(ch.title) +
-                '"></button>'
-              : levelButtons("ch:" + ch.id, level(course, a, "ch:" + ch.id), course)) +
+                ? '<button type="button" class="sp-chev" data-sp-open="' +
+                  esc(ch.id) +
+                  '" aria-expanded="' +
+                  Boolean(open) +
+                  '" aria-label="' +
+                  (open ? "Hide" : "Show") +
+                  " topics in " +
+                  esc(ch.title) +
+                  '"></button>'
+                : levelButtons(
+                    "ch:" + ch.id,
+                    level(course, a, "ch:" + ch.id),
+                    course,
+                  )) +
             "</div>";
           if (!a.curated || ch.upcoming) return head;
           if (!open) return head;
@@ -3503,7 +3829,8 @@
           state = "Working it out...";
           cls = "";
         } else if (!x.minutes) {
-          state = x.type === "exam" && x.minutes === null ? "No slide analysis" : "";
+          state =
+            x.type === "exam" && x.minutes === null ? "No slide analysis" : "";
           cls = "";
         } else if (x.startBy <= today) {
           state =
@@ -3674,16 +4001,64 @@
     return Boolean((plan().formatSkip || {})[key]);
   }
   function readinessBodyHtml(sid, st) {
-    var rows = st.rows, ratings = readinessProgress(sid);
-    return '<p class="sp-wiz-lead"></p>' +
-      '<div class="sp-note"><b>Estimated minimum: ' + hours(recommendedMinutes(sid)) + '</b> to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven\'t covered. If you\'ve forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.</div>' +
-      rows.map(function (r, n) {
-        var a = analysis(r.course, sid);
-        if (!a) return '<div class="sp-note">No topic analysis is available for ' + esc(r.course) + '; it cannot be rated here.</div>';
-        var key = sid + ':' + n, opened = Boolean(ui.readyOpen[key]), prog = courseProgress(r.course, a, r.exam);
-        return '<section class="sp-course sp-readiness-course' + (opened ? ' open' : '') + '"' + hue(r.course) + '><button class="sp-course-head sp-readiness-toggle" type="button" data-sp-readiness="' + key + '" aria-expanded="' + opened + '">' + ring(prog ? prog.ready : 0, undefined, 'sm') + '<span class="sp-course-title"><span class="sp-eyebrow">' + esc(examLabel(r.exam)) + '</span><b>' + esc(r.course) + '</b><small>' + (prog ? Math.round(prog.ready) + '% topic readiness' : 'Readiness not available') + '</small></span><span class="sp-readiness-chevron" aria-hidden="true">' + (opened ? '−' : '+') + '</span></button>' + (opened ? '<div class="sp-readiness-content">' + chaptersHtml(r.course, a, r.exam, true) + '</div>' : '') + '</section>';
-      }).join('') +
-      '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="2">Back</button><span>' + ratings.marked + ' of ' + ratings.total + ' rated</span><button class="btn solid" type="button" data-sp-step="4"' + (ratings.done ? '' : ' disabled') + '>Next: build schedule</button></div>';
+    var rows = st.rows,
+      ratings = readinessProgress(sid);
+    return (
+      '<p class="sp-wiz-lead"></p>' +
+      '<div class="sp-note"><b>Estimated minimum: ' +
+      hours(recommendedMinutes(sid)) +
+      "</b> to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven't covered. If you've forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.</div>" +
+      rows
+        .map(function (r, n) {
+          var a = analysis(r.course, sid);
+          if (!a)
+            return (
+              '<div class="sp-note">No topic analysis is available for ' +
+              esc(r.course) +
+              "; it cannot be rated here.</div>"
+            );
+          var key = sid + ":" + n,
+            opened = Boolean(ui.readyOpen[key]),
+            prog = courseProgress(r.course, a, r.exam);
+          return (
+            '<section class="sp-course sp-readiness-course' +
+            (opened ? " open" : "") +
+            '"' +
+            hue(r.course) +
+            '><button class="sp-course-head sp-readiness-toggle" type="button" data-sp-readiness="' +
+            key +
+            '" aria-expanded="' +
+            opened +
+            '">' +
+            ring(prog ? prog.ready : 0, undefined, "sm") +
+            '<span class="sp-course-title"><span class="sp-eyebrow">' +
+            esc(examLabel(r.exam)) +
+            "</span><b>" +
+            esc(r.course) +
+            "</b><small>" +
+            (prog
+              ? Math.round(prog.ready) + "% topic readiness"
+              : "Readiness not available") +
+            '</small></span><span class="sp-readiness-chevron" aria-hidden="true">' +
+            (opened ? "−" : "+") +
+            "</span></button>" +
+            (opened
+              ? '<div class="sp-readiness-content">' +
+                chaptersHtml(r.course, a, r.exam, true) +
+                "</div>"
+              : "") +
+            "</section>"
+          );
+        })
+        .join("") +
+      '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="2">Back</button><span>' +
+      ratings.marked +
+      " of " +
+      ratings.total +
+      ' rated</span><button class="btn solid" type="button" data-sp-step="4"' +
+      (ratings.done ? "" : " disabled") +
+      ">Next: build schedule</button></div>"
+    );
   }
   function examRows(sid) {
     return seasonExams(sid).map(function (e) {
@@ -3717,7 +4092,11 @@
   }
   function weekBodyHtml() {
     return (
-      '<div class="sp-wk"><div class="sp-wk-part sp-study-limits"><h4>Study time limits</h4><p class="sp-muted">Set your maximum study time. Leave the weekly limit empty for no weekly cap.</p><div class="sp-limit-fields"><label>Hours per day<input type="number" min="1" max="10" step="0.5" data-sp-study-daily value="' + studyLimits().daily + '" /></label><label>Hours per week<input type="number" min="0.5" max="70" step="0.5" data-sp-study-weekly value="' + (studyLimits().weekly || "") + '" placeholder="No limit" /></label></div></div><div class="sp-wk-part"><div class="sp-wk-head"><h4>Getting to uni</h4><button type="button" class="sp-chip-btn" data-sp-uni-reset>Reset</button></div><p class="sp-muted">Set a normal day once. Days you leave off are worked out from your classes.</p>' +
+      '<div class="sp-wk"><div class="sp-wk-part sp-study-limits"><h4>Study time limits</h4><p class="sp-muted">Set your maximum study time. Leave the weekly limit empty for no weekly cap.</p><div class="sp-limit-fields"><label>Hours per day<input type="number" min="1" max="10" step="0.5" data-sp-study-daily value="' +
+      studyLimits().daily +
+      '" /></label><label>Hours per week<input type="number" min="0.5" max="70" step="0.5" data-sp-study-weekly value="' +
+      (studyLimits().weekly || "") +
+      '" placeholder="No limit" /></label></div></div><div class="sp-wk-part"><div class="sp-wk-head"><h4>Getting to uni</h4><button type="button" class="sp-chip-btn" data-sp-uni-reset>Reset</button></div><p class="sp-muted">Set a normal day once. Days you leave off are worked out from your classes.</p>' +
       uniTimesHtml() +
       '</div><div class="sp-wk-part"><h4>Times you can\'t study</h4><p class="sp-muted">Work, gym, family. No study is planned in these.</p>' +
       blockedHtml() +
@@ -3783,7 +4162,7 @@
         ? ""
         : '<button type="button" class="sp-chip-btn" data-sp-fmt-later="' +
           esc(sel.key) +
-          '">Instructor hasn\'t said yet</button>') +
+          "\">Instructor hasn't said yet</button>") +
       "</div>" +
       formatEditorHtml(sel.course, a || null, sel.exam, sid, sel.format, true) +
       '</div></div><div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="1">Back</button>' +
@@ -3809,7 +4188,11 @@
       for (var i = 0; i < 14; i++) {
         var d = C.addDays(today, i);
         if ((x.days || []).indexOf(C.fromKey(d).getDay()) > -1)
-          rows.push({ x: x, date: d, skipped: (x.skips || []).indexOf(d) > -1 });
+          rows.push({
+            x: x,
+            date: d,
+            skipped: (x.skips || []).indexOf(d) > -1,
+          });
       }
     });
     if (!rows.length) return "";
@@ -3822,11 +4205,13 @@
         .slice(0, 5)
         .map(function (r) {
           return (
-            '<li><span><b>' +
+            "<li><span><b>" +
             esc(shortDate(r.date)) +
             "</b> " +
             esc(r.x.label || "Unavailable") +
-            (r.x.start ? " · " + esc(C.timeRange(r.x.start, r.x.end)) : " · All day") +
+            (r.x.start
+              ? " · " + esc(C.timeRange(r.x.start, r.x.end))
+              : " · All day") +
             "</span>" +
             (r.skipped
               ? '<span class="sp-coming-free">Studying instead</span><button type="button" class="sp-link-btn" data-sp-unskip="' +
@@ -3886,7 +4271,8 @@
           chapters: list.map(function (c) {
             return {
               id: "s" + c.n,
-              label: (/^\d/.test(c.n) ? "Ch " + c.n + " " : c.n + " ") + c.title,
+              label:
+                (/^\d/.test(c.n) ? "Ch " + c.n + " " : c.n + " ") + c.title,
             };
           }),
         };
@@ -3939,20 +4325,20 @@
             : active === 3
               ? readinessBodyHtml(sid, st)
               : (st.ready
-                ? ""
-                : '<div class="sp-note">Finish ' +
-                  (!st.wk && !st.fm
-                    ? "Your week and Exam formats"
-                    : !st.wk
-                      ? "Your week"
-                      : "Exam formats") +
-                  " first, so the plan fits your real week.</div>") +
-              plannerHtml(sid, st.ready) +
-              '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="3">Back</button><span></span>' +
-              (st.built
-                ? '<button class="btn solid" type="button" data-sp-view="plan">Go to my plan</button>'
-                : "<span></span>") +
-              "</div>";
+                  ? ""
+                  : '<div class="sp-note">Finish ' +
+                    (!st.wk && !st.fm
+                      ? "Your week and Exam formats"
+                      : !st.wk
+                        ? "Your week"
+                        : "Exam formats") +
+                    " first, so the plan fits your real week.</div>") +
+                plannerHtml(sid, st.ready) +
+                '<div class="sp-wiz-foot"><button class="btn muted" type="button" data-sp-step="3">Back</button><span></span>' +
+                (st.built
+                  ? '<button class="btn solid" type="button" data-sp-view="plan">Go to my plan</button>'
+                  : "<span></span>") +
+                "</div>";
     return (
       '<ol class="sp-wiz-steps">' +
       steps
@@ -3965,7 +4351,9 @@
             '"' +
             (x.n === active ? ' aria-current="step"' : "") +
             '><span class="sp-wiz-num">' +
-            (x.done && x.n !== active ? '<span class="sp-step-tick"></span>' : x.n) +
+            (x.done && x.n !== active
+              ? '<span class="sp-step-tick"></span>'
+              : x.n) +
             "</span>" +
             esc(x.label) +
             "</button></li>"
@@ -4104,15 +4492,17 @@
         esc(aboutHours(mins)) +
         (fp.head ? " · " + esc(fp.head) : "") +
         "</p>" +
-        (first.notes ? '<p class="sp-muted">' + esc(first.notes) + "</p>" : "") +
-        '<button class="btn" type="button" data-sp-sources="' +
+        (first.notes
+          ? '<p class="sp-muted">' + esc(first.notes) + "</p>"
+          : "") +
+        '<div class="sp-next-actions"><button class="btn" type="button" data-sp-sources="' +
         esc(first.id) +
         '">What to study from</button>' +
         '<button class="btn solid" type="button" data-sp-sess-done="' +
         esc(first.id) +
         '">Finished early · update plan</button><button class="btn muted" type="button" data-sp-sess-more="' +
         esc(first.id) +
-        '">I need more time</button></section>' +
+        '">I need more time</button></div></section>' +
         (week.length
           ? '<section class="sp-box"><h3>Coming up</h3>' +
             Object.keys(byDay)
@@ -4175,9 +4565,12 @@
     return n.getHours() * 60 + n.getMinutes();
   }
   function isOpenSession(i) {
-    if (i.planSource !== "study-plan" || i.planDone || !i.start || !i.end) return false;
+    if (i.planSource !== "study-plan" || i.planDone || !i.start || !i.end)
+      return false;
     var today = C.todayKey();
-    return i.date > today || (i.date === today && C.minutes(i.start) > nowMinutes());
+    return (
+      i.date > today || (i.date === today && C.minutes(i.start) > nowMinutes())
+    );
   }
   // The freed time itself fills first, then the rest of that day.
   function pullForward(day, block) {
@@ -4185,7 +4578,12 @@
       open = C.items.filter(isOpenSession),
       next = "";
     open.forEach(function (i) {
-      if (i.date > day && i.date <= C.addDays(day, 7) && (!next || i.date < next)) next = i.date;
+      if (
+        i.date > day &&
+        i.date <= C.addDays(day, 7) &&
+        (!next || i.date < next)
+      )
+        next = i.date;
     });
     if (!next) return { moved: 0, from: "" };
     var start =
@@ -4345,7 +4743,10 @@
     });
     var n = hit.length,
       what =
-        n + " study session" + (n === 1 ? "" : "s") + " moved around your calendar";
+        n +
+        " study session" +
+        (n === 1 ? "" : "s") +
+        " moved around your calendar";
     Object.keys(seasons)
       .reduce(function (chain, sid) {
         return chain.then(function () {
@@ -4402,14 +4803,19 @@
       };
     }
     C.classAttendance.forEach(function (r) {
-      if (r.date < today || (r.reason !== "cancelled" && r.reason !== "skipped")) return;
+      if (
+        r.date < today ||
+        (r.reason !== "cancelled" && r.reason !== "skipped")
+      )
+        return;
       var c = classOf(r.classId);
       if (!c) return;
       gone[r.classId + "|" + r.date] = true;
       add("a|" + r.classId + "|" + r.date + "|" + r.reason, c, r, r.reason);
     });
     C.classOverrides.forEach(function (o) {
-      if (o.date < today || o.movedTo || !(o.mode === "online" || o.onlineOnly)) return;
+      if (o.date < today || o.movedTo || !(o.mode === "online" || o.onlineOnly))
+        return;
       var c = classOf(o.classId);
       if (!c || c.onlineOnly || gone[o.classId + "|" + o.date]) return;
       add("o|" + o.classId + "|" + o.date, c, o, "online");
@@ -4451,7 +4857,11 @@
     var days = {},
       home = {};
     list.forEach(function (x) {
-      var d = (days[x.date] = days[x.date] || { date: x.date, start: "", end: "" });
+      var d = (days[x.date] = days[x.date] || {
+        date: x.date,
+        start: "",
+        end: "",
+      });
       if (x.start && (!d.start || x.start < d.start)) d.start = x.start;
       if (x.end && x.end > d.end) d.end = x.end;
       if (x.why === "online" && !campusSpan(x.date) && uniTimes(x.date).leave)
@@ -4482,7 +4892,12 @@
         return b && (b.date !== i.date || b.start !== i.start);
       })
       .map(function (i) {
-        return { title: i.title || "Study session", from: was[i.id], date: i.date, start: i.start };
+        return {
+          title: i.title || "Study session",
+          from: was[i.id],
+          date: i.date,
+          start: i.start,
+        };
       });
     restorePlan(before);
     if (moves.length) showFreed(list, order, home, moves, pullAll);
@@ -4586,7 +5001,8 @@
       });
     }
     wrap.addEventListener("click", function (ev) {
-      if (ev.target === wrap || ev.target.hasAttribute("data-free-keep")) close();
+      if (ev.target === wrap || ev.target.hasAttribute("data-free-keep"))
+        close();
       else if (ev.target.hasAttribute("data-free-move")) accept();
     });
     document.addEventListener("keydown", onKey, true);
@@ -4601,23 +5017,35 @@
     new: {
       name: "New material",
       how: "Explain each idea in your own words as you go, then close it and write what you remember.",
-      meant: "You're learning this for the first time, so it gets the most time.",
-      opens: "Annotated slides, or the slide breakdown when a chapter's slides are repetitive.",
+      meant:
+        "You're learning this for the first time, so it gets the most time.",
+      opens:
+        "Annotated slides, or the slide breakdown when a chapter's slides are repetitive.",
       fallback: "Each chapter opens whichever page suits it best.",
     },
     review: {
       name: "Review",
       how: "Test yourself from memory first, then check only what you missed.",
-      meant: "Going back over something you've already covered, so it stays with you.",
+      meant:
+        "Going back over something you've already covered, so it stays with you.",
       opens: "Mind maps first, then slide breakdowns or notes.",
       fallback: "Start with these and test yourself from memory.",
+    },
+    memorize: {
+      name: "Memorize",
+      how: "Cover the answers and recite them from memory, then check. Repeat only what you got wrong.",
+      meant: "Learning lists, formulas and key facts by heart.",
+      opens: "Listing vaults, formula sheets and cheat sheets.",
+      fallback: "Recite from memory, then check.",
     },
     practice: {
       name: "Practice",
       how: "Work it out yourself under time pressure, then fix what you got wrong.",
-      meant: "Solving problems and answering exam-style questions without your notes.",
+      meant:
+        "Doing what the exam asks, without your notes. The tag says which: Solve, Code, Diagrams, Scenarios or Timed exam.",
       opens: "Chapter quizzes and past exams.",
-      fallback: "Past exams under timed conditions are the closest thing to the real one.",
+      fallback:
+        "Past exams under timed conditions are the closest thing to the real one.",
     },
   };
   var sourcesLoad = null,
@@ -4667,9 +5095,7 @@
         .map(function (c) {
           return c.id;
         });
-    var named = (s.chapters || [s.chapter]).map(function (id) {
-      return String(id).replace(RETEST, "");
-    });
+    var named = (s.chapters || [s.chapter]).map(chapterBase);
     return a.chapters
       .filter(function (c) {
         return named.indexOf(c.id) > -1 || s.title.indexOf(chapterName(c)) > -1;
@@ -4678,23 +5104,9 @@
         return c.id;
       });
   }
-  function needsSolving(s, a, ids) {
-    var calc = 0,
-      formula = 0;
-    a.chapters.forEach(function (c) {
-      if (ids.indexOf(c.id) < 0 || !c.kinds) return;
-      calc += c.kinds.calc || 0;
-      formula += c.kinds.formula || 0;
-    });
-    var exam = C.exams.find(function (e) {
-        return e.id === s.examId;
-      }),
-      f = exam ? formatFor(s.course, exam, s.sid) : null,
-      types = (f && f.types) || [];
-    return calc + formula >= 2 || (calc >= 1 && (types.indexOf("solve") > -1 || types.indexOf("code") > -1));
-  }
   function sessionType(s) {
-    if (s.kind === "final") return "practice";
+    if (s.kind === "final" || s.kind === "practice") return "practice";
+    if (s.kind === "memorize") return "memorize";
     var a = analysis(s.course, s.sid);
     if (!a) {
       if (a === undefined) typeAsked = true;
@@ -4702,15 +5114,13 @@
     }
     return withSeason(s.sid, function () {
       var ids = sessionChapterIds(s, a);
-      if (s.kind === "review")
-        return String(s.chapter).indexOf(RETEST) > -1 && needsSolving(s, a, ids)
-          ? "practice"
-          : "review";
-      if (s.chapter === QUICK) return "review";
+      if (s.kind === "review" || s.chapter === QUICK) return "review";
       var ch = a.chapters.find(function (c) {
         return c.id === ids[0];
       });
-      return !ch || !ch.minutes || chapterLeft(s.course, a, ch) / ch.minutes >= NEW_SHARE
+      return !ch ||
+        !ch.minutes ||
+        chapterLeft(s.course, a, ch) / ch.minutes >= NEW_SHARE
         ? "new"
         : "review";
     });
@@ -4749,7 +5159,10 @@
     function add(list, l, prefix) {
       if (seen[l.url]) return;
       seen[l.url] = true;
-      list.push({ label: (prefix ? prefix + " · " : "") + l.label, url: l.url });
+      list.push({
+        label: (prefix ? prefix + " · " : "") + l.label,
+        url: l.url,
+      });
     }
     if (s.kind === "final" || !a) {
       out.why = TYPES.practice.fallback;
@@ -4775,7 +5188,8 @@
         c[key].links.forEach(function (l) {
           add(out.best, l, prefix);
         });
-        if (c[key].links.length && whys.indexOf(c[key].why) < 0) whys.push(c[key].why);
+        if (c[key].links.length && whys.indexOf(c[key].why) < 0)
+          whys.push(c[key].why);
       });
       if (key === "practice" && !out.best.length) {
         whys = [TYPES.practice.fallback];
@@ -4795,6 +5209,31 @@
       });
       out.why = whys.length === 1 ? whys[0] : TYPES[type].fallback;
     }
+    // No page made for this: the chapter's own pages, then the course page.
+    if (!out.best.length && a && s.kind !== "final") {
+      withSeason(s.sid, function () {
+        return sessionChapterIds(s, a);
+      }).forEach(function (id) {
+        var c = (src.chapters || {})[id];
+        ((c && c.learn && c.learn.links) || []).forEach(function (l) {
+          delete seen[l.url];
+          add(out.best, l);
+        });
+      });
+      out.also = out.also.filter(function (l) {
+        return !out.best.some(function (b) {
+          return b.url === l.url;
+        });
+      });
+      if (out.best.length)
+        out.why =
+          "There's no practice set for this on the site yet. Cover the worked examples here and do them yourself.";
+    }
+    if (!out.best.length && s.kind === "final" && src.page) {
+      out.best.push({ label: "Course page", url: src.page });
+      out.why =
+        "There are no past exams on the site for this course yet. Test yourself across every chapter, under a time limit.";
+    }
     if (!out.best.length) {
       out.why = "";
       out.note =
@@ -4804,6 +5243,12 @@
     numberRepeats(out.best);
     numberRepeats(out.also);
     return out;
+  }
+  // "Practice · Solve", from the session's title; a final review is a timed exam.
+  function typeName(s, type) {
+    if (type !== "practice") return TYPES[type].name;
+    var m = s.title.match(/Practice \((\w+)\)/);
+    return "Practice · " + (m ? m[1] : "Timed exam");
   }
   function showSession(x) {
     var s = sessionOf(x);
@@ -4821,22 +5266,40 @@
         '<section class="sp-free-dialog" role="dialog" aria-modal="true" aria-labelledby="sp-src-title"><span class="sp-src-badge t-' +
         type +
         '">' +
-        esc(info.name) +
+        esc(typeName(s, type)) +
         '</span><h3 id="sp-src-title">' +
         esc(parts.name) +
         "</h3><p>" +
-        esc([parts.head, s.date ? shortDate(s.date) + (s.start ? " · " + C.timeLabel(s.start) : "") : ""].filter(Boolean).join(" · ")) +
+        esc(
+          [
+            parts.head,
+            s.date
+              ? shortDate(s.date) +
+                (s.start ? " · " + C.timeLabel(s.start) : "")
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" · "),
+        ) +
         '</p><p class="sp-free-ask">' +
         esc(info.how) +
         "</p>" +
-        (focus ? '<p><b class="sp-src-focus">Focus on</b> ' + esc(focus) + "</p>" : "") +
+        (focus
+          ? '<p><b class="sp-src-focus">Focus on</b> ' + esc(focus) + "</p>"
+          : "") +
         (picks.best.length
           ? '<h4 class="sp-src-head">Best for this session</h4>' +
             (picks.why ? "<p>" + esc(picks.why) + "</p>" : "") +
             '<div class="sp-src-best">' +
             picks.best
               .map(function (l) {
-                return '<a class="btn solid" href="' + esc(l.url) + '">' + esc(l.label) + "</a>";
+                return (
+                  '<a class="btn solid" href="' +
+                  esc(l.url) +
+                  '">' +
+                  esc(l.label) +
+                  "</a>"
+                );
               })
               .join("") +
             "</div>"
@@ -4862,12 +5325,31 @@
         close();
       }
       wrap.addEventListener("click", function (ev) {
-        if (ev.target === wrap || ev.target.hasAttribute("data-src-close")) close();
+        if (ev.target === wrap || ev.target.hasAttribute("data-src-close"))
+          close();
       });
       document.addEventListener("keydown", onKey, true);
       document.body.appendChild(wrap);
       wrap.querySelector("[data-src-close]").focus();
     });
+  }
+  // The same tags as the calendar's legend.
+  function sessionLegendHtml() {
+    return (
+      '<div class="sp-legend" aria-label="What the session colors mean">' +
+      Object.keys(TYPES)
+        .map(function (k) {
+          return (
+            '<span class="legend-chip sp-' +
+            k +
+            '"><span class="legend-dot"></span>' +
+            esc(TYPES[k].name) +
+            "</span>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
   }
   function colorsHtml() {
     return (
@@ -4902,7 +5384,11 @@
       .querySelectorAll("[data-sp-format-form], [data-sp-block-form]")
       .forEach(function (form) {
         saved[formKey(form)] = [].map.call(form.elements, function (el) {
-          return { value: el.value, checked: el.checked, focused: el === active };
+          return {
+            value: el.value,
+            checked: el.checked,
+            focused: el === active,
+          };
         });
       });
     return saved;
@@ -4914,7 +5400,8 @@
         var state = saved[formKey(form)];
         if (!state || state.length !== form.elements.length) return;
         [].forEach.call(form.elements, function (el, n) {
-          if (el.type === "checkbox" || el.type === "radio") el.checked = state[n].checked;
+          if (el.type === "checkbox" || el.type === "radio")
+            el.checked = state[n].checked;
           else if (el.tagName !== "BUTTON") el.value = state[n].value;
           if (state[n].focused) el.focus();
         });
@@ -4937,17 +5424,16 @@
           ? remainingHtml()
           : view === "colors"
             ? colorsHtml()
-          : view === "setup"
-            ? setupHtml(sid)
-            : view === "exams"
-              ? ui.course
-                ? '<div class="sp-back-row"><button type="button" class="sp-chip-btn" data-sp-home>All exams</button></div>' +
-                  examCardsHtml(sid, courses) +
-                  courseHtml(ui.course, sid)
-                : heroHtml(sid) +
-                  examCardsHtml(sid, courses) +
-                  clashHtml(sid)
-              : planViewHtml(sid);
+            : view === "setup"
+              ? setupHtml(sid)
+              : view === "exams"
+                ? ui.course
+                  ? '<div class="sp-back-row"><button type="button" class="sp-chip-btn" data-sp-home>All exams</button></div>' +
+                    examCardsHtml(sid, courses) +
+                    courseHtml(ui.course, sid)
+                  : heroHtml(sid) + examCardsHtml(sid, courses) + clashHtml(sid)
+                : (upcomingSessions(sid).length ? sessionLegendHtml() : "") +
+                  planViewHtml(sid);
     root.innerHTML =
       headHtml(sid, view) + '<div class="sp-body">' + body + "</div>";
     restoreForms(root, drafts);
@@ -4984,21 +5470,40 @@
       });
       if (!sess) return;
       sess.planDone = true;
-      C.persist().then(function () { return replan(sess.planSeason, "Session finished early"); });
+      C.persist().then(function () {
+        return replan(sess.planSeason, "Session finished early");
+      });
     } else if (d.spSessMore) {
-      var sess = C.items.find(function (i) { return i.id === d.spSessMore; });
+      var sess = C.items.find(function (i) {
+        return i.id === d.spSessMore;
+      });
       if (!sess) return;
       var length = C.minutes(sess.end) - C.minutes(sess.start),
         day = sess.date,
         slot = null;
       for (var n = 0; n < 14 && !slot; n++) {
         day = C.addDays(day, 1);
-        var start = day === C.todayKey() ? Math.max(DAY_START, nowMinutes() + 15) : DAY_START;
-        slot = freeSlots(day, sess.planSeason, start).find(function (s) { return s[1] - s[0] >= length; }) || null;
+        var start =
+          day === C.todayKey()
+            ? Math.max(DAY_START, nowMinutes() + 15)
+            : DAY_START;
+        slot =
+          freeSlots(day, sess.planSeason, start).find(function (s) {
+            return s[1] - s[0] >= length;
+          }) || null;
       }
-      if (!slot) { C.toast("No later free slot found before the exam"); return; }
-      sess.date = day; sess.endDate = day; sess.start = C.toTime(slot[0]); sess.end = C.toTime(slot[0] + length); sess.planPinned = true;
-      C.persist().then(function () { return replan(sess.planSeason, "Session moved back"); });
+      if (!slot) {
+        C.toast("No later free slot found before the exam");
+        return;
+      }
+      sess.date = day;
+      sess.endDate = day;
+      sess.start = C.toTime(slot[0]);
+      sess.end = C.toTime(slot[0] + length);
+      sess.planPinned = true;
+      C.persist().then(function () {
+        return replan(sess.planSeason, "Session moved back");
+      });
     } else if (d.spSeason) {
       ui.preview = null;
       ui.step = undefined;
@@ -5029,23 +5534,33 @@
       var buildFor = season();
       t.disabled = true;
       t.textContent = "BUILDING…";
-      whenLoaded(buildFor).then(function (ok) {
-        if (!ok) {
-          C.toast("Could not load the exam chapter plans. Check your connection and try again.");
-          return;
-        }
-        ui.preview = buildSchedule(buildFor);
-        if (!ui.preview.placed.length) {
-          C.toast("No study sessions could be scheduled. Check the exam dates and available study time.");
-          return;
-        }
-        render();
-      }).catch(function (err) {
-        console.error("Study plan build failed", err);
-        C.toast("The study plan could not be built. Please try again.");
-      }).finally(function () {
-        if (t.isConnected) { t.disabled = false; t.textContent = "BUILD MY SCHEDULE"; }
-      });
+      whenLoaded(buildFor)
+        .then(function (ok) {
+          if (!ok) {
+            C.toast(
+              "Could not load the exam chapter plans. Check your connection and try again.",
+            );
+            return;
+          }
+          ui.preview = buildSchedule(buildFor);
+          if (!ui.preview.placed.length) {
+            C.toast(
+              "No study sessions could be scheduled. Check the exam dates and available study time.",
+            );
+            return;
+          }
+          render();
+        })
+        .catch(function (err) {
+          console.error("Study plan build failed", err);
+          C.toast("The study plan could not be built. Please try again.");
+        })
+        .finally(function () {
+          if (t.isConnected) {
+            t.disabled = false;
+            t.textContent = "BUILD MY SCHEDULE";
+          }
+        });
     } else if (t.hasAttribute("data-sp-commit")) commitPreview();
     else if (t.hasAttribute("data-sp-discard")) {
       ui.preview = null;
@@ -5060,8 +5575,7 @@
           return x.id !== bid;
         });
       }, "Unavailable time removed");
-    }
-    else if (d.spLevel !== undefined) {
+    } else if (d.spLevel !== undefined) {
       var readinessCourse = d.spReadyCourse || ui.course,
         a = analysis(readinessCourse, season());
       if (!a) return;
@@ -5086,23 +5600,16 @@
       ui.fmtOpen = "";
       render();
     } else if (d.spFmtRemove) {
-      if (
-        !window.confirm(
-          "Remove this exam format?",
-        )
-      )
-        return;
+      if (!window.confirm("Remove this exam format?")) return;
       var rk = d.spFmtRemove;
       delete ui.fmtEdit[rk];
       ui.preview = null;
       updatePlan(function (p) {
         p.formats = p.formats || {};
         var fc = d.spFmtCourse || ui.course;
-        formatKeys(fc, examFor(fc, season()), season()).forEach(
-          function (k) {
-            delete p.formats[k];
-          },
-        );
+        formatKeys(fc, examFor(fc, season()), season()).forEach(function (k) {
+          delete p.formats[k];
+        });
       }, true);
     } else if (d.spGoto) {
       var g = d.spGoto.split("|");
@@ -5305,17 +5812,43 @@
       if (!ui.uniDirty || ev.target.type !== "time") return;
       setTimeout(function () {
         var a = document.activeElement;
-        if (!ui.uniDirty || (a && a.type === "time" && a.closest(".sp-uni"))) return;
+        if (!ui.uniDirty || (a && a.type === "time" && a.closest(".sp-uni")))
+          return;
         ui.uniDirty = false;
         refreshAfterUni();
       }, 200);
     });
     $("study-plan-root").addEventListener("change", function (ev) {
-      if (ev.target.dataset && (ev.target.dataset.spStudyDaily !== undefined || ev.target.dataset.spStudyWeekly !== undefined)) {
-        var daily = ev.target.dataset.spStudyDaily !== undefined ? Number(ev.target.value) : studyLimits().daily;
-        var weekly = ev.target.dataset.spStudyWeekly !== undefined ? (ev.target.value.trim() ? Number(ev.target.value) : 0) : studyLimits().weekly;
-        if (!isFinite(daily) || daily < 1 || daily > 10 || !isFinite(weekly) || weekly < 0 || weekly > 70) { C.toast("Daily limit: 1–10 hours; weekly limit: up to 70 hours"); render(); return; }
-        updatePlan(function (p) { p.studyLimits = { daily: daily, weekly: weekly }; }, true);
+      if (
+        ev.target.dataset &&
+        (ev.target.dataset.spStudyDaily !== undefined ||
+          ev.target.dataset.spStudyWeekly !== undefined)
+      ) {
+        var daily =
+          ev.target.dataset.spStudyDaily !== undefined
+            ? Number(ev.target.value)
+            : studyLimits().daily;
+        var weekly =
+          ev.target.dataset.spStudyWeekly !== undefined
+            ? ev.target.value.trim()
+              ? Number(ev.target.value)
+              : 0
+            : studyLimits().weekly;
+        if (
+          !isFinite(daily) ||
+          daily < 1 ||
+          daily > 10 ||
+          !isFinite(weekly) ||
+          weekly < 0 ||
+          weekly > 70
+        ) {
+          C.toast("Daily limit: 1–10 hours; weekly limit: up to 70 hours");
+          render();
+          return;
+        }
+        updatePlan(function (p) {
+          p.studyLimits = { daily: daily, weekly: weekly };
+        }, true);
         if (seasonsWithPlan().length) rebuildPlans("Study time limit changed");
         else render();
         return;

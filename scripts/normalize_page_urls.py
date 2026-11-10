@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalize canonical, Open Graph, and hreflang URLs for generated HTML.
+"""Normalize canonical and Open Graph URLs for generated HTML and drop hreflang.
 
 The deployed filesystem route is authoritative. This prevents copied/generated
 folder pages from retaining the canonical URL of their template page.
@@ -52,20 +52,11 @@ def normalize(document: str, path: Path) -> str:
         document, flags=re.I | re.S,
     )
 
-    # Existing hreflang declarations must describe this page, not the template
-    # page it was copied from. Preserve the language set already present.
-    def fix_alternate(match: re.Match[str]) -> str:
-        tag = match.group(0)
-        lang_match = re.search(r'\bhreflang\s*=\s*["\']([^"\']+)["\']', tag, flags=re.I)
-        if not lang_match:
-            return tag
-        lang = lang_match.group(1).lower()
-        target = ORIGIN + "/ar" + url[len(ORIGIN):] if lang == "ar" else url
-        return replace_attr(tag, "href", target)
-
+    # Pages rebuilt after the optimizer can inherit these from a template; Arabic is
+    # applied in place, so no separate URL exists for an alternate to name.
     document = re.sub(
-        r'<link\b(?=[^>]*\brel\s*=\s*["\']alternate["\'])(?=[^>]*\bhreflang\s*=)[^>]*>',
-        fix_alternate, document, flags=re.I | re.S,
+        r'[ \t]*<link\b(?=[^>]*\brel\s*=\s*["\']alternate["\'])(?=[^>]*\bhreflang\s*=)[^>]*>[ \t]*\n?',
+        "", document, flags=re.I | re.S,
     )
     return document
 

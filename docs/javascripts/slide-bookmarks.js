@@ -7,14 +7,19 @@
   window.__slideBookmarks = true;
 
   var cards = Array.prototype.slice.call(
-    document.querySelectorAll("section.card[data-slide], article.sheet[data-n]"),
+    document.querySelectorAll(
+      "section.card[data-slide], article.sheet[data-n]",
+    ),
   );
-  var pdfHost = /\/slides\//.test(location.pathname) ? document.querySelector(".pdf-embed") : null;
+  var pdfHost = /\/slides\//.test(location.pathname)
+    ? document.querySelector(".pdf-embed")
+    : null;
   if (!cards.length && !pdfHost) return;
 
   var rootWindow = window;
   try {
-    if (window.top !== window.self && window.top.location.href) rootWindow = window.top;
+    if (window.top !== window.self && window.top.location.href)
+      rootWindow = window.top;
   } catch (e) {}
 
   var pagePath = rootWindow.location.pathname.replace(/[^/]+\.html$/, "");
@@ -67,7 +72,8 @@
     document.head.appendChild(style);
   }
 
-  var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>';
+  var ICON =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>';
   var toastTimer = null;
 
   function toast(text) {
@@ -179,10 +185,14 @@
   function goToCard(card) {
     if (savedList) savedList.hidden = true;
     if (card.hidden) {
-      var all = document.querySelector('[data-group="filter"][data-value="all"]');
+      var all = document.querySelector(
+        '[data-group="filter"][data-value="all"]',
+      );
       if (all) all.click();
     }
-    var flip = document.body.classList.contains("flip") || document.body.classList.contains("mode-flip");
+    var flip =
+      document.body.classList.contains("flip") ||
+      document.body.classList.contains("mode-flip");
     if (flip) {
       var jump = document.getElementById("as-jump");
       if (jump) {
@@ -198,8 +208,17 @@
       return;
     }
     var bar = document.querySelector(".top,.as-top");
-    var offset = bar && getComputedStyle(bar).position === "sticky" ? bar.offsetHeight + 12 : 10;
-    window.scrollTo(0, Math.max(0, card.getBoundingClientRect().top + window.pageYOffset - offset));
+    var offset =
+      bar && getComputedStyle(bar).position === "sticky"
+        ? bar.offsetHeight + 12
+        : 10;
+    window.scrollTo(
+      0,
+      Math.max(
+        0,
+        card.getBoundingClientRect().top + window.pageYOffset - offset,
+      ),
+    );
   }
 
   function buildDeck() {
@@ -232,7 +251,10 @@
     savedList.hidden = true;
     savedBtn.addEventListener("click", function () {
       savedList.hidden = !savedList.hidden;
-      savedBtn.setAttribute("aria-expanded", savedList.hidden ? "false" : "true");
+      savedBtn.setAttribute(
+        "aria-expanded",
+        savedList.hidden ? "false" : "true",
+      );
       if (!savedList.hidden) loadAccount();
     });
     document.addEventListener("click", function (ev) {
@@ -250,9 +272,11 @@
       if (btn) setButton(btn, !!saved[n]);
     });
     if (!savedBtn) return;
-    var saved_ns = Object.keys(saved).map(Number).sort(function (a, b) {
-      return a - b;
-    });
+    var saved_ns = Object.keys(saved)
+      .map(Number)
+      .sort(function (a, b) {
+        return a - b;
+      });
     savedBtn.innerHTML = ICON + "Saved (" + saved_ns.length + ")";
     savedList.textContent = "";
     if (!saved_ns.length) {
@@ -263,9 +287,9 @@
           ? "Couldn’t reach your account. Reload the page and try again."
           : !authKnown || (user && !listLoaded)
             ? "Connecting to your account…"
-        : user
-          ? "No bookmarked slides in this deck yet."
-          : "Sign in to bookmark slides.";
+            : user
+              ? "No bookmarked slides in this deck yet."
+              : "Sign in to bookmark slides.";
       savedList.appendChild(empty);
       return;
     }
@@ -276,7 +300,8 @@
       if (!card) return;
       var item = document.createElement("button");
       item.type = "button";
-      item.textContent = "Slide " + n + (cardLabel(card) ? " · " + cardLabel(card) : "");
+      item.textContent =
+        "Slide " + n + (cardLabel(card) ? " · " + cardLabel(card) : "");
       item.addEventListener("click", function () {
         goToCard(card);
       });
@@ -407,14 +432,24 @@
   function firebaseReady() {
     try {
       var candidate = rootWindow.__shoug_fb || rootWindow.firebase;
-      if (candidate && candidate.apps && candidate.apps.length && candidate.auth && candidate.firestore) return candidate;
+      if (
+        candidate &&
+        candidate.apps &&
+        candidate.apps.length &&
+        candidate.auth &&
+        candidate.firestore
+      )
+        return candidate;
     } catch (e) {}
     return null;
   }
 
   function canLoadAccount() {
     try {
-      return !!(firebaseReady() || typeof rootWindow.__shougLoadFirebaseAuth === "function");
+      return !!(
+        firebaseReady() ||
+        typeof rootWindow.__shougLoadFirebaseAuth === "function"
+      );
     } catch (e) {
       return false;
     }
@@ -431,7 +466,8 @@
       }, 20000);
     }
     try {
-      if (typeof rootWindow.__shougLoadFirebaseAuth === "function") rootWindow.__shougLoadFirebaseAuth(false);
+      if (typeof rootWindow.__shougLoadFirebaseAuth === "function")
+        rootWindow.__shougLoadFirebaseAuth(false);
     } catch (e) {}
   }
 
@@ -494,6 +530,7 @@
     connect();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

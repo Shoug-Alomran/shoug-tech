@@ -242,7 +242,9 @@
 
   function initListing(course) {
     var links = Array.prototype.filter.call(
-      document.querySelectorAll("a.dir-row[href], a.topic-name-link[href]"),
+      document.querySelectorAll(
+        "a.dir-row[href], a.topic-name-link[href], a.deck-preview[href]",
+      ),
       function (a) {
         return !a.closest(".academic-sidebar");
       },
@@ -376,9 +378,7 @@
             percent(state.up, state.down) +
               "% positive from " +
               countLabel(total),
-            percent(state.up, state.down) +
-              "٪ إيجابي من " +
-              countLabel(total),
+            percent(state.up, state.down) + "٪ إيجابي من " + countLabel(total),
           )
         : "";
       box.querySelector(".rrt-summary").textContent =
@@ -418,7 +418,12 @@
                 updatedAt: FieldValue.serverTimestamp(),
               };
               tx.set(ref, fresh);
-              return { up: fresh.up, down: fresh.down, vote: want, votes: first };
+              return {
+                up: fresh.up,
+                down: fresh.down,
+                vote: want,
+                votes: first,
+              };
             }
             var d = snap.data();
             var votes = d.votes || {};

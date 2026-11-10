@@ -43,46 +43,52 @@
     feedback.setAttribute("aria-live", "polite");
     options.parentNode.insertBefore(feedback, options.nextSibling);
 
-    Array.prototype.forEach.call(options.querySelectorAll("li"), function (item, index) {
-      var letter = String.fromCharCode(65 + index);
-      var content = item.innerHTML;
-      var accessibleContent = item.textContent.trim();
-      var button = document.createElement("button");
-      button.type = "button";
-      button.className = "mcq-choice";
-      button.setAttribute("aria-pressed", "false");
-      button.setAttribute(
-        "aria-label",
-        "Choose answer " + letter + ": " + accessibleContent,
-      );
-      button.innerHTML =
-        '<span class="mcq-letter">' +
-        letter +
-        '.</span><span class="mcq-option">' +
-        content +
-        "</span>";
-      item.textContent = "";
-      item.appendChild(button);
+    Array.prototype.forEach.call(
+      options.querySelectorAll("li"),
+      function (item, index) {
+        var letter = String.fromCharCode(65 + index);
+        var content = item.innerHTML;
+        var accessibleContent = item.textContent.trim();
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "mcq-choice";
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute(
+          "aria-label",
+          "Choose answer " + letter + ": " + accessibleContent,
+        );
+        button.innerHTML =
+          '<span class="mcq-letter">' +
+          letter +
+          '.</span><span class="mcq-option">' +
+          content +
+          "</span>";
+        item.textContent = "";
+        item.appendChild(button);
 
-      button.addEventListener("click", function () {
-        options.querySelectorAll(".mcq-choice").forEach(function (choice) {
-          choice.classList.remove("is-correct", "is-wrong");
-          choice.setAttribute("aria-pressed", "false");
+        button.addEventListener("click", function () {
+          options.querySelectorAll(".mcq-choice").forEach(function (choice) {
+            choice.classList.remove("is-correct", "is-wrong");
+            choice.setAttribute("aria-pressed", "false");
+          });
+          button.setAttribute("aria-pressed", "true");
+
+          var isCorrect = letter === correctLetter;
+          button.classList.add(isCorrect ? "is-correct" : "is-wrong");
+          feedback.className =
+            "mcq-feedback " + (isCorrect ? "is-correct" : "is-wrong");
+          feedback.textContent = isCorrect
+            ? "Correct. " + explanation
+            : "Not quite. The correct answer is " +
+              correctLetter +
+              ": " +
+              options.children[
+                correctLetter.charCodeAt(0) - 65
+              ].textContent.replace(/^\s*[A-Z]\.\s*/, "") +
+              " Why: " +
+              explanation;
         });
-        button.setAttribute("aria-pressed", "true");
-
-        var isCorrect = letter === correctLetter;
-        button.classList.add(isCorrect ? "is-correct" : "is-wrong");
-        feedback.className = "mcq-feedback " + (isCorrect ? "is-correct" : "is-wrong");
-        feedback.textContent = isCorrect
-          ? "Correct. " + explanation
-          : "Not quite. The correct answer is " +
-            correctLetter +
-            ": " +
-            (options.children[correctLetter.charCodeAt(0) - 65].textContent.replace(/^\s*[A-Z]\.\s*/, "")) +
-            " Why: " +
-            explanation;
-      });
-    });
+      },
+    );
   });
 })();

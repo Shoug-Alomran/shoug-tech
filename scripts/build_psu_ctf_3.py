@@ -685,7 +685,7 @@ __SUBNAV__
                     <div class="cmds">
                         <a class="cmd solid" href="https://ctf-psu.shoug-tech.com/" target="_blank" rel="noopener">Visit the competition site</a>
                         <a class="cmd" href="/workshops/psu-ctf-3/challenges/">Attack vectors</a>
-                        <a class="cmd red" href="/workshops/psu-ctf/">CTF 2.0 archive</a>
+                        <a class="cmd red" href="/workshops/psu-ctf-2/">CTF 2.0 archive</a>
                     </div>
                 </div>
                 <div class="hud">
@@ -715,7 +715,7 @@ __SUBNAV__
                         <li><span><strong>I designed and built the official CTF 3.0 website</strong> at ctf-psu.shoug-tech.com &mdash; the mission brief, attack-vector pages, competition parameters, training schedule, rules, FAQ, team registry and results archive.</span></li>
                         <li><span><strong>I built the scoreboard and archive views</strong> that publish the previous edition's verified record: 11 teams, 852 submissions, 89 captures and the final standings, with rosters for the top three teams.</span></li>
                         <li><span><strong>As Vice President of the ACM Club</strong>, I co-organize CTF 3.0 &mdash; leading event planning and coordination alongside the website work and supporting technical preparation.</span></li>
-                        <li><span>Challenge development, infrastructure and the participant workshop are led by the other organizers. My own workshop teaching for this series was the previous edition, <a href="/workshops/psu-ctf/">ACM/Cyber-Tech CTF 2.0</a>.</span></li>
+                        <li><span>Challenge development, infrastructure and the participant workshop are led by the other organizers. My own workshop teaching for this series was the previous edition, <a href="/workshops/psu-ctf-2/">ACM/Cyber-Tech CTF 2.0</a>.</span></li>
                     </ul>
                     <div class="term" aria-hidden="true">
 <span class="p">operator@cyber-range:~$</span> ./connect --event ctf-3.0
@@ -1001,7 +1001,7 @@ __SUBNAV__
 
                 <div class="notice cy" style="margin-top: 28px;">
                     <b>Earlier editions</b> &mdash; I taught three of the five preparation workshops for the previous
-                    edition and built its event website. See <a href="/workshops/psu-ctf/">ACM/Cyber-Tech CTF 2.0</a>.
+                    edition and built its event website. See <a href="/workshops/psu-ctf-2/">ACM/Cyber-Tech CTF 2.0</a>.
                 </div>
             </section>
         </div>

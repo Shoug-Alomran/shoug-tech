@@ -7,7 +7,8 @@
  *    under the grid, like the iPhone Calendar app.
  *  - Quick add: "SE322 quiz Tue 10am", "gym tomorrow 6-7pm".
  *  - Drag: move or resize your own events in Week/Day, drag on an empty slot
- *    to create one, and drag events between days in Month.
+ *    to create one, and drag events between days in Month. Study sessions
+ *    also drag up and down inside the day pop-up.
  *  - Search across events, keyboard shortcuts, and one colour per course.
  *
  * The calendar page owns the data and saving; it exposes what this needs on
@@ -352,9 +353,17 @@
             (i % 12 || 12) +
             (i < 12 ? " AM" : " PM") +
             "</span>";
-        return h;
+        return (
+          h +
+          (days.indexOf(today) > -1
+            ? '<b class="now-pill tv-now-time"></b>'
+            : "")
+        );
       })() +
       "</div>" +
+      (days.indexOf(today) > -1 && cols > 1
+        ? '<div class="tv-now-rail"></div>'
+        : "") +
       days
         .map(function (k) {
           var placed = layoutColumns(
@@ -425,6 +434,7 @@
     tv.innerHTML = html;
     tv.dataset.startHour = startHour;
     tv.dataset.px = px;
+    placeNow();
 
     tv.querySelectorAll("[data-goto-day]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -449,20 +459,41 @@
     }
   }
 
-  // Keep the red line moving.
-  setInterval(function () {
-    var line = document.querySelector(".tv-now"),
-      tv = $("time-view");
+  // The red line and its time, moved to now. An hour label the time would
+  // sit on top of steps aside, as in Apple Calendar.
+  function placeNow() {
+    var tv = $("time-view"),
+      line = document.querySelector("#time-view .tv-now");
     if (!line || !tv) return;
     var sh = Number(tv.dataset.startHour),
-      px = Number(tv.dataset.px);
-    line.style.top = ((nowMinutes() - sh * 60) / 60) * px + "px";
-  }, 60000);
+      px = Number(tv.dataset.px),
+      now = nowMinutes(),
+      top = ((now - sh * 60) / 60) * px,
+      hour = Math.floor(now / 60),
+      pill = tv.querySelector(".tv-now-time");
+    tv.querySelectorAll(".tv-now, .tv-now-time, .tv-now-rail").forEach(
+      function (el) {
+        el.style.top = top + "px";
+      },
+    );
+    if (pill)
+      pill.textContent =
+        (hour % 12 || 12) + ":" + String(now % 60).padStart(2, "0");
+    tv.querySelectorAll(".tv-hours span").forEach(function (label) {
+      label.style.visibility =
+        Math.abs(parseFloat(label.style.top) - top) < 13 ? "hidden" : "";
+    });
+  }
+  setInterval(placeNow, 20000);
 
   // ── Drag in Week / Day ──────────────────────────────────────────────────
   var SNAP = 15;
   function snap(m) {
     return Math.round(m / SNAP) * SNAP;
+  }
+  // The latest a session this long can start and still end before midnight.
+  function latestStart(len) {
+    return Math.floor((24 * 60 - 1 - len) / SNAP) * SNAP;
   }
   function colAt(x) {
     var cols = document.querySelectorAll("#time-view .tv-col");
@@ -471,6 +502,32 @@
       if (x >= r.left && x <= r.right) return cols[i];
     }
     return null;
+  }
+  // Scrolls a box while the pointer sits near its top or bottom edge, so a
+  // drag can reach times that are off screen.
+  function edgeScroll(box, onScroll) {
+    var y = null,
+      raf = requestAnimationFrame(tick);
+    function tick() {
+      raf = requestAnimationFrame(tick);
+      if (y === null) return;
+      var r = box.getBoundingClientRect(),
+        top = Math.max(r.top, 0) + 56,
+        bottom = Math.min(r.bottom, window.innerHeight) - 56,
+        over = y < top ? y - top : y > bottom ? y - bottom : 0;
+      if (!over) return;
+      var was = box.scrollTop;
+      box.scrollTop += Math.max(-16, Math.min(16, over / 3));
+      if (box.scrollTop !== was) onScroll();
+    }
+    return {
+      to: function (v) {
+        y = v;
+      },
+      stop: function () {
+        cancelAnimationFrame(raf);
+      },
+    };
   }
   function setupTimeDrag(tv, startHour, px) {
     function minsAt(col, y) {
@@ -537,23 +594,36 @@
           dragging = false,
           targetCol = col0,
           ns = s0,
-          ne = e0;
+          ne = e0,
+          scroller = $("tv-scroll"),
+          scroll0 = scroller ? scroller.scrollTop : 0,
+          auto = null,
+          last = null;
         if (!movable) return; // click handled below
         ev.preventDefault();
         // Listen on the document: moving the element into another day's
         // column mid-drag would drop any pointer capture on it.
         function move(e) {
-          var dy = e.clientY - startY,
+          last = e;
+          var dy =
+              e.clientY -
+              startY +
+              (scroller ? scroller.scrollTop - scroll0 : 0),
             dx = e.clientX - startX;
           if (!dragging && Math.abs(dy) < 4 && Math.abs(dx) < 4) return;
           dragging = true;
           el.classList.add("tv-dragging");
+          if (!auto && scroller)
+            auto = edgeScroll(scroller, function () {
+              move(last);
+            });
+          if (auto) auto.to(e.clientY);
           var dm = snap((dy / px) * 60);
           if (resizing) {
             ns = s0;
             ne = Math.max(s0 + SNAP, Math.min(24 * 60 - 1, e0 + dm));
           } else {
-            ns = Math.max(0, Math.min(24 * 60 - (e0 - s0), s0 + dm));
+            ns = Math.max(0, Math.min(latestStart(e0 - s0), s0 + dm));
             ne = ns + (e0 - s0);
             var c = colAt(e.clientX);
             if (c && c !== targetCol) {
@@ -569,6 +639,7 @@
         function up() {
           document.removeEventListener("pointermove", move);
           document.removeEventListener("pointerup", up);
+          if (auto) auto.stop();
           el.classList.remove("tv-dragging");
           if (!dragging) {
             C.openDay(el.dataset.openDay);
@@ -613,27 +684,56 @@
         : 0;
     var onlyEnd =
       day === it.date && start && start === it.start && end !== it.end;
+    // A dragged study session goes exactly where it's dropped and nothing else
+    // in the plan changes. Re-plan works around it later.
+    var plan = it.planSource === "study-plan",
+      was = null;
+    if (plan) {
+      was = {};
+      [
+        "date",
+        "endDate",
+        "start",
+        "end",
+        "planPinned",
+        "planOverlapOk",
+      ].forEach(function (f) {
+        was[f] = it[f];
+      });
+    }
     it.date = day;
     it.endDate = C.addDays(day, span);
     if (start) it.start = start;
     if (end) it.end = end;
-    C.renderAll();
-    // A dragged plan session stays put and the rest of the plan reflows.
-    if (it.planSource === "study-plan" && C.replanAfter) {
+    if (plan) {
+      var sp = window.__shougStudyPlan;
       it.planPinned = true;
-      C.replanAfter(it, "Session moved").then(function (done) {
-        if (!done) C.persist();
-      });
-      return;
+      // On top of a class or event on purpose: don't auto-move it away.
+      it.planOverlapOk = Boolean(sp && sp.overlaps && sp.overlaps(it));
     }
+    function redraw() {
+      C.renderAll();
+      if (C.activeDay) C.openDay(C.activeDay);
+    }
+    redraw();
     C.persist().then(function () {
-      C.toast(
-        onlyEnd
-          ? (it.title || "Event") + " now ends at " + C.timeLabel(it.end)
-          : "Moved to " +
-              C.prettyDate(day) +
-              (start ? ", " + C.timeRange(it.start, it.end) : ""),
-      );
+      var msg = onlyEnd
+        ? (it.title || "Event") + " now ends at " + C.timeLabel(it.end)
+        : "Moved to " +
+          C.prettyDate(day) +
+          (start ? ", " + C.timeRange(it.start, it.end) : "");
+      if (!plan) return C.toast(msg);
+      C.toastUndo(msg, function () {
+        // Saving reloads the list, so look the session up again.
+        var now = findItem(id);
+        if (!now) return;
+        Object.keys(was).forEach(function (f) {
+          if (was[f] === undefined) delete now[f];
+          else now[f] = was[f];
+        });
+        redraw();
+        C.persist();
+      });
     });
   }
   function moveExam(id, day, start, end, resized) {
@@ -669,6 +769,141 @@
       setTimeout(function () {
         t.focus();
       }, 30);
+    }
+  }
+
+  // ── Drag in the day pop-up ──────────────────────────────────────────────
+  // Study sessions move up and down the day. With a mouse a session lifts
+  // after a few pixels; on touch, press and hold so a swipe still scrolls.
+  function setupSheetDrag(root, day, startHour, px) {
+    var cards = root.querySelectorAll(".timeline-event.study[data-item-id]"),
+      found = 0;
+    cards.forEach(function (el) {
+      var seen = findItem(el.dataset.itemId);
+      if (!seen || !seen.start) return;
+      found++;
+      el.classList.add("tl-movable");
+      el.addEventListener("pointerdown", function (ev) {
+        if (ev.button !== 0 || ev.target.closest("button, a")) return;
+        var it = findItem(el.dataset.itemId);
+        if (!it) return;
+        var touch = ev.pointerType === "touch",
+          x0 = ev.clientX,
+          y0 = ev.clientY,
+          scroll0 = root.scrollTop,
+          s0 = C.minutes(it.start),
+          e0 = C.minutes(it.end),
+          len = e0 > s0 ? e0 - s0 : 60,
+          top0 = el.style.top,
+          ns = s0,
+          active = false,
+          pill = null,
+          auto = null,
+          timer = 0,
+          last = ev;
+        function lift() {
+          active = true;
+          el.classList.remove("tl-expanded");
+          el.classList.add("tl-dragging");
+          document.body.classList.add("cv-drag-on");
+          pill = document.createElement("span");
+          pill.className = "tl-drag-time";
+          el.appendChild(pill);
+          if (touch && navigator.vibrate) navigator.vibrate(10);
+          auto = edgeScroll(root, function () {
+            draw(last);
+          });
+          draw(last);
+        }
+        function draw(e) {
+          var dm = snap(
+            ((e.clientY - y0 + root.scrollTop - scroll0) / px) * 60,
+          );
+          ns = Math.max(startHour * 60, Math.min(latestStart(len), s0 + dm));
+          el.style.top = ((ns - startHour * 60) / 60) * px + "px";
+          pill.textContent = C.timeRange(C.toTime(ns), C.toTime(ns + len));
+          auto.to(e.clientY);
+        }
+        function move(e) {
+          last = e;
+          var far = Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0);
+          if (!active) {
+            if (touch) {
+              if (far > 10) finish(false); // a swipe: let the list scroll
+              return;
+            }
+            if (far < 6) return;
+            lift();
+          }
+          e.preventDefault();
+          draw(e);
+        }
+        function blockScroll(e) {
+          if (active) e.preventDefault();
+        }
+        function swallowClick(e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+        function up() {
+          finish(true);
+        }
+        function cancel() {
+          finish(false);
+        }
+        function key(e) {
+          if (e.key !== "Escape" || !active) return;
+          e.stopImmediatePropagation();
+          finish(false);
+        }
+        function finish(commit) {
+          clearTimeout(timer);
+          document.removeEventListener("pointermove", move);
+          document.removeEventListener("pointerup", up);
+          document.removeEventListener("pointercancel", cancel);
+          document.removeEventListener("keydown", key, true);
+          document.removeEventListener("touchmove", blockScroll, {
+            passive: false,
+          });
+          if (!active) return;
+          auto.stop();
+          pill.remove();
+          el.classList.remove("tl-dragging");
+          document.body.classList.remove("cv-drag-on");
+          // The press that ended the drag must not also open the session.
+          document.addEventListener("click", swallowClick, true);
+          setTimeout(function () {
+            document.removeEventListener("click", swallowClick, true);
+          }, 300);
+          if (commit && ns !== s0)
+            moveItem(it.id, day, C.toTime(ns), C.toTime(ns + len));
+          else el.style.top = top0;
+        }
+        if (touch) {
+          timer = setTimeout(lift, 350);
+          document.addEventListener("touchmove", blockScroll, {
+            passive: false,
+          });
+        }
+        document.addEventListener("pointermove", move);
+        document.addEventListener("pointerup", up);
+        document.addEventListener("pointercancel", cancel);
+        document.addEventListener("keydown", key, true);
+      });
+      // Long-press on touch would otherwise open the callout menu.
+      el.addEventListener("contextmenu", function (ev) {
+        if (window.matchMedia("(hover: none)").matches) ev.preventDefault();
+      });
+    });
+    var sub = $("day-detail-sub");
+    if (sub && found) {
+      var hint = document.createElement("span");
+      hint.className = "tl-drag-hint";
+      hint.textContent = window.matchMedia("(hover: none)").matches
+        ? "Hold a session to drag it"
+        : "Drag a study session to move it";
+      sub.appendChild(document.createTextNode(" "));
+      sub.appendChild(hint);
     }
   }
 
@@ -986,8 +1221,7 @@
       out.kind = "assignment";
     else if (/\s(project|phase|milestone|deliverable)\s/.test(t))
       out.kind = "project";
-    else if (/\s(presentation|presenting)\s/.test(t))
-      out.kind = "presentation";
+    else if (/\s(presentation|presenting)\s/.test(t)) out.kind = "presentation";
     else if (/\s(study|review|revise|revision)\s/.test(t)) out.kind = "study";
     else if (/\s(flight|travel|trip|vacation)\s/.test(t)) out.kind = "travel";
     else if (/\s(busy|unavailable|blocked)\s/.test(t)) out.kind = "busy";
@@ -1489,6 +1723,7 @@
 
   // ── Hooks the calendar page calls ───────────────────────────────────────
   window.__shougCalViews = {
+    setupSheetDrag: setupSheetDrag,
     render: render,
     step: function (dir) {
       if (!C || state.view === "month") return false;
@@ -1590,10 +1825,18 @@
       ".tv-ev-title{font:700 .74rem/1.2 Inter,system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
       ".tv-ev-time{font-size:.66rem;opacity:.8;white-space:nowrap}.tv-short .tv-ev-time{display:none}",
       ".tv-resize{position:absolute;left:0;right:0;bottom:0;height:7px;cursor:ns-resize}",
-      ".tv-now{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:4;pointer-events:none}",
-      ".tv-now::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red)}",
+      ".tv-now{position:absolute;left:0;right:0;height:2px;margin-top:-1px;background:#ff3b30;z-index:4;pointer-events:none}",
+      ".tv-now-rail{position:absolute;left:var(--gut);right:0;height:1px;background:rgba(255,59,48,.4);z-index:1;pointer-events:none}",
+      ".tv-now-time{position:absolute;right:0;transform:translateY(-50%);z-index:5}",
       ".tv-ghost{position:absolute;left:2px;right:2px;border-radius:7px;background:rgba(184,41,234,.22);border:1px dashed var(--brand);color:var(--brand);font:700 .68rem 'JetBrains Mono',monospace;padding:4px 6px;z-index:3;pointer-events:none}",
       ".tv-day .tv-ev-title{font-size:.86rem}.tv-day .tv-ev{padding:6px 10px}",
+      /* day pop-up drag */
+      ".timeline-event.tl-movable{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}",
+      ".timeline-event.tl-movable button,.timeline-event.tl-movable a{cursor:pointer}",
+      ".timeline-event.tl-dragging{cursor:grabbing;z-index:8;overflow:visible!important;background:color-mix(in srgb,currentColor 22%,var(--surface))!important;box-shadow:0 10px 26px rgba(0,0,0,.4);transition:none}",
+      ".timeline-event.tl-dragging .timeline-event-meta,.timeline-event.tl-dragging .day-card-actions{visibility:hidden}",
+      ".tl-drag-time{position:absolute;bottom:100%;left:6px;margin-bottom:4px;padding:2px 8px;border-radius:999px;border:1px solid currentColor;background:var(--surface);color:currentColor;font-size:.78rem;font-weight:700;white-space:nowrap;direction:ltr}",
+      ".tl-drag-hint{margin-left:10px;color:var(--muted);font-size:.82rem}.tl-drag-hint::before{content:'\\00b7';margin-right:10px}",
       /* month drag */
       "#month-grid .range-bar[data-item-id]{pointer-events:auto}",
       "#month-grid [data-item-id],#month-grid [data-exam-id]{cursor:grab;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}",

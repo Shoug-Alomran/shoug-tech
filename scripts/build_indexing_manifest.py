@@ -2,12 +2,14 @@
 """Build the edge SEO manifest from real files; never infer PDF wrapper equivalence."""
 import json
 import re
+import subprocess
 from pathlib import Path
 from urllib.parse import quote, unquote, urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'docs'
 OUTPUT = ROOT / 'workers/indexing/src/manifest.json'
+LEGACY = ROOT / 'workers/indexing/src/legacy-redirects.json'
 ORIGIN = 'https://shoug-tech.com'
 
 
@@ -69,6 +71,21 @@ def build():
     for old, targets in candidates.items():
         if len(targets) == 1 and not (DOCS / old.lstrip('/')).exists():
             redirects[old] = quote(targets[0], safe='/')
+    # Older moves found in git history by build_legacy_redirects.py. Explicit rules win.
+    # Only committed files count: this Worker can go live before the working tree does,
+    # and a redirect must never replace a live page or point at one not published yet.
+    committed = {
+        name[len('docs/'):]
+        for name in subprocess.run(
+            ['git', '-c', 'core.quotepath=false', 'ls-tree', '-r', 'HEAD', '--name-only', '--', 'docs'],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.splitlines()
+    }
+    as_file = lambda url: unquote(url).lstrip('/') + ('index.html' if url.endswith('/') else '')
+    legacy = json.loads(LEGACY.read_text(encoding='utf-8')) if LEGACY.is_file() else {}
+    for old, new in legacy.items():
+        if as_file(new) in committed and as_file(old) not in committed:
+            redirects.setdefault(old, new)
     for destination in redirects.values():
         target = DOCS / unquote(destination).lstrip('/')
         if destination.endswith('/'):

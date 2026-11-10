@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en" data-sg-styled data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CS316 Normalization Lab: Logistic and Linear Regression</title>
+    <meta
+      name="description"
+      content="CS316 Normalization Lab: Logistic and Linear Regression, Introduction to AI and Data Science."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/normalization-model-performance-lab/normalization-model-performance-lab.html"
+    />
+    <meta
+      property="og:title"
+      content="CS316 Normalization Lab: Logistic and Linear Regression"
+    />
+    <meta
+      property="og:description"
+      content="CS316 Normalization Lab: Logistic and Linear Regression, Introduction to AI and Data Science."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/normalization-model-performance-lab/normalization-model-performance-lab.html"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="CS316 Normalization Lab: Logistic and Linear Regression"
+    />
+    <meta
+      name="twitter:description"
+      content="CS316 Normalization Lab: Logistic and Linear Regression, Introduction to AI and Data Science."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/computer-science/cs316/extra-resources/notebooks/normalization-model-performance-lab/normalization-model-performance-lab.html",
+        "name": "Normalization Lab: Logistic and Linear Regression"
+      }
+    </script>
+    <script>
+      (function () {
+        var d = "dark";
+        try {
+          if (window.parent !== window) {
+            var b = parent.document.body;
+            if (!b.classList.contains("shoug-light-mode")) d = "dark";
+            else d = "light";
+          } else if (localStorage.getItem("theme") === "light") {
+            d = "light";
+          }
+        } catch (e) {}
+        document.documentElement.setAttribute("data-theme", d);
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #f6f5fb;
+        --panel: #fff;
+        --code: #f0eef8;
+        --text: #1c2435;
+        --muted: #5b6478;
+        --line: #d8d5e6;
+        --accent: #7a3fd0;
+      }
+      html[data-theme="dark"] {
+        --bg: #0b0912;
+        --panel: #14111e;
+        --code: #1b1727;
+        --text: #ece9f5;
+        --muted: #a59fb8;
+        --line: #2e2840;
+        --accent: #c084fc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+      body {
+        font:
+          16px/1.65 Inter,
+          system-ui,
+          sans-serif;
+        overflow-wrap: anywhere;
+      }
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 28px clamp(14px, 4vw, 40px) 60px;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.25;
+        margin: 1.4em 0 0.5em;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+      h3 {
+        font-size: 1.15rem;
+      }
+      a {
+        color: var(--accent);
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        background: #fff;
+        border-radius: 6px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+      }
+      .cell {
+        margin: 14px 0;
+      }
+      pre {
+        margin: 0;
+        padding: 12px 14px;
+        background: var(--code);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow-x: auto;
+        font:
+          13px/1.5 "JetBrains Mono",
+          ui-monospace,
+          monospace;
+        white-space: pre;
+      }
+      .out {
+        margin-top: 6px;
+      }
+      .out pre {
+        background: transparent;
+        border-style: dashed;
+        color: var(--muted);
+      }
+      .tw {
+        overflow-x: auto;
+        margin: 8px 0;
+      }
+      table {
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 4px 9px;
+        text-align: left;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css"
+    />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"
+      onload="
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false,
+        })
+      "
+    ></script>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Normalization Lab: Logistic and Linear Regression</h1>
+      <p class="note">
+        Read-only copy of the course notebook.
+        <a href="./normalization-model-performance-lab.ipynb" download
+          >Download the .ipynb</a
+        >
+        to run it in Jupyter or Colab.
+      </p>
+      <div class="cell">
+        <h1>
+          Normalization and Model Performance: Logistic Regression &amp; Linear
+          Regression
+        </h1>
+        <p>
+          <strong>Course:</strong> AI &amp; Data Science |
+          <strong>Time:</strong> ~60 min
+        </p>
+        <h3>Learning objectives</h3>
+        <ol>
+          <li>
+            Use <code>StandardScaler</code> and
+            <code>MinMaxScaler</code> correctly (fit on train, transform train
+            and test).
+          </li>
+          <li>
+            Show how normalization affects a
+            <strong>binary classifier (logistic regression)</strong>:
+            convergence, accuracy, regularization, gradient descent.
+          </li>
+          <li>
+            Show how normalization affects <strong>linear regression</strong>:
+            predictions, coefficient interpretation, gradient descent, Ridge,
+            conditioning.
+          </li>
+          <li>Avoid <strong>data leakage</strong> when scaling.</li>
+        </ol>
+        <h3>How to use this notebook</h3>
+        <ul>
+          <li>
+            Cells containing <strong><code>___</code></strong> are
+            <strong>blanks for you to fill in</strong>. Replace each
+            <code>___</code> with the correct code.
+          </li>
+          <li>
+            Run cells top to bottom. A cell with an unfilled blank raises an
+            error; that is expected.
+          </li>
+          <li>
+            Where you see <strong>Your answer:</strong>, write a short answer in
+            the text cell below.
+          </li>
+        </ul>
+      </div>
+      <div class="cell">
+        <pre>
+import warnings
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge, SGDRegressor
+from sklearn.metrics import accuracy_score, log_loss, r2_score
+
+np.random.seed(42)
+pd.set_option(&quot;display.float_format&quot;, lambda v: f&quot;{v:,.4f}&quot;)
+plt.rcParams[&quot;figure.figsize&quot;] = (8, 4)
+print(&quot;Setup complete&quot;)</pre>
+        <div class="out">
+          <pre>
+Setup complete
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <hr />
+        <h2>Part 1. The tools</h2>
+        <p>A tiny dataset whose features live on very different scales:</p>
+      </div>
+      <div class="cell">
+        <pre>
+df = pd.DataFrame({
+    &quot;age&quot;:          [22, 35, 47, 52, 29],
+    &quot;salary&quot;:       [28000, 54000, 81000, 120000, 39000],
+    &quot;num_children&quot;: [0, 1, 2, 3, 0],
+})
+df</pre>
+        <div class="out">
+          <div class="tw">
+            <div
+              id="df-e15eaf3f-c4e2-4743-9436-c7b0293e71d8"
+              class="colab-df-container"
+            >
+              <div>
+                <table border="1" class="dataframe">
+                  <thead>
+                    <tr style="text-align: right">
+                      <th></th>
+                      <th>age</th>
+                      <th>salary</th>
+                      <th>num_children</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>0</th>
+                      <td>22</td>
+                      <td>28000</td>
+                      <td>0</td>
+                    </tr>
+                    <tr>
+                      <th>1</th>
+                      <td>35</td>
+                      <td>54000</td>
+                      <td>1</td>
+                    </tr>
+                    <tr>
+                      <th>2</th>
+                      <td>47</td>
+                      <td>81000</td>
+                      <td>2</td>
+                    </tr>
+                    <tr>
+                      <th>3</th>
+                      <td>52</td>
+                      <td>120000</td>
+                      <td>3</td>
+                    </tr>
+                    <tr>
+                      <th>4</th>
+                      <td>29</td>
+                      <td>39000</td>
+                      <td>0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="colab-df-buttons">
+                <div class="colab-df-container">
+                  <button
+                    class="colab-df-convert"
+                    onclick="
+                      convertToInteractive(
+                        'df-e15eaf3f-c4e2-4743-9436-c7b0293e71d8',
+                      )
+                    "
+                    title="Convert this dataframe to an interactive table."
+                    style="display: none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24px"
+                      viewBox="0 -960 960 960"
+                    >
+                      <path
+                        d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div id="id_44a91a01-11c2-4e03-bcea-272a7da98877">
+                  <button
+                    class="colab-df-generate"
+                    onclick="generateWithVariable('df')"
+                    title="Generate code using this dataframe."
+                    style="display: none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      width="24px"
+                    >
+                      <path
+                        d="M7,19H8.4L18.45,9,17,7.55,7,17.6ZM5,21V16.75L18.45,3.32a2,2,0,0,1,2.83,0l1.4,1.43a1.91,1.91,0,0,1,.58,1.4,1.91,1.91,0,0,1-.58,1.4L9.25,21ZM18.45,9,17,7.55Zm-12,3A5.31,5.31,0,0,0,4.9,8.1,5.31,5.31,0,0,0,1,6.5,5.31,5.31,0,0,0,4.9,4.9,5.31,5.31,0,0,0,6.5,1,5.31,5.31,0,0,0,8.1,4.9,5.31,5.31,0,0,0,12,6.5,5.46,5.46,0,0,0,6.5,12Z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cell">
+        <p>
+          <strong>Standardization (z-score):</strong> $z = \frac{x -
+          \mu}{\sigma}$, giving mean 0 and standard deviation 1 per feature.
+        </p>
+        <p>
+          <strong>Min-max scaling:</strong> $x' = \frac{x - x_{min}}{x_{max} -
+          x_{min}}$, giving values in [0, 1].
+        </p>
+        <p><strong>Task:</strong> apply both scalers to <code>df</code>.</p>
+      </div>
+      <div class="cell">
+        <pre>
+std_scaler = StandardScaler() # Create a standard scaler instance to scale df
+X_std = std_scaler.fit_transform(df) # Obtains standardized x
+
+mm_scaler = MinMaxScaler() # Create a min max scaler to scale df
+X_mm = mm_scaler.fit_transform(df) # To obtain standardized x
+
+X_std_df = pd.DataFrame(X_std, columns=df.columns)
+print(&quot;standardized mean:&quot;, X_std_df.mean().round(6).to_dict())
+print(&quot;standardized std :&quot;, X_std_df.std(ddof=0).round(6).to_dict())
+print(&quot;min-max range    :&quot;, X_mm.min(axis=0), X_mm.max(axis=0))
+
+
+# mean of scaled data = 0
+# sd of scaled data = 1 using standard scaler while in min-max range it will be 0-1</pre>
+        <div class="out">
+          <pre>
+standardized mean: {&#x27;age&#x27;: 0.0, &#x27;salary&#x27;: 0.0, &#x27;num_children&#x27;: 0.0}
+standardized std : {&#x27;age&#x27;: 1.0, &#x27;salary&#x27;: 1.0, &#x27;num_children&#x27;: 1.0}
+min-max range    : [0. 0. 0.] [1. 1. 1.]
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <p>
+          <strong>Check by hand.</strong> <code>StandardScaler</code> is just a
+          formula (it uses the <em>population</em> std, <code>ddof=0</code>).
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+manual_z = (df - df.mean()) / df.std(ddof=0)
+print(&quot;Manual result matches StandardScaler:&quot;, np.allclose(manual_z.values, X_std))</pre>
+        <div class="out">
+          <pre>
+Manual result matches StandardScaler: True
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <hr />
+        <h2>Part 2. Logistic regression (binary classification)</h2>
+        <p>
+          Dataset: Wisconsin breast cancer (569 patients, 30 numeric features,
+          target: benign = 1 / malignant = 0).
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+data = load_breast_cancer(as_frame=True)
+X, y = data.data, data.target
+
+print(X.describe().T[[&quot;min&quot;, &quot;max&quot;, &quot;std&quot;]].sort_values(&quot;std&quot;, ascending=False).iloc[[0, 1, 2, -3, -2, -1]])
+
+fig, ax = plt.subplots()
+ax.bar(range(X.shape[1]), X.std().values)
+ax.set_yscale(&quot;log&quot;); ax.set_xlabel(&quot;feature index&quot;); ax.set_ylabel(&quot;std (log scale)&quot;)
+ax.set_title(&quot;Feature standard deviations span ~4 orders of magnitude&quot;)
+plt.show()
+
+# Load data - outputs indicate we need to standardize</pre>
+        <div class="out">
+          <pre>
+                             min        max      std
+worst area              185.2000 4,254.0000 569.3570
+mean area               143.5000 2,501.0000 351.9141
+area error                6.8020   542.2000  45.4910
+concave points error      0.0000     0.0528   0.0062
+smoothness error          0.0017     0.0311   0.0030
+fractal dimension error   0.0009     0.0298   0.0026
+</pre>
+          <img
+            alt="Notebook output"
+            loading="lazy"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAr4AAAGJCAYAAABsEDD9AAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvlHJYcgAAAAlwSFlzAAAPYQAAD2EBqD+naQAAT0ZJREFUeJzt3XlYVeX+///XBgUUAQcUJBWcUsmEQkEcUpMyNXPItOGccEg7hpmRmp7zyaEsStNo2GU2aDYdx6y0zLTMjlmaRlqmpeGQE46gmJBw//7ox/66ZaMgGzbu/Xxc17ou9r3utdZ7r33vxZube93LYowxAgAAANycl6sDAAAAAMoDiS8AAAA8AokvAAAAPAKJLwAAADwCiS8AAAA8AokvAAAAPAKJLwAAADwCiS8AAAA8AokvAAAAPAKJL+BBBg0apIiIiHI51ty5c2WxWLR79+7L2r48Yo2IiNCgQYOcus/yPMe4MpVFuysPp0+f1n333afQ0FBZLBaNHj3a1SGVicmTJ8tisZTb8SwWiyZPnlxux/N0JL64LAVJjaNl/PjxZXLMb775RpMnT9bJkyfLZP9l7b333lNqaqqrw4ATHDhwQJMnT1ZaWpqrQ0Exvfvuu7JYLKpWrZqrQ7liPfXUU5o7d65GjBiht99+W//85z9dHVK5eeqpp7R06VJXhwEnqOTqAHBle/zxx9WwYUO7spYtW5bJsb755htNmTJFgwYNUvXq1cvkGGXpvffe008//eS2vSRXoh07dsjLq+R//x84cEBTpkxRRESEoqOj7da99tprys/Pd1KEcIbTp09r3Lhx8vf3d3UoV7QvvvhCbdu21aRJk1wdSpn6v//7v0IdOE899ZT69++vPn36uCYoOA2JL0qle/fuat26tavDKJXs7Gx+IV6G/Px85ebmys/Pz9WhXDZfX1+n77Ny5cpO3ydKZ+rUqQoICFCXLl3KpdeuPK8p586dU35+vnx8fMr8WBkZGYqMjCzz47hapUqVVKkS6ZG7YqgDytSnn36qjh07yt/fXwEBAerZs6d+/vlnuzpbtmzRoEGD1KhRI/n5+Sk0NFRDhgzRsWPHbHUmT56ssWPHSpIaNmxoG1axe/du7d69WxaLRXPnzi10/AvHThWM3dq2bZvuvvtu1ahRQx06dLCtf+eddxQTE6MqVaqoZs2auvPOO7Vv375Lvs9Tp05p9OjRioiIkK+vr+rUqaObbrpJmzdvliR17txZy5cv1549e2yxF4wDzc3N1cSJExUTE6OgoCD5+/urY8eO+vLLL+2OUfA+n332Wc2ePVuNGzeWr6+v2rRpo40bNxaKaenSpWrZsqX8/PzUsmVLffDBBw5jf/bZZ9WuXTvVqlVLVapUUUxMjBYtWuTwXI4cOVLvvvuurrnmGvn6+mrFihWSpJ9//lk33nijqlSponr16mnq1Kkl6vUsbqz5+flKTU3VNddcIz8/P4WEhOj+++/XiRMnbHVuvfVWNWrUyOH28fHxdn+oXTjW8vjx4xozZoyuvfZaVatWTYGBgerevbt+/PFHW501a9aoTZs2kqTBgwfbPs+C9udojG92drYeeeQR1a9fX76+vmrWrJmeffZZGWPs6hWc44Lz4evrq2uuucZ2ngtcqr0VpTjbde7cWS1bttSmTZvUrl07ValSRQ0bNtSsWbPs9lVW7dbZfvvtNz333HOaOXNmiZOZL774wnb9ql69unr37q1ffvnFrs7FrinGGE2dOlX16tVT1apV1aVLl0LXvwInT57U6NGjbW2kSZMmeuaZZ+y+R+efy9TUVNu53LZtmyTpxRdf1DXXXKOqVauqRo0aat26td57771Lvs+MjAwNHTpUISEh8vPzU1RUlN566y3b+jVr1shisSg9PV3Lly+3u/4WpaAtL1y4UJGRkapSpYri4+O1detWSdKrr76qJk2ayM/PT507dy60r6+//lp33HGHGjRoIF9fX9WvX18PP/yw/vzzz0LHKjjG+dePC7+HJWmHF47xtVgsys7O1ltvvWV77wXXjaLG9DsaJ5yTk6OHH35YtWvXVkBAgG677Tb98ccfDs/f/v37NWTIEIWEhNiuA2+++WZRpxslwJ80KJXMzEwdPXrUriw4OFiS9PbbbysxMVHdunXTM888ozNnzuiVV15Rhw4d9MMPP9guFp9//rl+//13DR48WKGhofr55581e/Zs/fzzz/r2229lsVjUr18//frrr3r//ff13HPP2Y5Ru3ZtHTlypMRx33HHHWratKmeeuopW/Lx5JNP6rHHHtOAAQN033336ciRI3rxxRd1ww036Icffrjo8Ip//etfWrRokUaOHKnIyEgdO3ZM//vf//TLL7/o+uuv13/+8x9lZmbqjz/+0HPPPSdJtrGGWVlZev3113XXXXdp2LBhOnXqlN544w1169ZNGzZsKPSv9Pfee0+nTp3S/fffL4vFomnTpqlfv376/fffbb2NK1eu1O23367IyEilpKTo2LFjGjx4sOrVq1co9ueff1633Xab7rnnHuXm5uq///2v7rjjDi1btkw9e/a0q/vFF19owYIFGjlypIKDgxUREaFDhw6pS5cuOnfunMaPHy9/f3/Nnj1bVapUKdZnUZJY77//fs2dO1eDBw/WqFGjlJ6erpdeekk//PCD1q1bp8qVK2vgwIG69957tXHjRluCKkl79uzRt99+q+nTpxcZy++//66lS5fqjjvuUMOGDXX48GG9+uqr6tSpk7Zt26awsDC1aNFCjz/+uCZOnKjhw4erY8eOkqR27do53KcxRrfddpu+/PJLDR06VNHR0frss880duxY7d+/39YeCvzvf//TkiVL9MADDyggIEAvvPCCbr/9du3du1e1atWSdOn2VpTibnfixAn16NFDAwYM0F133aUFCxZoxIgR8vHx0ZAhQySVTbstC6NHj1aXLl3Uo0cPLViwoNjbrVq1St27d1ejRo00efJk/fnnn3rxxRfVvn17bd68uVCy4+iaMnHiRE2dOlU9evRQjx49tHnzZt18883Kzc212/bMmTPq1KmT9u/fr/vvv18NGjTQN998owkTJujgwYOF7g2YM2eOzp49q+HDh8vX11c1a9bUa6+9plGjRql///566KGHdPbsWW3ZskXfffed7r777iLf559//qnOnTtr586dGjlypBo2bKiFCxdq0KBBOnnypB566CG1aNFCb7/9th5++GHVq1dPjzzyiKS/r78X8/XXX+ujjz5SUlKSJCklJUW33nqrxo0bp5dfflkPPPCATpw4oWnTpmnIkCH64osvbNsuXLhQZ86c0YgRI1SrVi1t2LBBL774ov744w8tXLjQVm/58uUaOHCgrr32WqWkpOjEiRMaOnSorrrqKocxXU47fPvtt3XfffcpNjZWw4cPlyQ1btz4ou/dkfvuu0/vvPOO7r77brVr105ffPFFoWusJB0+fFht27a1/fFQu3Ztffrppxo6dKiysrIYLldaBrgMc+bMMZIcLsYYc+rUKVO9enUzbNgwu+0OHTpkgoKC7MrPnDlTaP/vv/++kWTWrl1rK5s+fbqRZNLT0+3qpqenG0lmzpw5hfYjyUyaNMn2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vddWXjCUrkBBbDt37iy0D0dlpXGx3z+OHqp04e+f8PBw5efna9euXXa9vBe2sYIZH/Ly8krdHuAYQx1QJrp166bAwEA99dRT+uuvvwqtL5iJoeCv7wv/2nb0hLOCXzQXXmQCAwMVHBxcaBzcyy+/XOx4+/XrJ29vb02ZMqVQLMYYu6nVLpSXl1foX7t16tRRWFiYcnJy7OJ39C9gR+fgu+++s/2bvqTq1q2r6OhovfXWW3bH+/zzz23THp1/bIvFYtc7sXv37hLNddqjRw99++232rBhg63syJEjRfbMXm6sAwYMUF5enp544olC+zl37lyhdjFw4EAdOHBAr7/+un788cdLDnOQ/j4fF37+Cxcu1P79++3KimqLjvTo0UN5eXl66aWX7Mqfe+45WSyWEve0Fre9lWa7c+fO6dVXX7W9zs3N1auvvqratWsrJiZGkvPbrTPVqVNHH3zwQaGlS5cu8vPz0wcffKAJEyYUuf357fL8z/inn37SypUr1aNHj0vGkJCQoMqVK+vFF1+0O0eOrm0DBgzQ+vXr9dlnnxVad/LkSZ07d+6Sx7vwGuXj46PIyEgZYxxegwv06NFDhw4d0vz5821l586d04svvqhq1arZDR8pL47aljFGzz//vF29sLAwtWzZUvPmzdPp06dt5V999ZVt2jRn8ff3d/h9b9y4sTIzM7VlyxZb2cGDBwtNyVjwPX/hhRfsyi9sD97e3rr99tu1ePFi/fTTT4WOdzmzGMEePb4oE4GBgXrllVf0z3/+U9dff73uvPNO1a5d23YjSvv27fXSSy8pMDBQN9xwg6ZNm6a//vpLV111lVauXKn09PRC+yz4hfuf//xHd955pypXrqxevXrJ399f9913n55++mndd999at26tdauXWvroSqOxo0ba+rUqZowYYJ2796tPn36KCAgQOnp6frggw80fPhwjRkzxuG2p06dUr169dS/f39FRUWpWrVqWrVqlTZu3KgZM2bYxT9//nwlJyerTZs2qlatmnr16qVbb71VS5YsUd++fdWzZ0+lp6dr1qxZioyMtLuYl0RKSop69uypDh06aMiQITp+/Lhtjs/z99mzZ0/NnDlTt9xyi+6++25lZGTIarWqSZMmdhfyixk3bpzefvtt3XLLLXrooYds05kV9CQ5K9ZOnTrp/vvvV0pKitLS0nTzzTercuXK+u2337Rw4UI9//zz6t+/v61+jx49FBAQoDFjxth+mVzKrbfeqscff1yDBw9Wu3bttHXrVr377ruF5gVu3LixqlevrlmzZikgIED+/v6Ki4tzOPayV69e6tKli/7zn/9o9+7dioqK0sqVK/Xhhx9q9OjRJZ4WqbjtrTTbhYWF6ZlnntHu3bt19dVXa/78+UpLS9Ps2bNtUz6VRbt1lqpVqzp8wtbSpUu1YcOGYj19a/r06erevbvi4+M1dOhQ23RmQUFBdnODF6V27doaM2aMbQqvHj166IcfftCnn35q998DSRo7dqw++ugj3XrrrRo0aJBiYmKUnZ2trVu3atGiRdq9e3ehbS508803KzQ0VO3bt1dISIh++eUXvfTSS+rZs2eh8eXnGz58uF599VUNGjRImzZtUkREhBYtWqR169YpNTX1otuWlebNm6tx48YaM2aM9u/fr8DAQC1evNjhONynnnpKvXv3Vvv27TV48GCdOHFCL730klq2bOnUdhgTE6NVq1Zp5syZCgsLU8OGDRUXF6c777xTjz76qPr27atRo0bZpu28+uqr7W5Ci46O1l133aWXX35ZmZmZateunVavXu2wZ/rpp5/Wl19+qbi4OA0bNkyRkZE6fvy4Nm/erFWrVun48eNOe18eqRxnkIAbKZjObOPGjRet9+WXX5pu3bqZoKAg4+fnZxo3bmwGDRpkvv/+e1udP/74w/Tt29dUr17dBAUFmTvuuMMcOHCg0BQvxvw97c9VV11lvLy87Ka/OXPmjBk6dKgJCgoyAQEBZsCAASYjI6PI6cyOHDniMN7FixebDh06GH9/f+Pv72+aN29ukpKSzI4dO4p8jzk5OWbs2LEmKirKBAQEGH9/fxMVFWVefvllu3qnT582d999t6levbrdVDv5+fnmqaeeMuHh4cbX19dcd911ZtmyZYWmySmYjmf69OmFYnB0rhYvXmxatGhhfH19TWRkpFmyZInDqXfeeOMN07RpU+Pr62uaN29u5syZ43A6H0lFToW1ZcsW06lTJ+Pn52euuuoq88QTT5g33nijWNOZlSRWY4yZPXu2iYmJMVWqVDEBAQHm2muvNePGjTMHDhwoVPeee+4xkkxCQoLD4zqazuyRRx4xdevWNVWqVDHt27c369evN506dTKdOnWy2/bDDz80kZGRplKlSnZTmzmK+9SpU+bh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kfv09fWVr69vmcYNAAAA17isJ7d99dVX6tWrl22ow2233aavv/7a2bE5xW233aZff/1VO3fu1PDhw4u1jdVqVWRkpG3MMgAAAK58JU5833nnHSUkJKhq1aoaNWqURo0aJT8/P3Xt2lXvvfdeWcToUHBwsLy9vXX48GG78sOHDys0NLRU+05KStK2bdu0cePGUu0HAAAAFUeJE98nn3xS06ZN0/z5822J74IFC/T000/riSeeKIsYHfLx8VFMTIxWr15tK8vPz9fq1asVHx9fqn3T4wsAAOB+Spz4/v777+rVq1eh8ttuu03p6elOCarA6dOnlZaWprS0NElSenq60tLStHfvXklScnKyXnvtNb311lv65ZdfNGLECGVnZ2vw4MGlOi49vgAAAO6nxDe31a9fX6tXr1aTJk3syletWuX0GRC+//57denSxfa6YMaFxMREzZ07VwMHDtSRI0c0ceJEHTp0SNHR0VqxYkWhG94AAACAEie+jzzyiEaNGqW0tDTbY4vXrVunuXPn6vnnn3dqcJ07d5Yx5qJ1Ro4cqZEjRzr1uAAAAHA/JU58R4wYodDQUM2YMUMLFiyQJLVo0ULz589X7969nR6gK1itVlmtVuXl5bk6FAAAADjJZc3j27dv3yKfpuYOkpKSlJSUpKysLAUFBbk6HAAAADjBZc3jCwAAAFxpitXjW6NGDVkslmLt8Pjx46UKqCJgqAMAAID7KVbim5qaWsZhVCwMdQAAAHA/xUp8ExMTyzoOAHCKiPHLL3vb3U/3dGIkAICKplhjfLOzs0u005LWBwAAAMpasRLfJk2a6Omnn9bBgweLrGOM0eeff67u3bvrhRdecFqArsAjiwEAANxPsYY6rFmzRv/+9781efJkRUVFqXXr1goLC5Ofn59OnDihbdu2af369apUqZImTJig+++/v6zjLlOM8QUAAHA/xUp8mzVrpsWLF2vv3r1auHChvv76a33zzTf6888/FRwcrOuuu06vvfaaunfvLm9v77KOGQAAACixEj3AokGDBnrkkUf0yCOPlFU8AAAAQJngARYAAADwCCS+DnBzGwAAgPsh8XUgKSlJ27Zt08aNG10dCgAAAJyExBcAAAAegcQXAAAAHqFYszps2bKl2Dts1arVZQcDAAAAlJViJb7R0dGyWCwyxshisVy0bl5enlMCAwAAAJypWEMd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ZD744APb6/z8fBMaGmqmT59uKzt58qTx9fU177//vgsidF8XnntjjElMTDS9e/d2STyeJCMjw0gyX331lTHm7zZeuXJls3DhQludX375xUgy69evd1WYbufC826MMZ06dTIPPfSQ64LyIDVq1DCvv/56ubZ3enyvALm5udq0aZMSEhJsZV5eXkpISND69etdGJn7++233xQWFqZGjRrpnnvu0d69e10dksdJT0/XoUOH7Np/UFCQ4uLiaP/lZM2aNapTp46aNWumESNG6NixY64Oye1kZmZKkmrWrClJ2rRpk/766y+7dt+8eXM1aNCAdu9EF573Au+++66Cg4PVsmVLTZgwQWfOnHFFeG4rLy9P//3vf5Wdna34+Phybe+VnLo3lImjR48qLy9PISEhduUhISHavn27i6Jyf3FxcZo7d66aNWumgwcPasqUKerYsaN++uknBQQEuDo8j3Ho0CFJctj+C9ah7Nxyyy3q16+fGjZsqF27dunf//63unfvrvXr18vb29vV4bmF/Px8jR49Wu3bt1fLli0l/d3ufXx8VL16dbu6tHvncXTeJenuu+9WeHi4wsLCtGXLFj366KPasWOHlixZ4sJo3cPWrVsVHx+vs2fPqlq1avrggw8UGRmptLS0cmvvJL5AEbp37277uVWrVoqLi1N4eLgWLFigoUOHujAyoPzceeedtp+vvfZatWrVSo0bN9aaNWvUtWtXF0bmPpKSkvTTTz9xD0E5K+q8Dx8+3Pbztddeq7p166pr167atWuXGjduXN5hupVmzZopLS1NmZmZWrRokRITE/XVV1+VawwMdbgCBAcHy9vbu9DdjYcPH1ZoaKiLovI81atX19VXX62dO3e6OhSPUtDGaf8VQ6NGjRQcHMz3wElGjhypZcuW6csvv1S9evVs5aGhocrNzdXJkyft6tPunaOo8+5IXFycJNHmncDHx0dNmjRRTEyMUlJSFBUVpeeff75c2zuJ7xXAx8dHMTExWr16ta0sPz9fq1evVnx8vAsj8yynT5/Wrl27VLduXVeH4lEaNmyo0NBQu/aflZWl7777jvbvAn/88YeOHTvG96CUjDEaOXKkPvjgA33xxRdq2LCh3fqYmBhVrlzZrt3v2LFDe/fupd2XwqXOuyNpaWmSRJsvA/n5+crJySnX9s5QhytEcnKyEhMT1bp1a8XGxio1NVXZ2dkaPHiwq0NzW2PGjFGvXr0UHh6uAwcOaNKkSfL29tZdd93l6tDczunTp+16U9LT05WWlqaaNWuqQYMGGj16tKZOnaqmTZuqYcOGeuyxxxQWFqY+ffq4Lmg3cbFzX7NmTU2ZMkW33367QkNDtWvXLo0bN05NmjRRt27dXBj1lS8pKUnvvfeePvzwQwUEBNjGMQYFBalKlSoKCgrS0KFDlZycrJo1ayowMFAPPvig4uPj1bZtWxdHf+W61HnftWuX3nvvPfXo0UO1atXSli1b9PDDD+uGG25Qq1atXBz9lW3ChAnq3r27GjRooFOnTum9997TmjVr9Nlnn5Vve3fqHBEoUy+++KJp0KCB8fHxMbGxsebbb791dUhubeDAgaZu3brGx8fHXHXVVWbgwIFm586drg7LLX355ZdGUqElMTHRGPP3lGaPPfaYCQkJMb6+vqZr165mx44drg3aTVzs3J85c8bcfPPNpnbt2qZy5comPDzcDBs2zBw6dMjVYV/xHJ1zSWbOnDm2On/++ad54IEHTI0aNUzVqlVN3759zcGDB10XtBu41Hnfu3evueGGG0zNmjWNr6+vadKkiRk7dqzJzMx0beBuYMiQISY8PNz4+PiY2rVrm65du5qVK1fa1pdXe7cYY4xzU2kAAACg4mGMLwAAADwCiS8AAAA8AokvAAAAPAKJLwAAADwCiS8AAAA8AokvAAAAPAKJLwAAADwCiS8AAAA8AokvAJSCMUbDhw9XzZo1ZbFYlJaW5uqQnMZisWjp0qWl2sfcuXNVvXp1p8QDAKVVydUBAMCVbMWKFZo7d67WrFmjRo0aKTg42Cn7HTRokE6ePFnqxLM0Dh48qBo1arjs+ADgbCS+AFAKu3btUt26ddWuXTtXh+JQXl6eLBaLvLxK/g++0NDQMogIAFyHoQ4AcJkGDRqkBx98UHv37pXFYlFERIQkKT8/XykpKWrYsKGqVKmiqKgoLVq0yLZdXl6ehg4dalvfrFkzPf/887b1kydP1ltvvaUPP/xQFotFFotFa9as0Zo1a2SxWHTy5Elb3bS0NFksFu3evVvS/xta8NFHHykyMlK+vr7au3evcnJyNGbMGF111VXy9/dXXFyc1qxZc9H3d/5Qh927d8tisWjJkiXq0qWLqlatqqioKK1fv95um7lz56pBgwaqWrWq+vbtq2PHjhXa74cffqjrr79efn5+atSokaZMmaJz585Jkh5//HGFhYXZbdezZ0916dJF+fn5l/pIAODiDADgspw8edI8/vjjpl69eubgwYMmIyPDGGPM1KlTTfPmzc2KFSvMrl27zJw5c4yvr69Zs2aNMcaY3NxcM3HiRLNx40bz+++/m3feecdUrVrVzJ8/3xhjzKlTp8yAAQPMLbfcYg4ePGgOHjxocnJyzJdffmkkmRMnTthi+OGHH4wkk56ebowxZs6cOaZy5cqmXbt2Zt26dWb79u0mOzvb3HfffaZdu3Zm7dq1ZufOnWb69OnG19fX/Prrr0W+P0nmgw8+MMYYk56ebiSZ5s2bm2XLlpkdO3aY/v37m/DwcPPXX38ZY4z59ttvjZeXl3nmmWfMjh07zPPPP2+qV69ugoKCbPtcu3atCQwMNHPnzjW7du0yK1euNBEREWby5MnGGGPOnTtn4uPjTZ8+fYwxxrz00kumevXqZs+ePaX+vACAxBcASuG5554z4eHhttdnz541VatWNd98841dvaFDh5q77rqryP0kJSWZ22+/3fY6MTHR9O7d265OcRNfSSYtLc1WZ8+ePcbb29vs37/fbn9du3Y1EyZMKDImR4nv66+/blv/888/G0nml19+McYYc9ddd5kePXrY7WPgwIF2iW/Xrl3NU089ZVfn7bffNnXr1rW93rVrlwkICDCPPvqoqVKlinn33XeLjBEASoIxvgDgRDt37tSZM2d000032ZXn5ubquuuus722Wq168803tXfvXv3555/Kzc1VdHS0U2Lw8fFRq1atbK+3bt2qvLw8XX311Xb1cnJyVKtWrRLt+/z91q1bV5KUkZGh5s2b65dfflHfvn3t6sfHx2vFihW21z/++KPWrVunJ5980laWl5ens2fP6syZM6pataoaNWqkZ599Vvfff78GDhyou+++u0QxAkBRSHwBwIlOnz4tSVq+fLmuuuoqu3W+vr6SpP/+978aM2aMZsyYofj4eAUEBGj69On67rvvLrrvghvUjDG2sr/++qtQvSpVqshisdjF5O3trU2bNsnb29uubrVq1Urw7qTKlSvbfi44RknG3p4+fVpTpkxRv379Cq3z8/Oz/bx27Vp5e3tr9+7dOnfunCpV4tcVgNLjSgIATnT+DWWdOnVyWGfdunVq166dHnjgAVvZrl277Or4+PgoLy/Prqx27dqS7KcZK868wdddd53y8vKUkZGhjh07luTtlEiLFi0KJe/ffvut3evrr79eO3bsUJMmTYrcz/z587VkyRKtWbNGAwYM0BNPPKEpU6aUScwAPAuJLwA4UUBAgMaMGaOHH35Y+fn56tChgzIzM7Vu3ToFBgYqMTFRTZs21bx58/TZZ5+pYcOGevvtt7Vx40Y1bNjQtp+IiAh99tln2rFjh2rVqqWgoCA1adJE9evX1+TJk/Xkk0/q119/1YwZMy4Z09VXX6177rlH9957r2bMmKHrrrtOR44c0erVq9WqVSv17NnTKe991KhRat++vZ599ln17t1bn332md0wB0maOHGibr31VjVo0ED9+/eXl5eXfvzxR/3000+aOnWq/vjjD40YMULPPPOMOnTooDlz5ujWW29V9+7d1bZtW6fECcBzMZ0ZADjZE088occee0wpKSlq0aKFbrnlFi1fvtyW2N5///3q16+fBg4cqLi4OB07dsyu91eShg0bpmbNmql169aqXbu21q1bp8qVK+v999/X9u3b1apVKz3zzDOaOnVqsWKaM2eO7r33Xj3yyCNq1qyZ+vTpo40bN6pBgwZOe99t27bVa6+9pueff15RUVFauXKl/u///s+uTrdu3bRs2TKtXLlSbdq0Udu2bfXcc88pPDxcxhgNGjRIsbGxGjlypK3+iBEj9I9//MM2jAQALpfFnD9YDAAAAHBT9PgCAADAI5D4AgAAwCOQ+AIAAMAjkPgCAADAI5D4AgAAwCOQ+AIAAMAjkPgCAADAI5D4AgAAwCOQ+AIAAMAjkPgCAADAI5D4AgAAwCP8fycB87aGz5dVAAAAAElFTkSuQmCC"
+          />
+        </div>
+      </div>
+      <div class="cell"><h3>2.1 Split first, scale second</h3></div>
+      <div class="cell">
+        <pre>
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)   # learn mean/std from TRAIN
+X_test_s  = scaler.transform(X_test)        # reuse the SAME mean/std on TEST- creates a transformation using other parameters in the training set
+print(X_train.shape, X_test.shape)</pre>
+        <div class="out">
+          <pre>
+(426, 30) (143, 30)
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <h3>2.2 Convergence: does the solver even finish?</h3>
+        <p>
+          Logistic regression has no closed-form solution; it is fitted by an
+          iterative optimizer. With scikit-learn's default
+          <code>max_iter=100</code>, see what happens on raw vs scaled data.
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+def fit_and_report(Xtr, Xte, label, max_iter=100):
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter(&quot;always&quot;)
+        model = LogisticRegression(max_iter=max_iter).fit(Xtr, y_train) # *** create logistic reg + train
+    converged = len(caught) == 0
+    acc = accuracy_score(y_test, model.predict(Xte)) #*** to predict the true y
+    ll  = log_loss(y_test, model.predict_proba(Xte)) # *** determines loss
+    print(f&quot;{label:8s} | converged within {max_iter} iters: {converged!s:5} | test accuracy: {acc:.4f} | test log-loss: {ll:.4f}&quot;)
+    return model
+# Invoke function on raw and scaled data
+m_raw    = fit_and_report(X_train,   X_test,   &quot;RAW&quot;)
+m_scaled = fit_and_report(X_train_s, X_test_s, &quot;SCALED&quot;)</pre>
+        <div class="out">
+          <pre>
+RAW      | converged within 100 iters: False | test accuracy: 0.9650 | test log-loss: 0.0645
+SCALED   | converged within 100 iters: False | test accuracy: 0.9790 | test log-loss: 0.0648
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <p>
+          Now let the optimizer run as long as it needs, and count the
+          iterations (<code>n_iter_</code>).
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+with warnings.catch_warnings():
+    warnings.simplefilter(&quot;ignore&quot;)
+    lr_raw    = LogisticRegression(max_iter=100000).fit(X_train, y_train) # adjust number of iterations
+    lr_scaled = LogisticRegression(max_iter=100000).fit(X_train_s, y_train)
+
+print(&quot;Iterations needed (raw)   :&quot;, lr_raw.n_iter_[0]) # wrote number of iterations needed to converge
+print(&quot;Iterations needed (scaled):&quot;, lr_scaled.n_iter_[0])
+print(&quot;Test accuracy  raw / scaled:&quot;, accuracy_score(y_test, lr_raw.predict(X_test)),
+      &quot;/&quot;, accuracy_score(y_test, lr_scaled.predict(X_test_s)))
+
+
+# we will converge in less number of iterations using scaled data so it is preferable to scale data before training</pre>
+        <div class="out">
+          <pre>
+Iterations needed (raw)   : 2112
+Iterations needed (scaled): 19
+Test accuracy  raw / scaled: 0.965034965034965 / 0.9790209790209791
+</pre>
+        </div>
+      </div>
+      <div class="cell">
+        <p>
+          <strong>Your answer:</strong> Why does the optimizer need so many more
+          iterations on the raw data? (Think about the shape of the loss surface
+          when one feature ranges over thousands and another over fractions.)
+        </p>
+        <p><em>(write your answer here)</em></p>
+      </div>
+      <div class="cell">
+        <hr />
+        <h2>Part 3. Linear regression</h2>
+        <p>
+          A synthetic <strong>house price</strong> dataset (price in thousands
+          of dollars):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>feature</th>
+              <th>typical range</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>sqft</code></td>
+              <td>500 - 4000</td>
+            </tr>
+            <tr>
+              <td><code>bedrooms</code></td>
+              <td>1 - 5</td>
+            </tr>
+            <tr>
+              <td><code>age</code> (years)</td>
+              <td>0 - 50</td>
+            </tr>
+            <tr>
+              <td><code>dist_center</code> (km)</td>
+              <td>1 - 30</td>
+            </tr>
+            <tr>
+              <td><code>renovated_frac</code> (share renovated)</td>
+              <td>0 - 1</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          True relationship:
+          <code
+            >price = 50 + 0.15*sqft + 10*bedrooms - 0.8*age - 2*dist_center +
+            60*renovated_frac + noise</code
+          >
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+rng = np.random.default_rng(0)
+n = 500
+house = pd.DataFrame({
+    &quot;sqft&quot;:           rng.uniform(500, 4000, n),
+    &quot;bedrooms&quot;:       rng.integers(1, 6, n).astype(float),
+    &quot;age&quot;:            rng.uniform(0, 50, n),
+    &quot;dist_center&quot;:    rng.uniform(1, 30, n),
+    &quot;renovated_frac&quot;: rng.uniform(0, 1, n),
+})
+price = (50 + 0.15*house.sqft + 10*house.bedrooms - 0.8*house.age
+         - 2*house.dist_center + 60*house.renovated_frac + rng.normal(0, 15, n))
+
+Xh_train, Xh_test, yh_train, yh_test = train_test_split(house, price, test_size=0.25, random_state=1)
+
+sc_h = StandardScaler()
+Xh_train_s = sc_h.fit_transform(Xh_train)
+Xh_test_s  = sc_h.transform(Xh_test)
+house.describe().loc[[&quot;min&quot;, &quot;max&quot;, &quot;std&quot;]]</pre>
+      </div>
+      <div class="cell">
+        <h3>3.1 OLS predictions do NOT change with scaling</h3>
+        <p>
+          Ordinary least squares (<code>LinearRegression</code>) has a
+          closed-form solution. Rescaling a feature just rescales its
+          coefficient, so predictions are identical.
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+ols_raw    = LinearRegression().fit(Xh_train, yh_train)
+ols_scaled = LinearRegression().fit(___, yh_train)
+
+r2_raw    = r2_score(yh_test, ols_raw.predict(Xh_test))
+r2_scaled = r2_score(yh_test, ols_scaled.predict(___))
+print(f&quot;OLS test R2 raw   : {r2_raw:.6f}&quot;)
+print(f&quot;OLS test R2 scaled: {r2_scaled:.6f}&quot;)
+
+pd.DataFrame({&quot;coef (raw)&quot;: ols_raw.coef_, &quot;coef (scaled)&quot;: ols_scaled.coef_}, index=house.columns)</pre>
+      </div>
+      <div class="cell">
+        <p>
+          <strong>Your answer:</strong> If predictions are identical, why might
+          you still scale for linear regression? Using the
+          <em>raw</em> coefficients, <code>renovated_frac</code> (about 60)
+          looks hugely more important than <code>sqft</code> (about 0.15). Using
+          the <em>scaled</em> coefficients, which feature has the largest effect
+          per standard deviation?
+        </p>
+        <p><em>(write your answer here)</em></p>
+      </div>
+      <div class="cell">
+        <h3>3.3 Gradient descent for linear regression</h3>
+        <p>
+          Complete the gradient and update lines (loss = mean squared error).
+        </p>
+      </div>
+      <div class="cell">
+        <pre>
+def gradient_descent(X, y, lr, n_iter):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, d = X.shape
+    Xb = np.c_[np.ones(n), X]
+    w = np.zeros(d + 1)
+    losses = []
+    with np.errstate(all=&quot;ignore&quot;):
+        for _ in range(n_iter):
+            error = Xb @ w - y
+            losses.append(np.mean(error ** 2))
+            if not np.isfinite(losses[-1]):          # training exploded
+                break
+            grad = (2 / n) * Xb.T @ ___
+            w = w - lr * ___
+    return w, losses</pre>
+      </div>
+      <div class="cell">
+        <pre>
+w_a, loss_a = gradient_descent(Xh_train,   yh_train, lr=0.01, n_iter=200)
+w_b, loss_b = gradient_descent(Xh_train,   yh_train, lr=1e-7, n_iter=200)
+w_c, loss_c = gradient_descent(Xh_train_s, yh_train, lr=0.1,  n_iter=200)
+
+print(&quot;Raw, lr=0.01 -&gt; iterations before exploding:&quot;, len(loss_a), &quot;| final loss:&quot;, loss_a[-1])
+print(f&quot;Raw, lr=1e-7 -&gt; final loss: {loss_b[-1]:,.1f}&quot;)
+print(f&quot;Scaled, lr=0.1 -&gt; final loss: {loss_c[-1]:,.1f}&quot;)
+
+fig, ax = plt.subplots()
+ax.plot(loss_b, label=&quot;raw features, lr=1e-7 (tiny lr needed)&quot;)
+ax.plot(loss_c, label=&quot;scaled features, lr=0.1&quot;)
+ax.set_yscale(&quot;log&quot;); ax.set_xlabel(&quot;iteration&quot;); ax.set_ylabel(&quot;training MSE (log)&quot;)
+ax.legend(); ax.set_title(&quot;Gradient descent convergence&quot;); plt.show()</pre>
+      </div>
+    </main>
+  </body>
+</html>

@@ -5,7 +5,8 @@
   "use strict";
   if (document.getElementById("ans-search")) return;
   var head =
-    document.querySelector(".top .wrap") || document.querySelector(".as-top .as-wrap");
+    document.querySelector(".top .wrap") ||
+    document.querySelector(".as-top .as-wrap");
   if (!head) return;
 
   var CSS =
@@ -39,7 +40,10 @@
   input.id = "ans-input";
   input.type = "search";
   input.placeholder = "Search slides, notes, tips…";
-  input.setAttribute("aria-label", "Search the annotated slides for this course");
+  input.setAttribute(
+    "aria-label",
+    "Search the annotated slides for this course",
+  );
   input.setAttribute("autocomplete", "off");
   input.setAttribute("spellcheck", "false");
   var panel = document.createElement("div");
@@ -116,14 +120,19 @@
     var text = slide[2];
     var lower = slide[4];
     var at = -1;
-    for (var i = 0; i < words.length && at < 0; i++) at = lower.indexOf(words[i]);
+    for (var i = 0; i < words.length && at < 0; i++)
+      at = lower.indexOf(words[i]);
     if (at < 0) return text.slice(0, 130);
     var from = Math.max(0, at - 55);
     if (from > 0) {
       var space = text.indexOf(" ", from);
       if (space >= 0 && space < at) from = space + 1;
     }
-    return (from > 0 ? "…" : "") + text.slice(from, from + 150) + (from + 150 < text.length ? "…" : "");
+    return (
+      (from > 0 ? "…" : "") +
+      text.slice(from, from + 150) +
+      (from + 150 < text.length ? "…" : "")
+    );
   }
 
   function items() {
@@ -138,8 +147,12 @@
       el.classList.toggle("sel", k === selected);
     });
     var el = list[selected];
-    if (el.offsetTop < panel.scrollTop + 34) panel.scrollTop = el.offsetTop - 34;
-    else if (el.offsetTop + el.offsetHeight > panel.scrollTop + panel.clientHeight)
+    if (el.offsetTop < panel.scrollTop + 34)
+      panel.scrollTop = el.offsetTop - 34;
+    else if (
+      el.offsetTop + el.offsetHeight >
+      panel.scrollTop + panel.clientHeight
+    )
       panel.scrollTop = el.offsetTop + el.offsetHeight - panel.clientHeight;
   }
 
@@ -190,7 +203,11 @@
     }
     var title = document.createElement("span");
     title.className = "ans-title";
-    appendMarked(title, "Slide " + slide[0] + " · " + (slide[1] || "Untitled"), words);
+    appendMarked(
+      title,
+      "Slide " + slide[0] + " · " + (slide[1] || "Untitled"),
+      words,
+    );
     el.appendChild(title);
     var snip = document.createElement("span");
     snip.className = "ans-snip";
@@ -248,12 +265,20 @@
       message("No results for “" + q + "”.");
       return;
     }
-    addGroup("This chapter: " + here.length + (here.length === 1 ? " slide" : " slides"));
+    addGroup(
+      "This chapter: " +
+        here.length +
+        (here.length === 1 ? " slide" : " slides"),
+    );
     here.slice(0, 40).forEach(function (h) {
       addItem(h.deck, h.slide, words, true);
     });
     if (other.length) {
-      addGroup("Other chapters: " + other.length + (other.length === 1 ? " slide" : " slides"));
+      addGroup(
+        "Other chapters: " +
+          other.length +
+          (other.length === 1 ? " slide" : " slides"),
+      );
       other.slice(0, 40).forEach(function (h) {
         addItem(h.deck, h.slide, words, false);
       });
@@ -278,8 +303,14 @@
     var walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
       acceptNode: function (node) {
         var el = node.parentElement;
-        if (!el || el.closest("svg,button,details,.picks,.opt-why,.verdict,textarea")) return NodeFilter.FILTER_REJECT;
-        return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        if (
+          !el ||
+          el.closest("svg,button,details,.picks,.opt-why,.verdict,textarea")
+        )
+          return NodeFilter.FILTER_REJECT;
+        return node.nodeValue.trim()
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
       },
     });
     var nodes = [];
@@ -310,16 +341,23 @@
   }
 
   function isFlip() {
-    return document.body.classList.contains("flip") || document.body.classList.contains("mode-flip");
+    return (
+      document.body.classList.contains("flip") ||
+      document.body.classList.contains("mode-flip")
+    );
   }
 
   function openSlide(n, words) {
-    var card = document.getElementById("slide-" + n) || document.getElementById("s-" + n);
+    var card =
+      document.getElementById("slide-" + n) ||
+      document.getElementById("s-" + n);
     if (!card) return;
     panel.hidden = true;
     clearMarks();
     if (card.hidden) {
-      var all = document.querySelector('[data-group="filter"][data-value="all"]');
+      var all = document.querySelector(
+        '[data-group="filter"][data-value="all"]',
+      );
       if (all) all.click();
     }
     if (card.classList.contains("notes-hidden")) {
@@ -342,11 +380,15 @@
     var first = markWords(card, words);
     requestAnimationFrame(function () {
       var bar = head.parentElement;
-      var offset = bar && getComputedStyle(bar).position === "sticky" ? bar.offsetHeight + 12 : 10;
+      var offset =
+        bar && getComputedStyle(bar).position === "sticky"
+          ? bar.offsetHeight + 12
+          : 10;
       var top = card.getBoundingClientRect().top + window.pageYOffset - offset;
       if (first) {
         var markTop = first.getBoundingClientRect().top + window.pageYOffset;
-        if (markTop - top > window.innerHeight - offset - 80) top = markTop - offset - 80;
+        if (markTop - top > window.innerHeight - offset - 80)
+          top = markTop - offset - 80;
       }
       window.scrollTo(0, Math.max(0, top));
       card.classList.add("ans-flash");
@@ -397,7 +439,10 @@
   if (window.top !== window.self) {
     try {
       var match = /^#(?:slide-|s-)(\d+)$/.exec(window.top.location.hash);
-      if (match) setTimeout(function () { openSlide(+match[1]); }, 60);
+      if (match)
+        setTimeout(function () {
+          openSlide(+match[1]);
+        }, 60);
     } catch (e) {}
   }
 })();

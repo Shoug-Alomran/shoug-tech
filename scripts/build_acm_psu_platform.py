@@ -646,7 +646,7 @@ __HEADER__
                         <div class="when">24 Oct 2026</div>
                         <div class="go">&rarr;</div>
                     </a>
-                    <a class="record" href="/workshops/psu-ctf/">
+                    <a class="record" href="/workshops/psu-ctf-2/">
                         <div class="rid">CTF 2.0</div>
                         <div>
                             <h3>ACM/Cyber-Tech CTF 2.0</h3>

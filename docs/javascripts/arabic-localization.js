@@ -18,6 +18,8 @@
     "SOFTWARE ENGINEERING": "هندسة البرمجيات",
     "CYBERSECURITY/": "الأمن السيبراني/",
     CYBERSECURITY: "الأمن السيبراني",
+    "INFORMATION SYSTEMS/": "نظم المعلومات/",
+    "Information Systems": "نظم المعلومات",
     "OTHER COURSES/": "مواد أخرى/",
     "OTHER COURSES": "مواد أخرى",
     OVERVIEW: "نظرة عامة",
