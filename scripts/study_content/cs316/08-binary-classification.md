@@ -178,8 +178,10 @@ False Positive Rate (x-axis) = FP / (FP + TN), which is 1 − specificity
 ::
 
 ::plot Hugging the top-left corner is good, and the diagonal is coin-flipping | False Positive Rate | True Positive Rate | 10 | 10
-curve good model 3: 0,0 0.6,4.5 1.5,7 3,8.6 6,9.6 10,10
-line random 5: 0,0 10,10
+curve - 3: 0,0 0.6,4.5 1.5,7 3,8.6 6,9.6 10,10
+line - 5: 0,0 10,10
+text good model: 3,9.3
+text random: 6.6,5.2
 ticks x: 0=0 10=1
 ticks y: 0=0 10=1
 ::

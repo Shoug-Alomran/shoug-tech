@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-sg-styled="true">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dependency Management, Exception Handling and Logging &mdash; SE411 Slide Breakdown</title>
+    <meta name="description" content="SE411 Chapter 3 explained in plain language with examples and memory tricks: Maven downloads your libraries and builds your project in fixed phases; exceptions let a program recover from errors instead of crashing; logging records what happened so you can debug it later.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/03-dependency-management-exception-handling-and-logging/dependency-management-exception-handling-and-logging.html">
+    <meta property="og:title" content="Dependency Management, Exception Handling and Logging &mdash; SE411 Slide Breakdown">
+    <meta property="og:description" content="SE411 Chapter 3 explained in plain language with examples and memory tricks: Maven downloads your libraries and builds your project in fixed phases; exceptions let a program recover from errors instead of crashing; logging records what happened so you can debug it later.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se411/slide-breakdowns/03-dependency-management-exception-handling-and-logging/dependency-management-exception-handling-and-logging.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Dependency Management, Exception Handling and Logging &mdash; SE411 Slide Breakdown">
+    <meta name="twitter:description" content="SE411 Chapter 3 explained in plain language with examples and memory tricks: Maven downloads your libraries and builds your project in fixed phases; exceptions let a program recover from errors instead of crashing; logging records what happened so you can debug it later.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ── palette ───────────────────────────────────────────────────────────────
+   Eight hue tokens drive the per-section colour: each <section> carries
+   --sec, and its label, rule, cards and table headers all derive from it. */
+
+:root[data-theme="dark"] {
+    --bg: #0a0611;
+    --bg2: #150d21;
+    --bg3: #1d1330;
+    --code-bg: #0d0716;
+    --border: rgba(255, 255, 255, 0.10);
+    --border2: rgba(255, 255, 255, 0.18);
+    --text: #f4f0fa;
+    --text2: #aaa2bb;
+    --text3: #756e88;
+    --accent: #c77dff;
+    --accent2: #e6b8ff;
+
+    --c1: #c77dff;   /* violet   */
+    --c2: #4cc9f0;   /* cyan     */
+    --c3: #4ade80;   /* green    */
+    --c4: #fbbf24;   /* amber    */
+    --c5: #fb7185;   /* rose     */
+    --c6: #818cf8;   /* indigo   */
+    --c7: #f472b6;   /* pink     */
+    --c8: #2dd4bf;   /* teal     */
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
+}
+
+:root[data-theme="light"] {
+    --bg: #fbf9fe;
+    --bg2: #f4eefb;
+    --bg3: #ffffff;
+    --code-bg: #f6f1fc;
+    --border: rgba(24, 12, 40, 0.10);
+    --border2: rgba(24, 12, 40, 0.18);
+    --text: #180d26;
+    --text2: #574d68;
+    --text3: #8a8299;
+    --accent: #7b2cbf;
+    --accent2: #9d4edd;
+
+    --c1: #7b2cbf;
+    --c2: #0369a1;
+    --c3: #047857;
+    --c4: #a16207;
+    --c5: #be123c;
+    --c6: #4338ca;
+    --c7: #a21caf;
+    --c8: #0f766e;
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
+}
+
+/* ── fluid scale ───────────────────────────────────────────────────────────
+   One root font-size ramp scales every rem on the page with the viewport,
+   so the layout uses a phone and a 32" monitor equally well. */
+
+html {
+    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+    scroll-behavior: smooth;
+    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+}
+
+:root {
+    --navh: 3.4rem;
+    --gutter: clamp(1rem, 3.2vw, 3rem);
+    --maxw: 74rem;
+    --radius: 0.85rem;
+    --sec: var(--c1);
+    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+   which turns the root into a scroll container and silently disables the
+   sticky TOC rail. overflow-x: clip contains the same overflow without
+   creating a scroll container; these selectors outrank the injected rule. */
+html:root { overflow-x: clip; }
+:root > body { overflow-x: clip; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    width: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── reading progress ──────────────────────────────────────────────────── */
+#progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    z-index: 200; transform-origin: left;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────
+   Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
+   used to leak their sticky positioning and gradient rule into it. */
+nav.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-inline: var(--gutter);
+    display: flex; align-items: center; gap: 1rem;
+    min-height: var(--navh);
+}
+nav.topbar::after {
+    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
+    opacity: 0.85;
+}
+.nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-links {
+    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
+    overflow-x: auto; min-width: 0; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
+    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
+}
+.toggle-btn {
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
+}
+.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero-band {
+    background: var(--hero-wash);
+    border-bottom: 1px solid var(--border);
+}
+.hero {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-eyebrow::before {
+    content: ''; width: 2rem; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+.hero h1 {
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 0.1em;
+}
+.hero-sub {
+    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+    margin-top: 1rem; max-width: 62ch;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.stat {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+}
+.stat:nth-child(1) { --sec: var(--c1); }
+.stat:nth-child(2) { --sec: var(--c2); }
+.stat:nth-child(3) { --sec: var(--c3); }
+.stat:nth-child(4) { --sec: var(--c4); }
+.stat:nth-child(5) { --sec: var(--c7); }
+
+/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+.layout {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.chapter-toc {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.9rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+.chapter-toc a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text2); text-decoration: none;
+    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
+    border: 1px solid transparent; transition: all 0.18s;
+}
+.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
+.chapter-toc a.active {
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+@media (min-width: 68rem) {
+    :root { --maxw: 88rem; }
+    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+    .toc-rail {
+        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
+        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
+    }
+    .chapter-toc {
+        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+        gap: 0.1rem; padding: 0.75rem;
+    }
+    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
+    .chapter-toc a.active { border-left-color: var(--accent); }
+}
+@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section {
+    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+    scroll-margin-top: calc(var(--navh) + 1rem);
+}
+.section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--sec); margin-bottom: 0.7rem;
+    background: var(--sec-soft);
+    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.75rem;
+}
+.section-title {
+    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
+    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+    width: 4px; border-radius: 4px;
+    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
+}
+
+h3 {
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
+}
+h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
+p { margin-bottom: 0.9rem; color: var(--text2); }
+p strong, li strong { color: var(--text); font-weight: 600; }
+ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
+li { margin-bottom: 0.4rem; }
+li::marker { color: var(--sec); }
+a { color: var(--accent); }
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius); padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; color: var(--sec); }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
+.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
+.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+
+/* ── tables ────────────────────────────────────────────────────────────── */
+.table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
+}
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
+th {
+    text-align: left; padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
+    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
+}
+td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
+td strong { color: var(--text); }
+td code, li code, p code, h4 code, th code, .cheat-col code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
+}
+th code { color: inherit; background: transparent; border: none; padding: 0; }
+.w-memorize, .w-write, .w-skim {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+}
+.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
+.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
+.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── code blocks ───────────────────────────────────────────────────────── */
+.code-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.2rem;
+    overflow: hidden; box-shadow: var(--shadow);
+}
+.code-head {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
+    border-bottom: 1px solid var(--border);
+}
+.code-file {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.code-file::before {
+    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--sec); flex-shrink: 0;
+}
+.code-note { font-size: 0.7rem; color: var(--text3); }
+.code-run {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    text-decoration: none; color: var(--sec); white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
+}
+.code-run:hover { background: var(--sec); color: var(--bg); }
+.code-block pre {
+    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
+    overflow-x: auto; background: var(--code-bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+    line-height: 1.65; color: var(--text); tab-size: 4;
+}
+.code-block pre .c { color: var(--text3); font-style: italic; }
+.code-block pre .k { color: var(--c1); }
+.code-block pre .s { color: var(--c3); }
+.code-block pre .t { color: var(--c2); }
+
+/* ── traps & hooks ─────────────────────────────────────────────────────── */
+.trap {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
+    border: 1px solid var(--border); border-left: 4px solid var(--c5);
+    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
+}
+.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+.trap p:last-child { margin-bottom: 0; }
+.trap .fix { color: var(--c3); font-weight: 700; }
+
+.hook {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--c1) 12%, transparent),
+        color-mix(in srgb, var(--c2) 10%, transparent));
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-left: 4px solid var(--c1);
+    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
+    font-size: 0.9rem; color: var(--text2);
+}
+.hook strong { color: var(--accent2); }
+
+/* ── cheat sheet ───────────────────────────────────────────────────────── */
+.cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+.cheat-col {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+}
+.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
+.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
+.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
+.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
+.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
+.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
+.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
+.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
+.cheat-col h4 {
+    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+}
+.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
+.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+
+/* ── drills ────────────────────────────────────────────────────────────── */
+.drill { counter-reset: drill; list-style: none; margin-left: 0; }
+.drill li {
+    counter-increment: drill; position: relative;
+    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
+}
+.drill li::before {
+    content: counter(drill, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
+}
+.drill li:nth-child(6n+1) { --sec: var(--c1); }
+.drill li:nth-child(6n+2) { --sec: var(--c2); }
+.drill li:nth-child(6n+3) { --sec: var(--c3); }
+.drill li:nth-child(6n+4) { --sec: var(--c4); }
+.drill li:nth-child(6n+5) { --sec: var(--c7); }
+.drill li:nth-child(6n+6) { --sec: var(--c8); }
+
+/* ── quiz ──────────────────────────────────────────────────────────────── */
+.test-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
+}
+.test-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.9rem 1.2rem;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
+    border-bottom: 1px solid var(--border);
+}
+.test-head h3 { margin: 0; font-size: 0.92rem; }
+.tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 0.2rem 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+}
+.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
+.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
+.test-options { display: grid; gap: 0.5rem; }
+.opt {
+    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
+.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.opt:disabled { cursor: default; }
+.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
+.test-feedback.show { display: block; }
+.next-btn {
+    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.next-btn:hover { background: var(--accent); color: var(--bg); }
+.next-btn.show { display: inline-block; }
+#quiz-score {
+    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
+    background: var(--hero-wash), var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+#quiz-score.show { display: block; }
+#quiz-score p {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    background: var(--hero-wash);
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+    text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+@media (max-width: 40rem) {
+    .nav-links { display: none; }
+    table { min-width: 26rem; }
+}
+
+.prose p, .prose ul, .prose ol { font-size: 1rem; line-height: 1.72; }
+.prose ul, .prose ol { margin: 0 0 1rem 1.2rem; }
+.prose li { margin-bottom: .4rem; }
+.prose strong { color: var(--text); }
+.lesson-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin: -.3rem 0 1.1rem; }
+.pill { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: .22rem .6rem; border-radius: 99px; border: 1px solid var(--border2); color: var(--text2); }
+.pill.must { color: var(--c5); border-color: color-mix(in srgb, var(--c5) 55%, transparent); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.pill.know { color: var(--c2); border-color: color-mix(in srgb, var(--c2) 55%, transparent); background: color-mix(in srgb, var(--c2) 12%, transparent); }
+.pill.skim { color: var(--text3); }
+.tldr { font-size: 1.16rem; line-height: 1.6; color: var(--text); padding: 1.15rem 1.3rem; border-radius: 12px; background: color-mix(in srgb, var(--sec) 13%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--sec) 40%, transparent); margin-bottom: 1.2rem; }
+.tldr b { display: block; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sec); margin-bottom: .4rem; font-weight: 700; }
+.start-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: .9rem; margin-bottom: 1.1rem; }
+.start-item { padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); }
+.start-item h4 { margin: 0 0 .4rem; color: var(--sec); font-size: .92rem; }
+.start-item p, .start-item ul { margin-bottom: 0; font-size: .95rem; }
+.start-item ul { margin-left: 1.1rem; }
+.slide-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: .4rem 0 1.2rem; }
+.slide-links a { font-family: 'JetBrains Mono', monospace; font-size: .74rem; padding: .45rem .8rem; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; text-decoration: none; }
+.slide-links a:hover { background: var(--accent); color: var(--bg); }
+.note, .worked, .remember, .formula { margin: 1rem 0; border-radius: 12px; }
+.note { padding: 1rem 1.15rem; border: 1px solid var(--tone-line); background: var(--tone-bg); --tone: var(--c2); --tone-line: color-mix(in srgb, var(--tone) 42%, transparent); --tone-bg: color-mix(in srgb, var(--tone) 10%, var(--bg2)); }
+.note h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--text); }
+.note p:last-child, .note ul:last-child, .note ol:last-child { margin-bottom: 0; }
+.note p, .note li { font-size: .96rem; line-height: 1.66; }
+.note ul, .note ol { margin-left: 1.15rem; }
+.note-tag { font-family: 'JetBrains Mono', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--tone, var(--sec)); margin-bottom: .45rem; }
+.n-analogy { --tone: var(--c2); } .n-mnemonic { --tone: var(--c7); } .n-tip { --tone: var(--c3); } .n-why { --tone: var(--c6); } .n-class { --tone: var(--c8); } .n-says { --tone: var(--c1); } .n-trap { --tone: var(--c5); }
+.n-mnemonic h4 { font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; color: var(--c7); font-size: 1.12rem; }
+.note-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .9rem; margin: 1rem 0; }
+.note-grid > .note { margin: 0; }
+.worked { padding: 1.1rem 1.25rem; border: 1px solid var(--border2); background: var(--bg2); border-left: 3px solid var(--c4); --tone: var(--c4); }
+.worked h4 { margin: 0 0 .65rem; font-size: 1.06rem; color: var(--text); }
+.worked p:last-child, .worked ol:last-child, .worked ul:last-child { margin-bottom: 0; }
+.worked p, .worked li { font-size: .97rem; line-height: 1.66; }
+.worked ol:not(.stepper), .worked ul { margin-left: 1.2rem; }
+.stepper { list-style: none; counter-reset: st; margin: 0; }
+.stepper li { counter-increment: st; position: relative; padding: 0 0 .75rem 2.5rem; margin: 0; }
+.stepper li:last-child { padding-bottom: 0; }
+.stepper li::before { content: counter(st); position: absolute; left: 0; top: 0; width: 1.65rem; height: 1.65rem; border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: .76rem; font-weight: 700; color: var(--bg); background: var(--c4); }
+.stepper li::after { content: ''; position: absolute; left: .79rem; top: 1.75rem; bottom: .1rem; width: 2px; background: var(--border2); }
+.stepper li:last-child::after { display: none; }
+.formula { padding: .95rem 1.15rem; background: var(--code-bg); border: 1px solid var(--border2); text-align: center; }
+.f-cap { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: .5rem; }
+.f-line { font-family: 'JetBrains Mono', monospace; font-size: 1.04rem; color: var(--text); line-height: 1.75; overflow-wrap: anywhere; }
+.remember { padding: 1rem 1.2rem; border: 1px dashed color-mix(in srgb, var(--sec) 55%, transparent); --tone: var(--sec); }
+.remember ul { margin: 0 0 0 1.1rem; }
+.remember li { margin-bottom: .32rem; font-size: .95rem; }
+.remember li:last-child { margin-bottom: 0; }
+details.try { margin: .8rem 0; border: 1px solid var(--border2); border-radius: 10px; background: var(--bg2); }
+details.try summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; color: var(--text); font-size: .97rem; list-style: none; }
+details.try summary::-webkit-details-marker { display: none; }
+details.try summary span { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--c3); padding: .14rem .45rem; border-radius: 4px; margin-right: .6rem; vertical-align: 1px; }
+details.try summary:hover { color: var(--accent); }
+details.try > div { padding: 0 1rem .9rem; border-top: 1px solid var(--border); padding-top: .75rem; }
+details.try p:last-child, details.try ul:last-child { margin-bottom: 0; }
+.diagram { margin: 1.1rem 0; text-align: center; }
+.diagram svg { width: 100%; max-width: 40rem; height: auto; }
+.diagram figcaption { font-size: .82rem; color: var(--text3); margin-top: .35rem; }
+.diagram text { font-family: 'JetBrains Mono', monospace; }
+.pl { fill: var(--text2); font-size: 13px; } .pt { fill: var(--text3); font-size: 12px; } .pn { fill: var(--text); font-size: 13.5px; font-weight: 700; } .pa { fill: var(--text); font-size: 13px; }
+.gn { fill: var(--text); font-size: 13.5px; font-weight: 600; } .gl { fill: var(--text2); font-size: 12px; }
+.table-wrap td, .table-wrap th { white-space: normal; }
+.roundup .note { margin: .8rem 0; }
+@media print { .topbar, .toc-rail, #progress { display: none !important; } .layout { display: block; } details.try > div { display: block; } }
+</style>
+<link rel="stylesheet" href="/styles/site-shell.css"><script defer src="/javascripts/site-palette.js"></script></head>
+
+<body>
+    <div id="progress"></div>
+
+    <nav class="topbar" aria-label="Chapter sections">
+        <div class="nav-title">SE411 // CHAPTER 3</div>
+        <ul class="nav-links"><li><a href="#start">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#lesson-1">Dependency management and Maven</a></li><li><a href="#lesson-2">What exceptions are and their types</a></li><li><a href="#lesson-3">throw, throws, try and catch</a></li><li><a href="#lesson-4">The finally clause: tracing execution</a></li><li><a href="#lesson-5">Using exceptions well</a></li><li><a href="#lesson-6">Assertions</a></li><li><a href="#lesson-7">Logging</a></li><li><a href="#traps">Exam Traps</a></li><li><a href="#tricks">Memory Tricks</a></li><li><a href="#cheat">Quick Reference</a></li><li><a href="#quiz">Quiz</a></li></ul>
+        <div class="nav-actions" data-page-search-host>
+            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+        </div>
+    </nav>
+
+    <div class="hero-band">
+        <header class="hero">
+            <div class="hero-eyebrow">Chapter 3 &middot; Slide Breakdown</div>
+            <h1>Dependency Management, Exception Handling and Logging</h1>
+            <p class="hero-sub">The slides explained in plain language, with examples, memory tricks and practice questions.</p>
+            <div class="hero-stats"><span class="stat">105 slides</span><span class="stat">Chapter 3</span><span class="stat">7 lessons</span><span class="stat">12 min read</span></div>
+        </header>
+    </div>
+
+    <div class="layout">
+        <aside class="toc-rail">
+            <nav class="chapter-toc" aria-label="On this page"><a href="#start">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#lesson-1">03 Dependency management and Maven</a><a href="#lesson-2">04 What exceptions are and their types</a><a href="#lesson-3">05 throw, throws, try and catch</a><a href="#lesson-4">06 The finally clause: tracing execution</a><a href="#lesson-5">07 Using exceptions well</a><a href="#lesson-6">08 Assertions</a><a href="#lesson-7">09 Logging</a><a href="#traps">10 Exam Traps</a><a href="#tricks">11 Memory Tricks</a><a href="#cheat">12 Quick Reference</a><a href="#quiz">13 Quiz</a></nav>
+        </aside>
+
+        <main>
+        <section id="start" style="--sec: var(--c1)">
+            <div class="section-label">Read this first</div>
+            <h2 class="section-title">The big picture</h2>
+<div class="tldr"><b>In one sentence</b>Maven downloads your libraries and builds your project in fixed phases; exceptions let a program recover from errors instead of crashing; logging records what happened so you can debug it later.</div><div class="prose"><p>These are the three things that separate a homework program from real software. Exams love the checked-vs-unchecked split, tracing a try/catch/finally flow, the order of the Maven phases, and "exception or assertion?" questions. All four are worked through on this page.</p></div><div class="start-grid"><div class="start-item"><h4>Where this fits</h4><p>Chapter 1's <code>mvn clean verify</code> and JUnit both come from Maven. Exceptions return in Chapter 5 (InterruptedException), and Chapter 6's Spring Boot is configured with Maven. Chapter 7 says never to log secrets or show stack traces to users.</p></div><div class="start-item"><h4>By the end you can</h4><ul><li>Explain what dependency management is and why Maven automates it</li><li>List the Maven default lifecycle phases in order</li><li>Classify exceptions as checked or unchecked using the hierarchy</li><li>Use try, catch, finally, throw and throws correctly</li><li>Trace a try/catch/finally program</li><li>Write a custom exception class</li><li>Choose between exceptions and assertions</li><li>Use log levels and explain SLF4J</li></ul></div></div><div class="slide-links"><a href="/academics/software-engineering/se411/slides/chapter-3-dependency-management-exception-handling-and-logging/" target="_top">Open the slides: Chapter 3 &rarr;</a></div><h3>Words you need first</h3><div class="table-wrap"><table><thead><tr><th>Term</th><th>In plain English</th></tr></thead><tbody><tr><td><strong>Dependency</strong></td><td>A library your project needs in order to compile or run.</td></tr><tr><td><strong>POM</strong></td><td>pom.xml: Maven's project file listing dependencies and plugins.</td></tr><tr><td><strong>GAV</strong></td><td>groupId, artifactId, version: how Maven identifies a library.</td></tr><tr><td><strong>Checked exception</strong></td><td>Checked by the compiler; must be caught or declared.</td></tr><tr><td><strong>Unchecked exception</strong></td><td>RuntimeException, Error and their subclasses; not checked by the compiler.</td></tr><tr><td><strong>Assertion</strong></td><td>A boolean statement that should always be true; checks your own logic.</td></tr><tr><td><strong>Facade</strong></td><td>A simple front that hides the system behind it (SLF4J).</td></tr></tbody></table></div>
+        </section>
+        <section id="map" style="--sec: var(--c2)">
+            <div class="section-label">Navigation</div>
+            <h2 class="section-title">Where to spend your time</h2>
+<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>5-9</strong></td><td><strong>Dependency management, Maven, POM</strong></td><td><span class="w-memorize">Memorize</span></td><td>Why and what</td></tr><tr><td><strong>10-14</strong></td><td><strong>Plugins and lifecycles</strong></td><td><span class="w-memorize">Memorize</span></td><td>Phase order</td></tr><tr><td><strong>15-26</strong></td><td><strong>Maven in Eclipse, plugins, advantages</strong></td><td><span class="w-skim">Skim</span></td><td>Screenshots</td></tr><tr><td><strong>27-43</strong></td><td><strong>Exceptions: why, types, hierarchy</strong></td><td><span class="w-memorize">Memorize</span></td><td>Checked vs unchecked</td></tr><tr><td><strong>44-60</strong></td><td><strong>Keywords, catch or declare, rethrow</strong></td><td><span class="w-write">Write it</span></td><td>throw vs throws</td></tr><tr><td><strong>61-72</strong></td><td><strong>finally and the trace</strong></td><td><span class="w-write">Write it</span></td><td>Trace exercises</td></tr><tr><td><strong>73-82</strong></td><td><strong>When to use, custom exceptions, best practice</strong></td><td><span class="w-memorize">Memorize</span></td><td>Custom class code</td></tr><tr><td><strong>83-93</strong></td><td><strong>Assertions</strong></td><td><span class="w-memorize">Memorize</span></td><td>Exception or assertion</td></tr><tr><td><strong>94-104</strong></td><td><strong>Logging, SLF4J, best practice</strong></td><td><span class="w-memorize">Memorize</span></td><td>Levels and facade</td></tr></tbody></table></div>
+        </section>
+        <section id="lesson-1" style="--sec: var(--c3)">
+            <div class="section-label">Lesson 1</div>
+            <h2 class="section-title">Dependency management and Maven</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 5-26</span></div><div class="prose"><p><strong>Dependency management</strong> means identifying, tracking and controlling the libraries your project depends on. By hand that's slow and error-prone: you'd download each JAR, plus the JARs <em>those</em> need, and keep versions consistent. Tools such as <strong>Maven</strong> and <strong>Gradle</strong> automate it <strong>declaratively</strong>: you list what you need, and the tool fetches it.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A shopping list, not a shopping trip</h4><p>Without Maven you drive to every shop yourself. With Maven you write a list (pom.xml), and everything, including the things your items need, is delivered to your door.</p></div>
+<div class="prose"><p>Maven uses a <strong>Project Object Model</strong>, the <code>pom.xml</code>, to centralize the build, reporting and documentation. It includes the POM, a set of standards, a project lifecycle, the dependency system, and plugins whose <strong>goals</strong> run at defined phases.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">xml</span></div><pre>&lt;dependency&gt;
+    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;          &lt;!-- organization --&gt;
+    &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;    &lt;!-- library name --&gt;
+    &lt;version&gt;2.0.9&lt;/version&gt;              &lt;!-- exact version --&gt;
+&lt;/dependency&gt;</pre></div>
+<div class="prose"><p>Those three tags are the <strong>GAV</strong>, and your own project has one too.</p>
+<p><strong>Plugins</strong> are scripts Maven executes. Each defines <strong>goals</strong>, such as <code>javafx:run</code>, the <code>site</code> goal (generates documentation) or the shade plugin's <code>shade</code> goal at the <code>package</code> phase (builds an executable JAR with its dependencies).</p>
+<h3>Three built-in lifecycles</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Lifecycle</th>
+<th>Job</th>
+<th>Phases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>default</strong></td>
+<td>Compile, package, deploy</td>
+<td>validate → compile → test → package → verify → install → deploy</td>
+</tr>
+<tr>
+<td><strong>clean</strong></td>
+<td>Remove previous build output</td>
+<td>pre-clean → clean → post-clean</td>
+</tr>
+<tr>
+<td><strong>site</strong></td>
+<td>Generate documentation</td>
+<td>pre-site → site → post-site → site-deploy</td>
+</tr>
+</tbody>
+</table></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Default phase</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>validate</td>
+<td>Checks the project is correct and dependencies are available</td>
+</tr>
+<tr>
+<td>compile</td>
+<td>Compiles source code</td>
+</tr>
+<tr>
+<td>test</td>
+<td>Runs unit tests (no packaging needed)</td>
+</tr>
+<tr>
+<td>package</td>
+<td>Builds the JAR or WAR</td>
+</tr>
+<tr>
+<td>verify</td>
+<td>Extra checks on the package</td>
+</tr>
+<tr>
+<td>install</td>
+<td>Copies it into your <strong>local</strong> repository</td>
+</tr>
+<tr>
+<td>deploy</td>
+<td>Pushes it to a <strong>remote</strong> repository for others</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Very Cool Teams Package Very Important Deliveries</h4><p><strong>V</strong>alidate, <strong>C</strong>ompile, <strong>T</strong>est, <strong>P</strong>ackage, <strong>V</strong>erify, <strong>I</strong>nstall, <strong>D</strong>eploy. Running a phase runs every phase before it, so <code>mvn install</code> also compiles and tests.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>install vs deploy</h4><p><strong>install</strong> = your machine's local repository. <strong>deploy</strong> = a remote repository shared with the team. Say "local" or "remote" in your answer.</p></div>
+<div class="prose"><p>Advantages from the slides: simple dependency management, multi-module projects, consistent builds, easy to learn (declarative XML), and strong community support.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Dependency management tracks and controls the libraries a project needs</li><li>Maven declares them in pom.xml using groupId, artifactId and version</li><li>Plugins define goals that run at lifecycle phases</li><li>Default lifecycle: validate, compile, test, package, verify, install, deploy</li><li>install is local; deploy is remote</li></ul></div>
+        </section>
+        <section id="lesson-2" style="--sec: var(--c4)">
+            <div class="section-label">Lesson 2</div>
+            <h2 class="section-title">What exceptions are and their types</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 27-43</span></div><div class="prose"><p>An <strong>exception</strong> is an event that disrupts the normal flow of a program; in Java it's an <strong>object thrown at run time</strong>. Without handling, a runtime error <strong>terminates the program abnormally</strong>. Exception handling lets the program <strong>continue or terminate gracefully</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Common exception</th>
+<th>Typical cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArithmeticException</td>
+<td>Divide by zero</td>
+</tr>
+<tr>
+<td>NullPointerException</td>
+<td>Using a variable that is null</td>
+</tr>
+<tr>
+<td>NumberFormatException</td>
+<td><code>Integer.parseInt("abc")</code></td>
+</tr>
+<tr>
+<td>ArrayIndexOutOfBoundsException</td>
+<td>Index past the end of an array</td>
+</tr>
+<tr>
+<td>InputMismatchException</td>
+<td>Scanner expected an int, got text</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Why not just use if/else?</strong> For a divide by zero you can, because you know what might go wrong. But when you connect to a database, write a file or read hardware, you can't predict every failure. Exceptions let the method that <em>detects</em> the error hand it to the code that knows how to <em>handle</em> it.</p>
+<h3>The hierarchy</h3></div>
+<figure class="diagram"><svg viewBox="33.0 -1.0 626.0 361.0" style="max-width:min(100%,782px)" role="img" aria-label="Java exception hierarchy"><defs><marker id="a16107498" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--text3)"/></marker><marker id="b16107498" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs><line x1="300.0" y1="47.0" x2="300.0" y2="78.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="261.1" y1="112.0" x2="189.0" y2="143.6" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="338.9" y1="112.0" x2="421.1" y2="148.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="437.3" y1="182.0" x2="394.7" y2="214.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="487.2" y1="182.0" x2="524.0" y2="205.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="140.0" y1="191.0" x2="140.0" y2="214.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><line x1="360.0" y1="266.0" x2="360.0" y2="294.0" stroke="var(--text3)" stroke-width="1.6" marker-end="url(#a16107498)"/><rect x="263.0" y="13.0" width="74.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="300.0" y="35.0" class="gn" text-anchor="middle">Object</text><rect x="251.0" y="78.0" width="98.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="300.0" y="100.0" class="gn" text-anchor="middle">Throwable</text><rect x="91.0" y="139.0" width="98.0" height="52.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6" opacity="0.55"/><text x="140.0" y="161.0" class="gn" text-anchor="middle">Error</text><text x="140.0" y="179.0" class="gn" text-anchor="middle">unchecked</text><rect x="411.0" y="148.0" width="98.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="460.0" y="170.0" class="gn" text-anchor="middle">Exception</text><rect x="283.0" y="214.0" width="154.0" height="52.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6" opacity="0.55"/><text x="360.0" y="236.0" class="gn" text-anchor="middle">RuntimeException</text><text x="360.0" y="254.0" class="gn" text-anchor="middle">unchecked</text><rect x="515.0" y="205.0" width="130.0" height="70.0" rx="7" fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))" stroke="var(--accent)" stroke-width="1.6"/><text x="580.0" y="227.0" class="gn" text-anchor="middle">IOException,</text><text x="580.0" y="245.0" class="gn" text-anchor="middle">ClassNotFound</text><text x="580.0" y="263.0" class="gn" text-anchor="middle">checked</text><rect x="47.0" y="214.0" width="186.0" height="52.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6" opacity="0.55"/><text x="140.0" y="236.0" class="gn" text-anchor="middle">VirtualMachineError,</text><text x="140.0" y="254.0" class="gn" text-anchor="middle">LinkageError</text><rect x="251.0" y="294.0" width="218.0" height="52.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6" opacity="0.55"/><text x="360.0" y="316.0" class="gn" text-anchor="middle">NullPointer, Arithmetic,</text><text x="360.0" y="334.0" class="gn" text-anchor="middle">IndexOutOfBounds</text></svg><figcaption>Java exception hierarchy</figcaption></figure>
+<div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Meaning</th>
+<th>Handle it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Error</strong></td>
+<td>System errors thrown by the JVM, such as running out of memory</td>
+<td>Rarely; little you can do</td>
+</tr>
+<tr>
+<td><strong>RuntimeException</strong></td>
+<td>Programming logic errors (null, bad index, divide by zero)</td>
+<td>Fix the code</td>
+</tr>
+<tr>
+<td><strong>Other Exception</strong> subclasses</td>
+<td>Outside conditions (missing file, network)</td>
+<td>Must catch or declare</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="formula"><div class="f-cap">The rule</div><div class="f-line">Unchecked = RuntimeException + Error + their subclasses</div><div class="f-line">Checked   = every other Exception</div></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Weather vs your own mistakes</h4><p>A <strong>checked</strong> exception is like rain: it comes from outside and you can't prevent it, so Java makes you bring an umbrella (catch or declare). An <strong>unchecked</strong> exception is like tripping on your own shoelace: the fix is to tie your shoes (fix the code), not to carry a stretcher everywhere.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>ClassNotFoundException is checked</h4><p>It's a sibling of IOException, not under RuntimeException. NullPointerException, ArithmeticException and IndexOutOfBoundsException are the unchecked ones.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>An exception is an object thrown at run time that disrupts normal flow</li><li>Handling lets the program continue or end gracefully</li><li>Error and RuntimeException (and subclasses) are unchecked</li><li>All other exceptions are checked: catch or declare them</li><li>Checked exceptions come from outside conditions; unchecked from logic errors</li></ul></div>
+        </section>
+        <section id="lesson-3" style="--sec: var(--c5)">
+            <div class="section-label">Lesson 3</div>
+            <h2 class="section-title">throw, throws, try and catch</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 44-60</span></div><div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Where</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>try</code></td>
+<td>Around risky code</td>
+<td>Must be followed by catch or finally</td>
+</tr>
+<tr>
+<td><code>catch</code></td>
+<td>After try</td>
+<td>Handles one exception type</td>
+</tr>
+<tr>
+<td><code>finally</code></td>
+<td>After try/catch</td>
+<td>Always runs</td>
+</tr>
+<tr>
+<td><code>throw</code></td>
+<td>Inside a method body</td>
+<td><strong>Throws</strong> one exception object now</td>
+</tr>
+<tr>
+<td><code>throws</code></td>
+<td>In the method signature</td>
+<td><strong>Declares</strong> what the method might throw</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public void checkAge(int age) {
+    if (age &lt; 18) throw new IllegalArgumentException(&quot;You must be 18 or older&quot;);
+    System.out.println(&quot;You can enter.&quot;);
+}
+
+public void readFile() throws IOException {      // declares
+    FileReader file = new FileReader(&quot;data.txt&quot;);
+}</pre></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>throwS = Signature</h4><p>The one with the <strong>s</strong> goes in the <strong>s</strong>ignature and can list <strong>s</strong>everal types. <code>throw</code> (no s) throws <strong>one</strong> object.</p></div>
+<div class="prose"><p><strong>Catch or declare.</strong> If <code>p2()</code> declares <code>throws IOException</code>, any caller <code>p1()</code> must either wrap the call in try/catch <strong>or</strong> declare <code>throws IOException</code> itself. For an <strong>unchecked</strong> exception the caller can call it with neither.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>void p1() {                          // (a) catch it
+    try { p2(); }
+    catch (IOException ex) { ... }
+}
+void p1() throws IOException {       // (b) pass it up
+    p2();
+}</pre></div>
+<div class="prose"><p><strong>How the catch is found.</strong> When an exception is thrown, Java looks for a matching catch in the current method. If none, the method ends and Java checks its caller, then that method's caller, down the call stack to main. If nobody catches it, the program terminates.</p>
+<p><strong>Rethrowing</strong>: a catch block that can't fully handle the exception can do something (such as log it) and then <code>throw ex;</code> so a higher level handles it.</p></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Order of catch blocks</h4><p>List the <strong>specific</strong> exceptions first. <code>catch (Exception e)</code> before <code>catch (IOException e)</code> makes the second block unreachable, which is a compile error.</p></div>
+<details class="try"><summary><span>Try it</span><code>setRadius</code> throws IllegalArgumentException for a negative value. Must callers use try/catch?</summary><div><p>No. IllegalArgumentException extends RuntimeException, so it's unchecked. They may catch it, but the compiler doesn't force them to.</p></div></details>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>throw throws one exception object; throws declares possible exceptions</li><li>A checked exception must be caught or declared by every caller</li><li>Java searches up the call stack for a matching catch</li><li>Rethrow when a catch block can only partly handle the error</li><li>Order catch blocks from specific to general</li></ul></div>
+        </section>
+        <section id="lesson-4" style="--sec: var(--c6)">
+            <div class="section-label">Lesson 4</div>
+            <h2 class="section-title">The finally clause: tracing execution</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 61-72</span></div><div class="prose"><p><strong>finally always runs</strong>, whether or not an exception was thrown, and whether or not it was caught.</p></div>
+<div class="worked"><div class="note-tag">Step by step</div><h4>Case 1: no exception</h4><ol class="stepper"><li>All try statements run.</li><li>catch is skipped.</li><li><strong>finally runs.</strong></li><li>The next statement after the block runs.</li></ol></div>
+<div class="worked"><div class="note-tag">Step by step</div><h4>Case 2: exception thrown and caught</h4><ol class="stepper"><li>statement2 throws Exception1, so statement3 is <strong>skipped</strong>.</li><li>The matching catch(Exception1) handles it.</li><li><strong>finally runs.</strong></li><li>The next statement after the block runs.</li></ol></div>
+<div class="worked"><div class="note-tag">Step by step</div><h4>Case 3: caught, then rethrown</h4><ol class="stepper"><li>statement2 throws Exception2; catch(Exception2) handles it and does <code>throw ex;</code>.</li><li><strong>finally still runs.</strong></li><li>Control goes to the <strong>caller</strong>; the "next statement" in this method is <strong>not</strong> run.</li></ol></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Locking the door on the way out</h4><p>Whatever happens inside the house (a normal day, a burnt dinner you dealt with, or a fire that sends you running) you always lock the door as you leave. That's finally, which is why it's used to close files, database connections and sockets.</p></div>
+<details class="try"><summary><span>Try it</span>In Case 3, list what runs after statement2 throws.</summary><div><p>The catch(Exception2) block, then finally, then control jumps to the caller. statement3 and "Next statement" don't run.</p></div></details>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>finally always runs: no exception, caught, or rethrown</li><li>Statements after the throwing line in try are skipped</li><li>After a rethrow, the next statement in the method does not run</li><li>Use finally to release resources</li></ul></div>
+        </section>
+        <section id="lesson-5" style="--sec: var(--c7)">
+            <div class="section-label">Lesson 5</div>
+            <h2 class="section-title">Using exceptions well</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 73-82</span></div><div class="prose"><p><strong>Cost.</strong> Exception handling separates error code from normal code, which makes programs easier to read. But it costs time and resources: an exception object must be created and the call stack searched.</p>
+<p><strong>When to throw</strong>: if the caller should decide what to do, throw. If you can handle it right there, don't throw.</p>
+<p><strong>When to use try/catch</strong>: for <strong>unexpected</strong> conditions only. For simple, expected situations, use an if:</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>// Wrong: try/catch for an expected case
+try { System.out.println(refVar.toString()); }
+catch (NullPointerException ex) { System.out.println(&quot;refVar is null&quot;); }
+
+// Right
+if (refVar != null) System.out.println(refVar.toString());
+else System.out.println(&quot;refVar is null&quot;);</pre></div>
+<div class="prose"><h3>Custom exceptions</h3>
+<p>Extend <strong>Exception</strong> for a checked exception or <strong>RuntimeException</strong> for an unchecked one. Use Java's built-in classes when they fit; write your own when you need to carry extra information to the handler.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>public class InvalidRadiusException extends Exception {
+    private double radius;
+    public InvalidRadiusException(double radius) {
+        super(&quot;Invalid radius &quot; + radius);
+        this.radius = radius;
+    }
+    public double getRadius() { return radius; }
+}
+
+public void setRadius(double newRadius) throws InvalidRadiusException {
+    if (newRadius &gt;= 0) radius = newRadius;
+    else throw new InvalidRadiusException(newRadius);
+}</pre></div>
+<div class="prose"><p>The handler can now call <code>ex.getRadius()</code> to see the bad value.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Best practice</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Catch only what you can handle</td>
+<td>Catching <code>Exception</code> can hide bugs</td>
+</tr>
+<tr>
+<td>Use specific types</td>
+<td><code>FileNotFoundException</code>, not <code>Exception</code></td>
+</tr>
+<tr>
+<td>Don't swallow exceptions</td>
+<td>An empty catch hides the failure; at least log it</td>
+</tr>
+<tr>
+<td>Use finally for resources</td>
+<td>Files, connections and sockets always get closed</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>The empty catch block</h4><p><code>catch (Exception e) { }</code> is the worst option: the program carries on as if nothing happened, and nobody ever learns why the data is wrong.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Exceptions cost time, so use them for unexpected conditions</li><li>Use an if for simple, expected cases such as null checks</li><li>Custom exceptions extend Exception (checked) or RuntimeException (unchecked)</li><li>Custom exceptions can carry data, such as the bad radius</li><li>Catch specific types, never swallow, and close resources in finally</li></ul></div>
+        </section>
+        <section id="lesson-6" style="--sec: var(--c8)">
+            <div class="section-label">Lesson 6</div>
+            <h2 class="section-title">Assertions</h2>
+<div class="lesson-meta"><span class="pill know">Good to know</span><span class="pill">Slides 83-93</span></div><div class="prose"><p>An <strong>assertion</strong> states an assumption that should be true while the program runs. If it's false, Java throws an <strong>AssertionError</strong>.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>assert i == 10;
+assert sum &gt; 10 &amp;&amp; sum &lt; 5 * 10 : &quot;sum is &quot; + sum;   // with a detail message</pre></div>
+<div class="prose"><p>Assertions are <strong>disabled by default</strong>. Enable them with <code>java -ea AssertionDemo</code> (<code>-da</code> disables). They can be switched on or off by class or package.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Assertions</th>
+<th>Exception handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Check <strong>your own logic</strong> is correct</td>
+<td>Deal with <strong>unusual run-time circumstances</strong></td>
+</tr>
+<tr>
+<td>Can be switched off?</td>
+<td>Yes, at startup</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Use for public method arguments?</td>
+<td><strong>Never</strong></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Never check public arguments with assert</h4><p>A public method's valid inputs are part of its contract, which must hold even when assertions are disabled. Validate public arguments with an exception (IllegalArgumentException) instead.</p></div>
+<div class="note n-tip"><div class="note-tag">Exam tip</div><h4>A good use of assert</h4><p>A switch with all 12 months as cases can have <code>default: assert false : "Invalid month: " + month;</code>, which flags something you believed impossible.</p></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>An assertion checks an assumption; a false one throws AssertionError</li><li>Assertions are off by default; enable them with -ea</li><li>Assertions check program logic; exceptions handle run-time problems</li><li>Never use assertions to check public method arguments</li></ul></div>
+        </section>
+        <section id="lesson-7" style="--sec: var(--c1)">
+            <div class="section-label">Lesson 7</div>
+            <h2 class="section-title">Logging</h2>
+<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 94-104</span></div><div class="prose"><p><strong>Logging</strong> records information about program execution, errors and important events at run time. It helps you debug, monitor applications and understand program flow, especially in production where you can't attach a debugger.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SEVERE</strong> (error)</td>
+<td>Critical issues such as a crash</td>
+</tr>
+<tr>
+<td><strong>WARNING</strong></td>
+<td>Potential problems, such as a deprecated method</td>
+</tr>
+<tr>
+<td><strong>INFO</strong></td>
+<td>General information, such as startup</td>
+</tr>
+<tr>
+<td><strong>DEBUG</strong></td>
+<td>Details for debugging</td>
+</tr>
+<tr>
+<td><strong>TRACE</strong></td>
+<td>Very fine-grained flow</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Should We Investigate Deeper Today?</h4><p><strong>S</strong>EVERE, <strong>W</strong>ARNING, <strong>I</strong>NFO, <strong>D</strong>EBUG, <strong>T</strong>RACE: from most serious to most detailed.</p></div>
+<div class="prose"><h3>SLF4J: a facade</h3>
+<p><strong>SLF4J</strong> (Simple Logging Facade for Java) is one API for logging that hides which logging framework actually does the work: <strong>Logback</strong>, <strong>Log4j</strong> or java.util.logging. You write code against SLF4J and choose the backend at deployment by changing a Maven dependency, without editing code.</p></div>
+<div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>A universal TV remote</h4><p>SLF4J is a universal remote: you press the same buttons no matter which TV brand (Logback, Log4j) is plugged in. Swap the TV and your fingers do exactly the same thing.</p></div>
+<div class="code-block"><div class="code-head"><span class="code-file">java</span></div><pre>private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
+
+logger.info(&quot;Application has started&quot;);
+logger.debug(&quot;Debugging an issue&quot;);
+logger.warn(&quot;This is a warning message&quot;);
+logger.error(&quot;An error has occurred&quot;);</pre></div>
+<div class="prose"><p>In Maven you add <strong>slf4j-api</strong> (the facade) and <strong>logback-classic</strong> (the implementation). <strong>Logback</strong> succeeded Log4j, from the same team as SLF4J, with better performance and easier configuration.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Logging best practice</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Right level</td>
+<td>Errors at SEVERE, routine at INFO</td>
+</tr>
+<tr>
+<td><strong>Never log sensitive data</strong></td>
+<td>No passwords, keys or private user data</td>
+</tr>
+<tr>
+<td>Structured logs</td>
+<td>JSON makes logs easy to search</td>
+</tr>
+<tr>
+<td>Watch performance</td>
+<td>Don't log heavily inside hot loops; use asynchronous logging</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="remember"><div class="note-tag">Remember</div><ul><li>Logging records run-time events for debugging and monitoring</li><li>Levels: SEVERE, WARNING, INFO, DEBUG, TRACE</li><li>SLF4J is a facade over Logback, Log4j and others</li><li>Switch backends by changing a dependency, not code</li><li>Never log passwords, keys or private data</li></ul></div>
+        </section>
+        <section id="traps" style="--sec: var(--c2)">
+            <div class="section-label">Marks lost here</div>
+            <h2 class="section-title">Every trap in one place</h2>
+<div class="note-grid roundup"><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>install vs deploy</h4><p><strong>install</strong> = your machine's local repository. <strong>deploy</strong> = a remote repository shared with the team. Say "local" or "remote" in your answer.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>ClassNotFoundException is checked</h4><p>It's a sibling of IOException, not under RuntimeException. NullPointerException, ArithmeticException and IndexOutOfBoundsException are the unchecked ones.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Order of catch blocks</h4><p>List the <strong>specific</strong> exceptions first. <code>catch (Exception e)</code> before <code>catch (IOException e)</code> makes the second block unreachable, which is a compile error.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>The empty catch block</h4><p><code>catch (Exception e) { }</code> is the worst option: the program carries on as if nothing happened, and nobody ever learns why the data is wrong.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Never check public arguments with assert</h4><p>A public method's valid inputs are part of its contract, which must hold even when assertions are disabled. Validate public arguments with an exception (IllegalArgumentException) instead.</p></div></div>
+        </section>
+        <section id="tricks" style="--sec: var(--c3)">
+            <div class="section-label">Make it stick</div>
+            <h2 class="section-title">Every memory trick in one place</h2>
+<div class="note-grid roundup"><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Very Cool Teams Package Very Important Deliveries</h4><p><strong>V</strong>alidate, <strong>C</strong>ompile, <strong>T</strong>est, <strong>P</strong>ackage, <strong>V</strong>erify, <strong>I</strong>nstall, <strong>D</strong>eploy. Running a phase runs every phase before it, so <code>mvn install</code> also compiles and tests.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>throwS = Signature</h4><p>The one with the <strong>s</strong> goes in the <strong>s</strong>ignature and can list <strong>s</strong>everal types. <code>throw</code> (no s) throws <strong>one</strong> object.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Should We Investigate Deeper Today?</h4><p><strong>S</strong>EVERE, <strong>W</strong>ARNING, <strong>I</strong>NFO, <strong>D</strong>EBUG, <strong>T</strong>RACE: from most serious to most detailed.</p></div></div>
+        </section>
+        <section id="cheat" style="--sec: var(--c4)">
+            <div class="section-label">One screen</div>
+            <h2 class="section-title">Quick reference</h2>
+<div class="cheat"><div class="cheat-col"><h4>Maven</h4><ul><li>pom.xml, GAV</li><li>Plugins → goals</li><li>validate, compile, test, package, verify, install, deploy</li><li>install = local, deploy = remote</li><li>clean and site lifecycles</li></ul></div><div class="cheat-col"><h4>Exception types</h4><ul><li>Unchecked: RuntimeException, Error</li><li>Checked: all other Exceptions</li><li>Checked = catch or declare</li></ul></div><div class="cheat-col"><h4>Keywords</h4><ul><li>throw: one object, in body</li><li>throws: signature, declares</li><li>finally: always runs</li><li>Specific catch blocks first</li></ul></div><div class="cheat-col"><h4>Using them</h4><ul><li>try/catch for unexpected only</li><li>Custom: extends Exception / RuntimeException</li><li>Don't swallow; close in finally</li></ul></div><div class="cheat-col"><h4>Assertions</h4><ul><li>assert cond : msg</li><li>Off by default; -ea</li><li>Never for public arguments</li></ul></div><div class="cheat-col"><h4>Logging</h4><ul><li>SEVERE, WARNING, INFO, DEBUG, TRACE</li><li>SLF4J facade → Logback / Log4j</li><li>Never log secrets</li></ul></div></div>
+        </section>
+
+        <section id="quiz" style="--sec: var(--c7)">
+            <div class="section-label">Self-Check</div>
+            <h2 class="section-title">Can you answer these without scrolling up?</h2>
+            <div class="test-card">
+                <div class="test-head">
+                    <h3 id="quiz-header">Question 1</h3>
+                    <span class="tag" id="quiz-tag">&nbsp;</span>
+                </div>
+                <div class="test-body">
+                    <div class="test-question" id="quiz-q"></div>
+                    <div class="test-options" id="quiz-opts"></div>
+                    <div class="test-feedback" id="quiz-fb"></div>
+                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
+                </div>
+            </div>
+            <div id="quiz-score">
+                <p id="score-text"></p>
+                <span id="score-sub"></span><br><br>
+                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <footer>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
+        <strong>Shoug Alomran</strong>
+        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">SE411 Software Construction &mdash; Chapter 3: Dependency Management, Exception Handling and Logging</div>
+    </footer>
+
+    <script>const questions = [{"tag": "Chapter 3", "q": "Which is the correct order of Maven default phases?", "opts": ["validate, test, compile, package, verify, deploy, install", "compile, validate, test, package, install, verify, deploy", "compile, test, validate, package, verify, install, deploy", "validate, compile, test, package, verify, install, deploy"], "a": 3, "why": "Slide 12."}, {"tag": "Chapter 3", "q": "Which Maven phase copies the packaged archive into the local repository?", "opts": ["package", "deploy", "install", "verify"], "a": 2, "why": "deploy pushes to a remote repository."}, {"tag": "Chapter 3", "q": "Which of these is a checked exception?", "opts": ["IndexOutOfBoundsException", "ArithmeticException", "IOException", "NullPointerException"], "a": 2, "why": "The other three extend RuntimeException."}, {"tag": "Chapter 3", "q": "The keyword used in a method signature to declare possible exceptions is:", "opts": ["finally", "throw", "throws", "catch"], "a": 2, "why": "throw raises one object inside the body."}, {"tag": "Chapter 3", "q": "When does the finally block run?", "opts": ["Only if the exception is rethrown", "Only if an exception occurs", "Only if no exception occurs", "Always, whether or not an exception occurs"], "a": 3, "why": "Slides 62-72."}, {"tag": "Chapter 3", "q": "For a possible null reference, the slides recommend:", "opts": ["An assertion", "An if statement checking for null", "A custom checked exception", "Catching NullPointerException"], "a": 1, "why": "Use exceptions for unexpected conditions only."}, {"tag": "Chapter 3", "q": "Assertions should NOT be used to:", "opts": ["Check arguments of public methods", "Mark impossible switch cases", "Check loop results", "Check internal assumptions"], "a": 0, "why": "Public argument checks must work even when assertions are off."}, {"tag": "Chapter 3", "q": "SLF4J is best described as:", "opts": ["A replacement for Maven", "A facade over logging frameworks such as Logback and Log4j", "A type of exception", "A unit-testing framework"], "a": 1, "why": "Slide 99."}];
+let currentQ = 0, score = 0, answered = false;
+
+function renderQuestion() {
+    const q = questions[currentQ];
+    answered = false;
+    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+    document.getElementById('quiz-tag').textContent = q.tag;
+    document.getElementById('quiz-q').textContent = q.q;
+    const opts = document.getElementById('quiz-opts');
+    opts.innerHTML = '';
+    q.opts.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.type = 'button';
+        b.innerHTML = text;
+        b.onclick = () => answer(i, b);
+        opts.appendChild(b);
+    });
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback';
+    fb.textContent = '';
+    document.getElementById('quiz-next').className = 'next-btn';
+}
+
+function answer(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
+        b.disabled = true;
+        if (j === q.a) b.classList.add('correct');
+    });
+    if (i !== q.a) btn.classList.add('wrong'); else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback show';
+    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
+    document.getElementById('quiz-next').className = 'next-btn show';
+}
+
+function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) { renderQuestion(); return; }
+    document.querySelector('.test-card').style.display = 'none';
+    document.getElementById('quiz-score').classList.add('show');
+    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
+    document.getElementById('score-sub').textContent =
+        score === questions.length ? 'Clean sweep. Move on to the drills.'
+        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
+        : 'Go back through the slide map before the next chapter.';
+}
+
+function restartQuiz() {
+    currentQ = 0; score = 0;
+    document.getElementById('quiz-score').classList.remove('show');
+    document.querySelector('.test-card').style.display = '';
+    renderQuestion();
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    // Persist both keys: html-theme-sync.js resolves from localStorage only and
+    // runs after this file, so without agreeing with it the page would flip.
+    try {
+        localStorage.setItem('shoug-theme', theme);
+        localStorage.setItem('theme', theme);
+    } catch (e) { }
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Default to dark — matching the site chrome this page is embedded in —
+    // unless the reader has explicitly chosen light.
+    let saved = null;
+    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+    renderQuestion();
+
+    // reading progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // highlight the section currently in view, in both the rail and the nav
+    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
+    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            links.forEach(a => a.classList.remove('active'));
+            byHash(e.target.id).forEach(a => a.classList.add('active'));
+        });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+});
+</script>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+</body>
+
+</html>

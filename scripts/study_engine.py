@@ -31,6 +31,18 @@ import markdown
 
 import build_se371_breakdowns as breakdown
 
+# Shared site assets: the shell stylesheet and the colour-theme script that follows the Theme picker.
+THEME_ASSETS = ('<link rel="stylesheet" href="/styles/site-shell.css">'
+                '<script defer src="/javascripts/site-palette.js"></script>')
+
+
+def with_theme_assets(page):
+    """Add the shell stylesheet and palette script once, so a page follows the site's Theme and light/dark mode."""
+    if "/javascripts/site-palette.js" in page:
+        return page
+    return page.replace("</head>", THEME_ASSETS + "</head>", 1)
+
+
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-⛿✀-➿️]")
 KEEP_SYMBOLS = set("✓✗")
 ALLOWED_TAGS = r"/?(?:sub|sup|br|strong|em|mark|kbd)\b"
@@ -135,7 +147,8 @@ def plot(arg, body):
             out.append('<path d="M%s" fill="none" stroke="var(--c%s)" stroke-width="2.6"/>'
                        % (" L".join("%.1f %.1f" % p for p in pts), colour))
             ex, ey = pts[-1]
-            top.append('<text x="%.1f" y="%.1f" class="pn" fill="var(--c%s)">%s</text>' % (ex + 5, ey + 4, colour, html.escape(name)))
+            if name != "-":
+                top.append('<text x="%.1f" y="%.1f" class="pn" fill="var(--c%s)">%s</text>' % (ex + 5, ey + 4, colour, html.escape(name)))
             continue
         m = re.match(r"area\s+(.*?)\s+(\d)\s*:\s*(.+)$", line)
         if m:
@@ -604,7 +617,7 @@ def render_breakdown(deck, ctx):
     text = text.replace("Chapter %02d &middot; Slide Breakdown" % ctx["num"], "%s &middot; Slide Breakdown" % deck["head"])
     text = text.replace("SE371 Web Engineering &mdash; Chapter %02d" % ctx["num"], "%s &mdash; %s" % (label, deck["head"]))
     text = text.replace("SE371 Web Engineering", label).replace("SE371", ctx["code"]).replace("se371", ctx["code"].lower())
-    return text.replace("</style>", EXTRA_CSS + "</style>", 1)
+    return with_theme_assets(text.replace("</style>", EXTRA_CSS + "</style>", 1))
 
 
 # ----------------------------------------------------------------- derived ---
@@ -666,9 +679,9 @@ b.addEventListener('click',function(){{a(r.getAttribute('data-theme')==='dark'?'
 
 
 def cheat_page(title, heading, eyebrow, desc, canonical, body):
-    return CHEAT_PAGE.format(title=html.escape(title), desc=html.escape(desc, quote=True), canonical=canonical,
+    return with_theme_assets(CHEAT_PAGE.format(title=html.escape(title), desc=html.escape(desc, quote=True), canonical=canonical,
                              style=breakdown.STYLE, extra=EXTRA_CSS, eyebrow=html.escape(eyebrow),
-                             heading=html.escape(heading), body=body)
+                             heading=html.escape(heading), body=body))
 
 
 def quiz_json(item, tag, options):

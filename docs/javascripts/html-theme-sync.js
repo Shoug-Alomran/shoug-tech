@@ -54,6 +54,12 @@
         overflow-x: hidden;
       }
 
+      /* Breakdowns already carry their own theme button (#bdThemeBtn); a second
+         one here gave readers two buttons that each flipped the theme. */
+      body:has(#bdThemeBtn) .sg-theme-toggle {
+        display: none !important;
+      }
+
       img,
       svg,
       canvas,
