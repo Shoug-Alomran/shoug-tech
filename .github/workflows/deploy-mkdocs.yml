@@ -146,12 +146,18 @@ jobs:
           find site \( -name '.DS_Store' -o -name '.render-stamp' \) -type f -delete
           files=$(find site -type f | wc -l)
           echo "Files to upload: $files"
-          find site -type f -size +25M -print | sed 's/^/::error::Over 25 MiB: /'
+          oversized=$(find site -type f -size +25M -print)
+          if [ -n "$oversized" ]; then
+            printf '%s\\n' "$oversized" | sed 's/^/::error::Cloudflare Pages cannot upload files over 25 MiB: /'
+            echo "::error::Move oversized assets to object storage or reduce them below 25 MiB before deploying to Cloudflare Pages."
+            exit 1
+          fi
           if [ "$files" -gt 20000 ]; then
             echo "::error::$files files is over the Cloudflare Pages limit of 20,000."
             exit 1
           fi
-          npx --yes wrangler@4.151.1 pages project create shoug-tech-site --production-branch main || true
+          # The Pages project is provisioned separately. Do not run "project create"
+          # on every deployment: it fails when the project already exists.
           npx --yes wrangler@4.151.1 pages deploy site --project-name shoug-tech-site --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=true
 
   indexnow:
