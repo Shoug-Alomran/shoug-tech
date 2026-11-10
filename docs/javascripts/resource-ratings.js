@@ -326,7 +326,8 @@
       status: null,
     };
 
-    var box = document.createElement("div");
+    var box = document.querySelector("[data-resource-rating-host]");
+    if (!box) box = document.createElement("div");
     box.className = "rrt-rating";
     box.innerHTML =
       '<span class="rrt-question"></span>' +
@@ -339,9 +340,11 @@
       '<span data-count="down">0</span></button>' +
       '<span class="rrt-summary"></span>' +
       '<span class="rrt-status" role="status"></span>';
-    if (buttons) buttons.insertAdjacentElement("afterend", box);
-    else if (header) header.appendChild(box);
-    else heading.insertAdjacentElement("afterend", box);
+    if (!box.isConnected) {
+      if (buttons) buttons.insertAdjacentElement("afterend", box);
+      else if (header) header.appendChild(box);
+      else heading.insertAdjacentElement("afterend", box);
+    }
 
     function mine() {
       return (state.user && state.votes[state.user.uid]) || 0;

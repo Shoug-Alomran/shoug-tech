@@ -26,7 +26,8 @@
 
   function parentDocument() {
     try {
-      if (window.parent && window.parent !== window) return window.parent.document;
+      if (window.parent && window.parent !== window)
+        return window.parent.document;
     } catch (e) {}
     return null;
   }
@@ -71,7 +72,8 @@
 
   // Another tab changed the site theme.
   window.addEventListener("storage", function (event) {
-    if (event.key === "shoug-theme" && valid(event.newValue)) apply(event.newValue);
+    if (event.key === "shoug-theme" && valid(event.newValue))
+      apply(event.newValue);
   });
 
   // The site page around this iframe changed theme.

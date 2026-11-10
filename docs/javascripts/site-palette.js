@@ -16,6 +16,14 @@
   var svgColorMap = new WeakMap();
   var svgColorAttributes = ["fill", "stroke", "stop-color", "flood-color"];
 
+  function ensurePaletteStylesheet() {
+    if (document.querySelector('link[href="/styles/site-shell.css"]')) return;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/styles/site-shell.css";
+    (document.head || document.documentElement).appendChild(link);
+  }
+
   if (window.location.pathname.indexOf("/academics/cybersecurity/") === 0) {
     root.setAttribute("data-site-track", "cyber");
   }
@@ -581,6 +589,12 @@
       applySvgColor(record, palette);
     });
 
+    syncPickerState(selected);
+    return selected;
+  }
+
+  function syncPickerState(selected) {
+    selected = selected || root.getAttribute("data-site-palette") || "original";
     document
       .querySelectorAll("[data-site-palette-option]")
       .forEach(function (button) {
@@ -594,12 +608,8 @@
     document
       .querySelectorAll("[data-site-palette-trigger]")
       .forEach(function (button) {
-        button.setAttribute(
-          "aria-label",
-          "Color theme: " + selected.replace("-", " "),
-        );
+        button.setAttribute("aria-label", "Color theme: " + selected);
       });
-    return selected;
   }
 
   function hexToRgbString(hex) {
@@ -723,46 +733,48 @@
       });
   }
 
+  function getMenuForTrigger(trigger) {
+    var id = trigger.getAttribute("aria-controls");
+    return (
+      (id && document.getElementById(id)) ||
+      (trigger.parentElement &&
+        trigger.parentElement.querySelector("[data-site-palette-menu]"))
+    );
+  }
+
   var saved = "original";
   try {
     saved = localStorage.getItem(storageKey) || "original";
   } catch (error) {}
+  ensurePaletteStylesheet();
   mountFallbackPicker();
   setTheme(saved);
 
-  document
-    .querySelectorAll("[data-site-palette-trigger]")
-    .forEach(function (trigger) {
-      trigger.addEventListener("click", function () {
-        var menu = trigger.parentElement.querySelector(
-          "[data-site-palette-menu]",
-        );
-        var open = menu && menu.hidden;
-        closeMenus();
-        if (menu && open) {
-          menu.hidden = false;
-          trigger.setAttribute("aria-expanded", "true");
-          menu.querySelector("[aria-pressed='true']")?.focus();
-        }
-      });
-    });
-
-  document
-    .querySelectorAll("[data-site-palette-option]")
-    .forEach(function (button) {
-      button.addEventListener("click", function () {
-        var selected = setTheme(
-          button.getAttribute("data-site-palette-option"),
-        );
-        try {
-          localStorage.setItem(storageKey, selected);
-        } catch (error) {}
-        closeMenus();
-        document.querySelector("[data-site-palette-trigger]")?.focus();
-      });
-    });
-
   document.addEventListener("click", function (event) {
+    var trigger = event.target.closest("[data-site-palette-trigger]");
+    if (trigger) {
+      var menu = getMenuForTrigger(trigger);
+      var open = menu && menu.hidden;
+      closeMenus();
+      if (menu && open) {
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+        menu.querySelector("[aria-pressed='true']")?.focus();
+      }
+      return;
+    }
+
+    var option = event.target.closest("[data-site-palette-option]");
+    if (option) {
+      var selected = setTheme(option.getAttribute("data-site-palette-option"));
+      try {
+        localStorage.setItem(storageKey, selected);
+      } catch (error) {}
+      closeMenus();
+      document.querySelector("[data-site-palette-trigger]")?.focus();
+      return;
+    }
+
     if (!event.target.closest(".shoug-palette-control")) closeMenus();
   });
   document.addEventListener("keydown", function (event) {
@@ -801,6 +813,7 @@
 
     new MutationObserver(function (mutations) {
       placePicker();
+      syncPickerState();
       var palette = currentPalette();
       mutations.forEach(function (mutation) {
         if (mutation.type === "attributes") scanNode(mutation.target, palette);

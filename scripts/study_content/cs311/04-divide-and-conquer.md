@@ -6,25 +6,27 @@
 @why This is the first design strategy of the course, and the template reappears in many other algorithms. Tracing merge sort and partitioning for quick sort by hand are common exam questions, and so is explaining why quick sort can degrade to O(n²).
 @connect Lecture 3's recurrences solve the running times here directly. Dynamic programming later handles the case in which the subproblems overlap, which divide and conquer handles badly.
 @goals
+
 - Name the three steps of divide and conquer
 - Trace merge sort on an array
 - Trace quick sort's partition step by step
 - Derive the best and worst cases of quick sort
 - Explain median-of-three pivot selection
-@vocab
-Partition | Rearranging an array around a pivot, smaller values before it and larger after.
-Pivot | The element chosen to split the array.
-Merge | Combining two sorted lists into one sorted list.
-In place | Using almost no extra memory.
-@map
-2-4 | The strategy | MEMORIZE | Divide, Conquer, Combine
-5-15 | Merge sort example | WRITE | Trace one by hand
-16-20 | Merge pseudocode and analysis | WRITE | The recurrence
-21-27 | Quick sort and partitioning | WRITE | Trace the partition
-28-31 | Best and worst case | MEMORIZE | When O(n²) happens
-32-34 | Better pivots, exercise | WRITE | Median-of-three
+  @vocab
+  Partition | Rearranging an array around a pivot, smaller values before it and larger after.
+  Pivot | The element chosen to split the array.
+  Merge | Combining two sorted lists into one sorted list.
+  In place | Using almost no extra memory.
+  @map
+  2-4 | The strategy | MEMORIZE | Divide, Conquer, Combine
+  5-15 | Merge sort example | WRITE | Trace one by hand
+  16-20 | Merge pseudocode and analysis | WRITE | The recurrence
+  21-27 | Quick sort and partitioning | WRITE | Trace the partition
+  28-31 | Best and worst case | MEMORIZE | When O(n²) happens
+  32-34 | Better pivots, exercise | WRITE | Median-of-three
 
 ## The strategy | Slides 2-4 | must
+
 Every divide-and-conquer algorithm has three moves.
 
 ::steps Divide, Conquer, Combine
@@ -39,13 +41,15 @@ You hand half to each of two assistants, who each split theirs again, until ever
 Think of the DC Comics hero sorting out a city: **D**ivide it up, **C**onquer each part, **C**ombine the results.
 ::
 ::key
+
 - Divide into similar, smaller subproblems
 - Conquer recursively, solving small cases directly
 - Combine the sub-answers
 - Analysis uses recurrence equations
-::
+  ::
 
 ## Merge sort: easy split, clever combine | Slides 5-20 | must
+
 - **Divide:** cut the array into two halves. Trivial.
 - **Conquer:** sort each half with merge sort.
 - **Combine:** merge the two sorted halves. **All the real work is here.**
@@ -84,6 +88,7 @@ e m o
 ::
 
 ### How merging works
+
 Keep a finger on the front of each sorted list. Repeatedly copy the smaller front value to the output, and advance that finger. When one list runs out, copy the rest of the other.
 
 ::steps Merge [2, 3, 8, 9] with [1, 4, 5, 7]
@@ -99,11 +104,12 @@ The second list is empty. Copy the rest: **8, 9**.
 Merging touches each element once: **Θ(p + q) = Θ(n)**.
 
 ### Analysis
-| Step | Cost |
-|---|---|
-| Divide (find the middle) | Θ(1) |
-| Conquer (two halves) | 2T(n/2) |
-| Combine (merge) | Θ(n) |
+
+| Step                     | Cost    |
+| ------------------------ | ------- |
+| Divide (find the middle) | Θ(1)    |
+| Conquer (two halves)     | 2T(n/2) |
+| Combine (merge)          | Θ(n)    |
 
 ::formula Recurrence
 T(n) = 2T(n/2) + Θ(n) → T(n) = Θ(n log n)
@@ -115,13 +121,15 @@ From Lecture 3, this is the tie case of the Master theorem. There are log n leve
 Its O(n log n) holds for **every** input: the split is always half and half. The cost is that merging needs extra memory for the output array.
 ::
 ::key
+
 - Merge sort splits in half and does its real work while merging
 - Merging two sorted lists takes Θ(n) time
 - T(n) = 2T(n/2) + Θ(n), which is Θ(n log n)
 - The running time is the same for best, worst and average
-::
+  ::
 
 ## Quick sort: clever split, easy combine | Slides 21-27 | must
+
 Quick sort reverses the idea. **All the real work is in dividing**, and combining is free.
 
 - **Divide:** pick a pivot and partition into smaller and larger values.
@@ -153,19 +161,21 @@ The searches have crossed. Swap pivot 7 with 5: **5 2 4** [7] **10 9**. Seven is
 Result: **2 4 5 7 9 10**.
 ::
 ::key
+
 - Quick sort does its work when partitioning
 - Combine does nothing
 - After partitioning, the pivot is in its final position
 - Partition scans from both ends and swaps out-of-place pairs
-::
+  ::
 
 ## Best and worst cases, and better pivots | Slides 28-33 | must
+
 Everything depends on how balanced the partition is.
 
-| Case | Partition | Recurrence | Result |
-|---|---|---|---|
-| **Best** | Pivot lands in the middle | T(n) = 2T(n/2) + bn | **O(n log n)** |
-| **Worst** | Pivot is always the smallest or largest | T(n) = T(n−1) + cn | **O(n²)** |
+| Case      | Partition                               | Recurrence          | Result         |
+| --------- | --------------------------------------- | ------------------- | -------------- |
+| **Best**  | Pivot lands in the middle               | T(n) = 2T(n/2) + bn | **O(n log n)** |
+| **Worst** | Pivot is always the smallest or largest | T(n) = T(n−1) + cn  | **O(n²)**      |
 
 ::steps Why the worst case is quadratic
 Partitioning n elements costs about n.
@@ -186,13 +196,13 @@ If you split a class by asking "who's shorter than the shortest person?", nobody
 S = 0, 1, 2, ..., 9. Left is 0, right is 9, centre index is (0 + 9)/2 = 4, so the centre value is 4. The median of 0, 9 and 4 is **4**. A sorted array no longer triggers the worst case.
 ::
 
-| | Merge sort | Quick sort |
-|---|---|---|
-| Worst case | O(n log n) | O(n²) |
-| Average | O(n log n) | O(n log n) |
-| Work happens in | Combine | Divide |
-| Extra memory | Needs an array | In place |
-| In practice | Reliable | Fastest known in practice (slide 21) |
+|                 | Merge sort     | Quick sort                           |
+| --------------- | -------------- | ------------------------------------ |
+| Worst case      | O(n log n)     | O(n²)                                |
+| Average         | O(n log n)     | O(n log n)                           |
+| Work happens in | Combine        | Divide                               |
+| Extra memory    | Needs an array | In place                             |
+| In practice     | Reliable       | Fastest known in practice (slide 21) |
 
 ::trap Picking the last element doesn't help
 Slide 32 says it plainly: a sorted array is just as bad with the last element as with the first. Only a pivot that tends to fall near the middle fixes the problem.
@@ -201,116 +211,157 @@ Slide 32 says it plainly: a sorted array is just as bad with the last element as
 T(n) = T(9n/10) + T(n/10) + n, which is still **O(n log n)**. Each level still costs at most n, and there are about log n levels. Any constant fraction is fine: the trouble only comes when one side is empty.
 ::
 ::key
+
 - Best case: balanced partition, O(n log n)
 - Worst case: pivot always extreme, O(n²)
 - First-element pivot gives the worst case on sorted or reverse-sorted arrays
 - Median-of-three uses the left, centre and right elements
 - Merge sort is always O(n log n), while quick sort is fast in practice
-::
-@cheat
+  ::
+  @cheat
+
 ### Divide and conquer
+
 - Divide into smaller subproblems
 - Conquer recursively
 - Combine the answers
+
 ### Merge sort
+
 - Split in half (trivial)
 - Work is in merge: Θ(n)
 - T(n) = 2T(n/2) + Θ(n)
 - Θ(n log n), every case
 - Needs extra array
+
 ### Quick sort
+
 - Pivot, partition, recurse
 - Combine does nothing
 - Best: T(n) = 2T(n/2) + n
 - Worst: T(n) = T(n−1) + n = O(n²)
 - Worst on sorted input with first pivot
+
 ### Partition
+
 - From left: first ≥ pivot
 - From right: first < pivot
 - Swap, continue until they cross
 - Swap pivot into place
+
 ### Median-of-three
+
 - Median of left, centre and right
 - Fixes the sorted-input worst case
-@mcq 18
-What is the recurrence for merge sort?
-+ T(n) = 2T(n/2) + Θ(n)
+  @mcq 18
+  What is the recurrence for merge sort?
+
+* T(n) = 2T(n/2) + Θ(n)
+
 - T(n) = T(n/2) + Θ(n)
 - T(n) = 2T(n/2) + Θ(1)
 - T(n) = T(n−1) + Θ(n)
+
 > Two halves are sorted, and merging costs linear time.
-@mcq 30
-Quick sort's worst-case recurrence is:
-+ T(n) = T(n−1) + cn
-- T(n) = 2T(n/2) + cn
-- T(n) = T(n/2) + c
-- T(n) = 2T(n−1) + c
+> @mcq 30
+> Quick sort's worst-case recurrence is:
+
+- T(n) = T(n−1) + cn
+
+* T(n) = 2T(n/2) + cn
+* T(n) = T(n/2) + c
+* T(n) = 2T(n−1) + c
+
 > The partition puts everything on one side, leaving n−1 elements.
-@mcq 31
-With the first element as the pivot, quick sort is at its worst when the array is:
-+ Already sorted or reverse sorted
-- Randomly shuffled
-- All different values
-- Of even length
+> @mcq 31
+> With the first element as the pivot, quick sort is at its worst when the array is:
+
+- Already sorted or reverse sorted
+
+* Randomly shuffled
+* All different values
+* Of even length
+
 > Each pivot is then the smallest or largest element.
-@mcq 21
-Where does quick sort do most of its work?
-+ In the partition step
-- In the combine step
-- In the base case
-- In comparing recursion depths
+> @mcq 21
+> Where does quick sort do most of its work?
+
+- In the partition step
+
+* In the combine step
+* In the base case
+* In comparing recursion depths
+
 > The combine step does nothing.
-@mcq 18
-Where does merge sort do most of its work?
-+ In the merge step
-- In picking the pivot
-- In computing the midpoint
-- In the base case
+> @mcq 18
+> Where does merge sort do most of its work?
+
+- In the merge step
+
+* In picking the pivot
+* In computing the midpoint
+* In the base case
+
 > Dividing is constant time. Merging costs Θ(n) per level.
-@mcq 33
-Median-of-three chooses as pivot the median of:
-+ The left, centre and right elements
-- Three random elements
-- The first three elements
-- The three largest elements
+> @mcq 33
+> Median-of-three chooses as pivot the median of:
+
+- The left, centre and right elements
+
+* Three random elements
+* The first three elements
+* The three largest elements
+
 > It approximates the true median cheaply.
-@mcq 17
-Merging sorted lists of sizes p and q takes:
-+ Θ(p + q)
-- Θ(p × q)
-- Θ(log(p + q))
-- Θ(max(p, q)²)
+> @mcq 17
+> Merging sorted lists of sizes p and q takes:
+
+- Θ(p + q)
+
+* Θ(p × q)
+* Θ(log(p + q))
+* Θ(max(p, q)²)
+
 > Each element is moved exactly once.
-@mcq 6
-Merge sort's overall running time is:
-+ Θ(n log n) for all inputs
-- Θ(n²) in the worst case
-- Θ(n) for sorted inputs
-- Θ(log n) on average
+> @mcq 6
+> Merge sort's overall running time is:
+
+- Θ(n log n) for all inputs
+
+* Θ(n²) in the worst case
+* Θ(n) for sorted inputs
+* Θ(log n) on average
+
 > Halving is independent of the data, so every input takes the same shape of work.
-@mcq 22
-After a partition step, the pivot is:
-+ In its final sorted position
-- At the front of the array
-- Still to be placed by combine
-- At the end of the array
+> @mcq 22
+> After a partition step, the pivot is:
+
+- In its final sorted position
+
+* At the front of the array
+* Still to be placed by combine
+* At the end of the array
+
 > Every smaller value is before it and every larger value is after it.
-@mcq 32
-Why not always use the exact median as pivot?
-+ It is hard to find quickly without sorting
-- It makes partitioning unstable
-- It gives O(n²) behaviour
-- It cannot be computed
+> @mcq 32
+> Why not always use the exact median as pivot?
+
+- It is hard to find quickly without sorting
+
+* It makes partitioning unstable
+* It gives O(n²) behaviour
+* It cannot be computed
+
 > Slide 32: the median would be ideal, but it's expensive to calculate.
-@short 26
-Show the first partition of 5 3 8 4 9 1 with the first element as pivot.
-~ pivot, 5, swap, 8, 1, final
+> @short 26
+> Show the first partition of 5 3 8 4 9 1 with the first element as pivot.
+> ~ pivot, 5, swap, 8, 1, final
 > Pivot is 5. From the left, 8 is ≥ 5; from the right, 1 is < 5. Swap to get 5 3 1 4 9 8. The searches cross, so swap the pivot with the last smaller value, 4, giving 4 3 1 5 9 8.
-@short 30
-Explain why quick sort becomes O(n²) on a sorted array when the first element is the pivot.
-~ pivot, smallest, n-1, unbalanced, sum
+> @short 30
+> Explain why quick sort becomes O(n²) on a sorted array when the first element is the pivot.
+> ~ pivot, smallest, n-1, unbalanced, sum
 > Each pivot is the smallest element, so one partition is empty and the other has n−1 elements. The costs add up to n + (n−1) + ... + 2, which is O(n²).
-@short 18
-Derive the running time of merge sort from its three steps.
-~ divide, conquer, combine, 2T(n/2), n log n
+> @short 18
+> Derive the running time of merge sort from its three steps.
+> ~ divide, conquer, combine, 2T(n/2), n log n
 > Dividing is Θ(1), conquering is 2T(n/2) and combining is Θ(n). So T(n) = 2T(n/2) + Θ(n), which is Θ(n log n).

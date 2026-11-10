@@ -1,0 +1,86 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/snapshot-bulk-edit.sh'",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/check-html.py'",
+            "timeout": 15,
+            "statusMessage": "Checking HTML structure..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty'); case \"$f\" in */My-Garden/*.js) out=$(node --check \"$f\" 2>&1) || { echo \"JS syntax error in $f:\"; echo \"$out\"; exit 2; };; esac",
+            "timeout": 30,
+            "statusMessage": "Checking JS syntax..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/responsive-guard.sh' --start",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/kill-preview-servers.sh'",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/validate-site.sh'",
+            "timeout": 90,
+            "statusMessage": "Validating site routes and links..."
+          },
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/sitemap-guard.sh'",
+            "timeout": 60,
+            "statusMessage": "Checking sitemaps..."
+          },
+          {
+            "type": "command",
+            "command": "'/Users/shougalomran/Developer/My-Garden/.codex/hooks/responsive-guard.sh'",
+            "timeout": 180,
+            "statusMessage": "Checking changed pages on laptop, iPad and iPhone widths..."
+          }
+        ]
+      }
+    ]
+  }
+}

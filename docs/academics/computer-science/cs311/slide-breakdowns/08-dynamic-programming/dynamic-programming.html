@@ -1,1057 +1,2843 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark" data-sg-styled="true">
-
-<head>
-    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
-    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamic Programming &mdash; CS311 Slide Breakdown</title>
-    <meta name="description" content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom.">
-    <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs311/slide-breakdowns/08-dynamic-programming/dynamic-programming.html">
-    <meta property="og:title" content="Dynamic Programming &mdash; CS311 Slide Breakdown">
-    <meta property="og:description" content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom.">
-    <meta property="og:url" content="https://shoug-tech.com/academics/computer-science/cs311/slide-breakdowns/08-dynamic-programming/dynamic-programming.html">
-    <meta property="og:type" content="article">
-    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Dynamic Programming &mdash; CS311 Slide Breakdown">
-    <meta name="twitter:description" content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom.">
-    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta
+      name="description"
+      content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs311/slide-breakdowns/08-dynamic-programming/dynamic-programming.html"
+    />
+    <meta
+      property="og:title"
+      content="Dynamic Programming &mdash; CS311 Slide Breakdown"
+    />
+    <meta
+      property="og:description"
+      content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs311/slide-breakdowns/08-dynamic-programming/dynamic-programming.html"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Dynamic Programming &mdash; CS311 Slide Breakdown"
+    />
+    <meta
+      name="twitter:description"
+      content="CS311 Lecture 6 explained in plain language with examples and memory tricks: When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-/* ── palette ───────────────────────────────────────────────────────────────
+      /* ── palette ───────────────────────────────────────────────────────────────
    Eight hue tokens drive the per-section colour: each <section> carries
    --sec, and its label, rule, cards and table headers all derive from it. */
 
-:root[data-theme="dark"] {
-    --bg: #0a0611;
-    --bg2: #150d21;
-    --bg3: #1d1330;
-    --code-bg: #0d0716;
-    --border: rgba(255, 255, 255, 0.10);
-    --border2: rgba(255, 255, 255, 0.18);
-    --text: #f4f0fa;
-    --text2: #aaa2bb;
-    --text3: #756e88;
-    --accent: #c77dff;
-    --accent2: #e6b8ff;
+      :root[data-theme="dark"] {
+        --bg: #0a0611;
+        --bg2: #150d21;
+        --bg3: #1d1330;
+        --code-bg: #0d0716;
+        --border: rgba(255, 255, 255, 0.1);
+        --border2: rgba(255, 255, 255, 0.18);
+        --text: #f4f0fa;
+        --text2: #aaa2bb;
+        --text3: #756e88;
+        --accent: #c77dff;
+        --accent2: #e6b8ff;
 
-    --c1: #c77dff;   /* violet   */
-    --c2: #4cc9f0;   /* cyan     */
-    --c3: #4ade80;   /* green    */
-    --c4: #fbbf24;   /* amber    */
-    --c5: #fb7185;   /* rose     */
-    --c6: #818cf8;   /* indigo   */
-    --c7: #f472b6;   /* pink     */
-    --c8: #2dd4bf;   /* teal     */
+        --c1: #c77dff; /* violet   */
+        --c2: #4cc9f0; /* cyan     */
+        --c3: #4ade80; /* green    */
+        --c4: #fbbf24; /* amber    */
+        --c5: #fb7185; /* rose     */
+        --c6: #818cf8; /* indigo   */
+        --c7: #f472b6; /* pink     */
+        --c8: #2dd4bf; /* teal     */
 
-    --green: var(--c3);
-    --red: var(--c5);
-    --amber: var(--c4);
-    --blue: var(--c2);
+        --green: var(--c3);
+        --red: var(--c5);
+        --amber: var(--c4);
+        --blue: var(--c2);
 
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
-    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
-                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
-}
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+        --hero-wash:
+          radial-gradient(
+            120% 140% at 8% 0%,
+            rgba(199, 125, 255, 0.2),
+            transparent 60%
+          ),
+          radial-gradient(
+            90% 120% at 92% 10%,
+            rgba(76, 201, 240, 0.16),
+            transparent 62%
+          );
+      }
 
-:root[data-theme="light"] {
-    --bg: #fbf9fe;
-    --bg2: #f4eefb;
-    --bg3: #ffffff;
-    --code-bg: #f6f1fc;
-    --border: rgba(24, 12, 40, 0.10);
-    --border2: rgba(24, 12, 40, 0.18);
-    --text: #180d26;
-    --text2: #574d68;
-    --text3: #8a8299;
-    --accent: #7b2cbf;
-    --accent2: #9d4edd;
+      :root[data-theme="light"] {
+        --bg: #fbf9fe;
+        --bg2: #f4eefb;
+        --bg3: #ffffff;
+        --code-bg: #f6f1fc;
+        --border: rgba(24, 12, 40, 0.1);
+        --border2: rgba(24, 12, 40, 0.18);
+        --text: #180d26;
+        --text2: #574d68;
+        --text3: #8a8299;
+        --accent: #7b2cbf;
+        --accent2: #9d4edd;
 
-    --c1: #7b2cbf;
-    --c2: #0369a1;
-    --c3: #047857;
-    --c4: #a16207;
-    --c5: #be123c;
-    --c6: #4338ca;
-    --c7: #a21caf;
-    --c8: #0f766e;
+        --c1: #7b2cbf;
+        --c2: #0369a1;
+        --c3: #047857;
+        --c4: #a16207;
+        --c5: #be123c;
+        --c6: #4338ca;
+        --c7: #a21caf;
+        --c8: #0f766e;
 
-    --green: var(--c3);
-    --red: var(--c5);
-    --amber: var(--c4);
-    --blue: var(--c2);
+        --green: var(--c3);
+        --red: var(--c5);
+        --amber: var(--c4);
+        --blue: var(--c2);
 
-    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
-    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
-    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
-                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
-}
+        --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+        --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+        --hero-wash:
+          radial-gradient(
+            120% 140% at 8% 0%,
+            rgba(123, 44, 191, 0.12),
+            transparent 60%
+          ),
+          radial-gradient(
+            90% 120% at 92% 10%,
+            rgba(3, 105, 161, 0.1),
+            transparent 62%
+          );
+      }
 
-/* ── fluid scale ───────────────────────────────────────────────────────────
+      /* ── fluid scale ───────────────────────────────────────────────────────────
    One root font-size ramp scales every rem on the page with the viewport,
    so the layout uses a phone and a 32" monitor equally well. */
 
-html {
-    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
-    scroll-behavior: smooth;
-    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
-}
+      html {
+        font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+        scroll-behavior: smooth;
+        overflow-x: clip; /* clip, not hidden: hidden would break the sticky rail */
+      }
 
-@media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    * { animation: none !important; transition: none !important; }
-}
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
 
-:root {
-    --navh: 3.4rem;
-    --gutter: clamp(1rem, 3.2vw, 3rem);
-    --maxw: 74rem;
-    --radius: 0.85rem;
-    --sec: var(--c1);
-    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
-    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
-}
+      :root {
+        --navh: 3.4rem;
+        --gutter: clamp(1rem, 3.2vw, 3rem);
+        --maxw: 74rem;
+        --radius: 0.85rem;
+        --sec: var(--c1);
+        --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+        --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+      }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+      /* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
    which turns the root into a scroll container and silently disables the
    sticky TOC rail. overflow-x: clip contains the same overflow without
    creating a scroll container; these selectors outrank the injected rule. */
-html:root { overflow-x: clip; }
-:root > body { overflow-x: clip; }
+      html:root {
+        overflow-x: clip;
+      }
+      :root > body {
+        overflow-x: clip;
+      }
 
-body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    width: 100%;
-    overflow-x: clip;
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.3s, color 0.3s;
-}
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        width: 100%;
+        overflow-x: clip;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
 
-/* ── reading progress ──────────────────────────────────────────────────── */
-#progress {
-    position: fixed; top: 0; left: 0; height: 3px; width: 0;
-    z-index: 200; transform-origin: left;
-    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
-}
+      /* ── reading progress ──────────────────────────────────────────────────── */
+      #progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        width: 0;
+        z-index: 200;
+        transform-origin: left;
+        background: linear-gradient(
+          90deg,
+          var(--c1),
+          var(--c7),
+          var(--c2),
+          var(--c3)
+        );
+      }
 
-/* ── top bar ───────────────────────────────────────────────────────────
+      /* ── top bar ───────────────────────────────────────────────────────────
    Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
    used to leak their sticky positioning and gradient rule into it. */
-nav.topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: color-mix(in srgb, var(--bg) 86%, transparent);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border);
-    padding-inline: var(--gutter);
-    display: flex; align-items: center; gap: 1rem;
-    min-height: var(--navh);
-}
-nav.topbar::after {
-    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
-    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
-    opacity: 0.85;
-}
-.nav-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
-    background: linear-gradient(90deg, var(--c1), var(--c7));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.nav-links {
-    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
-    overflow-x: auto; min-width: 0; scrollbar-width: none;
-}
-.nav-links::-webkit-scrollbar { display: none; }
-.nav-links a {
-    color: var(--text2); text-decoration: none; font-size: 0.8rem;
-    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-}
-.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
-.nav-actions {
-    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
-    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
-}
-.toggle-btn {
-    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
-    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
-    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
-}
-.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+      nav.topbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+        padding-inline: var(--gutter);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-height: var(--navh);
+      }
+      nav.topbar::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 -1px 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--c1),
+          var(--c7),
+          var(--c2),
+          var(--c3),
+          var(--c4)
+        );
+        opacity: 0.85;
+      }
+      .nav-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
+        background: linear-gradient(90deg, var(--c1), var(--c7));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .nav-links {
+        display: flex;
+        gap: clamp(0.7rem, 1.4vw, 1.5rem);
+        list-style: none;
+        overflow-x: auto;
+        min-width: 0;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        color: var(--text2);
+        text-decoration: none;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        padding: 0.15rem 0;
+        border-bottom: 2px solid transparent;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+      }
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+      .nav-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .toggle-btn {
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        color: var(--text2);
+        border-radius: 0.6rem;
+        padding: 0.3rem 0.8rem;
+        cursor: pointer;
+        font-size: 0.76rem;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+      .toggle-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: var(--sec-soft);
+      }
 
-/* ── hero ──────────────────────────────────────────────────────────────── */
-.hero-band {
-    background: var(--hero-wash);
-    border-bottom: 1px solid var(--border);
-}
-.hero {
-    width: min(100% - 2 * var(--gutter), var(--maxw));
-    margin-inline: auto;
-    padding-block: clamp(2rem, 5vw, 4rem);
-}
-.hero-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
-    color: var(--accent); margin-bottom: 0.9rem;
-    display: inline-flex; align-items: center; gap: 0.6rem;
-}
-.hero-eyebrow::before {
-    content: ''; width: 2rem; height: 3px; border-radius: 2px;
-    background: linear-gradient(90deg, var(--c1), var(--c2));
-}
-.hero h1 {
-    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
-    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
-    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    padding-bottom: 0.1em;
-}
-.hero-sub {
-    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
-    margin-top: 1rem; max-width: 62ch;
-}
-.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
-.stat {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-    border-radius: 999px; padding: 0.3rem 0.85rem;
-    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
-    color: var(--sec);
-    background: color-mix(in srgb, var(--sec) 13%, transparent);
-    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
-}
-.stat:nth-child(1) { --sec: var(--c1); }
-.stat:nth-child(2) { --sec: var(--c2); }
-.stat:nth-child(3) { --sec: var(--c3); }
-.stat:nth-child(4) { --sec: var(--c4); }
-.stat:nth-child(5) { --sec: var(--c7); }
+      /* ── hero ──────────────────────────────────────────────────────────────── */
+      .hero-band {
+        background: var(--hero-wash);
+        border-bottom: 1px solid var(--border);
+      }
+      .hero {
+        width: min(100% - 2 * var(--gutter), var(--maxw));
+        margin-inline: auto;
+        padding-block: clamp(2rem, 5vw, 4rem);
+      }
+      .hero-eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin-bottom: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .hero-eyebrow::before {
+        content: "";
+        width: 2rem;
+        height: 3px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--c1), var(--c2));
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        background: linear-gradient(
+          115deg,
+          var(--text) 20%,
+          var(--c1) 60%,
+          var(--c7) 90%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding-bottom: 0.1em;
+      }
+      .hero-sub {
+        color: var(--text2);
+        font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+        margin-top: 1rem;
+        max-width: 62ch;
+      }
+      .hero-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+      .stat {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        border-radius: 999px;
+        padding: 0.3rem 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+        color: var(--sec);
+        background: color-mix(in srgb, var(--sec) 13%, transparent);
+        border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+      }
+      .stat:nth-child(1) {
+        --sec: var(--c1);
+      }
+      .stat:nth-child(2) {
+        --sec: var(--c2);
+      }
+      .stat:nth-child(3) {
+        --sec: var(--c3);
+      }
+      .stat:nth-child(4) {
+        --sec: var(--c4);
+      }
+      .stat:nth-child(5) {
+        --sec: var(--c7);
+      }
 
-/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
-.layout {
-    width: min(100% - 2 * var(--gutter), var(--maxw));
-    margin-inline: auto;
-    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1.5rem, 3vw, 3rem);
-    align-items: start;
-}
+      /* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+      .layout {
+        width: min(100% - 2 * var(--gutter), var(--maxw));
+        margin-inline: auto;
+        padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: clamp(1.5rem, 3vw, 3rem);
+        align-items: start;
+      }
 
-.chapter-toc {
-    display: flex; flex-wrap: wrap; gap: 0.4rem;
-    padding: 0.9rem; background: var(--bg2);
-    border: 1px solid var(--border); border-radius: var(--radius);
-}
-.chapter-toc a {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-    color: var(--text2); text-decoration: none;
-    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
-    border: 1px solid transparent; transition: all 0.18s;
-}
-.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
-.chapter-toc a.active {
-    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-}
+      .chapter-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        padding: 0.9rem;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+      .chapter-toc a {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--text2);
+        text-decoration: none;
+        padding: 0.28rem 0.65rem;
+        border-radius: 0.5rem;
+        border: 1px solid transparent;
+        transition: all 0.18s;
+      }
+      .chapter-toc a:hover {
+        color: var(--accent);
+        border-color: var(--border2);
+        background: var(--bg3);
+      }
+      .chapter-toc a.active {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      }
 
-@media (min-width: 68rem) {
-    :root { --maxw: 88rem; }
-    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
-    .toc-rail {
-        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
-        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
-    }
-    .chapter-toc {
-        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
-        gap: 0.1rem; padding: 0.75rem;
-    }
-    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
-    .chapter-toc a.active { border-left-color: var(--accent); }
-}
-@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+      @media (min-width: 68rem) {
+        :root {
+          --maxw: 88rem;
+        }
+        .layout {
+          grid-template-columns: 14rem minmax(0, 1fr);
+        }
+        .toc-rail {
+          position: sticky;
+          top: calc(var(--navh) + 1rem);
+          align-self: start;
+          max-height: calc(100vh - var(--navh) - 2rem);
+          overflow-y: auto;
+        }
+        .chapter-toc {
+          flex-direction: column;
+          flex-wrap: nowrap;
+          align-items: stretch;
+          gap: 0.1rem;
+          padding: 0.75rem;
+        }
+        .chapter-toc a {
+          text-align: left;
+          border-left: 2px solid transparent;
+          border-radius: 0 0.4rem 0.4rem 0;
+        }
+        .chapter-toc a.active {
+          border-left-color: var(--accent);
+        }
+      }
+      @media (min-width: 100rem) {
+        :root {
+          --maxw: 100rem;
+        }
+        .layout {
+          grid-template-columns: 16rem minmax(0, 1fr);
+        }
+      }
 
-/* ── sections ──────────────────────────────────────────────────────────── */
-section {
-    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
-    scroll-margin-top: calc(var(--navh) + 1rem);
-}
-.section-label {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-    text-transform: uppercase; letter-spacing: 0.16em;
-    color: var(--sec); margin-bottom: 0.7rem;
-    background: var(--sec-soft);
-    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
-    border-radius: 999px; padding: 0.22rem 0.75rem;
-}
-.section-title {
-    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
-    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
-    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
-}
-.section-title::before {
-    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
-    width: 4px; border-radius: 4px;
-    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
-}
+      /* ── sections ──────────────────────────────────────────────────────────── */
+      section {
+        margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+        scroll-margin-top: calc(var(--navh) + 1rem);
+      }
+      .section-label {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--sec);
+        margin-bottom: 0.7rem;
+        background: var(--sec-soft);
+        border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+        border-radius: 999px;
+        padding: 0.22rem 0.75rem;
+      }
+      .section-title {
+        font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+        font-weight: 750;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin-bottom: 1.4rem;
+        position: relative;
+        padding-left: 0.85rem;
+      }
+      .section-title::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        bottom: 0.15em;
+        width: 4px;
+        border-radius: 4px;
+        background: linear-gradient(
+          180deg,
+          var(--sec),
+          color-mix(in srgb, var(--sec) 25%, transparent)
+        );
+      }
 
-h3 {
-    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
-    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
-}
-h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
-p { margin-bottom: 0.9rem; color: var(--text2); }
-p strong, li strong { color: var(--text); font-weight: 600; }
-ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
-li { margin-bottom: 0.4rem; }
-li::marker { color: var(--sec); }
-a { color: var(--accent); }
+      h3 {
+        font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+        font-weight: 680;
+        margin: 1.8rem 0 0.7rem;
+        color: var(--text);
+      }
+      h4 {
+        font-size: 0.92rem;
+        font-weight: 650;
+        margin: 1.1rem 0 0.5rem;
+      }
+      p {
+        margin-bottom: 0.9rem;
+        color: var(--text2);
+      }
+      p strong,
+      li strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+      ul,
+      ol {
+        margin: 0 0 1rem 1.3rem;
+        color: var(--text2);
+      }
+      li {
+        margin-bottom: 0.4rem;
+      }
+      li::marker {
+        color: var(--sec);
+      }
+      a {
+        color: var(--accent);
+      }
 
-/* ── cards ─────────────────────────────────────────────────────────────── */
-.card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-top: 3px solid var(--sec);
-    border-radius: var(--radius); padding: 1.1rem 1.25rem;
-    margin-bottom: 1rem; box-shadow: var(--shadow);
-}
-.card h4 { margin-top: 0; color: var(--sec); }
-.card p:last-child, .card ul:last-child { margin-bottom: 0; }
-.grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-    gap: 1rem;
-}
-.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
-.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
-.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+      /* ── cards ─────────────────────────────────────────────────────────────── */
+      .card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--sec);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow);
+      }
+      .card h4 {
+        margin-top: 0;
+        color: var(--sec);
+      }
+      .card p:last-child,
+      .card ul:last-child {
+        margin-bottom: 0;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+        gap: 1rem;
+      }
+      .grid-2 > .card:nth-child(2n) {
+        --sec: var(--c2);
+      }
+      .grid-2 > .card:nth-child(3n) {
+        --sec: var(--c3);
+      }
+      .grid-2 > .card:nth-child(4n) {
+        --sec: var(--c4);
+      }
 
-/* ── tables ────────────────────────────────────────────────────────────── */
-.table-wrap {
-    overflow-x: auto; border: 1px solid var(--border);
-    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
-}
-table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
-th {
-    text-align: left; padding: 0.75rem 0.9rem;
-    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
-    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
-    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
-}
-td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
-td strong { color: var(--text); }
-td code, li code, p code, h4 code, th code, .cheat-col code {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
-    background: var(--code-bg); border: 1px solid var(--border);
-    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
-}
-th code { color: inherit; background: transparent; border: none; padding: 0; }
-.w-memorize, .w-write, .w-skim {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
-    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
-    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
-}
-.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
-.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
-.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+      /* ── tables ────────────────────────────────────────────────────────────── */
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1.4rem;
+        background: var(--bg2);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 32rem;
+        font-size: 0.86rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.75rem 0.9rem;
+        background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--sec);
+        border-bottom: 2px solid var(--sec-line);
+        white-space: nowrap;
+      }
+      td {
+        padding: 0.7rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text2);
+        vertical-align: top;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover td {
+        background: color-mix(in srgb, var(--sec) 5%, transparent);
+      }
+      td strong {
+        color: var(--text);
+      }
+      td code,
+      li code,
+      p code,
+      h4 code,
+      th code,
+      .cheat-col code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85em;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.3rem;
+        padding: 0.05rem 0.35rem;
+        color: var(--accent2);
+      }
+      th code {
+        color: inherit;
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+      .w-memorize,
+      .w-write,
+      .w-skim {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 999px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 700;
+      }
+      .w-memorize {
+        background: color-mix(in srgb, var(--c4) 16%, transparent);
+        color: var(--c4);
+        border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent);
+      }
+      .w-write {
+        background: color-mix(in srgb, var(--c3) 16%, transparent);
+        color: var(--c3);
+        border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent);
+      }
+      .w-skim {
+        background: color-mix(in srgb, var(--text3) 14%, transparent);
+        color: var(--text3);
+        border: 1px solid var(--border2);
+      }
 
-/* ── code blocks ───────────────────────────────────────────────────────── */
-.code-block {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); margin-bottom: 1.2rem;
-    overflow: hidden; box-shadow: var(--shadow);
-}
-.code-head {
-    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
-    padding: 0.6rem 1rem;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
-    border-bottom: 1px solid var(--border);
-}
-.code-file {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
-    color: var(--text); font-weight: 600;
-    display: inline-flex; align-items: center; gap: 0.5rem;
-}
-.code-file::before {
-    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
-    background: var(--sec); flex-shrink: 0;
-}
-.code-note { font-size: 0.7rem; color: var(--text3); }
-.code-run {
-    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
-    text-decoration: none; color: var(--sec); white-space: nowrap;
-    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
-    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
-}
-.code-run:hover { background: var(--sec); color: var(--bg); }
-.code-block pre {
-    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
-    overflow-x: auto; background: var(--code-bg);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
-    line-height: 1.65; color: var(--text); tab-size: 4;
-}
-.code-block pre .c { color: var(--text3); font-style: italic; }
-.code-block pre .k { color: var(--c1); }
-.code-block pre .s { color: var(--c3); }
-.code-block pre .t { color: var(--c2); }
+      /* ── code blocks ───────────────────────────────────────────────────────── */
+      .code-block {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1.2rem;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .code-head {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+        padding: 0.6rem 1rem;
+        background: linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--sec) 13%, var(--bg3)),
+          var(--bg3)
+        );
+        border-bottom: 1px solid var(--border);
+      }
+      .code-file {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.74rem;
+        color: var(--text);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .code-file::before {
+        content: "";
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--sec);
+        flex-shrink: 0;
+      }
+      .code-note {
+        font-size: 0.7rem;
+        color: var(--text3);
+      }
+      .code-run {
+        margin-left: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        text-decoration: none;
+        color: var(--sec);
+        white-space: nowrap;
+        border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+        border-radius: 999px;
+        padding: 0.22rem 0.7rem;
+        transition: all 0.18s;
+      }
+      .code-run:hover {
+        background: var(--sec);
+        color: var(--bg);
+      }
+      .code-block pre {
+        margin: 0;
+        padding: clamp(0.8rem, 1.6vw, 1.2rem);
+        overflow-x: auto;
+        background: var(--code-bg);
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+        line-height: 1.65;
+        color: var(--text);
+        tab-size: 4;
+      }
+      .code-block pre .c {
+        color: var(--text3);
+        font-style: italic;
+      }
+      .code-block pre .k {
+        color: var(--c1);
+      }
+      .code-block pre .s {
+        color: var(--c3);
+      }
+      .code-block pre .t {
+        color: var(--c2);
+      }
 
-/* ── traps & hooks ─────────────────────────────────────────────────────── */
-.trap {
-    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
-    border: 1px solid var(--border); border-left: 4px solid var(--c5);
-    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
-}
-.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
-.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
-.trap p:last-child { margin-bottom: 0; }
-.trap .fix { color: var(--c3); font-weight: 700; }
+      /* ── traps & hooks ─────────────────────────────────────────────────────── */
+      .trap {
+        background: linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--c5) 9%, var(--bg2)),
+          var(--bg2) 40%
+        );
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--c5);
+        border-radius: var(--radius);
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.9rem;
+      }
+      .trap-title {
+        font-weight: 660;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+        font-size: 0.98rem;
+      }
+      .trap p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+      .trap p:last-child {
+        margin-bottom: 0;
+      }
+      .trap .fix {
+        color: var(--c3);
+        font-weight: 700;
+      }
 
-.hook {
-    background: linear-gradient(115deg,
-        color-mix(in srgb, var(--c1) 12%, transparent),
-        color-mix(in srgb, var(--c2) 10%, transparent));
-    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
-    border-left: 4px solid var(--c1);
-    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
-    font-size: 0.9rem; color: var(--text2);
-}
-.hook strong { color: var(--accent2); }
+      .hook {
+        background: linear-gradient(
+          115deg,
+          color-mix(in srgb, var(--c1) 12%, transparent),
+          color-mix(in srgb, var(--c2) 10%, transparent)
+        );
+        border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+        border-left: 4px solid var(--c1);
+        border-radius: var(--radius);
+        padding: 0.95rem 1.2rem;
+        margin: 1.2rem 0;
+        font-size: 0.9rem;
+        color: var(--text2);
+      }
+      .hook strong {
+        color: var(--accent2);
+      }
 
-/* ── cheat sheet ───────────────────────────────────────────────────────── */
-.cheat {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-    gap: 1rem;
-}
-.cheat-col {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--sec);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    box-shadow: var(--shadow);
-}
-.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
-.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
-.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
-.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
-.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
-.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
-.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
-.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
-.cheat-col h4 {
-    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
-    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
-}
-.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
-.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+      /* ── cheat sheet ───────────────────────────────────────────────────────── */
+      .cheat {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+        gap: 1rem;
+      }
+      .cheat-col {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--sec);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        box-shadow: var(--shadow);
+      }
+      .cheat-col:nth-child(8n + 1) {
+        --sec: var(--c1);
+      }
+      .cheat-col:nth-child(8n + 2) {
+        --sec: var(--c2);
+      }
+      .cheat-col:nth-child(8n + 3) {
+        --sec: var(--c3);
+      }
+      .cheat-col:nth-child(8n + 4) {
+        --sec: var(--c4);
+      }
+      .cheat-col:nth-child(8n + 5) {
+        --sec: var(--c5);
+      }
+      .cheat-col:nth-child(8n + 6) {
+        --sec: var(--c6);
+      }
+      .cheat-col:nth-child(8n + 7) {
+        --sec: var(--c7);
+      }
+      .cheat-col:nth-child(8n + 8) {
+        --sec: var(--c8);
+      }
+      .cheat-col h4 {
+        margin-top: 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--sec);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.4rem;
+      }
+      .cheat-col ul {
+        list-style: none;
+        margin: 0.65rem 0 0;
+        font-size: 0.8rem;
+      }
+      .cheat-col li {
+        margin-bottom: 0.42rem;
+        line-height: 1.5;
+      }
 
-/* ── drills ────────────────────────────────────────────────────────────── */
-.drill { counter-reset: drill; list-style: none; margin-left: 0; }
-.drill li {
-    counter-increment: drill; position: relative;
-    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
-}
-.drill li::before {
-    content: counter(drill, decimal-leading-zero);
-    position: absolute; left: 0; top: 0.15rem;
-    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
-    color: var(--sec);
-    background: color-mix(in srgb, var(--sec) 13%, transparent);
-    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
-    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
-}
-.drill li:nth-child(6n+1) { --sec: var(--c1); }
-.drill li:nth-child(6n+2) { --sec: var(--c2); }
-.drill li:nth-child(6n+3) { --sec: var(--c3); }
-.drill li:nth-child(6n+4) { --sec: var(--c4); }
-.drill li:nth-child(6n+5) { --sec: var(--c7); }
-.drill li:nth-child(6n+6) { --sec: var(--c8); }
+      /* ── drills ────────────────────────────────────────────────────────────── */
+      .drill {
+        counter-reset: drill;
+        list-style: none;
+        margin-left: 0;
+      }
+      .drill li {
+        counter-increment: drill;
+        position: relative;
+        padding-left: 2.6rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.92rem;
+      }
+      .drill li::before {
+        content: counter(drill, decimal-leading-zero);
+        position: absolute;
+        left: 0;
+        top: 0.15rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--sec);
+        background: color-mix(in srgb, var(--sec) 13%, transparent);
+        border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+        border-radius: 0.45rem;
+        padding: 0.1rem 0.4rem;
+      }
+      .drill li:nth-child(6n + 1) {
+        --sec: var(--c1);
+      }
+      .drill li:nth-child(6n + 2) {
+        --sec: var(--c2);
+      }
+      .drill li:nth-child(6n + 3) {
+        --sec: var(--c3);
+      }
+      .drill li:nth-child(6n + 4) {
+        --sec: var(--c4);
+      }
+      .drill li:nth-child(6n + 5) {
+        --sec: var(--c7);
+      }
+      .drill li:nth-child(6n + 6) {
+        --sec: var(--c8);
+      }
 
-/* ── quiz ──────────────────────────────────────────────────────────────── */
-.test-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
-}
-.test-head {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; padding: 0.9rem 1.2rem;
-    background: linear-gradient(90deg,
-        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
-        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
-    border-bottom: 1px solid var(--border);
-}
-.test-head h3 { margin: 0; font-size: 0.92rem; }
-.tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-    background: color-mix(in srgb, var(--accent) 18%, transparent);
-    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    border-radius: 999px; padding: 0.2rem 0.65rem;
-    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
-}
-.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
-.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
-.test-options { display: grid; gap: 0.5rem; }
-.opt {
-    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
-    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
-    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
-}
-.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
-.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
-.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
-.opt:disabled { cursor: default; }
-.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
-.test-feedback.show { display: block; }
-.next-btn {
-    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
-    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
-    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
-}
-.next-btn:hover { background: var(--accent); color: var(--bg); }
-.next-btn.show { display: inline-block; }
-#quiz-score {
-    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
-    background: var(--hero-wash), var(--bg2);
-    border: 1px solid var(--border); border-radius: var(--radius);
-}
-#quiz-score.show { display: block; }
-#quiz-score p {
-    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
-    background: linear-gradient(90deg, var(--c1), var(--c7));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-}
+      /* ── quiz ──────────────────────────────────────────────────────────────── */
+      .test-card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lift);
+      }
+      .test-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.9rem 1.2rem;
+        background: linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+          color-mix(in srgb, var(--c2) 12%, var(--bg3))
+        );
+        border-bottom: 1px solid var(--border);
+      }
+      .test-head h3 {
+        margin: 0;
+        font-size: 0.92rem;
+      }
+      .tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+        color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+        border-radius: 999px;
+        padding: 0.2rem 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+      .test-body {
+        padding: clamp(1rem, 2vw, 1.5rem);
+      }
+      .test-question {
+        font-size: 1rem;
+        color: var(--text);
+        margin-bottom: 1rem;
+        white-space: pre-wrap;
+      }
+      .test-options {
+        display: grid;
+        gap: 0.5rem;
+      }
+      .opt {
+        text-align: left;
+        padding: 0.7rem 0.95rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--border2);
+        background: var(--bg3);
+        color: var(--text2);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.88rem;
+        transition: all 0.15s;
+      }
+      .opt:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--text);
+        transform: translateX(2px);
+      }
+      .opt.correct {
+        border-color: var(--c3);
+        color: var(--c3);
+        background: color-mix(in srgb, var(--c3) 12%, transparent);
+      }
+      .opt.wrong {
+        border-color: var(--c5);
+        color: var(--c5);
+        background: color-mix(in srgb, var(--c5) 12%, transparent);
+      }
+      .opt:disabled {
+        cursor: default;
+      }
+      .test-feedback {
+        margin-top: 0.9rem;
+        font-size: 0.88rem;
+        color: var(--text2);
+        display: none;
+      }
+      .test-feedback.show {
+        display: block;
+      }
+      .next-btn {
+        display: none;
+        margin-top: 1rem;
+        padding: 0.6rem 1.3rem;
+        border-radius: 0.6rem;
+        border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        background: color-mix(in srgb, var(--accent) 15%, transparent);
+        color: var(--accent);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.85rem;
+      }
+      .next-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .next-btn.show {
+        display: inline-block;
+      }
+      #quiz-score {
+        display: none;
+        text-align: center;
+        padding: clamp(1.2rem, 3vw, 2rem);
+        margin-top: 1rem;
+        background: var(--hero-wash), var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+      #quiz-score.show {
+        display: block;
+      }
+      #quiz-score p {
+        font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem);
+        font-weight: 800;
+        margin-bottom: 0.2rem;
+        background: linear-gradient(90deg, var(--c1), var(--c7));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
 
-/* ── footer ────────────────────────────────────────────────────────────── */
-footer {
-    border-top: 1px solid var(--border);
-    background: var(--hero-wash);
-    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
-    text-align: center; color: var(--text2); font-size: 0.85rem;
-}
+      /* ── footer ────────────────────────────────────────────────────────────── */
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--hero-wash);
+        padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+        text-align: center;
+        color: var(--text2);
+        font-size: 0.85rem;
+      }
 
-@media (max-width: 40rem) {
-    .nav-links { display: none; }
-    table { min-width: 26rem; }
-}
+      @media (max-width: 40rem) {
+        .nav-links {
+          display: none;
+        }
+        table {
+          min-width: 26rem;
+        }
+      }
 
-.prose p, .prose ul, .prose ol { font-size: 1rem; line-height: 1.72; }
-.prose ul, .prose ol { margin: 0 0 1rem 1.2rem; }
-.prose li { margin-bottom: .4rem; }
-.prose strong { color: var(--text); }
-.lesson-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin: -.3rem 0 1.1rem; }
-.pill { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: .22rem .6rem; border-radius: 99px; border: 1px solid var(--border2); color: var(--text2); }
-.pill.must { color: var(--c5); border-color: color-mix(in srgb, var(--c5) 55%, transparent); background: color-mix(in srgb, var(--c5) 12%, transparent); }
-.pill.know { color: var(--c2); border-color: color-mix(in srgb, var(--c2) 55%, transparent); background: color-mix(in srgb, var(--c2) 12%, transparent); }
-.pill.skim { color: var(--text3); }
-.tldr { font-size: 1.16rem; line-height: 1.6; color: var(--text); padding: 1.15rem 1.3rem; border-radius: 12px; background: color-mix(in srgb, var(--sec) 13%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--sec) 40%, transparent); margin-bottom: 1.2rem; }
-.tldr b { display: block; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sec); margin-bottom: .4rem; font-weight: 700; }
-.start-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: .9rem; margin-bottom: 1.1rem; }
-.start-item { padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); }
-.start-item h4 { margin: 0 0 .4rem; color: var(--sec); font-size: .92rem; }
-.start-item p, .start-item ul { margin-bottom: 0; font-size: .95rem; }
-.start-item ul { margin-left: 1.1rem; }
-.slide-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: .4rem 0 1.2rem; }
-.slide-links a { font-family: 'JetBrains Mono', monospace; font-size: .74rem; padding: .45rem .8rem; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; text-decoration: none; }
-.slide-links a:hover { background: var(--accent); color: var(--bg); }
-.note, .worked, .remember, .formula { margin: 1rem 0; border-radius: 12px; }
-.note { padding: 1rem 1.15rem; border: 1px solid var(--tone-line); background: var(--tone-bg); --tone: var(--c2); --tone-line: color-mix(in srgb, var(--tone) 42%, transparent); --tone-bg: color-mix(in srgb, var(--tone) 10%, var(--bg2)); }
-.note h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--text); }
-.note p:last-child, .note ul:last-child, .note ol:last-child { margin-bottom: 0; }
-.note p, .note li { font-size: .96rem; line-height: 1.66; }
-.note ul, .note ol { margin-left: 1.15rem; }
-.note-tag { font-family: 'JetBrains Mono', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--tone, var(--sec)); margin-bottom: .45rem; }
-.n-analogy { --tone: var(--c2); } .n-mnemonic { --tone: var(--c7); } .n-tip { --tone: var(--c3); } .n-why { --tone: var(--c6); } .n-class { --tone: var(--c8); } .n-says { --tone: var(--c1); } .n-trap { --tone: var(--c5); }
-.n-mnemonic h4 { font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; color: var(--c7); font-size: 1.12rem; }
-.note-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .9rem; margin: 1rem 0; }
-.note-grid > .note { margin: 0; }
-.worked { padding: 1.1rem 1.25rem; border: 1px solid var(--border2); background: var(--bg2); border-left: 3px solid var(--c4); --tone: var(--c4); }
-.worked h4 { margin: 0 0 .65rem; font-size: 1.06rem; color: var(--text); }
-.worked p:last-child, .worked ol:last-child, .worked ul:last-child { margin-bottom: 0; }
-.worked p, .worked li { font-size: .97rem; line-height: 1.66; }
-.worked ol:not(.stepper), .worked ul { margin-left: 1.2rem; }
-.stepper { list-style: none; counter-reset: st; margin: 0; }
-.stepper li { counter-increment: st; position: relative; padding: 0 0 .75rem 2.5rem; margin: 0; }
-.stepper li:last-child { padding-bottom: 0; }
-.stepper li::before { content: counter(st); position: absolute; left: 0; top: 0; width: 1.65rem; height: 1.65rem; border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: .76rem; font-weight: 700; color: var(--bg); background: var(--c4); }
-.stepper li::after { content: ''; position: absolute; left: .79rem; top: 1.75rem; bottom: .1rem; width: 2px; background: var(--border2); }
-.stepper li:last-child::after { display: none; }
-.formula { padding: .95rem 1.15rem; background: var(--code-bg); border: 1px solid var(--border2); text-align: center; }
-.f-cap { font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: .5rem; }
-.f-line { font-family: 'JetBrains Mono', monospace; font-size: 1.04rem; color: var(--text); line-height: 1.75; overflow-wrap: anywhere; }
-.remember { padding: 1rem 1.2rem; border: 1px dashed color-mix(in srgb, var(--sec) 55%, transparent); --tone: var(--sec); }
-.remember ul { margin: 0 0 0 1.1rem; }
-.remember li { margin-bottom: .32rem; font-size: .95rem; }
-.remember li:last-child { margin-bottom: 0; }
-details.try { margin: .8rem 0; border: 1px solid var(--border2); border-radius: 10px; background: var(--bg2); }
-details.try summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; color: var(--text); font-size: .97rem; list-style: none; }
-details.try summary::-webkit-details-marker { display: none; }
-details.try summary span { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--c3); padding: .14rem .45rem; border-radius: 4px; margin-right: .6rem; vertical-align: 1px; }
-details.try summary:hover { color: var(--accent); }
-details.try > div { padding: 0 1rem .9rem; border-top: 1px solid var(--border); padding-top: .75rem; }
-details.try p:last-child, details.try ul:last-child { margin-bottom: 0; }
-.diagram { margin: 1.1rem 0; text-align: center; }
-.diagram svg { width: 100%; max-width: 40rem; height: auto; }
-.diagram figcaption { font-size: .82rem; color: var(--text3); margin-top: .35rem; }
-.diagram text { font-family: 'JetBrains Mono', monospace; }
-.pl { fill: var(--text2); font-size: 13px; } .pt { fill: var(--text3); font-size: 12px; } .pn { fill: var(--text); font-size: 13.5px; font-weight: 700; } .pa { fill: var(--text); font-size: 13px; }
-.gn { fill: var(--text); font-size: 13.5px; font-weight: 600; } .gl { fill: var(--text2); font-size: 12px; }
-.table-wrap td, .table-wrap th { white-space: normal; }
-.roundup .note { margin: .8rem 0; }
-@media print { .topbar, .toc-rail, #progress { display: none !important; } .layout { display: block; } details.try > div { display: block; } }
-</style>
-<link rel="stylesheet" href="/styles/site-shell.css"><script defer src="/javascripts/site-palette.js"></script></head>
+      .prose p,
+      .prose ul,
+      .prose ol {
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+      .prose ul,
+      .prose ol {
+        margin: 0 0 1rem 1.2rem;
+      }
+      .prose li {
+        margin-bottom: 0.4rem;
+      }
+      .prose strong {
+        color: var(--text);
+      }
+      .lesson-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin: -0.3rem 0 1.1rem;
+      }
+      .pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.22rem 0.6rem;
+        border-radius: 99px;
+        border: 1px solid var(--border2);
+        color: var(--text2);
+      }
+      .pill.must {
+        color: var(--c5);
+        border-color: color-mix(in srgb, var(--c5) 55%, transparent);
+        background: color-mix(in srgb, var(--c5) 12%, transparent);
+      }
+      .pill.know {
+        color: var(--c2);
+        border-color: color-mix(in srgb, var(--c2) 55%, transparent);
+        background: color-mix(in srgb, var(--c2) 12%, transparent);
+      }
+      .pill.skim {
+        color: var(--text3);
+      }
+      .tldr {
+        font-size: 1.16rem;
+        line-height: 1.6;
+        color: var(--text);
+        padding: 1.15rem 1.3rem;
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--sec) 13%, var(--bg2));
+        border: 1px solid color-mix(in srgb, var(--sec) 40%, transparent);
+        margin-bottom: 1.2rem;
+      }
+      .tldr b {
+        display: block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--sec);
+        margin-bottom: 0.4rem;
+        font-weight: 700;
+      }
+      .start-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+        gap: 0.9rem;
+        margin-bottom: 1.1rem;
+      }
+      .start-item {
+        padding: 1rem 1.15rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg2);
+      }
+      .start-item h4 {
+        margin: 0 0 0.4rem;
+        color: var(--sec);
+        font-size: 0.92rem;
+      }
+      .start-item p,
+      .start-item ul {
+        margin-bottom: 0;
+        font-size: 0.95rem;
+      }
+      .start-item ul {
+        margin-left: 1.1rem;
+      }
+      .slide-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.4rem 0 1.2rem;
+      }
+      .slide-links a {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.74rem;
+        padding: 0.45rem 0.8rem;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        border-radius: 7px;
+        text-decoration: none;
+      }
+      .slide-links a:hover {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .note,
+      .worked,
+      .remember,
+      .formula {
+        margin: 1rem 0;
+        border-radius: 12px;
+      }
+      .note {
+        padding: 1rem 1.15rem;
+        border: 1px solid var(--tone-line);
+        background: var(--tone-bg);
+        --tone: var(--c2);
+        --tone-line: color-mix(in srgb, var(--tone) 42%, transparent);
+        --tone-bg: color-mix(in srgb, var(--tone) 10%, var(--bg2));
+      }
+      .note h4 {
+        margin: 0 0 0.4rem;
+        font-size: 1.02rem;
+        color: var(--text);
+      }
+      .note p:last-child,
+      .note ul:last-child,
+      .note ol:last-child {
+        margin-bottom: 0;
+      }
+      .note p,
+      .note li {
+        font-size: 0.96rem;
+        line-height: 1.66;
+      }
+      .note ul,
+      .note ol {
+        margin-left: 1.15rem;
+      }
+      .note-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.67rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--tone, var(--sec));
+        margin-bottom: 0.45rem;
+      }
+      .n-analogy {
+        --tone: var(--c2);
+      }
+      .n-mnemonic {
+        --tone: var(--c7);
+      }
+      .n-tip {
+        --tone: var(--c3);
+      }
+      .n-why {
+        --tone: var(--c6);
+      }
+      .n-class {
+        --tone: var(--c8);
+      }
+      .n-says {
+        --tone: var(--c1);
+      }
+      .n-trap {
+        --tone: var(--c5);
+      }
+      .n-mnemonic h4 {
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 0.08em;
+        color: var(--c7);
+        font-size: 1.12rem;
+      }
+      .note-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+        gap: 0.9rem;
+        margin: 1rem 0;
+      }
+      .note-grid > .note {
+        margin: 0;
+      }
+      .worked {
+        padding: 1.1rem 1.25rem;
+        border: 1px solid var(--border2);
+        background: var(--bg2);
+        border-left: 3px solid var(--c4);
+        --tone: var(--c4);
+      }
+      .worked h4 {
+        margin: 0 0 0.65rem;
+        font-size: 1.06rem;
+        color: var(--text);
+      }
+      .worked p:last-child,
+      .worked ol:last-child,
+      .worked ul:last-child {
+        margin-bottom: 0;
+      }
+      .worked p,
+      .worked li {
+        font-size: 0.97rem;
+        line-height: 1.66;
+      }
+      .worked ol:not(.stepper),
+      .worked ul {
+        margin-left: 1.2rem;
+      }
+      .stepper {
+        list-style: none;
+        counter-reset: st;
+        margin: 0;
+      }
+      .stepper li {
+        counter-increment: st;
+        position: relative;
+        padding: 0 0 0.75rem 2.5rem;
+        margin: 0;
+      }
+      .stepper li:last-child {
+        padding-bottom: 0;
+      }
+      .stepper li::before {
+        content: counter(st);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1.65rem;
+        height: 1.65rem;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--bg);
+        background: var(--c4);
+      }
+      .stepper li::after {
+        content: "";
+        position: absolute;
+        left: 0.79rem;
+        top: 1.75rem;
+        bottom: 0.1rem;
+        width: 2px;
+        background: var(--border2);
+      }
+      .stepper li:last-child::after {
+        display: none;
+      }
+      .formula {
+        padding: 0.95rem 1.15rem;
+        background: var(--code-bg);
+        border: 1px solid var(--border2);
+        text-align: center;
+      }
+      .f-cap {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text3);
+        margin-bottom: 0.5rem;
+      }
+      .f-line {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.04rem;
+        color: var(--text);
+        line-height: 1.75;
+        overflow-wrap: anywhere;
+      }
+      .remember {
+        padding: 1rem 1.2rem;
+        border: 1px dashed color-mix(in srgb, var(--sec) 55%, transparent);
+        --tone: var(--sec);
+      }
+      .remember ul {
+        margin: 0 0 0 1.1rem;
+      }
+      .remember li {
+        margin-bottom: 0.32rem;
+        font-size: 0.95rem;
+      }
+      .remember li:last-child {
+        margin-bottom: 0;
+      }
+      details.try {
+        margin: 0.8rem 0;
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        background: var(--bg2);
+      }
+      details.try summary {
+        cursor: pointer;
+        padding: 0.8rem 1rem;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.97rem;
+        list-style: none;
+      }
+      details.try summary::-webkit-details-marker {
+        display: none;
+      }
+      details.try summary span {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--bg);
+        background: var(--c3);
+        padding: 0.14rem 0.45rem;
+        border-radius: 4px;
+        margin-right: 0.6rem;
+        vertical-align: 1px;
+      }
+      details.try summary:hover {
+        color: var(--accent);
+      }
+      details.try > div {
+        padding: 0 1rem 0.9rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.75rem;
+      }
+      details.try p:last-child,
+      details.try ul:last-child {
+        margin-bottom: 0;
+      }
+      .diagram {
+        margin: 1.1rem 0;
+        text-align: center;
+      }
+      .diagram svg {
+        width: 100%;
+        max-width: 40rem;
+        height: auto;
+      }
+      .diagram figcaption {
+        font-size: 0.82rem;
+        color: var(--text3);
+        margin-top: 0.35rem;
+      }
+      .diagram text {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .pl {
+        fill: var(--text2);
+        font-size: 13px;
+      }
+      .pt {
+        fill: var(--text3);
+        font-size: 12px;
+      }
+      .pn {
+        fill: var(--text);
+        font-size: 13.5px;
+        font-weight: 700;
+      }
+      .pa {
+        fill: var(--text);
+        font-size: 13px;
+      }
+      .gn {
+        fill: var(--text);
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+      .gl {
+        fill: var(--text2);
+        font-size: 12px;
+      }
+      .table-wrap td,
+      .table-wrap th {
+        white-space: normal;
+      }
+      .roundup .note {
+        margin: 0.8rem 0;
+      }
+      @media print {
+        .topbar,
+        .toc-rail,
+        #progress {
+          display: none !important;
+        }
+        .layout {
+          display: block;
+        }
+        details.try > div {
+          display: block;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
 
-<body>
+  <body>
     <div id="progress"></div>
 
     <nav class="topbar" aria-label="Chapter sections">
-        <div class="nav-title">CS311 // LECTURE 6</div>
-        <ul class="nav-links"><li><a href="#start">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#lesson-1">What dynamic programming is</a></li><li><a href="#lesson-2">Fibonacci: the clearest example</a></li><li><a href="#lesson-3">Matrix chain multiplication</a></li><li><a href="#lesson-4">0/1 knapsack</a></li><li><a href="#lesson-5">Coin change, and when DP applies</a></li><li><a href="#traps">Exam Traps</a></li><li><a href="#tricks">Memory Tricks</a></li><li><a href="#cheat">Quick Reference</a></li><li><a href="#quiz">Quiz</a></li></ul>
-        <div class="nav-actions" data-page-search-host>
-            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
-        </div>
+      <div class="nav-title">CS311 // LECTURE 6</div>
+      <ul class="nav-links">
+        <li><a href="#start">Start Here</a></li>
+        <li><a href="#map">Slide Map</a></li>
+        <li><a href="#lesson-1">What dynamic programming is</a></li>
+        <li><a href="#lesson-2">Fibonacci: the clearest example</a></li>
+        <li><a href="#lesson-3">Matrix chain multiplication</a></li>
+        <li><a href="#lesson-4">0/1 knapsack</a></li>
+        <li><a href="#lesson-5">Coin change, and when DP applies</a></li>
+        <li><a href="#traps">Exam Traps</a></li>
+        <li><a href="#tricks">Memory Tricks</a></li>
+        <li><a href="#cheat">Quick Reference</a></li>
+        <li><a href="#quiz">Quiz</a></li>
+      </ul>
+      <div class="nav-actions" data-page-search-host>
+        <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+      </div>
     </nav>
 
     <div class="hero-band">
-        <header class="hero">
-            <div class="hero-eyebrow">Lecture 6 &middot; Slide Breakdown</div>
-            <h1>Dynamic Programming</h1>
-            <p class="hero-sub">The slides explained in plain language, with examples, memory tricks and practice questions.</p>
-            <div class="hero-stats"><span class="stat">83 slides</span><span class="stat">Lecture 6</span><span class="stat">5 lessons</span><span class="stat">7 min read</span></div>
-        </header>
+      <header class="hero">
+        <div class="hero-eyebrow">Lecture 6 &middot; Slide Breakdown</div>
+        <h1>Dynamic Programming</h1>
+        <p class="hero-sub">
+          The slides explained in plain language, with examples, memory tricks
+          and practice questions.
+        </p>
+        <div class="hero-stats">
+          <span class="stat">83 slides</span><span class="stat">Lecture 6</span
+          ><span class="stat">5 lessons</span
+          ><span class="stat">7 min read</span>
+        </div>
+      </header>
     </div>
 
     <div class="layout">
-        <aside class="toc-rail">
-            <nav class="chapter-toc" aria-label="On this page"><a href="#start">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#lesson-1">03 What dynamic programming is</a><a href="#lesson-2">04 Fibonacci: the clearest example</a><a href="#lesson-3">05 Matrix chain multiplication</a><a href="#lesson-4">06 0/1 knapsack</a><a href="#lesson-5">07 Coin change, and when DP applies</a><a href="#traps">08 Exam Traps</a><a href="#tricks">09 Memory Tricks</a><a href="#cheat">10 Quick Reference</a><a href="#quiz">11 Quiz</a></nav>
-        </aside>
+      <aside class="toc-rail">
+        <nav class="chapter-toc" aria-label="On this page">
+          <a href="#start">01 Start Here</a><a href="#map">02 Slide Map</a
+          ><a href="#lesson-1">03 What dynamic programming is</a
+          ><a href="#lesson-2">04 Fibonacci: the clearest example</a
+          ><a href="#lesson-3">05 Matrix chain multiplication</a
+          ><a href="#lesson-4">06 0/1 knapsack</a
+          ><a href="#lesson-5">07 Coin change, and when DP applies</a
+          ><a href="#traps">08 Exam Traps</a
+          ><a href="#tricks">09 Memory Tricks</a
+          ><a href="#cheat">10 Quick Reference</a><a href="#quiz">11 Quiz</a>
+        </nav>
+      </aside>
 
-        <main>
+      <main>
         <section id="start" style="--sec: var(--c1)">
-            <div class="section-label">Read this first</div>
-            <h2 class="section-title">The big picture</h2>
-<div class="tldr"><b>In one sentence</b>When subproblems repeat, solve each one once, store the answer in a table, and build up to the final answer from the bottom.</div><div class="prose"><p>At 83 slides this is the largest deck in the course, and one where filling tables by hand brings real exam marks. Once you see the two questions that define any DP solution, matrix chain and knapsack stop feeling like separate topics.</p></div><div class="start-grid"><div class="start-item"><h4>Where this fits</h4><p>Greedy failed on 0/1 knapsack and on some coin sets. Divide and conquer wasted effort when subproblems overlapped. DP fixes both problems.</p></div><div class="start-item"><h4>By the end you can</h4><ul><li>Compare DP with greedy and divide and conquer</li><li>State when DP can be applied</li><li>Fill in the matrix chain table and rebuild the parenthesization</li><li>Fill in the 0/1 knapsack table and recover the items</li><li>Apply DP to coin change</li></ul></div></div><div class="slide-links"><a href="/academics/computer-science/cs311/slides/lecture-6-dynamic-programming/" target="_top">Open the slides: Lecture 6 &rarr;</a></div><h3>Words you need first</h3><div class="table-wrap"><table><thead><tr><th>Term</th><th>In plain English</th></tr></thead><tbody><tr><td><strong>Subproblem</strong></td><td>A smaller version of the problem.</td></tr><tr><td><strong>Overlapping</strong></td><td>The same subproblem appears again and again.</td></tr><tr><td><strong>Optimal substructure</strong></td><td>The best overall answer contains the best answers to its subproblems.</td></tr><tr><td><strong>Bottom-up</strong></td><td>Solving the smallest cases first and building upward.</td></tr><tr><td><strong>Memoization</strong></td><td>Storing results to avoid recomputing.</td></tr></tbody></table></div>
+          <div class="section-label">Read this first</div>
+          <h2 class="section-title">The big picture</h2>
+          <div class="tldr">
+            <b>In one sentence</b>When subproblems repeat, solve each one once,
+            store the answer in a table, and build up to the final answer from
+            the bottom.
+          </div>
+          <div class="prose">
+            <p>
+              At 83 slides this is the largest deck in the course, and one where
+              filling tables by hand brings real exam marks. Once you see the
+              two questions that define any DP solution, matrix chain and
+              knapsack stop feeling like separate topics.
+            </p>
+          </div>
+          <div class="start-grid">
+            <div class="start-item">
+              <h4>Where this fits</h4>
+              <p>
+                Greedy failed on 0/1 knapsack and on some coin sets. Divide and
+                conquer wasted effort when subproblems overlapped. DP fixes both
+                problems.
+              </p>
+            </div>
+            <div class="start-item">
+              <h4>By the end you can</h4>
+              <ul>
+                <li>Compare DP with greedy and divide and conquer</li>
+                <li>State when DP can be applied</li>
+                <li>
+                  Fill in the matrix chain table and rebuild the
+                  parenthesization
+                </li>
+                <li>Fill in the 0/1 knapsack table and recover the items</li>
+                <li>Apply DP to coin change</li>
+              </ul>
+            </div>
+          </div>
+          <div class="slide-links">
+            <a
+              href="/academics/computer-science/cs311/slides/lecture-6-dynamic-programming/"
+              target="_top"
+              >Open the slides: Lecture 6 &rarr;</a
+            >
+          </div>
+          <h3>Words you need first</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Term</th>
+                  <th>In plain English</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Subproblem</strong></td>
+                  <td>A smaller version of the problem.</td>
+                </tr>
+                <tr>
+                  <td><strong>Overlapping</strong></td>
+                  <td>The same subproblem appears again and again.</td>
+                </tr>
+                <tr>
+                  <td><strong>Optimal substructure</strong></td>
+                  <td>
+                    The best overall answer contains the best answers to its
+                    subproblems.
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Bottom-up</strong></td>
+                  <td>Solving the smallest cases first and building upward.</td>
+                </tr>
+                <tr>
+                  <td><strong>Memoization</strong></td>
+                  <td>Storing results to avoid recomputing.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
         <section id="map" style="--sec: var(--c2)">
-            <div class="section-label">Navigation</div>
-            <h2 class="section-title">Where to spend your time</h2>
-<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>3-6</strong></td><td><strong>What DP is; vs greedy and D&amp;C</strong></td><td><span class="w-memorize">Memorize</span></td><td>Slides 5 and 6's comparison tables</td></tr><tr><td><strong>7-14</strong></td><td><strong>Fibonacci</strong></td><td><span class="w-write">Write it</span></td><td>Why recursion explodes</td></tr><tr><td><strong>15-38</strong></td><td><strong>Matrix chain product</strong></td><td><span class="w-write">Write it</span></td><td>Fill the table, recover the split</td></tr><tr><td><strong>39</strong></td><td><strong>The general technique</strong></td><td><span class="w-memorize">Memorize</span></td><td>Three ingredients</td></tr><tr><td><strong>40-73</strong></td><td><strong>0/1 knapsack</strong></td><td><span class="w-write">Write it</span></td><td>Build the table and find the items</td></tr><tr><td><strong>74-79</strong></td><td><strong>Binomial, coin change</strong></td><td><span class="w-write">Write it</span></td><td>Coin DP table</td></tr><tr><td><strong>80-83</strong></td><td><strong>When it applies</strong></td><td><span class="w-memorize">Memorize</span></td><td>Optimal substructure, overlap</td></tr></tbody></table></div>
+          <div class="section-label">Navigation</div>
+          <h2 class="section-title">Where to spend your time</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Slides</th>
+                  <th>Topic</th>
+                  <th>Weight</th>
+                  <th>What to do with it</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>3-6</strong></td>
+                  <td><strong>What DP is; vs greedy and D&amp;C</strong></td>
+                  <td><span class="w-memorize">Memorize</span></td>
+                  <td>Slides 5 and 6's comparison tables</td>
+                </tr>
+                <tr>
+                  <td><strong>7-14</strong></td>
+                  <td><strong>Fibonacci</strong></td>
+                  <td><span class="w-write">Write it</span></td>
+                  <td>Why recursion explodes</td>
+                </tr>
+                <tr>
+                  <td><strong>15-38</strong></td>
+                  <td><strong>Matrix chain product</strong></td>
+                  <td><span class="w-write">Write it</span></td>
+                  <td>Fill the table, recover the split</td>
+                </tr>
+                <tr>
+                  <td><strong>39</strong></td>
+                  <td><strong>The general technique</strong></td>
+                  <td><span class="w-memorize">Memorize</span></td>
+                  <td>Three ingredients</td>
+                </tr>
+                <tr>
+                  <td><strong>40-73</strong></td>
+                  <td><strong>0/1 knapsack</strong></td>
+                  <td><span class="w-write">Write it</span></td>
+                  <td>Build the table and find the items</td>
+                </tr>
+                <tr>
+                  <td><strong>74-79</strong></td>
+                  <td><strong>Binomial, coin change</strong></td>
+                  <td><span class="w-write">Write it</span></td>
+                  <td>Coin DP table</td>
+                </tr>
+                <tr>
+                  <td><strong>80-83</strong></td>
+                  <td><strong>When it applies</strong></td>
+                  <td><span class="w-memorize">Memorize</span></td>
+                  <td>Optimal substructure, overlap</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
         <section id="lesson-1" style="--sec: var(--c3)">
-            <div class="section-label">Lesson 1</div>
-            <h2 class="section-title">What dynamic programming is</h2>
-<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 3-6</span></div><div class="prose"><p>"Programming" here means <strong>planning</strong>, as in filling in a table. It was invented by Richard Bellman in the 1950s to solve optimization problems.</p></div>
-<div class="worked"><div class="note-tag">Step by step</div><h4>The main idea</h4><ol class="stepper"><li>Solve smaller, overlapping subproblems.</li><li>Record the solutions in a table so each is only solved once.</li><li>The final state of the table is, or contains, the solution.</li></ol></div>
-<div class="prose"><div class="table-wrap"><table>
-<thead>
-<tr>
-<th></th>
-<th>Greedy</th>
-<th>Dynamic programming</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Decides by</td>
-<td>What's best right now</td>
-<td>Considering earlier subproblem solutions</td>
-</tr>
-<tr>
-<td>Looks back?</td>
-<td>Never</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Optimal?</td>
-<td>Sometimes</td>
-<td><strong>Yes, when it applies</strong></td>
-</tr>
-</tbody>
-</table></div>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th></th>
-<th>Divide and conquer</th>
-<th>Dynamic programming</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Direction</td>
-<td>Top-down</td>
-<td>Bottom-up</td>
-</tr>
-<tr>
-<td>Subproblems</td>
-<td><strong>Independent</strong></td>
-<td><strong>Overlapping</strong></td>
-</tr>
-<tr>
-<td>Stores results?</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-</tbody>
-</table></div></div>
-<div class="note-grid"><div class="note n-analogy"><div class="note-tag">Think of it like this</div><h4>Writing the answer on the board</h4><p>Ask a class "what's 8 + 7 + 5?" They work out 20. Now ask "what's 8 + 7 + 5 + 3?" Nobody re-adds. They use 20 and add 3. DP is writing past answers on the board.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Overlap means Store</h4><p>If subproblems <strong>o</strong>verlap, you must <strong>s</strong>tore. Independent subproblems: divide and conquer. Overlapping: dynamic programming.</p></div></div>
-<div class="remember"><div class="note-tag">Remember</div><ul><li>DP solves overlapping subproblems once and stores them in a table</li><li>Greedy never looks back, while DP uses earlier results</li><li>D&amp;C subproblems are independent, DP's overlap</li><li>DP is typically built bottom-up</li></ul></div>
+          <div class="section-label">Lesson 1</div>
+          <h2 class="section-title">What dynamic programming is</h2>
+          <div class="lesson-meta">
+            <span class="pill must">Must know</span
+            ><span class="pill">Slides 3-6</span>
+          </div>
+          <div class="prose">
+            <p>
+              "Programming" here means <strong>planning</strong>, as in filling
+              in a table. It was invented by Richard Bellman in the 1950s to
+              solve optimization problems.
+            </p>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Step by step</div>
+            <h4>The main idea</h4>
+            <ol class="stepper">
+              <li>Solve smaller, overlapping subproblems.</li>
+              <li>
+                Record the solutions in a table so each is only solved once.
+              </li>
+              <li>
+                The final state of the table is, or contains, the solution.
+              </li>
+            </ol>
+          </div>
+          <div class="prose">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Greedy</th>
+                    <th>Dynamic programming</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Decides by</td>
+                    <td>What's best right now</td>
+                    <td>Considering earlier subproblem solutions</td>
+                  </tr>
+                  <tr>
+                    <td>Looks back?</td>
+                    <td>Never</td>
+                    <td>Yes</td>
+                  </tr>
+                  <tr>
+                    <td>Optimal?</td>
+                    <td>Sometimes</td>
+                    <td><strong>Yes, when it applies</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Divide and conquer</th>
+                    <th>Dynamic programming</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Direction</td>
+                    <td>Top-down</td>
+                    <td>Bottom-up</td>
+                  </tr>
+                  <tr>
+                    <td>Subproblems</td>
+                    <td><strong>Independent</strong></td>
+                    <td><strong>Overlapping</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Stores results?</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="note-grid">
+            <div class="note n-analogy">
+              <div class="note-tag">Think of it like this</div>
+              <h4>Writing the answer on the board</h4>
+              <p>
+                Ask a class "what's 8 + 7 + 5?" They work out 20. Now ask
+                "what's 8 + 7 + 5 + 3?" Nobody re-adds. They use 20 and add 3.
+                DP is writing past answers on the board.
+              </p>
+            </div>
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>Overlap means Store</h4>
+              <p>
+                If subproblems <strong>o</strong>verlap, you must
+                <strong>s</strong>tore. Independent subproblems: divide and
+                conquer. Overlapping: dynamic programming.
+              </p>
+            </div>
+          </div>
+          <div class="remember">
+            <div class="note-tag">Remember</div>
+            <ul>
+              <li>
+                DP solves overlapping subproblems once and stores them in a
+                table
+              </li>
+              <li>Greedy never looks back, while DP uses earlier results</li>
+              <li>D&amp;C subproblems are independent, DP's overlap</li>
+              <li>DP is typically built bottom-up</li>
+            </ul>
+          </div>
         </section>
         <section id="lesson-2" style="--sec: var(--c4)">
-            <div class="section-label">Lesson 2</div>
-            <h2 class="section-title">Fibonacci: the clearest example</h2>
-<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 7-14</span></div><div class="formula"><div class="f-cap">Recurrence</div><div class="f-line">f(0) = 0, f(1) = 1, f(n) = f(n−1) + f(n−2)</div></div>
-<div class="prose"><p>Calling this recursively recomputes the same values over and over.</p></div>
-<figure class="diagram"><svg viewBox="-3.0 -31.0 416.0 202.0" style="max-width:min(100%,520px)" role="img" aria-label="The recursive tree for f(4): f(2) is computed twice"><defs><marker id="a86229546" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--text3)"/></marker><marker id="b86229546" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs><line x1="175.7" y1="17.0" x2="124.3" y2="53.0" stroke="var(--text3)" stroke-width="1.6"/><line x1="226.7" y1="17.0" x2="283.3" y2="53.0" stroke="var(--text3)" stroke-width="1.6"/><line x1="85.4" y1="87.0" x2="54.6" y2="123.0" stroke="var(--text3)" stroke-width="1.6"/><line x1="114.6" y1="87.0" x2="145.4" y2="123.0" stroke="var(--text3)" stroke-width="1.6"/><line x1="297.9" y1="87.0" x2="272.1" y2="123.0" stroke="var(--text3)" stroke-width="1.6"/><line x1="324.6" y1="87.0" x2="355.4" y2="123.0" stroke="var(--text3)" stroke-width="1.6"/><rect x="171.0" y="-17.0" width="58.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="200.0" y="5.0" class="gn" text-anchor="middle">f(4)</text><rect x="71.0" y="53.0" width="58.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="100.0" y="75.0" class="gn" text-anchor="middle">f(3)</text><rect x="281.0" y="53.0" width="58.0" height="34.0" rx="7" fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))" stroke="var(--accent)" stroke-width="1.6"/><text x="310.0" y="75.0" class="gn" text-anchor="middle">f(2)</text><rect x="11.0" y="123.0" width="58.0" height="34.0" rx="7" fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))" stroke="var(--accent)" stroke-width="1.6"/><text x="40.0" y="145.0" class="gn" text-anchor="middle">f(2)</text><rect x="131.0" y="123.0" width="58.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="160.0" y="145.0" class="gn" text-anchor="middle">f(1)</text><rect x="231.0" y="123.0" width="58.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="260.0" y="145.0" class="gn" text-anchor="middle">f(1)</text><rect x="341.0" y="123.0" width="58.0" height="34.0" rx="7" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.6"/><text x="370.0" y="145.0" class="gn" text-anchor="middle">f(0)</text></svg><figcaption>The recursive tree for f(4): f(2) is computed twice</figcaption></figure>
-<div class="prose"><p>The bottom-up version just fills an array from left to right.</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Version</th>
-<th>Code idea</th>
-<th>Time</th>
-<th>At n = 100</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Recursive</td>
-<td><code>fib(n-1) + fib(n-2)</code></td>
-<td><strong>O(2ⁿ)</strong></td>
-<td>About 13 days at 1 ns</td>
-</tr>
-<tr>
-<td>Bottom-up DP</td>
-<td><code>f[i] = f[i-1] + f[i-2]</code></td>
-<td><strong>O(n)</strong></td>
-<td><strong>101 ns</strong></td>
-</tr>
-</tbody>
-</table></div></div>
-<div class="remember"><div class="note-tag">Remember</div><ul><li>Plain recursion recomputes overlapping subproblems and takes O(2ⁿ)</li><li>Bottom-up DP fills a table in O(n)</li><li>At n = 100, the difference is 13 days versus 101 nanoseconds</li></ul></div>
+          <div class="section-label">Lesson 2</div>
+          <h2 class="section-title">Fibonacci: the clearest example</h2>
+          <div class="lesson-meta">
+            <span class="pill must">Must know</span
+            ><span class="pill">Slides 7-14</span>
+          </div>
+          <div class="formula">
+            <div class="f-cap">Recurrence</div>
+            <div class="f-line">f(0) = 0, f(1) = 1, f(n) = f(n−1) + f(n−2)</div>
+          </div>
+          <div class="prose">
+            <p>
+              Calling this recursively recomputes the same values over and over.
+            </p>
+          </div>
+          <figure class="diagram">
+            <svg
+              viewBox="-3.0 -31.0 416.0 202.0"
+              style="max-width: min(100%, 520px)"
+              role="img"
+              aria-label="The recursive tree for f(4): f(2) is computed twice"
+            >
+              <defs>
+                <marker
+                  id="a86229546"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M0 0L10 5L0 10z" fill="var(--text3)" />
+                </marker>
+                <marker
+                  id="b86229546"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M0 0L10 5L0 10z" fill="var(--accent)" />
+                </marker>
+              </defs>
+              <line
+                x1="175.7"
+                y1="17.0"
+                x2="124.3"
+                y2="53.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <line
+                x1="226.7"
+                y1="17.0"
+                x2="283.3"
+                y2="53.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <line
+                x1="85.4"
+                y1="87.0"
+                x2="54.6"
+                y2="123.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <line
+                x1="114.6"
+                y1="87.0"
+                x2="145.4"
+                y2="123.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <line
+                x1="297.9"
+                y1="87.0"
+                x2="272.1"
+                y2="123.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <line
+                x1="324.6"
+                y1="87.0"
+                x2="355.4"
+                y2="123.0"
+                stroke="var(--text3)"
+                stroke-width="1.6"
+              />
+              <rect
+                x="171.0"
+                y="-17.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="var(--bg3)"
+                stroke="var(--border2)"
+                stroke-width="1.6"
+              />
+              <text x="200.0" y="5.0" class="gn" text-anchor="middle">
+                f(4)
+              </text>
+              <rect
+                x="71.0"
+                y="53.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="var(--bg3)"
+                stroke="var(--border2)"
+                stroke-width="1.6"
+              />
+              <text x="100.0" y="75.0" class="gn" text-anchor="middle">
+                f(3)
+              </text>
+              <rect
+                x="281.0"
+                y="53.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))"
+                stroke="var(--accent)"
+                stroke-width="1.6"
+              />
+              <text x="310.0" y="75.0" class="gn" text-anchor="middle">
+                f(2)
+              </text>
+              <rect
+                x="11.0"
+                y="123.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="color-mix(in srgb, var(--accent) 24%, var(--bg3))"
+                stroke="var(--accent)"
+                stroke-width="1.6"
+              />
+              <text x="40.0" y="145.0" class="gn" text-anchor="middle">
+                f(2)
+              </text>
+              <rect
+                x="131.0"
+                y="123.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="var(--bg3)"
+                stroke="var(--border2)"
+                stroke-width="1.6"
+              />
+              <text x="160.0" y="145.0" class="gn" text-anchor="middle">
+                f(1)
+              </text>
+              <rect
+                x="231.0"
+                y="123.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="var(--bg3)"
+                stroke="var(--border2)"
+                stroke-width="1.6"
+              />
+              <text x="260.0" y="145.0" class="gn" text-anchor="middle">
+                f(1)
+              </text>
+              <rect
+                x="341.0"
+                y="123.0"
+                width="58.0"
+                height="34.0"
+                rx="7"
+                fill="var(--bg3)"
+                stroke="var(--border2)"
+                stroke-width="1.6"
+              />
+              <text x="370.0" y="145.0" class="gn" text-anchor="middle">
+                f(0)
+              </text>
+            </svg>
+            <figcaption>
+              The recursive tree for f(4): f(2) is computed twice
+            </figcaption>
+          </figure>
+          <div class="prose">
+            <p>The bottom-up version just fills an array from left to right.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Version</th>
+                    <th>Code idea</th>
+                    <th>Time</th>
+                    <th>At n = 100</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Recursive</td>
+                    <td><code>fib(n-1) + fib(n-2)</code></td>
+                    <td><strong>O(2ⁿ)</strong></td>
+                    <td>About 13 days at 1 ns</td>
+                  </tr>
+                  <tr>
+                    <td>Bottom-up DP</td>
+                    <td><code>f[i] = f[i-1] + f[i-2]</code></td>
+                    <td><strong>O(n)</strong></td>
+                    <td><strong>101 ns</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="remember">
+            <div class="note-tag">Remember</div>
+            <ul>
+              <li>
+                Plain recursion recomputes overlapping subproblems and takes
+                O(2ⁿ)
+              </li>
+              <li>Bottom-up DP fills a table in O(n)</li>
+              <li>
+                At n = 100, the difference is 13 days versus 101 nanoseconds
+              </li>
+            </ul>
+          </div>
         </section>
         <section id="lesson-3" style="--sec: var(--c5)">
-            <div class="section-label">Lesson 3</div>
-            <h2 class="section-title">Matrix chain multiplication</h2>
-<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 15-38</span></div><div class="prose"><p>Multiplying a d × e matrix by an e × f matrix costs <strong>d × e × f</strong> operations. The order of multiplication doesn't change the answer but it hugely changes the cost.</p></div>
-<div class="worked"><div class="note-tag">Worked example</div><h4>Slide 17: B is 3×100, C is 100×5, D is 5×5</h4><p><strong>(B·C)·D:</strong> B·C costs 3×100×5 = 1500 and gives a 3×5 matrix. Times D: 3×5×5 = 75. Total <strong>1575</strong>.</p>
-<p><strong>B·(C·D):</strong> C·D costs 100×5×5 = 2500. B times that: 3×100×5 = 1500. Total <strong>4000</strong>.</p></div>
-<div class="prose"><p>Trying every parenthesization is exponential (nearly 4ⁿ), and both greedy ideas fail with counterexamples (slides 19 and 20). DP asks one clever question: <strong>where's the last multiplication?</strong></p></div>
-<div class="formula"><div class="f-cap">Characterizing equation</div><div class="f-line">m[i, j] = min over k of { m[i, k] + m[k+1, j] + p<sub>i−1</sub> · p<sub>k</sub> · p<sub>j</sub> }</div><div class="f-line">m[i, i] = 0</div></div>
-<div class="prose"><p>Read it as: cost of the left part, plus cost of the right part, plus cost of multiplying those two results.</p></div>
-<div class="worked"><div class="note-tag">Step by step</div><h4>Fill the table for slide 28's six matrices</h4><ol class="stepper"><li>Dimensions p = 10, 20, 5, 15, 50, 10, 15 (so A1 is 10×20, A2 is 20×5, and so on).</li><li>Length 1 entries are all 0.</li><li>Length 2: m[1,2] = 10×20×5 = 1000; m[2,3] = 1500; m[3,4] = 3750; m[4,5] = 7500; m[5,6] = 7500.</li><li>Length 3: m[1,3] = min(0 + 1500 + 10×20×15, 1000 + 0 + 10×5×15) = min(4500, <strong>1750</strong>) = 1750.</li><li>Continue through lengths 4 and 5, one diagonal at a time.</li><li>Final: m[1,6] = <strong>8750</strong>, with the best split at k = 2.</li></ol></div>
-<div class="prose"><p>To rebuild the answer, store in s[i, j] the k that gave the minimum.</p></div>
-<div class="worked"><div class="note-tag">Worked example</div><h4>Recovering the parenthesization</h4><p>s[1,6] = 2 gives (A1A2)(A3...A6). s[3,6] = 5 gives (A3A4A5)A6. s[3,5] = 4 gives (A3A4)A5.</p>
-<p>Result: <strong>((A1A2)(((A3A4)A5)A6))</strong>.</p></div>
-<div class="prose"><p><strong>Time: O(n³)</strong> (O(n²) table entries, each taking O(n)). <strong>Space: O(n²)</strong>.</p></div>
-<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Length by Length</h4><p>The table fills <strong>diagonal by diagonal</strong>, by chain length, since each entry needs shorter chains.</p></div>
-<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>p subscripts are off by one</h4><p>A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub>. So A3 here is p<sub>2</sub> × p<sub>3</sub> = 5 × 15. Write out the p list before you begin.</p></div>
-<details class="try"><summary><span>Try it</span>Cost of the chain A(2×3), B(3×5), C(5×2) with the best order?</summary><div><p>(AB)C = 2×3×5 + 2×5×2 = 30 + 20 = 50. A(BC) = 3×5×2 + 2×3×2 = 30 + 12 = <strong>42</strong>. So A(BC). It matches m[1,3] = 42 in slide 36's table.</p></div></details>
-<div class="remember"><div class="note-tag">Remember</div><ul><li>Multiplying d×e by e×f costs d·e·f</li><li>m[i,j] = min over k of left + right + p(i−1)·p(k)·p(j)</li><li>Fill the table by chain length, diagonal by diagonal</li><li>Store the best k in s[i,j] to recover the parenthesization</li><li>Time is O(n³) and space is O(n²)</li></ul></div>
+          <div class="section-label">Lesson 3</div>
+          <h2 class="section-title">Matrix chain multiplication</h2>
+          <div class="lesson-meta">
+            <span class="pill must">Must know</span
+            ><span class="pill">Slides 15-38</span>
+          </div>
+          <div class="prose">
+            <p>
+              Multiplying a d × e matrix by an e × f matrix costs
+              <strong>d × e × f</strong> operations. The order of multiplication
+              doesn't change the answer but it hugely changes the cost.
+            </p>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Worked example</div>
+            <h4>Slide 17: B is 3×100, C is 100×5, D is 5×5</h4>
+            <p>
+              <strong>(B·C)·D:</strong> B·C costs 3×100×5 = 1500 and gives a 3×5
+              matrix. Times D: 3×5×5 = 75. Total <strong>1575</strong>.
+            </p>
+            <p>
+              <strong>B·(C·D):</strong> C·D costs 100×5×5 = 2500. B times that:
+              3×100×5 = 1500. Total <strong>4000</strong>.
+            </p>
+          </div>
+          <div class="prose">
+            <p>
+              Trying every parenthesization is exponential (nearly 4ⁿ), and both
+              greedy ideas fail with counterexamples (slides 19 and 20). DP asks
+              one clever question:
+              <strong>where's the last multiplication?</strong>
+            </p>
+          </div>
+          <div class="formula">
+            <div class="f-cap">Characterizing equation</div>
+            <div class="f-line">
+              m[i, j] = min over k of { m[i, k] + m[k+1, j] + p<sub>i−1</sub> ·
+              p<sub>k</sub> · p<sub>j</sub> }
+            </div>
+            <div class="f-line">m[i, i] = 0</div>
+          </div>
+          <div class="prose">
+            <p>
+              Read it as: cost of the left part, plus cost of the right part,
+              plus cost of multiplying those two results.
+            </p>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Step by step</div>
+            <h4>Fill the table for slide 28's six matrices</h4>
+            <ol class="stepper">
+              <li>
+                Dimensions p = 10, 20, 5, 15, 50, 10, 15 (so A1 is 10×20, A2 is
+                20×5, and so on).
+              </li>
+              <li>Length 1 entries are all 0.</li>
+              <li>
+                Length 2: m[1,2] = 10×20×5 = 1000; m[2,3] = 1500; m[3,4] = 3750;
+                m[4,5] = 7500; m[5,6] = 7500.
+              </li>
+              <li>
+                Length 3: m[1,3] = min(0 + 1500 + 10×20×15, 1000 + 0 + 10×5×15)
+                = min(4500, <strong>1750</strong>) = 1750.
+              </li>
+              <li>Continue through lengths 4 and 5, one diagonal at a time.</li>
+              <li>
+                Final: m[1,6] = <strong>8750</strong>, with the best split at k
+                = 2.
+              </li>
+            </ol>
+          </div>
+          <div class="prose">
+            <p>
+              To rebuild the answer, store in s[i, j] the k that gave the
+              minimum.
+            </p>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Worked example</div>
+            <h4>Recovering the parenthesization</h4>
+            <p>
+              s[1,6] = 2 gives (A1A2)(A3...A6). s[3,6] = 5 gives (A3A4A5)A6.
+              s[3,5] = 4 gives (A3A4)A5.
+            </p>
+            <p>Result: <strong>((A1A2)(((A3A4)A5)A6))</strong>.</p>
+          </div>
+          <div class="prose">
+            <p>
+              <strong>Time: O(n³)</strong> (O(n²) table entries, each taking
+              O(n)). <strong>Space: O(n²)</strong>.
+            </p>
+          </div>
+          <div class="note n-mnemonic">
+            <div class="note-tag">Memory trick</div>
+            <h4>Length by Length</h4>
+            <p>
+              The table fills <strong>diagonal by diagonal</strong>, by chain
+              length, since each entry needs shorter chains.
+            </p>
+          </div>
+          <div class="note n-trap">
+            <div class="note-tag">Exam trap</div>
+            <h4>p subscripts are off by one</h4>
+            <p>
+              A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub>. So
+              A3 here is p<sub>2</sub> × p<sub>3</sub> = 5 × 15. Write out the p
+              list before you begin.
+            </p>
+          </div>
+          <details class="try">
+            <summary>
+              <span>Try it</span>Cost of the chain A(2×3), B(3×5), C(5×2) with
+              the best order?
+            </summary>
+            <div>
+              <p>
+                (AB)C = 2×3×5 + 2×5×2 = 30 + 20 = 50. A(BC) = 3×5×2 + 2×3×2 = 30
+                + 12 = <strong>42</strong>. So A(BC). It matches m[1,3] = 42 in
+                slide 36's table.
+              </p>
+            </div>
+          </details>
+          <div class="remember">
+            <div class="note-tag">Remember</div>
+            <ul>
+              <li>Multiplying d×e by e×f costs d·e·f</li>
+              <li>m[i,j] = min over k of left + right + p(i−1)·p(k)·p(j)</li>
+              <li>Fill the table by chain length, diagonal by diagonal</li>
+              <li>
+                Store the best k in s[i,j] to recover the parenthesization
+              </li>
+              <li>Time is O(n³) and space is O(n²)</li>
+            </ul>
+          </div>
         </section>
         <section id="lesson-4" style="--sec: var(--c6)">
-            <div class="section-label">Lesson 4</div>
-            <h2 class="section-title">0/1 knapsack</h2>
-<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 40-73</span></div><div class="prose"><p>You must take each item <strong>entirely or not at all</strong>. Greedy fails here, and DP handles it.</p>
-<p>Define <strong>B[k, w]</strong> as the best benefit using the first k items with capacity w. For item k there are only two options: <strong>skip it or take it</strong>.</p></div>
-<div class="formula"><div class="f-cap">Recurrence (slides 44-45)</div><div class="f-line">If w<sub>k</sub> &gt; w: B[k, w] = B[k−1, w]</div><div class="f-line">Otherwise: B[k, w] = max( B[k−1, w], B[k−1, w − w<sub>k</sub>] + b<sub>k</sub> )</div></div>
-<div class="worked"><div class="note-tag">Worked example</div><h4>Fill the table: W = 5, items (2,3), (3,4), (4,5), (5,6) as (weight, benefit)</h4><div class="table-wrap"><table>
-<thead>
-<tr>
-<th>i \ w</th>
-<th>0</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>0</strong></td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td><strong>1</strong> (2,3)</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-</tr>
-<tr>
-<td><strong>2</strong> (3,4)</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>4</td>
-<td>4</td>
-<td><strong>7</strong></td>
-</tr>
-<tr>
-<td><strong>3</strong> (4,5)</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>4</td>
-<td>5</td>
-<td>7</td>
-</tr>
-<tr>
-<td><strong>4</strong> (5,6)</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>4</td>
-<td>5</td>
-<td>7</td>
-</tr>
-</tbody>
-</table></div>
-<p>The highlighted cell: i = 2, w = 5. Skip gives B[1,5] = 3. Take gives B[1, 2] + 4 = 3 + 4 = 7. Take it.</p>
-<p>The best benefit is the bottom-right value: <strong>7</strong>.</p></div>
-<div class="worked"><div class="note-tag">Step by step</div><h4>Recover which items were taken (slides 70-73)</h4><ol class="stepper"><li>Start at i = 4, k = 5. B[4,5] = 7 and B[3,5] = 7: same value, so item 4 is <strong>out</strong>.</li><li>i = 3: B[3,5] = 7 and B[2,5] = 7: same, so item 3 is <strong>out</strong>.</li><li>i = 2: B[2,5] = 7 and B[1,5] = 3: different, so item 2 is <strong>in</strong>. Reduce k to 5 − 3 = 2.</li><li>i = 1: B[1,2] = 3 and B[0,2] = 0: different, so item 1 is <strong>in</strong>. k = 0, stop.</li><li>Optimal knapsack = <strong>{1, 2}</strong>, benefit 7.</li></ol></div>
-<div class="prose"><p><strong>Running time: O(nW)</strong>, against brute force's O(2ⁿ).</p></div>
-<div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Different means Delivered</h4><p>Compare a cell with the cell <strong>above</strong> it. If they're <strong>different</strong>, the item was <strong>delivered</strong> into the knapsack.</p></div>
-<div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Greedy on 0/1</h4><p>On slide 41's data, picking by ratio works, but in general, taking the best-ratio item may leave the bag badly filled. Only the table is guaranteed.</p></div>
-<div class="remember"><div class="note-tag">Remember</div><ul><li>B[k,w] is the best benefit using the first k items and capacity w</li><li>Skip it: B[k−1,w]. Take it: B[k−1,w−wk] + bk</li><li>Answer is at B[n,W]</li><li>Running time is O(nW), brute force is O(2ⁿ)</li><li>If a cell differs from the one above, that item was taken</li></ul></div>
+          <div class="section-label">Lesson 4</div>
+          <h2 class="section-title">0/1 knapsack</h2>
+          <div class="lesson-meta">
+            <span class="pill must">Must know</span
+            ><span class="pill">Slides 40-73</span>
+          </div>
+          <div class="prose">
+            <p>
+              You must take each item <strong>entirely or not at all</strong>.
+              Greedy fails here, and DP handles it.
+            </p>
+            <p>
+              Define <strong>B[k, w]</strong> as the best benefit using the
+              first k items with capacity w. For item k there are only two
+              options: <strong>skip it or take it</strong>.
+            </p>
+          </div>
+          <div class="formula">
+            <div class="f-cap">Recurrence (slides 44-45)</div>
+            <div class="f-line">
+              If w<sub>k</sub> &gt; w: B[k, w] = B[k−1, w]
+            </div>
+            <div class="f-line">
+              Otherwise: B[k, w] = max( B[k−1, w], B[k−1, w − w<sub>k</sub>] +
+              b<sub>k</sub> )
+            </div>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Worked example</div>
+            <h4>
+              Fill the table: W = 5, items (2,3), (3,4), (4,5), (5,6) as
+              (weight, benefit)
+            </h4>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>i \ w</th>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>0</strong></td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                  </tr>
+                  <tr>
+                    <td><strong>1</strong> (2,3)</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td><strong>2</strong> (3,4)</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td><strong>7</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>3</strong> (4,5)</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>7</td>
+                  </tr>
+                  <tr>
+                    <td><strong>4</strong> (5,6)</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              The highlighted cell: i = 2, w = 5. Skip gives B[1,5] = 3. Take
+              gives B[1, 2] + 4 = 3 + 4 = 7. Take it.
+            </p>
+            <p>
+              The best benefit is the bottom-right value: <strong>7</strong>.
+            </p>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Step by step</div>
+            <h4>Recover which items were taken (slides 70-73)</h4>
+            <ol class="stepper">
+              <li>
+                Start at i = 4, k = 5. B[4,5] = 7 and B[3,5] = 7: same value, so
+                item 4 is <strong>out</strong>.
+              </li>
+              <li>
+                i = 3: B[3,5] = 7 and B[2,5] = 7: same, so item 3 is
+                <strong>out</strong>.
+              </li>
+              <li>
+                i = 2: B[2,5] = 7 and B[1,5] = 3: different, so item 2 is
+                <strong>in</strong>. Reduce k to 5 − 3 = 2.
+              </li>
+              <li>
+                i = 1: B[1,2] = 3 and B[0,2] = 0: different, so item 1 is
+                <strong>in</strong>. k = 0, stop.
+              </li>
+              <li>Optimal knapsack = <strong>{1, 2}</strong>, benefit 7.</li>
+            </ol>
+          </div>
+          <div class="prose">
+            <p>
+              <strong>Running time: O(nW)</strong>, against brute force's O(2ⁿ).
+            </p>
+          </div>
+          <div class="note n-mnemonic">
+            <div class="note-tag">Memory trick</div>
+            <h4>Different means Delivered</h4>
+            <p>
+              Compare a cell with the cell <strong>above</strong> it. If they're
+              <strong>different</strong>, the item was
+              <strong>delivered</strong> into the knapsack.
+            </p>
+          </div>
+          <div class="note n-trap">
+            <div class="note-tag">Exam trap</div>
+            <h4>Greedy on 0/1</h4>
+            <p>
+              On slide 41's data, picking by ratio works, but in general, taking
+              the best-ratio item may leave the bag badly filled. Only the table
+              is guaranteed.
+            </p>
+          </div>
+          <div class="remember">
+            <div class="note-tag">Remember</div>
+            <ul>
+              <li>
+                B[k,w] is the best benefit using the first k items and capacity
+                w
+              </li>
+              <li>Skip it: B[k−1,w]. Take it: B[k−1,w−wk] + bk</li>
+              <li>Answer is at B[n,W]</li>
+              <li>Running time is O(nW), brute force is O(2ⁿ)</li>
+              <li>If a cell differs from the one above, that item was taken</li>
+            </ul>
+          </div>
         </section>
         <section id="lesson-5" style="--sec: var(--c7)">
-            <div class="section-label">Lesson 5</div>
-            <h2 class="section-title">Coin change, and when DP applies</h2>
-<div class="lesson-meta"><span class="pill must">Must know</span><span class="pill">Slides 74-83</span></div><div class="prose"><p>Greedy failed for some coin sets, and DP doesn't.</p></div>
-<div class="formula"><div class="f-cap">Recurrence</div><div class="f-line">C[0] = 0</div><div class="f-line">C[p] = min over coins d<sub>i</sub> ≤ p of { 1 + C[p − d<sub>i</sub>] }</div></div>
-<div class="worked"><div class="note-tag">Worked example</div><h4>Slide 79: amount 5, coins {1, 2, 3}</h4><div class="table-wrap"><table>
-<thead>
-<tr>
-<th>p</th>
-<th>0</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>C[p]</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td><strong>2</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p>C[5] = 1 + min(C[4], C[3], C[2]) = 1 + 1 = <strong>2</strong>, using coins {2, 3}.</p></div>
-<div class="prose"><p>Binomial coefficients follow the same pattern: C(n, k) = C(n−1, k−1) + C(n−1, k), with C(n, 0) = C(n, n) = 1.</p>
-<p>DP applies when the problem has:</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Ingredient</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Simple subproblems</strong></td>
-<td>Defined with a few variables, like i, j, k</td>
-</tr>
-<tr>
-<td><strong>Optimal substructure</strong></td>
-<td>The best answer contains the best answers to subproblems</td>
-</tr>
-<tr>
-<td><strong>Subproblem overlap</strong></td>
-<td>The same subproblems appear repeatedly</td>
-</tr>
-</tbody>
-</table></div></div>
-<div class="note-grid"><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>SOS</h4><p>A DP problem sends <strong>SOS</strong>: <strong>S</strong>imple subproblems, <strong>O</strong>ptimal substructure, <strong>S</strong>ubproblem overlap.</p></div><div class="note n-tip"><div class="note-tag">Exam tip</div><h4>The crucial step</h4><p>Slide 80 says the crucial step is deriving a <strong>recurrence</strong> that relates the answer to smaller subinstances. Once you have the recurrence, the table is just arithmetic.</p></div></div>
-<div class="remember"><div class="note-tag">Remember</div><ul><li>Coin change: C[p] = min of 1 + C[p − di]</li><li>DP needs simple subproblems, optimal substructure and overlap</li><li>Deriving the recurrence is the crucial step</li></ul></div>
+          <div class="section-label">Lesson 5</div>
+          <h2 class="section-title">Coin change, and when DP applies</h2>
+          <div class="lesson-meta">
+            <span class="pill must">Must know</span
+            ><span class="pill">Slides 74-83</span>
+          </div>
+          <div class="prose">
+            <p>Greedy failed for some coin sets, and DP doesn't.</p>
+          </div>
+          <div class="formula">
+            <div class="f-cap">Recurrence</div>
+            <div class="f-line">C[0] = 0</div>
+            <div class="f-line">
+              C[p] = min over coins d<sub>i</sub> ≤ p of { 1 + C[p −
+              d<sub>i</sub>] }
+            </div>
+          </div>
+          <div class="worked">
+            <div class="note-tag">Worked example</div>
+            <h4>Slide 79: amount 5, coins {1, 2, 3}</h4>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>p</th>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>C[p]</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td><strong>2</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              C[5] = 1 + min(C[4], C[3], C[2]) = 1 + 1 = <strong>2</strong>,
+              using coins {2, 3}.
+            </p>
+          </div>
+          <div class="prose">
+            <p>
+              Binomial coefficients follow the same pattern: C(n, k) = C(n−1,
+              k−1) + C(n−1, k), with C(n, 0) = C(n, n) = 1.
+            </p>
+            <p>DP applies when the problem has:</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ingredient</th>
+                    <th>Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Simple subproblems</strong></td>
+                    <td>Defined with a few variables, like i, j, k</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Optimal substructure</strong></td>
+                    <td>
+                      The best answer contains the best answers to subproblems
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Subproblem overlap</strong></td>
+                    <td>The same subproblems appear repeatedly</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="note-grid">
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>SOS</h4>
+              <p>
+                A DP problem sends <strong>SOS</strong>: <strong>S</strong>imple
+                subproblems, <strong>O</strong>ptimal substructure,
+                <strong>S</strong>ubproblem overlap.
+              </p>
+            </div>
+            <div class="note n-tip">
+              <div class="note-tag">Exam tip</div>
+              <h4>The crucial step</h4>
+              <p>
+                Slide 80 says the crucial step is deriving a
+                <strong>recurrence</strong> that relates the answer to smaller
+                subinstances. Once you have the recurrence, the table is just
+                arithmetic.
+              </p>
+            </div>
+          </div>
+          <div class="remember">
+            <div class="note-tag">Remember</div>
+            <ul>
+              <li>Coin change: C[p] = min of 1 + C[p − di]</li>
+              <li>
+                DP needs simple subproblems, optimal substructure and overlap
+              </li>
+              <li>Deriving the recurrence is the crucial step</li>
+            </ul>
+          </div>
         </section>
         <section id="traps" style="--sec: var(--c8)">
-            <div class="section-label">Marks lost here</div>
-            <h2 class="section-title">Every trap in one place</h2>
-<div class="note-grid roundup"><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>p subscripts are off by one</h4><p>A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub>. So A3 here is p<sub>2</sub> × p<sub>3</sub> = 5 × 15. Write out the p list before you begin.</p></div><div class="note n-trap"><div class="note-tag">Exam trap</div><h4>Greedy on 0/1</h4><p>On slide 41's data, picking by ratio works, but in general, taking the best-ratio item may leave the bag badly filled. Only the table is guaranteed.</p></div></div>
+          <div class="section-label">Marks lost here</div>
+          <h2 class="section-title">Every trap in one place</h2>
+          <div class="note-grid roundup">
+            <div class="note n-trap">
+              <div class="note-tag">Exam trap</div>
+              <h4>p subscripts are off by one</h4>
+              <p>
+                A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub>. So
+                A3 here is p<sub>2</sub> × p<sub>3</sub> = 5 × 15. Write out the
+                p list before you begin.
+              </p>
+            </div>
+            <div class="note n-trap">
+              <div class="note-tag">Exam trap</div>
+              <h4>Greedy on 0/1</h4>
+              <p>
+                On slide 41's data, picking by ratio works, but in general,
+                taking the best-ratio item may leave the bag badly filled. Only
+                the table is guaranteed.
+              </p>
+            </div>
+          </div>
         </section>
         <section id="tricks" style="--sec: var(--c1)">
-            <div class="section-label">Make it stick</div>
-            <h2 class="section-title">Every memory trick in one place</h2>
-<div class="note-grid roundup"><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Overlap means Store</h4><p>If subproblems <strong>o</strong>verlap, you must <strong>s</strong>tore. Independent subproblems: divide and conquer. Overlapping: dynamic programming.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Length by Length</h4><p>The table fills <strong>diagonal by diagonal</strong>, by chain length, since each entry needs shorter chains.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>Different means Delivered</h4><p>Compare a cell with the cell <strong>above</strong> it. If they're <strong>different</strong>, the item was <strong>delivered</strong> into the knapsack.</p></div><div class="note n-mnemonic"><div class="note-tag">Memory trick</div><h4>SOS</h4><p>A DP problem sends <strong>SOS</strong>: <strong>S</strong>imple subproblems, <strong>O</strong>ptimal substructure, <strong>S</strong>ubproblem overlap.</p></div></div>
+          <div class="section-label">Make it stick</div>
+          <h2 class="section-title">Every memory trick in one place</h2>
+          <div class="note-grid roundup">
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>Overlap means Store</h4>
+              <p>
+                If subproblems <strong>o</strong>verlap, you must
+                <strong>s</strong>tore. Independent subproblems: divide and
+                conquer. Overlapping: dynamic programming.
+              </p>
+            </div>
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>Length by Length</h4>
+              <p>
+                The table fills <strong>diagonal by diagonal</strong>, by chain
+                length, since each entry needs shorter chains.
+              </p>
+            </div>
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>Different means Delivered</h4>
+              <p>
+                Compare a cell with the cell <strong>above</strong> it. If
+                they're <strong>different</strong>, the item was
+                <strong>delivered</strong> into the knapsack.
+              </p>
+            </div>
+            <div class="note n-mnemonic">
+              <div class="note-tag">Memory trick</div>
+              <h4>SOS</h4>
+              <p>
+                A DP problem sends <strong>SOS</strong>: <strong>S</strong>imple
+                subproblems, <strong>O</strong>ptimal substructure,
+                <strong>S</strong>ubproblem overlap.
+              </p>
+            </div>
+          </div>
         </section>
         <section id="cheat" style="--sec: var(--c2)">
-            <div class="section-label">One screen</div>
-            <h2 class="section-title">Quick reference</h2>
-<div class="cheat"><div class="cheat-col"><h4>DP recipe</h4><ul><li>Define subproblem</li><li>Write recurrence</li><li>Fill table bottom-up</li><li>Read answer from final cell</li><li>Trace back for the actual choice</li></ul></div><div class="cheat-col"><h4>vs other strategies</h4><ul><li>Greedy: no look-back</li><li>D&amp;C: independent subproblems</li><li>DP: overlapping, stored</li></ul></div><div class="cheat-col"><h4>Matrix chain</h4><ul><li>Cost of d×e × e×f: d·e·f</li><li>m[i,j] = min left + right + p(i−1)p(k)p(j)</li><li>Fill by chain length</li><li>O(n³) time, O(n²) space</li></ul></div><div class="cheat-col"><h4>0/1 knapsack</h4><ul><li>Skip: B[k−1,w]</li><li>Take: B[k−1,w−wk] + bk</li><li>Differs from above: taken</li><li>O(nW)</li></ul></div><div class="cheat-col"><h4>Coin change</h4><ul><li>C[0] = 0</li><li>C[p] = min 1 + C[p − di]</li></ul></div><div class="cheat-col"><h4>Fibonacci</h4><ul><li>Recursive: O(2ⁿ)</li><li>Bottom-up: O(n)</li></ul></div></div>
+          <div class="section-label">One screen</div>
+          <h2 class="section-title">Quick reference</h2>
+          <div class="cheat">
+            <div class="cheat-col">
+              <h4>DP recipe</h4>
+              <ul>
+                <li>Define subproblem</li>
+                <li>Write recurrence</li>
+                <li>Fill table bottom-up</li>
+                <li>Read answer from final cell</li>
+                <li>Trace back for the actual choice</li>
+              </ul>
+            </div>
+            <div class="cheat-col">
+              <h4>vs other strategies</h4>
+              <ul>
+                <li>Greedy: no look-back</li>
+                <li>D&amp;C: independent subproblems</li>
+                <li>DP: overlapping, stored</li>
+              </ul>
+            </div>
+            <div class="cheat-col">
+              <h4>Matrix chain</h4>
+              <ul>
+                <li>Cost of d×e × e×f: d·e·f</li>
+                <li>m[i,j] = min left + right + p(i−1)p(k)p(j)</li>
+                <li>Fill by chain length</li>
+                <li>O(n³) time, O(n²) space</li>
+              </ul>
+            </div>
+            <div class="cheat-col">
+              <h4>0/1 knapsack</h4>
+              <ul>
+                <li>Skip: B[k−1,w]</li>
+                <li>Take: B[k−1,w−wk] + bk</li>
+                <li>Differs from above: taken</li>
+                <li>O(nW)</li>
+              </ul>
+            </div>
+            <div class="cheat-col">
+              <h4>Coin change</h4>
+              <ul>
+                <li>C[0] = 0</li>
+                <li>C[p] = min 1 + C[p − di]</li>
+              </ul>
+            </div>
+            <div class="cheat-col">
+              <h4>Fibonacci</h4>
+              <ul>
+                <li>Recursive: O(2ⁿ)</li>
+                <li>Bottom-up: O(n)</li>
+              </ul>
+            </div>
+          </div>
         </section>
 
         <section id="quiz" style="--sec: var(--c7)">
-            <div class="section-label">Self-Check</div>
-            <h2 class="section-title">Can you answer these without scrolling up?</h2>
-            <div class="test-card">
-                <div class="test-head">
-                    <h3 id="quiz-header">Question 1</h3>
-                    <span class="tag" id="quiz-tag">&nbsp;</span>
-                </div>
-                <div class="test-body">
-                    <div class="test-question" id="quiz-q"></div>
-                    <div class="test-options" id="quiz-opts"></div>
-                    <div class="test-feedback" id="quiz-fb"></div>
-                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
-                </div>
+          <div class="section-label">Self-Check</div>
+          <h2 class="section-title">
+            Can you answer these without scrolling up?
+          </h2>
+          <div class="test-card">
+            <div class="test-head">
+              <h3 id="quiz-header">Question 1</h3>
+              <span class="tag" id="quiz-tag">&nbsp;</span>
             </div>
-            <div id="quiz-score">
-                <p id="score-text"></p>
-                <span id="score-sub"></span><br><br>
-                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            <div class="test-body">
+              <div class="test-question" id="quiz-q"></div>
+              <div class="test-options" id="quiz-opts"></div>
+              <div class="test-feedback" id="quiz-fb"></div>
+              <button
+                class="next-btn"
+                id="quiz-next"
+                type="button"
+                onclick="nextQuestion()"
+              >
+                Next question &rarr;
+              </button>
             </div>
+          </div>
+          <div id="quiz-score">
+            <p id="score-text"></p>
+            <span id="score-sub"></span><br /><br />
+            <button class="toggle-btn" type="button" onclick="restartQuiz()">
+              Restart quiz
+            </button>
+          </div>
         </section>
-        </main>
+      </main>
     </div>
 
     <footer>
-        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
-        <strong>Shoug Alomran</strong>
-        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">CS311 Design and Analysis of Algorithms &mdash; Lecture 6: Dynamic Programming</div>
+      <div
+        style="
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--text3);
+          margin-bottom: 0.4rem;
+        "
+      >
+        Prepared by
+      </div>
+      <strong>Shoug Alomran</strong>
+      <div style="margin-top: 0.5rem; font-size: 0.78rem; color: var(--text3)">
+        CS311 Design and Analysis of Algorithms &mdash; Lecture 6: Dynamic
+        Programming
+      </div>
     </footer>
 
-    <script>const questions = [{"tag": "Lecture 6", "q": "How do DP subproblems differ from divide-and-conquer subproblems?", "opts": ["There is no difference", "D&amp;C's overlap, while DP's are independent", "DP's overlap, while D&amp;C's are independent", "DP's are always larger"], "a": 2, "why": "Slide 6's comparison."}, {"tag": "Lecture 6", "q": "A is 2×3 and B is 3×4. Multiplying A·B costs:", "opts": ["9", "24", "12", "6"], "a": 1, "why": "d × e × f = 2 × 3 × 4."}, {"tag": "Lecture 6", "q": "The 0/1 knapsack DP runs in:", "opts": ["O(2ⁿ)", "O(W²)", "O(n²)", "O(nW)"], "a": 3, "why": "n rows, W + 1 columns."}, {"tag": "Lecture 6", "q": "In B[k,w] when item k fits, the value is:", "opts": ["max(B[k,w−1], bk)", "B[k−1,w−wk]", "max(B[k−1,w], B[k−1,w−wk] + bk)", "B[k−1,w] + bk"], "a": 2, "why": "The maximum of skipping and taking."}, {"tag": "Lecture 6", "q": "The plain recursive Fibonacci runs in:", "opts": ["O(n²)", "O(log n)", "O(2ⁿ)", "O(n)"], "a": 2, "why": "It recomputes overlapping subproblems."}, {"tag": "Lecture 6", "q": "Which is NOT one of the three DP ingredients on slide 39?", "opts": ["Random pivot selection", "Subproblem optimality", "Subproblem overlap", "Simple subproblems"], "a": 0, "why": "Random pivots belong to quick sort."}, {"tag": "Lecture 6", "q": "In matrix chain, s[i,j] stores:", "opts": ["The matrix dimensions", "The minimum cost", "The best split point k", "The chain length"], "a": 2, "why": "It's used to reconstruct the parenthesization."}, {"tag": "Lecture 6", "q": "What makes it the \"0/1\" knapsack?", "opts": ["Weights are either 0 or 1", "The bag holds 0 or 1 items", "Each item is taken whole or not at all", "Benefits are binary"], "a": 2, "why": "xᵢ is 0 or 1."}];
-let currentQ = 0, score = 0, answered = false;
+    <script>
+      const questions = [
+        {
+          tag: "Lecture 6",
+          q: "How do DP subproblems differ from divide-and-conquer subproblems?",
+          opts: [
+            "There is no difference",
+            "D&amp;C's overlap, while DP's are independent",
+            "DP's overlap, while D&amp;C's are independent",
+            "DP's are always larger",
+          ],
+          a: 2,
+          why: "Slide 6's comparison.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "A is 2×3 and B is 3×4. Multiplying A·B costs:",
+          opts: ["9", "24", "12", "6"],
+          a: 1,
+          why: "d × e × f = 2 × 3 × 4.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "The 0/1 knapsack DP runs in:",
+          opts: ["O(2ⁿ)", "O(W²)", "O(n²)", "O(nW)"],
+          a: 3,
+          why: "n rows, W + 1 columns.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "In B[k,w] when item k fits, the value is:",
+          opts: [
+            "max(B[k,w−1], bk)",
+            "B[k−1,w−wk]",
+            "max(B[k−1,w], B[k−1,w−wk] + bk)",
+            "B[k−1,w] + bk",
+          ],
+          a: 2,
+          why: "The maximum of skipping and taking.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "The plain recursive Fibonacci runs in:",
+          opts: ["O(n²)", "O(log n)", "O(2ⁿ)", "O(n)"],
+          a: 2,
+          why: "It recomputes overlapping subproblems.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "Which is NOT one of the three DP ingredients on slide 39?",
+          opts: [
+            "Random pivot selection",
+            "Subproblem optimality",
+            "Subproblem overlap",
+            "Simple subproblems",
+          ],
+          a: 0,
+          why: "Random pivots belong to quick sort.",
+        },
+        {
+          tag: "Lecture 6",
+          q: "In matrix chain, s[i,j] stores:",
+          opts: [
+            "The matrix dimensions",
+            "The minimum cost",
+            "The best split point k",
+            "The chain length",
+          ],
+          a: 2,
+          why: "It's used to reconstruct the parenthesization.",
+        },
+        {
+          tag: "Lecture 6",
+          q: 'What makes it the "0/1" knapsack?',
+          opts: [
+            "Weights are either 0 or 1",
+            "The bag holds 0 or 1 items",
+            "Each item is taken whole or not at all",
+            "Benefits are binary",
+          ],
+          a: 2,
+          why: "xᵢ is 0 or 1.",
+        },
+      ];
+      let currentQ = 0,
+        score = 0,
+        answered = false;
 
-function renderQuestion() {
-    const q = questions[currentQ];
-    answered = false;
-    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
-    document.getElementById('quiz-tag').textContent = q.tag;
-    document.getElementById('quiz-q').textContent = q.q;
-    const opts = document.getElementById('quiz-opts');
-    opts.innerHTML = '';
-    q.opts.forEach((text, i) => {
-        const b = document.createElement('button');
-        b.className = 'opt';
-        b.type = 'button';
-        b.innerHTML = text;
-        b.onclick = () => answer(i, b);
-        opts.appendChild(b);
-    });
-    const fb = document.getElementById('quiz-fb');
-    fb.className = 'test-feedback';
-    fb.textContent = '';
-    document.getElementById('quiz-next').className = 'next-btn';
-}
-
-function answer(i, btn) {
-    if (answered) return;
-    answered = true;
-    const q = questions[currentQ];
-    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
-        b.disabled = true;
-        if (j === q.a) b.classList.add('correct');
-    });
-    if (i !== q.a) btn.classList.add('wrong'); else score++;
-    const fb = document.getElementById('quiz-fb');
-    fb.className = 'test-feedback show';
-    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
-    document.getElementById('quiz-next').className = 'next-btn show';
-}
-
-function nextQuestion() {
-    currentQ++;
-    if (currentQ < questions.length) { renderQuestion(); return; }
-    document.querySelector('.test-card').style.display = 'none';
-    document.getElementById('quiz-score').classList.add('show');
-    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
-    document.getElementById('score-sub').textContent =
-        score === questions.length ? 'Clean sweep. Move on to the drills.'
-        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
-        : 'Go back through the slide map before the next chapter.';
-}
-
-function restartQuiz() {
-    currentQ = 0; score = 0;
-    document.getElementById('quiz-score').classList.remove('show');
-    document.querySelector('.test-card').style.display = '';
-    renderQuestion();
-}
-
-function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    // Persist both keys: html-theme-sync.js resolves from localStorage only and
-    // runs after this file, so without agreeing with it the page would flip.
-    try {
-        localStorage.setItem('shoug-theme', theme);
-        localStorage.setItem('theme', theme);
-    } catch (e) { }
-    const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Default to dark — matching the site chrome this page is embedded in —
-    // unless the reader has explicitly chosen light.
-    let saved = null;
-    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
-    applyTheme(saved === 'light' ? 'light' : 'dark');
-
-    const btn = document.getElementById('theme-btn');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      function renderQuestion() {
+        const q = questions[currentQ];
+        answered = false;
+        document.getElementById("quiz-header").textContent =
+          `Question ${currentQ + 1} of ${questions.length}`;
+        document.getElementById("quiz-tag").textContent = q.tag;
+        document.getElementById("quiz-q").textContent = q.q;
+        const opts = document.getElementById("quiz-opts");
+        opts.innerHTML = "";
+        q.opts.forEach((text, i) => {
+          const b = document.createElement("button");
+          b.className = "opt";
+          b.type = "button";
+          b.innerHTML = text;
+          b.onclick = () => answer(i, b);
+          opts.appendChild(b);
         });
-    }
-    renderQuestion();
+        const fb = document.getElementById("quiz-fb");
+        fb.className = "test-feedback";
+        fb.textContent = "";
+        document.getElementById("quiz-next").className = "next-btn";
+      }
 
-    // reading progress
-    const bar = document.getElementById('progress');
-    const onScroll = () => {
-        const h = document.documentElement.scrollHeight - window.innerHeight;
-        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-
-    // highlight the section currently in view, in both the rail and the nav
-    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
-    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
-    const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (!e.isIntersecting) return;
-            links.forEach(a => a.classList.remove('active'));
-            byHash(e.target.id).forEach(a => a.classList.add('active'));
+      function answer(i, btn) {
+        if (answered) return;
+        answered = true;
+        const q = questions[currentQ];
+        document.querySelectorAll("#quiz-opts .opt").forEach((b, j) => {
+          b.disabled = true;
+          if (j === q.a) b.classList.add("correct");
         });
-    }, { rootMargin: '-25% 0px -65% 0px' });
-    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
-});
-</script>
+        if (i !== q.a) btn.classList.add("wrong");
+        else score++;
+        const fb = document.getElementById("quiz-fb");
+        fb.className = "test-feedback show";
+        fb.textContent = (i === q.a ? "Correct — " : "Not quite — ") + q.why;
+        document.getElementById("quiz-next").className = "next-btn show";
+      }
+
+      function nextQuestion() {
+        currentQ++;
+        if (currentQ < questions.length) {
+          renderQuestion();
+          return;
+        }
+        document.querySelector(".test-card").style.display = "none";
+        document.getElementById("quiz-score").classList.add("show");
+        document.getElementById("score-text").textContent =
+          `${score} / ${questions.length}`;
+        document.getElementById("score-sub").textContent =
+          score === questions.length
+            ? "Clean sweep. Move on to the drills."
+            : score >= questions.length * 0.6
+              ? "Solid. Re-read the traps you missed."
+              : "Go back through the slide map before the next chapter.";
+      }
+
+      function restartQuiz() {
+        currentQ = 0;
+        score = 0;
+        document.getElementById("quiz-score").classList.remove("show");
+        document.querySelector(".test-card").style.display = "";
+        renderQuestion();
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        // Persist both keys: html-theme-sync.js resolves from localStorage only and
+        // runs after this file, so without agreeing with it the page would flip.
+        try {
+          localStorage.setItem("shoug-theme", theme);
+          localStorage.setItem("theme", theme);
+        } catch (e) {}
+        const btn = document.getElementById("theme-btn");
+        if (btn) btn.textContent = theme === "dark" ? "Light" : "Dark";
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Default to dark — matching the site chrome this page is embedded in —
+        // unless the reader has explicitly chosen light.
+        let saved = null;
+        try {
+          saved =
+            localStorage.getItem("shoug-theme") ||
+            localStorage.getItem("theme");
+        } catch (e) {}
+        applyTheme(saved === "light" ? "light" : "dark");
+
+        const btn = document.getElementById("theme-btn");
+        if (btn) {
+          btn.addEventListener("click", () => {
+            applyTheme(
+              document.documentElement.getAttribute("data-theme") === "dark"
+                ? "light"
+                : "dark",
+            );
+          });
+        }
+        renderQuestion();
+
+        // reading progress
+        const bar = document.getElementById("progress");
+        const onScroll = () => {
+          const h = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+
+        // highlight the section currently in view, in both the rail and the nav
+        const links = [
+          ...document.querySelectorAll(".chapter-toc a, .nav-links a"),
+        ];
+        const byHash = (id) =>
+          links.filter((a) => a.getAttribute("href") === "#" + id);
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              links.forEach((a) => a.classList.remove("active"));
+              byHash(e.target.id).forEach((a) => a.classList.add("active"));
+            });
+          },
+          { rootMargin: "-25% 0px -65% 0px" },
+        );
+        document.querySelectorAll("section[id]").forEach((s) => io.observe(s));
+      });
+    </script>
     <script src="/javascripts/standalone-theme.js"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
-</body>
-
+  </body>
 </html>

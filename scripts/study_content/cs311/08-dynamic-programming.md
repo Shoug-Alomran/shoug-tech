@@ -6,27 +6,29 @@
 @why At 83 slides this is the largest deck in the course, and one where filling tables by hand brings real exam marks. Once you see the two questions that define any DP solution, matrix chain and knapsack stop feeling like separate topics.
 @connect Greedy failed on 0/1 knapsack and on some coin sets. Divide and conquer wasted effort when subproblems overlapped. DP fixes both problems.
 @goals
+
 - Compare DP with greedy and divide and conquer
 - State when DP can be applied
 - Fill in the matrix chain table and rebuild the parenthesization
 - Fill in the 0/1 knapsack table and recover the items
 - Apply DP to coin change
-@vocab
-Subproblem | A smaller version of the problem.
-Overlapping | The same subproblem appears again and again.
-Optimal substructure | The best overall answer contains the best answers to its subproblems.
-Bottom-up | Solving the smallest cases first and building upward.
-Memoization | Storing results to avoid recomputing.
-@map
-3-6 | What DP is; vs greedy and D&C | MEMORIZE | Slides 5 and 6's comparison tables
-7-14 | Fibonacci | WRITE | Why recursion explodes
-15-38 | Matrix chain product | WRITE | Fill the table, recover the split
-39 | The general technique | MEMORIZE | Three ingredients
-40-73 | 0/1 knapsack | WRITE | Build the table and find the items
-74-79 | Binomial, coin change | WRITE | Coin DP table
-80-83 | When it applies | MEMORIZE | Optimal substructure, overlap
+  @vocab
+  Subproblem | A smaller version of the problem.
+  Overlapping | The same subproblem appears again and again.
+  Optimal substructure | The best overall answer contains the best answers to its subproblems.
+  Bottom-up | Solving the smallest cases first and building upward.
+  Memoization | Storing results to avoid recomputing.
+  @map
+  3-6 | What DP is; vs greedy and D&C | MEMORIZE | Slides 5 and 6's comparison tables
+  7-14 | Fibonacci | WRITE | Why recursion explodes
+  15-38 | Matrix chain product | WRITE | Fill the table, recover the split
+  39 | The general technique | MEMORIZE | Three ingredients
+  40-73 | 0/1 knapsack | WRITE | Build the table and find the items
+  74-79 | Binomial, coin change | WRITE | Coin DP table
+  80-83 | When it applies | MEMORIZE | Optimal substructure, overlap
 
 ## What dynamic programming is | Slides 3-6 | must
+
 "Programming" here means **planning**, as in filling in a table. It was invented by Richard Bellman in the 1950s to solve optimization problems.
 
 ::steps The main idea
@@ -35,17 +37,17 @@ Record the solutions in a table so each is only solved once.
 The final state of the table is, or contains, the solution.
 ::
 
-| | Greedy | Dynamic programming |
-|---|---|---|
-| Decides by | What's best right now | Considering earlier subproblem solutions |
-| Looks back? | Never | Yes |
-| Optimal? | Sometimes | **Yes, when it applies** |
+|             | Greedy                | Dynamic programming                      |
+| ----------- | --------------------- | ---------------------------------------- |
+| Decides by  | What's best right now | Considering earlier subproblem solutions |
+| Looks back? | Never                 | Yes                                      |
+| Optimal?    | Sometimes             | **Yes, when it applies**                 |
 
-| | Divide and conquer | Dynamic programming |
-|---|---|---|
-| Direction | Top-down | Bottom-up |
-| Subproblems | **Independent** | **Overlapping** |
-| Stores results? | No | Yes |
+|                 | Divide and conquer | Dynamic programming |
+| --------------- | ------------------ | ------------------- |
+| Direction       | Top-down           | Bottom-up           |
+| Subproblems     | **Independent**    | **Overlapping**     |
+| Stores results? | No                 | Yes                 |
 
 ::analogy Writing the answer on the board
 Ask a class "what's 8 + 7 + 5?" They work out 20. Now ask "what's 8 + 7 + 5 + 3?" Nobody re-adds. They use 20 and add 3. DP is writing past answers on the board.
@@ -54,13 +56,15 @@ Ask a class "what's 8 + 7 + 5?" They work out 20. Now ask "what's 8 + 7 + 5 + 3?
 If subproblems **o**verlap, you must **s**tore. Independent subproblems: divide and conquer. Overlapping: dynamic programming.
 ::
 ::key
+
 - DP solves overlapping subproblems once and stores them in a table
 - Greedy never looks back, while DP uses earlier results
 - D&C subproblems are independent, DP's overlap
 - DP is typically built bottom-up
-::
+  ::
 
 ## Fibonacci: the clearest example | Slides 7-14 | must
+
 ::formula Recurrence
 f(0) = 0, f(1) = 1, f(n) = f(n−1) + f(n−2)
 ::
@@ -85,18 +89,20 @@ e c g
 
 The bottom-up version just fills an array from left to right.
 
-| Version | Code idea | Time | At n = 100 |
-|---|---|---|---|
-| Recursive | `fib(n-1) + fib(n-2)` | **O(2ⁿ)** | About 13 days at 1 ns |
-| Bottom-up DP | `f[i] = f[i-1] + f[i-2]` | **O(n)** | **101 ns** |
+| Version      | Code idea                | Time      | At n = 100            |
+| ------------ | ------------------------ | --------- | --------------------- |
+| Recursive    | `fib(n-1) + fib(n-2)`    | **O(2ⁿ)** | About 13 days at 1 ns |
+| Bottom-up DP | `f[i] = f[i-1] + f[i-2]` | **O(n)**  | **101 ns**            |
 
 ::key
+
 - Plain recursion recomputes overlapping subproblems and takes O(2ⁿ)
 - Bottom-up DP fills a table in O(n)
 - At n = 100, the difference is 13 days versus 101 nanoseconds
-::
+  ::
 
 ## Matrix chain multiplication | Slides 15-38 | must
+
 Multiplying a d × e matrix by an e × f matrix costs **d × e × f** operations. The order of multiplication doesn't change the answer but it hugely changes the cost.
 
 ::example Slide 17: B is 3×100, C is 100×5, D is 5×5
@@ -143,14 +149,16 @@ A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub>. So A3 here is p
 (AB)C = 2×3×5 + 2×5×2 = 30 + 20 = 50. A(BC) = 3×5×2 + 2×3×2 = 30 + 12 = **42**. So A(BC). It matches m[1,3] = 42 in slide 36's table.
 ::
 ::key
+
 - Multiplying d×e by e×f costs d·e·f
 - m[i,j] = min over k of left + right + p(i−1)·p(k)·p(j)
 - Fill the table by chain length, diagonal by diagonal
 - Store the best k in s[i,j] to recover the parenthesization
 - Time is O(n³) and space is O(n²)
-::
+  ::
 
 ## 0/1 knapsack | Slides 40-73 | must
+
 You must take each item **entirely or not at all**. Greedy fails here, and DP handles it.
 
 Define **B[k, w]** as the best benefit using the first k items with capacity w. For item k there are only two options: **skip it or take it**.
@@ -160,13 +168,14 @@ If w<sub>k</sub> > w: B[k, w] = B[k−1, w]
 Otherwise: B[k, w] = max( B[k−1, w], B[k−1, w − w<sub>k</sub>] + b<sub>k</sub> )
 ::
 ::example Fill the table: W = 5, items (2,3), (3,4), (4,5), (5,6) as (weight, benefit)
-| i \ w | 0 | 1 | 2 | 3 | 4 | 5 |
-|---|---|---|---|---|---|---|
-| **0** | 0 | 0 | 0 | 0 | 0 | 0 |
-| **1** (2,3) | 0 | 0 | 3 | 3 | 3 | 3 |
-| **2** (3,4) | 0 | 0 | 3 | 4 | 4 | **7** |
-| **3** (4,5) | 0 | 0 | 3 | 4 | 5 | 7 |
-| **4** (5,6) | 0 | 0 | 3 | 4 | 5 | 7 |
+
+| i \ w       | 0   | 1   | 2   | 3   | 4   | 5     |
+| ----------- | --- | --- | --- | --- | --- | ----- |
+| **0**       | 0   | 0   | 0   | 0   | 0   | 0     |
+| **1** (2,3) | 0   | 0   | 3   | 3   | 3   | 3     |
+| **2** (3,4) | 0   | 0   | 3   | 4   | 4   | **7** |
+| **3** (4,5) | 0   | 0   | 3   | 4   | 5   | 7     |
+| **4** (5,6) | 0   | 0   | 3   | 4   | 5   | 7     |
 
 The highlighted cell: i = 2, w = 5. Skip gives B[1,5] = 3. Take gives B[1, 2] + 4 = 3 + 4 = 7. Take it.
 
@@ -189,14 +198,16 @@ Compare a cell with the cell **above** it. If they're **different**, the item wa
 On slide 41's data, picking by ratio works, but in general, taking the best-ratio item may leave the bag badly filled. Only the table is guaranteed.
 ::
 ::key
+
 - B[k,w] is the best benefit using the first k items and capacity w
 - Skip it: B[k−1,w]. Take it: B[k−1,w−wk] + bk
 - Answer is at B[n,W]
 - Running time is O(nW), brute force is O(2ⁿ)
 - If a cell differs from the one above, that item was taken
-::
+  ::
 
 ## Coin change, and when DP applies | Slides 74-83 | must
+
 Greedy failed for some coin sets, and DP doesn't.
 
 ::formula Recurrence
@@ -204,9 +215,10 @@ C[0] = 0
 C[p] = min over coins d<sub>i</sub> ≤ p of { 1 + C[p − d<sub>i</sub>] }
 ::
 ::example Slide 79: amount 5, coins {1, 2, 3}
-| p | 0 | 1 | 2 | 3 | 4 | 5 |
-|---|---|---|---|---|---|---|
-| C[p] | 0 | 1 | 1 | 1 | 2 | **2** |
+
+| p    | 0   | 1   | 2   | 3   | 4   | 5     |
+| ---- | --- | --- | --- | --- | --- | ----- |
+| C[p] | 0   | 1   | 1   | 1   | 2   | **2** |
 
 C[5] = 1 + min(C[4], C[3], C[2]) = 1 + 1 = **2**, using coins {2, 3}.
 ::
@@ -215,11 +227,11 @@ Binomial coefficients follow the same pattern: C(n, k) = C(n−1, k−1) + C(n�
 
 DP applies when the problem has:
 
-| Ingredient | Meaning |
-|---|---|
-| **Simple subproblems** | Defined with a few variables, like i, j, k |
+| Ingredient               | Meaning                                                  |
+| ------------------------ | -------------------------------------------------------- |
+| **Simple subproblems**   | Defined with a few variables, like i, j, k               |
 | **Optimal substructure** | The best answer contains the best answers to subproblems |
-| **Subproblem overlap** | The same subproblems appear repeatedly |
+| **Subproblem overlap**   | The same subproblems appear repeatedly                   |
 
 ::mnemonic SOS
 A DP problem sends **SOS**: **S**imple subproblems, **O**ptimal substructure, **S**ubproblem overlap.
@@ -228,130 +240,179 @@ A DP problem sends **SOS**: **S**imple subproblems, **O**ptimal substructure, **
 Slide 80 says the crucial step is deriving a **recurrence** that relates the answer to smaller subinstances. Once you have the recurrence, the table is just arithmetic.
 ::
 ::key
+
 - Coin change: C[p] = min of 1 + C[p − di]
 - DP needs simple subproblems, optimal substructure and overlap
 - Deriving the recurrence is the crucial step
-::
-@cheat
+  ::
+  @cheat
+
 ### DP recipe
+
 - Define subproblem
 - Write recurrence
 - Fill table bottom-up
 - Read answer from final cell
 - Trace back for the actual choice
+
 ### vs other strategies
+
 - Greedy: no look-back
 - D&C: independent subproblems
 - DP: overlapping, stored
+
 ### Matrix chain
+
 - Cost of d×e × e×f: d·e·f
 - m[i,j] = min left + right + p(i−1)p(k)p(j)
 - Fill by chain length
 - O(n³) time, O(n²) space
+
 ### 0/1 knapsack
+
 - Skip: B[k−1,w]
 - Take: B[k−1,w−wk] + bk
 - Differs from above: taken
 - O(nW)
+
 ### Coin change
+
 - C[0] = 0
 - C[p] = min 1 + C[p − di]
+
 ### Fibonacci
+
 - Recursive: O(2ⁿ)
 - Bottom-up: O(n)
-@mcq 6
-How do DP subproblems differ from divide-and-conquer subproblems?
-+ DP's overlap, while D&C's are independent
+  @mcq 6
+  How do DP subproblems differ from divide-and-conquer subproblems?
+
+* DP's overlap, while D&C's are independent
+
 - DP's are always larger
 - D&C's overlap, while DP's are independent
 - There is no difference
+
 > Slide 6's comparison.
-@mcq 17
-A is 2×3 and B is 3×4. Multiplying A·B costs:
-+ 24
-- 9
-- 12
-- 6
+> @mcq 17
+> A is 2×3 and B is 3×4. Multiplying A·B costs:
+
+- 24
+
+* 9
+* 12
+* 6
+
 > d × e × f = 2 × 3 × 4.
-@mcq 25
-The matrix chain DP runs in:
-+ O(n³) time and O(n²) space
-- O(n²) time and O(n) space
-- O(2ⁿ) time and O(n²) space
-- O(n log n) time and O(n) space
+> @mcq 25
+> The matrix chain DP runs in:
+
+- O(n³) time and O(n²) space
+
+* O(n²) time and O(n) space
+* O(2ⁿ) time and O(n²) space
+* O(n log n) time and O(n) space
+
 > Slide 28 states this.
-@mcq 47
-The 0/1 knapsack DP runs in:
-+ O(nW)
-- O(n²)
-- O(2ⁿ)
-- O(W²)
+> @mcq 47
+> The 0/1 knapsack DP runs in:
+
+- O(nW)
+
+* O(n²)
+* O(2ⁿ)
+* O(W²)
+
 > n rows, W + 1 columns.
-@mcq 44
-In B[k,w] when item k fits, the value is:
-+ max(B[k−1,w], B[k−1,w−wk] + bk)
-- B[k−1,w] + bk
-- max(B[k,w−1], bk)
-- B[k−1,w−wk]
+> @mcq 44
+> In B[k,w] when item k fits, the value is:
+
+- max(B[k−1,w], B[k−1,w−wk] + bk)
+
+* B[k−1,w] + bk
+* max(B[k,w−1], bk)
+* B[k−1,w−wk]
+
 > The maximum of skipping and taking.
-@mcq 72
-Comparing B[i,k] with B[i−1,k], a different value means:
-+ Item i was taken
-- Item i was skipped
-- The table has an error
-- The capacity is exceeded
+> @mcq 72
+> Comparing B[i,k] with B[i−1,k], a different value means:
+
+- Item i was taken
+
+* Item i was skipped
+* The table has an error
+* The capacity is exceeded
+
 > Slides 69 to 73 use this to recover the items.
-@mcq 8
-The plain recursive Fibonacci runs in:
-+ O(2ⁿ)
-- O(n)
-- O(log n)
-- O(n²)
+> @mcq 8
+> The plain recursive Fibonacci runs in:
+
+- O(2ⁿ)
+
+* O(n)
+* O(log n)
+* O(n²)
+
 > It recomputes overlapping subproblems.
-@mcq 39
-Which is NOT one of the three DP ingredients on slide 39?
-+ Random pivot selection
-- Simple subproblems
-- Subproblem optimality
-- Subproblem overlap
+> @mcq 39
+> Which is NOT one of the three DP ingredients on slide 39?
+
+- Random pivot selection
+
+* Simple subproblems
+* Subproblem optimality
+* Subproblem overlap
+
 > Random pivots belong to quick sort.
-@mcq 79
-With coins {1, 2, 3}, the minimum number of coins to make 5 is:
-+ 2
-- 3
-- 5
-- 1
+> @mcq 79
+> With coins {1, 2, 3}, the minimum number of coins to make 5 is:
+
+- 2
+
+* 3
+* 5
+* 1
+
 > 2 + 3.
-@mcq 34
-In matrix chain, s[i,j] stores:
-+ The best split point k
-- The minimum cost
-- The matrix dimensions
-- The chain length
+> @mcq 34
+> In matrix chain, s[i,j] stores:
+
+- The best split point k
+
+* The minimum cost
+* The matrix dimensions
+* The chain length
+
 > It's used to reconstruct the parenthesization.
-@mcq 40
-What makes it the "0/1" knapsack?
-+ Each item is taken whole or not at all
-- Weights are either 0 or 1
-- The bag holds 0 or 1 items
-- Benefits are binary
+> @mcq 40
+> What makes it the "0/1" knapsack?
+
+- Each item is taken whole or not at all
+
+* Weights are either 0 or 1
+* The bag holds 0 or 1 items
+* Benefits are binary
+
 > xᵢ is 0 or 1.
-@mcq 3
-The word "programming" in dynamic programming means:
-+ Planning
-- Writing code
-- Recursion
-- Compiling
+> @mcq 3
+> The word "programming" in dynamic programming means:
+
+- Planning
+
+* Writing code
+* Recursion
+* Compiling
+
 > It refers to filling in a table, per slide 3.
-@short 44
-Write the recurrence for 0/1 knapsack and explain each case.
-~ skip, take, weight, max, B
+> @short 44
+> Write the recurrence for 0/1 knapsack and explain each case.
+> ~ skip, take, weight, max, B
 > If item k's weight exceeds w, it can't fit: B[k,w] = B[k−1,w]. Otherwise take the better of skipping it, B[k−1,w], or taking it, B[k−1,w−wk] + bk.
-@short 23
-Explain the meaning of each term in the matrix chain recurrence.
-~ left, right, multiply, split, minimum
+> @short 23
+> Explain the meaning of each term in the matrix chain recurrence.
+> ~ left, right, multiply, split, minimum
 > For every split point k, the cost is the cost of the left chain m[i,k], plus the right chain m[k+1,j], plus multiplying the two results, p(i−1)·p(k)·p(j). The minimum over all k is the answer.
-@short 81
-What two properties must a problem have for DP to apply? Explain them.
-~ optimal substructure, overlapping, subproblems, table
+> @short 81
+> What two properties must a problem have for DP to apply? Explain them.
+> ~ optimal substructure, overlapping, subproblems, table
 > Optimal substructure: the optimal solution contains optimal solutions to smaller instances. Overlapping subproblems: the same subproblems recur, so storing their solutions avoids recomputation.
