@@ -320,7 +320,7 @@ def build(src_path):
 def write_index():
     entries = []
     for f in sorted(OUT.glob("*.json")):
-        if f.name == "index.json":
+        if f.name in ("index.json", "study-sources.json"):
             continue
         d = json.loads(f.read_text())
         entries.append(

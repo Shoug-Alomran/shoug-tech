@@ -961,8 +961,21 @@ def write(path, text):
     print('wrote', os.path.relpath(path, REPO))
 
 
+def has_slide_hub():
+    """The course's slide sections were merged by scripts/build_slide_hub.py."""
+    return 'data-slide-hub' in read(os.path.join(C.dir, 'slides', 'index.html'))
+
+
 def update_sidebar_data():
     data = sidebar.load_data()
+    if has_slide_hub():
+        data['children'][C.base + 'slides/#annotated'] = [
+            {'url': C.section + C.decks[k][0] + '/', 'attrs': '', 'label': C.item_label(C.decks[k][3])}
+            for k in C.decks if k in C.built_keys]
+        with open(sidebar.DATA_FILE, 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=2)
+            fh.write('\n')
+        return data
     entry = {'url': C.section, 'attrs': 'data-en-text="ANNOTATED SLIDES" data-ar-text="%s"' % AR_LABEL,
              'label': 'ANNOTATED SLIDES'}
     sections = data['sections'][C.base]
@@ -1203,6 +1216,7 @@ def build(course):
         build_page(deck, mod, out)
         i = keys.index(deck['key'])
         build_wrapper(deck, data, keys[i - 1] if i > 0 else None, keys[i + 1] if i + 1 < len(keys) else None)
-    build_directory(data)
-    wire_course_pages()
+    if not has_slide_hub():  # A merged course lists its decks on the Slides page.
+        build_directory(data)
+        wire_course_pages()
     annotated_search.build_course(C.dir)

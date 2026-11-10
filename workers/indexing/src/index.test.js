@@ -144,3 +144,18 @@ test("Cloudflare entrypoint accepts env and execution context arguments", async 
     globalThis.fetch = previous;
   }
 });
+
+test("legacy URL redirects with or without slash or index.html", async () => {
+  const location =
+    "https://shoug-tech.com/academics/computer-science/cs330/slides/chapter-4-threads/";
+  for (const suffix of ["/", "", "/index.html"]) {
+    const res = await handle(
+      request(
+        `/Academics/computer-science/CS330/slides/chapter-4-threads${suffix}`,
+      ),
+      unexpected,
+    );
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get("location"), location);
+  }
+});

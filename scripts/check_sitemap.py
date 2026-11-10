@@ -57,7 +57,7 @@ def build() -> tuple[list[Path], list[Path], dict[Path, str]]:
         # Same in-memory transforms the deploy build applies; nothing is written back.
         for fn in (o.patch_accessibility, o.update_brand_favicon, o.optimize_images):
             html = fn(html)
-        html = o.add_clarity(o.add_alternates(o.ensure_meta(html, path), path))
+        html = o.add_clarity(o.remove_hreflang(o.ensure_meta(html, path)))
         if o.is_indexable_standalone(path, html):
             standalone.append(path)
         if o.is_indexable(path, html):

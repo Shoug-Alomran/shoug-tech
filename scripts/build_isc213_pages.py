@@ -43,7 +43,7 @@ SECTIONS = {
         *[(f'0{n}-lecture-{n}', f'Lecture {n}', '') for n in range(1, 10)],
     ],
     'slides': [
-        *[(f'lecture-{n}', f'Lecture {n}', '') for n in range(1, 10)],
+        *[(f'lecture-{n}', f'Lecture {n}', '') for n in range(1, 13)],
     ],
     'extra-resources': [
         ('01-cheat-sheet', 'Midterm Cheat Sheet', 'ورقة مراجعة الاختبار الفصلي'),
@@ -88,6 +88,17 @@ SECTION_LABEL = {
     'exams': ('Exams', 'الاختبارات'),
 }
 
+SUB_NAV = '''<nav class="sub-nav">
+                <a href="/academics/other-courses/isc213/" class="sub-nav-item active"
+                  data-en-text="[ OVERVIEW ]" data-ar-text="[ نظرة عامة ]">[ OVERVIEW ]</a>
+                <a href="/academics/other-courses/isc213/exams/" class="sub-nav-item"
+                  data-en-text="[ EXAMS ]" data-ar-text="[ الاختبارات ]">[ EXAMS ]</a>
+                <a href="/academics/other-courses/isc213/slides/" class="sub-nav-item"
+                  data-en-text="[ SLIDES ]" data-ar-text="[ الشرائح ]">[ SLIDES ]</a>
+                <a href="/academics/other-courses/isc213/extra-resources/" class="sub-nav-item"
+                  data-en-text="[ STUDY MATERIAL ]" data-ar-text="[ المواد الدراسية ]">[ STUDY MATERIAL ]</a>
+            </nav>'''
+
 ARROW_SVG = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
              'stroke-linecap="square"><path d="M5 12h14M12 5l7 7-7 7"/></svg>')
 
@@ -104,9 +115,9 @@ SYLLABUS = [
     ('Bonds', 'السندات', '4 SLIDES'),
     ('Murabaha', 'المرابحة', '3 SLIDES'),
     ('Sale Deed Based on Leasing', 'البيع القائم على الإجارة', '3 SLIDES'),
-    ('Credit Cards', 'بطاقات الائتمان', 'PENDING'),
-    ('Gambling', 'الميسر', 'PENDING'),
-    ('Multi-Level Marketing and Pyramid Schemes', 'التسويق الشبكي والهرمي', 'PENDING'),
+    ('Credit Cards', 'بطاقات الائتمان', '3 SLIDES'),
+    ('Gambling', 'الميسر', '4 SLIDES'),
+    ('Multi-Level Marketing and Pyramid Schemes', 'التسويق الشبكي والهرمي', '4 SLIDES'),
 ]
 
 OUTCOMES = [
@@ -142,8 +153,75 @@ IN_PROGRESS_CSS = '''        .tag-in-progress {
         }
 '''
 
-TOTAL_SLIDES = 44
-TOTAL_DECKS = 9
+TOTAL_SLIDES = 55
+TOTAL_DECKS = 12
+
+EXAM_COUNT_CSS = '''      .exam-count-group {
+        margin-bottom: 24px;
+      }
+      .exam-count-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 8px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--brand-purple);
+        text-transform: uppercase;
+      }
+      .exam-count-total {
+        color: var(--text-main);
+      }
+      .topic-item.exam-total {
+        background-color: var(--bg-surface);
+        font-weight: 700;
+      }
+      .topic-item.exam-total .topic-meta {
+        color: var(--brand-purple);
+      }
+      .exam-scope-note {
+        margin: -8px 0 24px;
+        padding: 12px 16px;
+        border-left: 2px solid var(--brand-purple);
+        background-color: var(--bg-elevated);
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+'''
+
+PAGE_COUNT_BY_EXAM = [
+    ("First Major Exam — Lectures 1–4", "الاختبار الفصلي الأول — المحاضرات 1–4", [
+        ("LEC 1", "The Concept of Contemporary Financial Transactions &amp; Its Characteristics", "lecture-1", "6 SLIDES"),
+        ("LEC 2", "Methodology of Ijtihad &amp; Introduction to Incorporeal Rights", "lecture-2", "4 SLIDES"),
+        ("LEC 3", "Incorporeal Rights: Copyright, Trade Name, Invention Certificate", "lecture-3", "8 SLIDES"),
+        ("LEC 4", "Insurance", "lecture-4", "9 SLIDES"),
+    ], "27 SLIDES"),
+    ("Second Major Exam — Lectures 5–9", "الاختبار الفصلي الثاني — المحاضرات 5–9", [
+        ("LEC 5", "Financial Securities", "lecture-5", "3 SLIDES"),
+        ("LEC 6", "Shares", "lecture-6", "4 SLIDES"),
+        ("LEC 7", "Bonds", "lecture-7", "4 SLIDES"),
+        ("LEC 8", "Sale Deed Based on Leasing", "lecture-8", "3 SLIDES"),
+        ("LEC 9", "Murabaha", "lecture-9", "3 SLIDES"),
+    ], "17 SLIDES"),
+    ("Final Exam — Comprehensive", "الاختبار النهائي — شامل", [
+        ("LEC 1", "The Concept of Contemporary Financial Transactions &amp; Its Characteristics", "lecture-1", "6 SLIDES"),
+        ("LEC 2", "Methodology of Ijtihad &amp; Introduction to Incorporeal Rights", "lecture-2", "4 SLIDES"),
+        ("LEC 3", "Incorporeal Rights: Copyright, Trade Name, Invention Certificate", "lecture-3", "8 SLIDES"),
+        ("LEC 4", "Insurance", "lecture-4", "9 SLIDES"),
+        ("LEC 5", "Financial Securities", "lecture-5", "3 SLIDES"),
+        ("LEC 6", "Shares", "lecture-6", "4 SLIDES"),
+        ("LEC 7", "Bonds", "lecture-7", "4 SLIDES"),
+        ("LEC 8", "Sale Deed Based on Leasing", "lecture-8", "3 SLIDES"),
+        ("LEC 9", "Murabaha", "lecture-9", "3 SLIDES"),
+        ("LEC 10", "Credit Cards", "lecture-10", "3 SLIDES"),
+        ("LEC 11", "Gambling", "lecture-11", "4 SLIDES"),
+        ("LEC 12", "Multi-Level Marketing and Pyramid Schemes", "lecture-12", "4 SLIDES"),
+    ], "55 SLIDES"),
+]
 
 
 def read(*parts):
@@ -179,6 +257,8 @@ def replace_between(html, start, end, new):
 def reorder_nav(html, nav_class, item_class):
     """Re-emit one nav's links in SECTION_ORDER, keeping each link untouched."""
     open_tag = f'<nav class="{nav_class}">'
+    if open_tag not in html:
+        return html
     start = html.index(open_tag) + len(open_tag)
     end = html.index('</nav>', start)
     block = html[start:end]
@@ -286,11 +366,20 @@ def nav_strip(section, idx, style):
 
 
 def build_slide_wrapper(idx, slug, title):
-    html = recourse(read('slides', 'lecture-1', 'index.html'))
-    html = html.replace('Lecture 1', title).replace('lecture-1', slug)
+    template = os.path.join(DST, 'slides', 'lecture-9', 'index.html')
+    if os.path.isfile(template):
+        with open(template, encoding='utf-8') as fh:
+            html = fh.read()
+        html = html.replace('Lecture 9', title).replace('lecture-9', slug)
+    else:
+        html = recourse(read('slides', 'lecture-1', 'index.html'))
+        html = html.replace('Lecture 1', title).replace('lecture-1', slug)
+    if idx >= 9:
+        html = html.replace(f'./{slug}.pdf', f'../{slug}.pdf')
     html = html.replace('ITEM_01 //', f'ITEM_{idx + 1:02d} //')
-    html = replace_between(html, '            <div class="nav-strip">', '</div>\n            <div class="embed-area-wrapper">',
-                           nav_strip('slides', idx, 'slides') + '\n            <div class="embed-area-wrapper">')
+    html = replace_between(html, '        <div class="nav-strip">', '</div>\n        <div class="embed-area-wrapper">',
+                           nav_strip('slides', idx, 'slides').replace('            ', '        ') +
+                           '\n        <div class="embed-area-wrapper">')
     write(os.path.join('slides', slug, 'index.html'), html)
 
 
@@ -330,6 +419,8 @@ def build_embed_wrapper(section, idx, slug, title, title_ar):
 
 def build_overview():
     html = recourse(read('index.html'))
+    html = re.sub(r'<nav class="sub-nav">.*?</nav>', SUB_NAV, html, count=1, flags=re.S)
+    html = html.replace('</style>', EXAM_COUNT_CSS + '    </style>', 1)
     # The header blurb and 01_DESCRIPTION both carry the old course description.
     html = re.sub(r'ISC213 introduces the Islamic economic system[^<]*', DESC, html)
     html = re.sub(r'يقدم مقرر ISC213 النظام الاقتصادي الإسلامي[^"]*', DESC_AR, html)
@@ -345,14 +436,26 @@ def build_overview():
         f'                                <div class="topic-item exam-total"><span class="topic-num">&Sigma;</span>'
         f'<span class="topic-name" data-ar-text="مجموع الشرائح">Total Slides</span>'
         f'<span class="topic-meta">{TOTAL_SLIDES} SLIDES</span></div>')
-    html = replace_between(
-        html,
-        '<div class="topics-list" style="margin-bottom: 48px;">',
-        'Total Slides</span><span class="topic-meta">46 SLIDES</span></div>\n                            </div>',
+    html = re.sub(
+        r'<div class="topics-list" style="margin-bottom: 48px;?">.*?'
+        r'<span class="topic-name"[^>]*>\s*Total Slides\s*</span\s*>'
+        r'\s*<span class="topic-meta">\s*\d+ SLIDES\s*</span\s*>\s*</div>\s*</div>',
         '<div class="topics-list" style="margin-bottom: 48px;">\n' + '\n'.join(topics) +
-        '\n                            </div>')
-    html = html.replace('02_SYLLABUS_INDEX // 12_DECKS // 46_SLIDES',
-                        f'02_SYLLABUS_INDEX // {TOTAL_DECKS:02d}_DECKS // {TOTAL_SLIDES}_SLIDES')
+        '\n                            </div>',
+        html, count=1, flags=re.S)
+    html = re.sub(
+        r'02_SYLLABUS_INDEX // \d+_DECKS // \d+_SLIDES',
+        f'02_SYLLABUS_INDEX // {TOTAL_DECKS:02d}_DECKS // {TOTAL_SLIDES}_SLIDES',
+        html)
+    marker = '</div>\n            </article>'
+    if 'id="section-page-count-by-exam"' not in html:
+        end = html.rfind(marker)
+        if end < 0:
+            raise SystemExit("overview content section marker not found")
+        html = html[:end] + (
+            '<div class="section-label" id="section-page-count-by-exam">'
+            '05_PAGE_COUNT_BY_EXAM</div>' + exam_page_counts_html() + '\n              '
+        ) + html[end:]
 
     # 03_LEARNING_OUTCOMES
     lis = '\n'.join(
@@ -367,7 +470,7 @@ def build_overview():
         f'<span class="topic-meta">{pct}</span></div>'
         for n, (en, ar, pct) in enumerate(ASSESSMENTS, start=1))
     i = html.index('04_WEIGHT_OF_ASSESSMENTS')
-    start = html.index('<div class="topics-list" style="margin-bottom: 48px;">', i)
+    start = html.index('<div class="topics-list" style="margin-bottom: 48px', i)
     end = html.index('</div>', html.index('40%', start)) + len('</div>')
     end = html.index('</div>', end) + len('</div>')
     html = html[:start] + '<div class="topics-list" style="margin-bottom: 48px;">\n' + rows + \
@@ -392,6 +495,38 @@ def build_overview():
 
     html = html.replace('04012023-DB', '10092025-DB')
     write('index.html', html)
+
+
+def exam_page_counts_html():
+    groups = []
+    for heading, heading_ar, rows, total in PAGE_COUNT_BY_EXAM:
+        items = []
+        for num, title, slug, count in rows:
+            href = (
+                f'/academics/other-courses/isc213/slides/{slug}/'
+                if slug else '/academics/other-courses/isc213/slides/'
+            )
+            items.append(
+                f'<div class="topic-item"><span class="topic-num">{num}</span>'
+                f'<a class="topic-name topic-name-link" href="{href}" '
+                f'data-ar-text="{title}">{title}</a><span class="topic-meta">{count}</span></div>')
+        items.append(
+            f'<div class="topic-item exam-total"><span class="topic-num">&Sigma;</span>'
+            f'<a class="topic-name topic-name-link" href="/academics/other-courses/isc213/slides/" '
+            f'data-ar-text="المجموع">Total</a><span class="topic-meta">{total}</span></div>')
+        groups.append(
+            f'<div class="exam-count-group"><div class="exam-count-heading">'
+            f'<span data-ar-text="{heading_ar}">{heading}</span>'
+            f'<span class="exam-count-total">{total}</span></div>'
+            f'<div class="topics-list">{"".join(items)}</div></div>')
+    note = (
+        '<div class="exam-scope-note" data-ar-text="النطاق: يغطي الاختبار الفصلي الأول المحاضرات 1–4، '
+        'والاختبار الفصلي الثاني المحاضرات 5–9. الاختبار النهائي شامل ويغطي المحاضرات 1–12. '
+        'أعداد الشرائح هي أعداد صفحات ملفات PDF الفعلية.">'
+        'SCOPE — The First Major Exam covers Lectures 1–4 and the Second Major Exam covers Lectures 5–9. '
+        'The Final is comprehensive and covers Lectures 1–12. Slide counts are the real '
+        'page counts of the lecture PDFs.</div>')
+    return note + ''.join(groups)
 
 
 

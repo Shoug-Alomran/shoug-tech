@@ -40,6 +40,10 @@ npx wrangler whoami
 npm run deploy
 ```
 
+Old URLs found in git history live in `src/legacy-redirects.json`. After renaming
+or moving pages, run `python3 scripts/build_legacy_redirects.py`, commit it, then
+deploy. It needs full history, so it must not run in CI.
+
 The primary site's CI rebuilds the manifest and tests the rules, but does not
 deploy this Worker. Regenerate and redeploy it when PDF paths change. GitHub
 Pages does not support `_headers`; putting such a file there would not fix PDFs.

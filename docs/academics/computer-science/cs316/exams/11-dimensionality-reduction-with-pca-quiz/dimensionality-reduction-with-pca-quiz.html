@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>
+      CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA | Shoug's
+      Digital Garden
+    </title>
+    <link rel="icon" href="/assets/shoug-favicon-v3.png" />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #141c31;
+        --card: #19243b;
+        --text: #f4f7ff;
+        --muted: #aab6cc;
+        --line: #34415e;
+        --purple: #bb72ff;
+        --cyan: #42dcff;
+        --green: #54d889;
+        --red: #ff6475;
+        --gold: #f5b94c;
+      }
+      [data-theme="light"] {
+        --bg: #f5f4fb;
+        --panel: #fff;
+        --card: #f9f8ff;
+        --text: #1c2435;
+        --muted: #5e687b;
+        --line: #d6d7e5;
+        --purple: #7536b5;
+        --cyan: #007c9a;
+        --green: #14753b;
+        --red: #ba2c41;
+        --gold: #9a6100;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(
+            circle at 12% 5%,
+            color-mix(in srgb, var(--purple) 15%, transparent),
+            transparent 34rem
+          ),
+          radial-gradient(
+            circle at 90% 35%,
+            color-mix(in srgb, var(--cyan) 12%, transparent),
+            transparent 30rem
+          ),
+          var(--bg);
+        color: var(--text);
+        font:
+          16px/1.55 system-ui,
+          sans-serif;
+        min-height: 100vh;
+      }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--line);
+      }
+      .topin,
+      main {
+        max-width: 1450px;
+        margin: auto;
+        padding: 14px clamp(14px, 4vw, 58px);
+      }
+      .topin {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand {
+        margin-right: auto;
+      }
+      .eyebrow {
+        font: 700 11px ui-monospace;
+        color: var(--cyan);
+        letter-spacing: 0.16em;
+      }
+      button {
+        cursor: pointer;
+      }
+      .timer,
+      .theme {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--text);
+        padding: 9px 12px;
+        font: 600 14px ui-monospace;
+      }
+      .hero {
+        padding: clamp(28px, 6vw, 72px) 0 28px;
+      }
+      h1 {
+        font-size: clamp(34px, 6vw, 68px);
+        line-height: 1;
+        margin: 8px 0;
+        background: linear-gradient(
+          100deg,
+          var(--text),
+          var(--purple),
+          var(--cyan)
+        );
+        background-clip: text;
+        color: transparent;
+      }
+      .hero p {
+        max-width: 850px;
+        color: var(--muted);
+      }
+      .meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font: 13px ui-monospace;
+        color: var(--muted);
+      }
+      .progress {
+        height: 7px;
+        background: var(--line);
+        border-radius: 9px;
+        overflow: hidden;
+        margin: 24px 0;
+      }
+      .progress i {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, var(--purple), var(--cyan));
+        transition: 0.25s;
+      }
+      section {
+        background: linear-gradient(
+          135deg,
+          var(--panel),
+          color-mix(in srgb, var(--purple) 5%, var(--panel))
+        );
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: clamp(16px, 3vw, 30px);
+        margin: 20px 0;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+      }
+      section h2 {
+        margin-top: 0;
+      }
+      .q {
+        border-top: 1px solid var(--line);
+        padding: 22px 0;
+      }
+      .q:first-of-type {
+        border-top: 0;
+      }
+      .qnum {
+        color: var(--gold);
+        font: 700 13px ui-monospace;
+      }
+      .prompt {
+        font-weight: 650;
+        margin: 7px 0 13px;
+        overflow-wrap: anywhere;
+      }
+      label {
+        display: block;
+        overflow-wrap: anywhere;
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 11px;
+        padding: 11px 13px;
+        margin: 8px 0;
+        transition: 0.18s;
+      }
+      label:hover {
+        border-color: var(--cyan);
+        transform: translateX(4px);
+      }
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--text);
+        border-radius: 11px;
+        padding: 12px;
+        font: inherit;
+      }
+      .feedback {
+        display: none;
+        margin-top: 12px;
+        padding: 14px;
+        border: 2px solid transparent;
+        border-radius: 10px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .correct {
+        border-color: var(--green) !important;
+        background: color-mix(
+          in srgb,
+          var(--green) 24%,
+          var(--card)
+        ) !important;
+        color: var(--text);
+        box-shadow:
+          inset 5px 0 0 var(--green),
+          0 0 0 1px color-mix(in srgb, var(--green) 35%, transparent);
+      }
+      .wrong {
+        border-color: var(--red) !important;
+        background: color-mix(in srgb, var(--red) 24%, var(--card)) !important;
+        color: var(--text);
+        box-shadow:
+          inset 5px 0 0 var(--red),
+          0 0 0 1px color-mix(in srgb, var(--red) 35%, transparent);
+      }
+      label.correct::after {
+        content: " ✓  CORRECT";
+        float: right;
+        color: var(--green);
+        font-weight: 900;
+      }
+      label.wrong::after {
+        content: " ✕  YOUR ANSWER";
+        float: right;
+        color: var(--red);
+        font-weight: 900;
+      }
+      textarea.correct,
+      textarea.wrong {
+        border-width: 3px;
+      }
+      .actions {
+        text-align: center;
+        padding: 20px;
+      }
+      .submit {
+        border: 0;
+        border-radius: 12px;
+        background: linear-gradient(105deg, var(--purple), var(--cyan));
+        color: white;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 16px;
+        box-shadow: 0 12px 35px
+          color-mix(in srgb, var(--purple) 30%, transparent);
+      }
+      .score {
+        display: none;
+        text-align: center;
+        font-size: clamp(24px, 5vw, 48px);
+        padding: 22px;
+        border: 3px solid transparent;
+        border-radius: 16px;
+      }
+      .score.show {
+        display: block;
+      }
+      .score.pass {
+        border-color: var(--green);
+        background: color-mix(in srgb, var(--green) 20%, var(--panel));
+      }
+      .score.fail {
+        border-color: var(--red);
+        background: color-mix(in srgb, var(--red) 20%, var(--panel));
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs316/exams/11-dimensionality-reduction-with-pca-quiz/dimensionality-reduction-with-pca-quiz.html"
+    />
+    <meta
+      name="description"
+      content="CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA, written from the Introduction to AI and Data Science lecture slides."
+    />
+    <meta
+      property="og:title"
+      content="CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA | Shoug&#x27;s Digital Garden"
+    />
+    <meta
+      property="og:description"
+      content="CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA, written from the Introduction to AI and Data Science lecture slides."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/computer-science/cs316/exams/11-dimensionality-reduction-with-pca-quiz/dimensionality-reduction-with-pca-quiz.html"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA | Shoug&#x27;s Digital Garden"
+    />
+    <meta
+      name="twitter:description"
+      content="CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA, written from the Introduction to AI and Data Science lecture slides."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://shoug-tech.com/academics/computer-science/cs316/exams/11-dimensionality-reduction-with-pca-quiz/dimensionality-reduction-with-pca-quiz.html",
+        "name": "CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA | Shoug's Digital Garden",
+        "description": "CS316 Chapter 7.2 Quiz: Dimensionality Reduction with PCA, written from the Introduction to AI and Data Science lecture slides."
+      }
+    </script>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
+  <body>
+    <div class="top">
+      <div class="topin">
+        <div class="brand">
+          <div class="eyebrow">CS316 · CHAPTER 7.2</div>
+          <strong>Dimensionality Reduction with PCA — Chapter Quiz</strong>
+        </div>
+        <div class="timer" id="timer">35:00</div>
+        <button class="theme" id="theme" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+    <main>
+      <header class="hero">
+        <div class="eyebrow">SELF-GRADED · COMPREHENSIVE PRACTICE</div>
+        <h1>Dimensionality Reduction with PCA</h1>
+        <p>
+          Apply the chapter’s definitions, distinctions, techniques, and quality
+          implications. Submit for instant grading; every item includes an
+          explanation or model answer.
+        </p>
+        <div class="meta">
+          <b>13 questions</b><span>10 MCQ + 3 short answer</span
+          ><span>16 points</span><span>35 minutes</span>
+        </div>
+        <div class="progress"><i id="bar"></i></div>
+      </header>
+      <section>
+        <h2>Multiple Choice — Concept Application</h2>
+        <div id="mcq"></div>
+      </section>
+      <section>
+        <h2>Short Answer — Explain and Connect</h2>
+        <div id="short"></div>
+      </section>
+      <div class="actions">
+        <button class="submit" id="submit">Submit Exam</button
+        ><button class="theme" id="reset" hidden>Reset</button>
+      </div>
+      <div class="score" id="score"></div>
+    </main>
+    <script>
+      const MCQ = [
+          {
+            q: "Why is data standardized before PCA?",
+            options: [
+              "So fewer students are needed",
+              "So the covariance matrix becomes zero",
+              "So each feature contributes equally",
+              "So the eigenvalues all equal one",
+            ],
+            correct: 2,
+            why: "Otherwise large-scale features dominate.",
+          },
+          {
+            q: "The diagonal of a covariance matrix holds:",
+            options: [
+              "The variance of each feature",
+              "The mean of each feature",
+              "The eigenvalues of the data",
+              "The sample size",
+            ],
+            correct: 0,
+            why: "Cov(X, X) = Var(X).",
+          },
+          {
+            q: "An eigenvalue between 0 and 1 means the eigenvector is:",
+            options: [
+              "Stretched",
+              "Rotated to a new direction",
+              "Flipped",
+              "Compressed",
+            ],
+            correct: 3,
+            why: "Direction is kept and the length shrinks.",
+          },
+          {
+            q: "What defines an eigenvector of a matrix?",
+            options: [
+              "It becomes perpendicular to its original self",
+              "It keeps its direction under the transformation",
+              "It always has length exactly 1 afterwards",
+              "It is the largest column of the matrix",
+            ],
+            correct: 1,
+            why: "It may be stretched, compressed or flipped along the same line.",
+          },
+          {
+            q: "In PCA, the eigenvector with the largest eigenvalue is:",
+            options: [
+              "The original feature with the largest mean",
+              "The direction capturing the least variance",
+              "The feature to remove first",
+              "The direction capturing the most variance",
+            ],
+            correct: 3,
+            why: "That is the first principal component.",
+          },
+          {
+            q: "Eigenvalues [1.01, 1.6, 3.61, 2.5] sorted descending give which indices?",
+            options: [
+              "[2, 1, 3, 0]",
+              "[2, 3, 1, 0]",
+              "[0, 1, 3, 2]",
+              "[3, 2, 1, 0]",
+            ],
+            correct: 1,
+            why: "3.61 is at 2, 2.5 at 3, 1.6 at 1, 1.01 at 0.",
+          },
+          {
+            q: "What does eigenvectors[:, sorted_indices] do?",
+            options: [
+              "Reorders the rows by sample score",
+              "Keeps only the first eigenvector",
+              "Sorts the entries inside each column",
+              "Reorders the columns to match sorted eigenvalues",
+            ],
+            correct: 3,
+            why: "Eigenvectors are stored as columns.",
+          },
+          {
+            q: "PC1 for a student is computed as:",
+            options: [
+              "The covariance of the row with itself",
+              "The dot product of the row with the first eigenvector",
+              "The sum of the student's raw scores",
+              "The first eigenvalue times the row mean",
+            ],
+            correct: 1,
+            why: "Z = X times eigenvector.",
+          },
+          {
+            q: "What does PCA treat as information?",
+            options: [
+              "The sample mean",
+              "The response variable",
+              "Variance",
+              "The feature names",
+            ],
+            correct: 2,
+            why: "High-variance directions are preserved.",
+          },
+          {
+            q: "With eigenvalues 3.9566, 0.0338, 0.0079, 0.0016, what share does PC1 explain?",
+            options: ["About 98.9%", "About 25%", "About 3.96%", "About 39.6%"],
+            correct: 0,
+            why: "3.9566 divided by their sum of about 4.",
+          },
+        ],
+        SHORT = [
+          {
+            q: "List the steps of PCA in order.",
+            keywords: ["standardize", "covariance", "eigen", "sort", "project"],
+            answer:
+              "Standardize the data, compute the covariance matrix, compute eigenvalues and eigenvectors, sort them in descending order, and project the data onto the top k eigenvectors.",
+          },
+          {
+            q: "What do eigenvalues and eigenvectors each represent in PCA?",
+            keywords: ["variance", "direction", "principal"],
+            answer:
+              "Eigenvalues give the amount of variance carried by each principal component. Eigenvectors give the directions of those components in the original feature space.",
+          },
+          {
+            q: "A standardized row is [1, 2] and the first eigenvector is [0.6, 0.8]. Compute PC1.",
+            keywords: ["2.2", "0.6", "1.6"],
+            answer: "1(0.6) + 2(0.8) = 0.6 + 1.6 = 2.2.",
+          },
+        ];
+      const mc = document.getElementById("mcq"),
+        sa = document.getElementById("short");
+      MCQ.forEach((x, i) =>
+        mc.insertAdjacentHTML(
+          "beforeend",
+          '<article class="q" data-i="' +
+            i +
+            '"><span class="qnum">Q' +
+            (i + 1) +
+            '</span><div class="prompt">' +
+            x.q +
+            "</div>" +
+            x.options
+              .map(
+                (o, j) =>
+                  '<label><input type="radio" name="m' +
+                  i +
+                  '" value="' +
+                  j +
+                  '"> ' +
+                  String.fromCharCode(65 + j) +
+                  ". " +
+                  o +
+                  "</label>",
+              )
+              .join("") +
+            '<div class="feedback" id="fm' +
+            i +
+            '"></div></article>',
+        ),
+      );
+      SHORT.forEach((x, i) =>
+        sa.insertAdjacentHTML(
+          "beforeend",
+          '<article class="q"><span class="qnum">Q' +
+            (MCQ.length + i + 1) +
+            '</span><div class="prompt">' +
+            x.q +
+            '</div><textarea id="s' +
+            i +
+            '" placeholder="Write your answer…"></textarea><div class="feedback" id="fs' +
+            i +
+            '"></div></article>',
+        ),
+      );
+      function update() {
+        const done =
+          document.querySelectorAll("input:checked").length +
+          [...document.querySelectorAll("textarea")].filter((x) =>
+            x.value.trim(),
+          ).length;
+        document.getElementById("bar").style.width =
+          (done / (MCQ.length + SHORT.length)) * 100 + "%";
+      }
+      document.addEventListener("input", update);
+      let left = 2100,
+        t = setInterval(() => {
+          left--;
+          document.getElementById("timer").textContent =
+            String(Math.floor(left / 60)).padStart(2, "0") +
+            ":" +
+            String(left % 60).padStart(2, "0");
+          if (left <= 0) {
+            clearInterval(t);
+            grade();
+          }
+        }, 1000);
+      function grade() {
+        clearInterval(t);
+        let points = 0;
+        MCQ.forEach((x, i) => {
+          const inputs = [
+              ...document.querySelectorAll("input[name=m" + i + "]"),
+            ],
+            chosen = inputs.find((n) => n.checked),
+            f = document.getElementById("fm" + i);
+          inputs.forEach((n) => {
+            n.disabled = true;
+            if (+n.value === x.correct)
+              n.closest("label").classList.add("correct");
+          });
+          if (chosen && +chosen.value === x.correct) {
+            points++;
+            f.className = "feedback show correct";
+            f.innerHTML = "<b>✓ Correct.</b> " + x.why;
+          } else {
+            if (chosen) chosen.closest("label").classList.add("wrong");
+            f.className = "feedback show wrong";
+            f.innerHTML =
+              "<b>✕ Incorrect. Correct answer: " +
+              String.fromCharCode(65 + x.correct) +
+              ". " +
+              x.options[x.correct] +
+              ".</b> " +
+              x.why;
+          }
+        });
+        SHORT.forEach((x, i) => {
+          const area = document.getElementById("s" + i),
+            v = area.value.toLowerCase(),
+            hits = x.keywords.filter((k) => v.includes(k)).length,
+            earned = Math.min(2, hits),
+            state = earned >= 1 ? "correct" : "wrong";
+          points += earned;
+          area.classList.add(state);
+          const f = document.getElementById("fs" + i);
+          f.className = "feedback show " + state;
+          f.innerHTML =
+            "<b>" +
+            (earned >= 1 ? "✓ Credit earned" : "✕ Needs review") +
+            " (" +
+            earned +
+            "/2 by keyword check).</b> Model answer: " +
+            x.answer;
+          area.disabled = true;
+        });
+        const maxPoints = MCQ.length + SHORT.length * 2,
+          passed = points / maxPoints >= 0.6,
+          score = document.getElementById("score");
+        score.className = "score show " + (passed ? "pass" : "fail");
+        score.innerHTML =
+          "<b>" +
+          (passed ? "✓ " : "✕ ") +
+          points +
+          " / " +
+          maxPoints +
+          "</b><br><small>Review the color-coded answers above, then retry to strengthen weak areas.</small>";
+        document.getElementById("submit").hidden = true;
+        document.getElementById("reset").hidden = false;
+      }
+      document.getElementById("submit").onclick = grade;
+      document.getElementById("reset").onclick = () => location.reload();
+      const root = document.documentElement;
+      try {
+        root.dataset.theme = localStorage.getItem("shoug-theme") || "dark";
+      } catch (e) {}
+      document.getElementById("theme").onclick = () => {
+        root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+        try {
+          localStorage.setItem("shoug-theme", root.dataset.theme);
+        } catch (e) {}
+      };
+    </script>
+    <script src="/javascripts/quiz-mistakes.js" defer></script>
+  </body>
+</html>

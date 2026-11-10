@@ -22,7 +22,12 @@ export async function handle(request, fetchOrigin = fetch) {
   }
   const main = ["shoug-tech.com", "www.shoug-tech.com"].includes(url.hostname);
   let target;
-  if (main) target = manifest.redirects[path];
+  // Old links may omit the trailing slash or name index.html directly.
+  if (main)
+    target =
+      manifest.redirects[path] ??
+      manifest.redirects[path + "/"] ??
+      manifest.redirects[path.replace(/index\.html$/, "")];
   if (
     url.hostname === "operating-systems.shoug-tech.com" &&
     path.endsWith(".md") &&

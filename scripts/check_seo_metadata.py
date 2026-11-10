@@ -81,6 +81,9 @@ def main() -> int:
             or any(fragment in description for fragment in BAD_DESCRIPTION_FRAGMENTS)
         ):
             failures.append(f"{route}: generic or missing description")
+        # There are no separate Arabic URLs, so any hreflang sends Google to a dead or duplicate one.
+        if re.search(r"<link\b[^>]*\bhreflang\s*=", html, re.IGNORECASE):
+            failures.append(f"{route}: hreflang alternate must be removed")
         if canonical and og_url and canonical != og_url:
             failures.append(f"{route}: og:url does not match canonical")
 

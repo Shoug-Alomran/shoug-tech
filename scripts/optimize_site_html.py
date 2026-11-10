@@ -295,41 +295,20 @@ def update_brand_favicon(html: str) -> str:
     )
 
 
-def page_variants(path: Path) -> tuple[str, str]:
-    rel = path.relative_to(SITE).as_posix()
-    is_ar = rel.startswith("ar/")
-
-    if rel.endswith("index.html"):
-        route = rel[: -len("index.html")]
-    else:
-        route = rel
-
-    if is_ar:
-        ar_route = route
-        en_route = route[3:]
-    else:
-        en_route = route
-        ar_route = f"ar/{route}"
-
-    return en_route, ar_route
+HREFLANG_LINK = re.compile(
+    r'[ \t]*<link\b(?=[^>]*\brel\s*=\s*["\']alternate["\'])(?=[^>]*\bhreflang\s*=)[^>]*>[ \t]*\n?',
+    re.IGNORECASE,
+)
 
 
-def add_alternates(html: str, path: Path) -> str:
-    if 'rel="alternate"' in html:
-        return html
+def remove_hreflang(html: str) -> str:
+    """Drop hreflang alternates: the site has no separate Arabic URLs to point at.
 
-    en_route, ar_route = page_variants(path)
-    en = f"{SITE_URL}{en_route}".replace("index.html", "")
-    ar = f"{SITE_URL}{ar_route}".replace("index.html", "")
-
-    links = (
-        f'      <link rel="alternate" hreflang="en" href="{en}">\n'
-        f'      <link rel="alternate" hreflang="ar" href="{ar}">\n'
-        f'      <link rel="alternate" hreflang="x-default" href="{en}">\n'
-    )
-    if "      <link rel=\"icon\"" in html:
-        return html.replace("      <link rel=\"icon\"", links + "      <link rel=\"icon\"", 1)
-    return insert_before_head_close(html, "\n" + links.rstrip())
+    Arabic is applied in the browser on the same page, so there is no /ar/ tree
+    (those URLs 404) and ?lang=ar canonicalizes back to the English page. Either
+    form only hands Google thousands of URLs it can never index.
+    """
+    return HREFLANG_LINK.sub("", html)
 
 
 def add_clarity(html: str) -> str:
@@ -388,6 +367,9 @@ def is_indexable_standalone(path: Path, html: str) -> bool:
 def is_indexable(path: Path, html: str) -> bool:
     if path.name == "404.html":
         return False
+    # The course-access host serves these without .html and redirects the .html form.
+    if path.suffix == ".html" and path.name != "index.html" and SITE / "course-access" in path.parents:
+        return False
     if is_redirect(html) or is_noindex(html):
         return False
     if canonicalizes_elsewhere(path, html):
@@ -439,7 +421,7 @@ def main() -> int:
         html = update_brand_favicon(html)
         html = optimize_images(html)
         html = ensure_meta(html, path)
-        html = add_alternates(html, path)
+        html = remove_hreflang(html)
         html = add_clarity(html)
 
         if html != original:

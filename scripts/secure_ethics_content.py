@@ -57,7 +57,7 @@ def build_worker():
         shutil.copy2(WORKER / 'src' / source, access / dest)
     for relative in ['checkout/ethics/index.html', 'admin/transfers/index.html',
                      'styles/course-transfers.css', 'javascripts/course-transfers.js',
-                     'styles/site-shell.css', 'javascripts/site-shell.js', 'javascripts/mobile-navigation.js', 'styles/ethics-study-tools.css', 'javascripts/ethics-study-tools.js', 'javascripts/email-verification.js', 'javascripts/firebase-auth.js', 'sw.js']:
+                     'styles/site-shell.css', 'javascripts/site-shell.js', 'javascripts/site-palette.js', 'javascripts/mobile-navigation.js', 'styles/ethics-study-tools.css', 'javascripts/ethics-study-tools.js', 'javascripts/email-verification.js', 'javascripts/firebase-auth.js', 'sw.js']:
         target = assets / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(DOCS / relative, target)

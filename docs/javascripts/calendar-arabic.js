@@ -14,140 +14,156 @@
     "Click an exam to choose its chapters": "اضغطي على اختبار لاختيار فصوله",
     "Which chapters are on this exam?": "ما الفصول المشمولة في هذا الاختبار؟",
     "Choose chapters": "اختيار الفصول",
-    "e.g. Chapters 1 to 4, no lab material": "مثال: الفصول من 1 إلى 4، بدون مواد المعمل",
+    "e.g. Chapters 1 to 4, no lab material":
+      "مثال: الفصول من 1 إلى 4، بدون مواد المعمل",
     "Group Submitted": "سلمت المجموعة",
     "When did the group submit?": "متى سلمت المجموعة؟",
     "Waiting on group": "بانتظار المجموعة",
     "Undo My Part": "التراجع عن جزئي",
-    "Group submission saved. Your stats use the time you finished your part.": "تم حفظ تسليم المجموعة. تعتمد إحصاءاتك على وقت إنهاء جزئك.",
+    "Group submission saved. Your stats use the time you finished your part.":
+      "تم حفظ تسليم المجموعة. تعتمد إحصاءاتك على وقت إنهاء جزئك.",
     "Group submitted": "سلمت المجموعة",
     "Compare / contrast": "مقارنة",
     "Add type": "إضافة نوع",
-    "Another question type, e.g. Case analysis": "نوع سؤال آخر، مثل: تحليل حالة",
+    "Another question type, e.g. Case analysis":
+      "نوع سؤال آخر، مثل: تحليل حالة",
     "Another question type": "نوع سؤال آخر",
     "Ready to build your schedule": "جاهزة لبناء جدولك",
-    "Study sessions go into your free time before each exam, around your classes, events and the drive.": "توضع جلسات المذاكرة في وقتك الحر قبل كل اختبار، حول محاضراتك وأحداثك والقيادة.",
+    "Study sessions go into your free time before each exam, around your classes, events and the drive.":
+      "توضع جلسات المذاكرة في وقتك الحر قبل كل اختبار، حول محاضراتك وأحداثك والقيادة.",
     "Build my schedule": "بناء جدولي",
-    "Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.": "انقلي أو عدلي أو احذفي أي جلسة في التقويم وستعاد بقية الخطة حولها.",
+    "Move, edit or delete any session on the calendar and the rest of the plan rebuilds around it.":
+      "انقلي أو عدلي أو احذفي أي جلسة في التقويم وستعاد بقية الخطة حولها.",
     "Next:": "التالي:",
     ". So far you have": ". حتى الآن لديك",
     "Coursework is": "أعمال الفصل",
     "1–2 days": "1–2 يوم",
-    "When": "متى",
-    "days": "أيام",
-    "day": "يوم",
+    When: "متى",
+    days: "أيام",
+    day: "يوم",
     "medium priority": "أولوية متوسطة",
     "high priority": "أولوية عالية",
     "low priority": "أولوية منخفضة",
-    "Presentations": "العروض التقديمية",
+    Presentations: "العروض التقديمية",
     "Quizzes (best two of three)": "الاختبارات القصيرة (أفضل اثنين من ثلاثة)",
     "Formulas to memorize": "معادلات للحفظ",
     "Numbers to memorize": "أرقام للحفظ",
     "Lists to memorize": "قوائم للحفظ",
-    "Mark work as submitted. On group projects, use": "حددي العمل كمسلم. في المشاريع الجماعية استخدمي",
-    "so your partners’ timing doesn’t count against you.": "حتى لا يؤثر توقيت زملائك عليك.",
+    "Mark work as submitted. On group projects, use":
+      "حددي العمل كمسلم. في المشاريع الجماعية استخدمي",
+    "so your partners’ timing doesn’t count against you.":
+      "حتى لا يؤثر توقيت زملائك عليك.",
     "I’ve Finished My Part": "أنهيت جزئي",
-    "Open": "فتح",
-    ", tell it about your week and how each exam will ask, and it plans your study time. If your calendar changes, the plan moves with it.": "، أخبريها عن أسبوعك وكيف ستكون أسئلة كل اختبار، وستخطط وقت مذاكرتك. وإذا تغير تقويمك تتغير الخطة معه.",
-    "Classes": "المحاضرات",
+    Open: "فتح",
+    ", tell it about your week and how each exam will ask, and it plans your study time. If your calendar changes, the plan moves with it.":
+      "، أخبريها عن أسبوعك وكيف ستكون أسئلة كل اختبار، وستخطط وقت مذاكرتك. وإذا تغير تقويمك تتغير الخطة معه.",
+    Classes: "المحاضرات",
     "// Loading Calendar": "// جار تحميل التقويم",
     "// Sign In Required": "// يلزم تسجيل الدخول",
     "// Study calendar": "// تقويم الدراسة",
-    "Checking your account and saved dates...": "جار التحقق من حسابك والتواريخ المحفوظة...",
-    "Sign in to see your exams and save calendar items.": "سجلي الدخول لعرض اختباراتك وحفظ عناصر التقويم.",
-    "Keep your exams, classes, study sessions, and personal events in one academic calendar.": "اختباراتك ومحاضراتك وجلسات مذاكرتك وأحداثك الشخصية في تقويم أكاديمي واحد.",
-    "Calendar": "التقويم",
-    "Assignments": "الواجبات",
-    "Exams": "الاختبارات",
+    "Checking your account and saved dates...":
+      "جار التحقق من حسابك والتواريخ المحفوظة...",
+    "Sign in to see your exams and save calendar items.":
+      "سجلي الدخول لعرض اختباراتك وحفظ عناصر التقويم.",
+    "Keep your exams, classes, study sessions, and personal events in one academic calendar.":
+      "اختباراتك ومحاضراتك وجلسات مذاكرتك وأحداثك الشخصية في تقويم أكاديمي واحد.",
+    Calendar: "التقويم",
+    Assignments: "الواجبات",
+    Exams: "الاختبارات",
     "Study plan": "خطة المذاكرة",
-    "Grades": "الدرجات",
-    "Classes": "المحاضرات",
-    "Add": "إضافة",
-    "More": "المزيد",
-    "Event": "حدث",
-    "Assignment": "واجب",
-    "Project": "مشروع",
-    "Presentation": "عرض تقديمي",
-    "Exam": "اختبار",
-    "Class": "محاضرة",
+    Grades: "الدرجات",
+    Classes: "المحاضرات",
+    Add: "إضافة",
+    More: "المزيد",
+    Event: "حدث",
+    Assignment: "واجب",
+    Project: "مشروع",
+    Presentation: "عرض تقديمي",
+    Exam: "اختبار",
+    Class: "محاضرة",
     "Study session": "جلسة مذاكرة",
     "Export calendar": "تصدير التقويم",
     "Classes online": "تحويل المحاضرات عن بعد",
     "Clear everything": "مسح كل شيء",
     "Move classes online": "تحويل المحاضرات عن بعد",
-    "Delete all your classes, events, assignments and absences? This can't be undone.": "هل تريدين حذف جميع محاضراتك وأحداثك وواجباتك وغياباتك؟ لا يمكن التراجع عن ذلك.",
+    "Delete all your classes, events, assignments and absences? This can't be undone.":
+      "هل تريدين حذف جميع محاضراتك وأحداثك وواجباتك وغياباتك؟ لا يمكن التراجع عن ذلك.",
     "Calendar sections": "أقسام التقويم",
     "Calendar view": "عرض التقويم",
     "Semester view": "عرض الفصل",
-    "Breadcrumb": "مسار الصفحة",
+    Breadcrumb: "مسار الصفحة",
     "All semesters": "كل الفصول",
     "All courses": "كل المقررات",
-    "All": "الكل",
-    "Day": "يوم",
-    "Week": "أسبوع",
-    "Month": "شهر",
-    "Today": "اليوم",
-    "Tomorrow": "غدا",
-    "Sun": "الأحد",
-    "Mon": "الاثنين",
-    "Tue": "الثلاثاء",
-    "Wed": "الأربعاء",
-    "Thu": "الخميس",
-    "Fri": "الجمعة",
-    "Sat": "السبت",
-    "Cancel": "إلغاء",
-    "Delete": "حذف",
-    "Save": "حفظ",
-    "Close": "إغلاق",
-    "Back": "رجوع",
-    "Remove": "إزالة",
-    "Done": "تم",
-    "Open": "فتح",
-    "Clear": "مسح",
-    "Edit": "تعديل",
-    "Undo": "تراجع",
-    "Search": "بحث",
-    "Sort": "ترتيب",
-    "Term": "الفصل",
-    "Status": "الحالة",
-    "Notes": "ملاحظات",
-    "Optional": "اختياري",
-    "optional": "اختياري",
-    "Hide": "إخفاء",
-    "Show": "إظهار",
+    All: "الكل",
+    Day: "يوم",
+    Week: "أسبوع",
+    Month: "شهر",
+    Today: "اليوم",
+    Tomorrow: "غدا",
+    Sun: "الأحد",
+    Mon: "الاثنين",
+    Tue: "الثلاثاء",
+    Wed: "الأربعاء",
+    Thu: "الخميس",
+    Fri: "الجمعة",
+    Sat: "السبت",
+    Cancel: "إلغاء",
+    Delete: "حذف",
+    Save: "حفظ",
+    Close: "إغلاق",
+    Back: "رجوع",
+    Remove: "إزالة",
+    Done: "تم",
+    Open: "فتح",
+    Clear: "مسح",
+    Edit: "تعديل",
+    Undo: "تراجع",
+    "Drag a study session to move it": "اسحب جلسة المذاكرة لنقلها",
+    "Hold a session to drag it": "اضغط مطولا على الجلسة لسحبها",
+    Search: "بحث",
+    Sort: "ترتيب",
+    Term: "الفصل",
+    Status: "الحالة",
+    Notes: "ملاحظات",
+    Optional: "اختياري",
+    optional: "اختياري",
+    Hide: "إخفاء",
+    Show: "إظهار",
     "Show completed": "إظهار المكتملة",
-    "Total": "المجموع",
-    "Grade": "التقدير",
-    "Course": "المقرر",
-    "Courses": "المقررات",
-    "Discard": "تجاهل",
+    Total: "المجموع",
+    Grade: "التقدير",
+    Course: "المقرر",
+    Courses: "المقررات",
+    Discard: "تجاهل",
     "Add a class": "إضافة محاضرة",
     "Add a study session": "إضافة جلسة مذاكرة",
     "Repeats every week during the term": "تتكرر كل أسبوع خلال الفصل",
     "Block time before an exam": "حددي وقتا للمذاكرة قبل الاختبار",
     "Import from EduGate": "استيراد من إديوجيت",
-    "Upload your EduGate class schedule (PDF or screenshots) to add every class at once.": "ارفعي جدولك من إديوجيت (PDF أو صور) لإضافة كل المحاضرات دفعة واحدة.",
+    "Upload your EduGate class schedule (PDF or screenshots) to add every class at once.":
+      "ارفعي جدولك من إديوجيت (PDF أو صور) لإضافة كل المحاضرات دفعة واحدة.",
     "Fully online course": "مقرر عن بعد بالكامل",
     "Paste it now or add it later": "الصقيه الآن أو أضيفيه لاحقا",
     "Your classes": "محاضراتك",
     "Your weekly schedule and absences": "جدولك الأسبوعي وغياباتك",
     "Add class": "إضافة محاضرة",
-    "No classes yet. Add one, or import your whole schedule from EduGate.": "لا توجد محاضرات بعد. أضيفي واحدة أو استوردي جدولك كاملا من إديوجيت.",
+    "No classes yet. Add one, or import your whole schedule from EduGate.":
+      "لا توجد محاضرات بعد. أضيفي واحدة أو استوردي جدولك كاملا من إديوجيت.",
     "No absences": "لا غياب",
     "No room added": "لم تضف قاعة",
-    "Online": "عن بعد",
+    Online: "عن بعد",
     "In person": "حضوري",
-    "Join": "انضمام",
+    Join: "انضمام",
     "Your exams": "اختباراتك",
     "Soonest first, by type": "الأقرب أولا، حسب النوع",
-    "Quizzes": "الاختبارات القصيرة",
-    "Midterms": "الاختبارات النصفية",
-    "Finals": "الاختبارات النهائية",
+    Quizzes: "الاختبارات القصيرة",
+    Midterms: "الاختبارات النصفية",
+    Finals: "الاختبارات النهائية",
     "Add quiz": "إضافة اختبار قصير",
     "Add midterm": "إضافة اختبار نصفي",
     "Add final": "إضافة اختبار نهائي",
     "None coming up": "لا يوجد قادم",
-    "Bonus": "إضافي",
+    Bonus: "إضافي",
     "Bonus Quiz": "اختبار قصير إضافي",
     "Date not set": "لم يحدد التاريخ",
     "Time not set": "لم يحدد الوقت",
@@ -159,7 +175,8 @@
     "New task": "مهمة جديدة",
     "No due date": "بدون موعد",
     "Clear due date": "مسح الموعد",
-    "Quick tasks that don't need a calendar slot": "مهام سريعة لا تحتاج وقتا في التقويم",
+    "Quick tasks that don't need a calendar slot":
+      "مهام سريعة لا تحتاج وقتا في التقويم",
     "All caught up.": "أنجزت كل شيء.",
     "Nothing yet. Add a task above.": "لا شيء بعد. أضيفي مهمة في الأعلى.",
     "Hide To-Do": "إخفاء المهام",
@@ -167,7 +184,8 @@
     "Hide View Focus": "إخفاء تركيز العرض",
     "Show View Focus": "إظهار تركيز العرض",
     "Your Next 7 Days": "الأيام السبعة القادمة",
-    "A focused agenda ranked by urgency and effort": "جدول مركز مرتب حسب الأولوية والجهد",
+    "A focused agenda ranked by urgency and effort":
+      "جدول مركز مرتب حسب الأولوية والجهد",
     "Study plan · next 7 days": "خطة المذاكرة · الأيام السبعة القادمة",
     "Open study plan": "فتح خطة المذاكرة",
     "Plan Due Work": "جدولة الأعمال المستحقة",
@@ -175,11 +193,11 @@
     "Nothing scheduled": "لا شيء مجدول",
     "Today Classes": "محاضرات اليوم",
     "Today Exams": "اختبارات اليوم",
-    "Conflicts": "التعارضات",
+    Conflicts: "التعارضات",
     "Study Sessions": "جلسات المذاكرة",
     "No exam conflicts detected": "لا توجد تعارضات في الاختبارات",
     "Colour events by course": "تلوين الأحداث حسب المقرر",
-    "colours": "الألوان",
+    colours: "الألوان",
     "Urgency colours": "ألوان الأولوية",
     "Your calendar preferences": "تفضيلات التقويم",
     "Keyboard shortcuts": "اختصارات لوحة المفاتيح",
@@ -191,23 +209,24 @@
     "This week": "هذا الأسبوع",
     "This week (Sun–Sat)": "هذا الأسبوع (الأحد–السبت)",
     "That whole week": "ذلك الأسبوع كاملا",
-    "Only": "فقط",
-    "Later": "لاحقا",
-    "Events": "الأحداث",
+    Only: "فقط",
+    Later: "لاحقا",
+    Events: "الأحداث",
     "Assignments, Projects & Presentations": "الواجبات والمشاريع والعروض",
     "Assignment status": "حالة الواجب",
-    "Analytics": "التحليلات",
+    Analytics: "التحليلات",
     "Add Assignment": "إضافة واجب",
-    "Submitted": "مسلم",
-    "Due": "مستحق",
+    Submitted: "مسلم",
+    Due: "مستحق",
     "Due date": "موعد التسليم",
     "Due date (latest first)": "موعد التسليم (الأحدث أولا)",
     "Recently submitted": "المسلمة حديثا",
     "Enable Due Notifications": "تفعيل تنبيهات التسليم",
-    "Turn assignment and exam due notifications on": "تفعيل تنبيهات الواجبات والاختبارات",
+    "Turn assignment and exam due notifications on":
+      "تفعيل تنبيهات الواجبات والاختبارات",
     "Mark Submitted": "تحديد كمسلم",
     "Mark Not Submitted": "إلغاء التسليم",
-    "Reopen": "إعادة فتح",
+    Reopen: "إعادة فتح",
     "Edit Time": "تعديل الوقت",
     "Add Time": "إضافة الوقت",
     "I've Finished My Part": "أنهيت جزئي",
@@ -226,10 +245,10 @@
     "Due soon": "مستحق قريبا",
     "Due this week": "مستحق هذا الأسبوع",
     "Can wait": "يمكن الانتظار",
-    "DUE": "مستحق",
-    "DONE": "تم",
+    DUE: "مستحق",
+    DONE: "تم",
     "MY PART DONE": "أنهيت جزئي",
-    "PRESENTS": "يقدم",
+    PRESENTS: "يقدم",
     "Add Project": "إضافة مشروع",
     "Add Presentation": "إضافة عرض تقديمي",
     "Save Assignment": "حفظ الواجب",
@@ -248,36 +267,41 @@
     "Add Anyway": "إضافة على أي حال",
     "Available from": "متاح من",
     "Due time": "وقت التسليم",
-    "Priority": "الأولوية",
-    "Difficulty": "الصعوبة",
-    "High": "عالية",
-    "Medium": "متوسطة",
-    "medium": "متوسطة",
-    "Low": "منخفضة",
-    "Hard": "صعب",
-    "Easy": "سهل",
+    Priority: "الأولوية",
+    Difficulty: "الصعوبة",
+    High: "عالية",
+    Medium: "متوسطة",
+    medium: "متوسطة",
+    Low: "منخفضة",
+    Hard: "صعب",
+    Easy: "سهل",
     "Estimated hours": "الساعات المقدرة",
-    "Checklist": "قائمة المهام",
+    Checklist: "قائمة المهام",
     "one task per line": "مهمة في كل سطر",
     "Notify me": "نبهيني",
     "Due day": "يوم التسليم",
     "Resource or file link": "رابط المورد أو الملف",
     "Rubric link": "رابط معايير التقييم",
     "Submission link": "رابط التسليم",
-    "Requirements, rubric notes, or anything to remember": "المتطلبات أو ملاحظات التقييم أو أي شيء للتذكر",
-    "Read requirements\nDraft solution\nReview and submit": "قراءة المتطلبات\nكتابة الحل\nالمراجعة والتسليم",
-    "Read requirements Draft solution Review and submit": "قراءة المتطلبات، كتابة الحل، المراجعة والتسليم",
+    "Requirements, rubric notes, or anything to remember":
+      "المتطلبات أو ملاحظات التقييم أو أي شيء للتذكر",
+    "Read requirements\nDraft solution\nReview and submit":
+      "قراءة المتطلبات\nكتابة الحل\nالمراجعة والتسليم",
+    "Read requirements Draft solution Review and submit":
+      "قراءة المتطلبات، كتابة الحل، المراجعة والتسليم",
     "Presentation time limit": "مدة العرض",
     "minutes · optional": "دقائق · اختياري",
-    "Enter the maximum speaking time allowed by your instructor.": "أدخلي أقصى مدة للعرض يسمح بها مدرسك.",
-    "Choose when work opens and the final due date. It will display as a compact work window.": "اختاري موعد بدء العمل وموعد التسليم النهائي.",
+    "Enter the maximum speaking time allowed by your instructor.":
+      "أدخلي أقصى مدة للعرض يسمح بها مدرسك.",
+    "Choose when work opens and the final due date. It will display as a compact work window.":
+      "اختاري موعد بدء العمل وموعد التسليم النهائي.",
     "Assignment title": "عنوان الواجب",
     "Project title": "عنوان المشروع",
     "Presentation title": "عنوان العرض",
     "Event name": "اسم الحدث",
-    "Work": "عمل",
+    Work: "عمل",
     "Add time and location": "إضافة الوقت والموقع",
-    "Meeting": "محاضرة",
+    Meeting: "محاضرة",
     "Meeting link": "رابط المحاضرة",
     "All day": "طوال اليوم",
     "Course code, e.g. SE 322": "رمز المقرر، مثل SE 322",
@@ -285,18 +309,21 @@
     "https://...": "https://...",
     "Quick add: SE322 quiz Tue 10am": "إضافة سريعة: SE322 quiz Tue 10am",
     "Grades & GPA": "الدرجات والمعدل",
-    "Fill in your scores and the rest is worked out for you": "أدخلي درجاتك والباقي يحسب تلقائيا",
+    "Fill in your scores and the rest is worked out for you":
+      "أدخلي درجاتك والباقي يحسب تلقائيا",
     "Semester GPA": "المعدل الفصلي",
     "Cumulative GPA": "المعدل التراكمي",
     "Your goal GPA": "معدلك المستهدف",
-    "Enter a target to see the semester GPA you need.": "أدخلي هدفك لمعرفة المعدل الفصلي المطلوب.",
+    "Enter a target to see the semester GPA you need.":
+      "أدخلي هدفك لمعرفة المعدل الفصلي المطلوب.",
     "How your GPA is worked out": "طريقة حساب معدلك",
-    "Hrs": "الساعات",
-    "Score": "الدرجة",
-    "Points": "النقاط",
+    Hrs: "الساعات",
+    Score: "الدرجة",
+    Points: "النقاط",
     "Manage completed courses": "إدارة المقررات المكتملة",
-    "GPA = points × hours ÷ hours, on PSU's 4.00 scale. Courses without a final letter use their current average, rounded to a whole mark.": "المعدل = النقاط × الساعات ÷ الساعات على مقياس 4.00. المقررات بلا تقدير نهائي تستخدم معدلها الحالي مقربا لأقرب درجة.",
-    "estimated": "تقديري",
+    "GPA = points × hours ÷ hours, on PSU's 4.00 scale. Courses without a final letter use their current average, rounded to a whole mark.":
+      "المعدل = النقاط × الساعات ÷ الساعات على مقياس 4.00. المقررات بلا تقدير نهائي تستخدم معدلها الحالي مقربا لأقرب درجة.",
+    estimated: "تقديري",
     "est.": "تقديري",
     "Set up your record below": "أكملي سجلك بالأسفل",
     "no grades yet": "لا درجات بعد",
@@ -307,15 +334,15 @@
     "Watch closely": "يحتاج متابعة",
     "On track": "على المسار",
     "Average needed on the remaining": "المعدل المطلوب في المتبقي",
-    "earned": "مكتسبة",
-    "lost": "مفقودة",
+    earned: "مكتسبة",
+    lost: "مفقودة",
     "still to come": "متبقية",
-    "Coursework": "أعمال الفصل",
+    Coursework: "أعمال الفصل",
     "Assessments from the": "التقييمات من",
-    "syllabus": "خطة المقرر",
-    "Assessment": "التقييم",
+    syllabus: "خطة المقرر",
+    Assessment: "التقييم",
     "Assessment name": "اسم التقييم",
-    "Weight": "الوزن",
+    Weight: "الوزن",
     "Weight (%)": "الوزن (%)",
     "Out of": "من",
     "Add another assessment": "إضافة تقييم آخر",
@@ -334,57 +361,91 @@
     "Course weight (%)": "وزن التقييم (%)",
     "Add Grade": "إضافة درجة",
     "Grade added": "تمت إضافة الدرجة",
-    "The site doesn't have this course's syllabus yet, so add your assessments below. If you can, please email the syllabus to": "لا تتوفر خطة هذا المقرر في الموقع بعد، لذا أضيفي تقييماتك بالأسفل. إن أمكن، يرجى إرسال الخطة إلى",
+    "The site doesn't have this course's syllabus yet, so add your assessments below. If you can, please email the syllabus to":
+      "لا تتوفر خطة هذا المقرر في الموقع بعد، لذا أضيفي تقييماتك بالأسفل. إن أمكن، يرجى إرسال الخطة إلى",
     "Final Exam": "الاختبار النهائي",
-    "Attendance": "الحضور",
+    Attendance: "الحضور",
     "Course fully graded": "تم تقييم المقرر بالكامل",
     "My plan": "خطتي",
     "What's left": "المتبقي",
-    "Setup": "الإعداد",
+    Setup: "الإعداد",
     "Planning for": "التخطيط لـ",
     "Study plan sections": "أقسام خطة المذاكرة",
     "What to do next": "ما الخطوة التالية",
-    "Your next study sessions and the exams they lead to.": "جلسات مذاكرتك القادمة والاختبارات المرتبطة بها.",
-    "Open an exam to see its chapters, topics and what to memorize.": "افتحي اختبارا لرؤية فصوله ومواضيعه وما يجب حفظه.",
+    "Your next study sessions and the exams they lead to.":
+      "جلسات مذاكرتك القادمة والاختبارات المرتبطة بها.",
+    "Open an exam to see its chapters, topics and what to memorize.":
+      "افتحي اختبارا لرؤية فصوله ومواضيعه وما يجب حفظه.",
     "Everything still ahead": "كل ما تبقى",
-    "Every exam and deadline, in the order to start them.": "كل اختبار وموعد تسليم بترتيب البدء بها.",
+    "Every exam and deadline, in the order to start them.":
+      "كل اختبار وموعد تسليم بترتيب البدء بها.",
     "Set up your plan": "إعداد خطتك",
-    "Three short steps, then the schedule is built for you.": "ثلاث خطوات قصيرة ثم تبنى خطتك تلقائيا.",
+    "Three short steps, then the schedule is built for you.":
+      "ثلاث خطوات قصيرة ثم تبنى خطتك تلقائيا.",
     "Your week": "أسبوعك",
     "Exam formats": "صيغ الاختبارات",
     "Build your plan": "بناء خطتك",
-    "When are you at uni, and when can't you study?": "متى تكونين في الجامعة ومتى لا يمكنك المذاكرة؟",
+    "When are you at uni, and when can't you study?":
+      "متى تكونين في الجامعة ومتى لا يمكنك المذاكرة؟",
     "How will each exam ask?": "كيف ستكون أسئلة كل اختبار؟",
     "Getting to uni": "الذهاب إلى الجامعة",
-    "Set a normal day once. Days you leave off are worked out from your classes.": "حددي يوما عاديا مرة واحدة. الأيام غير المحددة تحسب من محاضراتك.",
+    "Set a normal day once. Days you leave off are worked out from your classes.":
+      "حددي يوما عاديا مرة واحدة. الأيام غير المحددة تحسب من محاضراتك.",
     "Drive each way": "مدة القيادة لكل اتجاه",
-    "minutes": "دقيقة",
+    minutes: "دقيقة",
     "Minutes of driving each way": "دقائق القيادة لكل اتجاه",
     "Leave home": "مغادرة المنزل",
     "Leave uni": "مغادرة الجامعة",
     "Days you go in": "أيام الذهاب",
     "One day is different": "يوم مختلف",
-    "Reset": "إعادة ضبط",
-    "Colors": "الألوان",
+    Reset: "إعادة ضبط",
+    Colors: "الألوان",
+    "There's no practice set for this on the site yet. Cover the worked examples here and do them yourself.":
+      "لا توجد مجموعة تدريب لهذا في الموقع بعد. غطي الأمثلة المحلولة هنا وحليها بنفسك.",
+    "There are no past exams on the site for this course yet. Test yourself across every chapter, under a time limit.":
+      "لا توجد اختبارات سابقة لهذا المقرر في الموقع بعد. اختبري نفسك في كل الفصول بوقت محدد.",
+    Memorize: "حفظ",
+    "Learning lists, formulas and key facts by heart.":
+      "حفظ القوائم والصيغ والحقائق الأساسية.",
+    "Study from: Listing vaults, formula sheets and cheat sheets.":
+      "ذاكري من: قوائم الحفظ وأوراق الصيغ والملخصات.",
+    "Recite from memory, then check.": "سمّعي من الذاكرة، ثم راجعي.",
+    "Cover the answers and recite them from memory, then check. Repeat only what you got wrong.":
+      "غطي الإجابات وسمّعيها من الذاكرة، ثم راجعي. أعيدي ما أخطأتِ فيه فقط.",
+    "Cover the answers and recite them from memory, then check. Repeat only what you missed.":
+      "غطي الإجابات وسمّعيها من الذاكرة، ثم راجعي. أعيدي ما فاتك فقط.",
+    "Doing what the exam asks, without your notes. The tag says which: Solve, Code, Diagrams, Scenarios or Timed exam.":
+      "تنفيذ ما يطلبه الاختبار دون ملاحظاتك. يوضح الوسم النوع: حل، برمجة، رسوم، سيناريوهات، أو اختبار بوقت.",
     "What the colors mean": "ماذا تعني الألوان",
-    "What each kind of study session is for, and where it sends you.": "الغرض من كل نوع من جلسات المذاكرة وإلى أين يأخذك.",
+    "What each kind of study session is for, and where it sends you.":
+      "الغرض من كل نوع من جلسات المذاكرة وإلى أين يأخذك.",
     "New material": "مادة جديدة",
-    "Review": "مراجعة",
-    "Practice": "تدريب",
-    "You're learning this for the first time, so it gets the most time.": "تتعلمين هذا لأول مرة، لذلك يأخذ أكبر وقت.",
-    "Going back over something you've already covered, so it stays with you.": "العودة إلى ما غطيتِه من قبل حتى يثبت.",
-    "Solving problems and answering exam-style questions without your notes.": "حل المسائل والإجابة عن أسئلة بأسلوب الاختبار دون ملاحظاتك.",
-    "Study from: Annotated slides, or the slide breakdown when a chapter's slides are repetitive.": "ذاكري من: الشرائح المشروحة، أو تحليل الشرائح عندما تكون شرائح الفصل مكررة.",
-    "Study from: Mind maps first, then slide breakdowns or notes.": "ذاكري من: الخرائط الذهنية أولا، ثم تحليل الشرائح أو الملاحظات.",
-    "Study from: Chapter quizzes and past exams.": "ذاكري من: اختبارات الفصول والاختبارات السابقة.",
-    "Click any study session to see exactly what to study from. The best page is chosen chapter by chapter: when many of a chapter's slides repeat, it sends you to the slide breakdown instead.": "اضغطي على أي جلسة مذاكرة لتري بالضبط ما تذاكرين منه. تُختار أفضل صفحة لكل فصل على حدة: عندما تتكرر شرائح كثيرة في الفصل، تنتقلين إلى تحليل الشرائح بدلا منها.",
-    "Explain each idea in your own words as you go, then close it and write what you remember.": "اشرحي كل فكرة بكلماتك أثناء الدراسة، ثم أغلقيها واكتبي ما تتذكرينه.",
-    "Test yourself from memory first, then check only what you missed.": "اختبري نفسك من الذاكرة أولا، ثم راجعي ما فاتك فقط.",
-    "Work it out yourself under time pressure, then fix what you got wrong.": "حلي بنفسك مع ضغط الوقت، ثم صححي أخطاءك.",
+    Review: "مراجعة",
+    Practice: "تدريب",
+    "You're learning this for the first time, so it gets the most time.":
+      "تتعلمين هذا لأول مرة، لذلك يأخذ أكبر وقت.",
+    "Going back over something you've already covered, so it stays with you.":
+      "العودة إلى ما غطيتِه من قبل حتى يثبت.",
+    "Solving problems and answering exam-style questions without your notes.":
+      "حل المسائل والإجابة عن أسئلة بأسلوب الاختبار دون ملاحظاتك.",
+    "Study from: Annotated slides, or the slide breakdown when a chapter's slides are repetitive.":
+      "ذاكري من: الشرائح المشروحة، أو تحليل الشرائح عندما تكون شرائح الفصل مكررة.",
+    "Study from: Mind maps first, then slide breakdowns or notes.":
+      "ذاكري من: الخرائط الذهنية أولا، ثم تحليل الشرائح أو الملاحظات.",
+    "Study from: Chapter quizzes and past exams.":
+      "ذاكري من: اختبارات الفصول والاختبارات السابقة.",
+    "Click any study session to see exactly what to study from. The best page is chosen chapter by chapter: when many of a chapter's slides repeat, it sends you to the slide breakdown instead.":
+      "اضغطي على أي جلسة مذاكرة لتري بالضبط ما تذاكرين منه. تُختار أفضل صفحة لكل فصل على حدة: عندما تتكرر شرائح كثيرة في الفصل، تنتقلين إلى تحليل الشرائح بدلا منها.",
+    "Explain each idea in your own words as you go, then close it and write what you remember.":
+      "اشرحي كل فكرة بكلماتك أثناء الدراسة، ثم أغلقيها واكتبي ما تتذكرينه.",
+    "Test yourself from memory first, then check only what you missed.":
+      "اختبري نفسك من الذاكرة أولا، ثم راجعي ما فاتك فقط.",
+    "Work it out yourself under time pressure, then fix what you got wrong.":
+      "حلي بنفسك مع ضغط الوقت، ثم صححي أخطاءك.",
     "Best for this session": "الأفضل لهذه الجلسة",
     "Also available": "متاح أيضا",
     "Focus on": "ركزي على",
-    "Close": "إغلاق",
+    Close: "إغلاق",
     "What to study from": "ماذا أذاكر منه",
     "Annotated slides": "الشرائح المشروحة",
     "Slide breakdown": "تحليل الشرائح",
@@ -392,63 +453,82 @@
     "Chapter quiz": "اختبار الفصل",
     "Lesson notes": "ملاحظات الدرس",
     "Lecture PDF": "ملف المحاضرة",
-    "Slides": "الشرائح",
-    "Each chapter opens whichever page suits it best.": "يفتح كل فصل الصفحة الأنسب له.",
-    "Start with these and test yourself from memory.": "ابدئي بهذه واختبري نفسك من الذاكرة.",
-    "Past exams under timed conditions are the closest thing to the real one.": "الاختبارات السابقة بوقت محدد هي الأقرب إلى الاختبار الحقيقي.",
-    "These lesson notes cover the whole lecture in one place.": "تغطي ملاحظات الدرس هذه المحاضرة كاملة في مكان واحد.",
-    "The annotated slides explain every slide.": "تشرح الشرائح المشروحة كل شريحة.",
-    "The breakdown is the clearest page the site has for this chapter.": "التحليل هو أوضح صفحة في الموقع لهذا الفصل.",
-    "The slides are the only page for this chapter so far.": "الشرائح هي الصفحة الوحيدة لهذا الفصل حتى الآن.",
-    "A mind map shows how the ideas connect, so gaps stand out quickly.": "توضح الخريطة الذهنية ترابط الأفكار، فتظهر الثغرات بسرعة.",
-    "The breakdown is the quickest way back over the key points.": "التحليل هو أسرع طريقة للعودة إلى النقاط الأساسية.",
-    "Go back over the lesson notes from memory first.": "راجعي ملاحظات الدرس من الذاكرة أولا.",
-    "Go back over the slides from memory first.": "راجعي الشرائح من الذاكرة أولا.",
-    "Test yourself with this first, then check what you missed.": "اختبري نفسك بهذا أولا، ثم راجعي ما فاتك.",
-    "There's nothing on the site for this yet. Use your own class notes, and check back once the slides are added.": "لا يوجد شيء لهذا في الموقع بعد. استخدمي ملاحظاتك، وعودي بعد إضافة الشرائح.",
-    " to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven't covered. If you've forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.": " لتغطية نطاق الاختبار المحلل. المواضيع التي لم تغيريها تُحسب جديدة. «درستها سابقا» للمادة التي تعلمتها من قبل وتحتاجين إلى تنشيطها، وتأخذ وقتا أقل من «جديد» أو «غير متأكدة» حتى يذهب معظم وقتك إلى ما لم تغطيه بعد. إذا نسيتِ موضوعا فقيّميه «غير متأكدة» أو «جديد». المواضيع المتقنة تُحسب جاهزة 100%، ويبقى في الجدول وقت لمراجعة قصيرة. هذا تقدير للتخطيط وليس ضمانا للعلامة الكاملة.",
+    Slides: "الشرائح",
+    "Each chapter opens whichever page suits it best.":
+      "يفتح كل فصل الصفحة الأنسب له.",
+    "Start with these and test yourself from memory.":
+      "ابدئي بهذه واختبري نفسك من الذاكرة.",
+    "Past exams under timed conditions are the closest thing to the real one.":
+      "الاختبارات السابقة بوقت محدد هي الأقرب إلى الاختبار الحقيقي.",
+    "These lesson notes cover the whole lecture in one place.":
+      "تغطي ملاحظات الدرس هذه المحاضرة كاملة في مكان واحد.",
+    "The annotated slides explain every slide.":
+      "تشرح الشرائح المشروحة كل شريحة.",
+    "The breakdown is the clearest page the site has for this chapter.":
+      "التحليل هو أوضح صفحة في الموقع لهذا الفصل.",
+    "The slides are the only page for this chapter so far.":
+      "الشرائح هي الصفحة الوحيدة لهذا الفصل حتى الآن.",
+    "A mind map shows how the ideas connect, so gaps stand out quickly.":
+      "توضح الخريطة الذهنية ترابط الأفكار، فتظهر الثغرات بسرعة.",
+    "The breakdown is the quickest way back over the key points.":
+      "التحليل هو أسرع طريقة للعودة إلى النقاط الأساسية.",
+    "Go back over the lesson notes from memory first.":
+      "راجعي ملاحظات الدرس من الذاكرة أولا.",
+    "Go back over the slides from memory first.":
+      "راجعي الشرائح من الذاكرة أولا.",
+    "Test yourself with this first, then check what you missed.":
+      "اختبري نفسك بهذا أولا، ثم راجعي ما فاتك.",
+    "There's nothing on the site for this yet. Use your own class notes, and check back once the slides are added.":
+      "لا يوجد شيء لهذا في الموقع بعد. استخدمي ملاحظاتك، وعودي بعد إضافة الشرائح.",
+    " to cover the analyzed exam scope. Unchanged topics count as New. Previously studied is for material you learned before and need to refresh; it gets less time than New or Shaky, so most of your time goes to what you haven't covered. If you've forgotten a topic, rate it Shaky or New. Solid topics count as 100% ready, and the schedule still reserves a short check. Use this as a planning estimate, not a 40/40 guarantee.":
+      " لتغطية نطاق الاختبار المحلل. المواضيع التي لم تغيريها تُحسب جديدة. «درستها سابقا» للمادة التي تعلمتها من قبل وتحتاجين إلى تنشيطها، وتأخذ وقتا أقل من «جديد» أو «غير متأكدة» حتى يذهب معظم وقتك إلى ما لم تغطيه بعد. إذا نسيتِ موضوعا فقيّميه «غير متأكدة» أو «جديد». المواضيع المتقنة تُحسب جاهزة 100%، ويبقى في الجدول وقت لمراجعة قصيرة. هذا تقدير للتخطيط وليس ضمانا للعلامة الكاملة.",
     "Nothing to reset": "لا يوجد ما يحتاج إلى إعادة ضبط",
     "Uni days reset": "تمت إعادة ضبط أيام الجامعة",
     "Uni days changed": "تم تغيير أيام الجامعة",
     "Uni times changed": "تم تغيير أوقات الجامعة",
     "Drive time changed": "تم تغيير مدة القيادة",
-    "This assumes you stay home that day.": "هذا على افتراض أنك ستبقين في المنزل ذلك اليوم.",
-    "Want to move this up so a later day is lighter?": "هل تريدين تقديم هذه الجلسة لتخفيف يوم لاحق؟",
-    "Want to move these up so later days are lighter?": "هل تريدين تقديم هذه الجلسات لتخفيف الأيام اللاحقة؟",
+    "This assumes you stay home that day.":
+      "هذا على افتراض أنك ستبقين في المنزل ذلك اليوم.",
+    "Want to move this up so a later day is lighter?":
+      "هل تريدين تقديم هذه الجلسة لتخفيف يوم لاحق؟",
+    "Want to move these up so later days are lighter?":
+      "هل تريدين تقديم هذه الجلسات لتخفيف الأيام اللاحقة؟",
     "Move it": "تقديمها",
     "Move them": "تقديمها",
     "Keep my plan": "إبقاء خطتي",
     "Times you can't study": "أوقات لا يمكنك المذاكرة فيها",
-    "Work, gym, family. No study is planned in these.": "عمل، رياضة، عائلة. لن تجدول مذاكرة فيها.",
+    "Work, gym, family. No study is planned in these.":
+      "عمل، رياضة، عائلة. لن تجدول مذاكرة فيها.",
     "Every week": "كل أسبوع",
     "One date only": "تاريخ واحد فقط",
     "How often": "التكرار",
     "How long": "المدة",
     "Which days": "أي الأيام",
-    "Weekdays": "أيام الأسبوع",
+    Weekdays: "أيام الأسبوع",
     "Set times": "تحديد الأوقات",
     "Whole day": "اليوم كاملا",
-    "From": "من",
-    "To": "إلى",
+    From: "من",
+    To: "إلى",
     "What is it?": "ما هو؟",
     "Optional, e.g. Grandma": "اختياري، مثل: زيارة الجدة",
-    "Weekly": "أسبوعي",
-    "Once": "مرة واحدة",
+    Weekly: "أسبوعي",
+    Once: "مرة واحدة",
     "Next: exam formats": "التالي: صيغ الاختبارات",
     "Next: build your plan": "التالي: بناء خطتك",
     "What did your instructor say?": "ماذا قال مدرسك؟",
     "Note what your instructor said.": "دوني ما قاله مدرسك.",
     "Question types": "أنواع الأسئلة",
     "More details (optional)": "تفاصيل أكثر (اختياري)",
-    "Questions": "الأسئلة",
-    "Minutes": "الدقائق",
-    "Book": "الكتاب",
+    Questions: "الأسئلة",
+    Minutes: "الدقائق",
+    Book: "الكتاب",
     "Not said": "لم يحدد",
     "Closed book": "كتاب مغلق",
     "Open book": "كتاب مفتوح",
     "Cheat sheet allowed": "ورقة ملخص مسموحة",
     "What it covers": "ما يشمله",
-    "Topics to focus on or skip (optional)": "مواضيع للتركيز عليها أو تخطيها (اختياري)",
+    "Topics to focus on or skip (optional)":
+      "مواضيع للتركيز عليها أو تخطيها (اختياري)",
     "Save and next": "حفظ والتالي",
     "Save format": "حفظ الصيغة",
     "Update format": "تحديث الصيغة",
@@ -460,24 +540,26 @@
     "Format not set": "الصيغة غير محددة",
     "Exam format": "صيغة الاختبار",
     "Problem solving": "حل المسائل",
-    "Solving": "حل مسائل",
-    "Code": "برمجة",
-    "Diagrams": "رسوم تخطيطية",
+    Solving: "حل مسائل",
+    Code: "برمجة",
+    Diagrams: "رسوم تخطيطية",
     "Multiple choice": "اختيار من متعدد",
-    "MCQ": "اختيار من متعدد",
+    MCQ: "اختيار من متعدد",
     "True / False": "صح / خطأ",
     "T/F": "صح / خطأ",
     "Short answer": "إجابة قصيرة",
     "Explain / essay": "شرح / مقال",
-    "Explain": "شرح",
+    Explain: "شرح",
     "Fill in / match": "إكمال / توصيل",
     "Fill in": "إكمال",
-    "Scenarios": "سيناريوهات",
+    Scenarios: "سيناريوهات",
     "How will the final ask?": "كيف ستكون أسئلة النهائي؟",
     "How will the midterm ask?": "كيف ستكون أسئلة النصفي؟",
     "How will the quiz ask?": "كيف ستكون أسئلة الاختبار القصير؟",
-    "e.g. All problem solving and code, 5 questions, 30 minutes, closed book": "مثال: كلها حل مسائل وبرمجة، 5 أسئلة، 30 دقيقة، كتاب مغلق",
-    "e.g. Focus on Liskov and DIP; no Observer": "مثال: التركيز على Liskov وDIP؛ بدون Observer",
+    "e.g. All problem solving and code, 5 questions, 30 minutes, closed book":
+      "مثال: كلها حل مسائل وبرمجة، 5 أسئلة، 30 دقيقة، كتاب مغلق",
+    "e.g. Focus on Liskov and DIP; no Observer":
+      "مثال: التركيز على Liskov وDIP؛ بدون Observer",
     "Remove this exam format?": "هل تريدين إزالة صيغة هذا الاختبار؟",
     "Earlier versions": "النسخ السابقة",
     "Your plan": "خطتك",
@@ -486,7 +568,8 @@
     "Remove upcoming sessions": "إزالة الجلسات القادمة",
     "Start over": "البدء من جديد",
     "Delete entire study plan": "حذف خطة المذاكرة بالكامل",
-    "Delete every study session and build a fresh plan": "حذف كل الجلسات وبناء خطة جديدة",
+    "Delete every study session and build a fresh plan":
+      "حذف كل الجلسات وبناء خطة جديدة",
     "Go to my plan": "الذهاب إلى خطتي",
     "Go to Exams": "الذهاب إلى الاختبارات",
     "Next up": "التالي",
@@ -497,12 +580,14 @@
     "Set up my plan": "إعداد خطتي",
     "Continue setup": "متابعة الإعداد",
     "Plans changed?": "تغيرت خططك؟",
-    "Not going to something this time? Study then instead, and the next day's study moves up to it.": "لن تذهبي هذه المرة؟ ذاكري بدلا من ذلك وستنتقل مذاكرة اليوم التالي إليه.",
+    "Not going to something this time? Study then instead, and the next day's study moves up to it.":
+      "لن تذهبي هذه المرة؟ ذاكري بدلا من ذلك وستنتقل مذاكرة اليوم التالي إليه.",
     "Study instead": "المذاكرة بدلا من ذلك",
     "Studying instead": "ستذاكرين بدلا من ذلك",
     "All caught up": "أنجزت كل شيء",
-    "Finish Your week and Exam formats first, so the plan fits your real week.": "أكملي أسبوعك وصيغ الاختبارات أولا لتناسب الخطة أسبوعك الفعلي.",
-    "fits": "مناسب",
+    "Finish Your week and Exam formats first, so the plan fits your real week.":
+      "أكملي أسبوعك وصيغ الاختبارات أولا لتناسب الخطة أسبوعك الفعلي.",
+    fits: "مناسب",
     "Next final": "النهائي التالي",
     "Next midterm": "النصفي التالي",
     "Next quiz": "الاختبار القصير التالي",
@@ -520,60 +605,65 @@
     "Quiz done": "انتهى الاختبار القصير",
     "exams left": "اختبارات متبقية",
     "exam left": "اختبار متبق",
-    "deadline": "موعد تسليم",
-    "deadlines": "مواعيد تسليم",
+    deadline: "موعد تسليم",
+    deadlines: "مواعيد تسليم",
     "last one": "الأخير",
     "Focus now": "ركزي الآن",
     "Nothing urgent": "لا شيء عاجل",
     "One thing needs your time right now": "شيء واحد يحتاج وقتك الآن",
     "What to start first": "ما تبدئين به أولا",
-    "In the order to begin them, at about 1.5 h a day for each, with a day spare before each exam.": "بترتيب البدء، بنحو ساعة ونصف يوميا لكل منها، مع يوم احتياطي قبل كل اختبار.",
+    "In the order to begin them, at about 1.5 h a day for each, with a day spare before each exam.":
+      "بترتيب البدء، بنحو ساعة ونصف يوميا لكل منها، مع يوم احتياطي قبل كل اختبار.",
     "Week by week": "أسبوعا بأسبوع",
-    "Study each week asks for if you start on time, next to your free time (9 AM to 10 PM, after classes, work, events and the drive). A week is tight when it needs close to 3 h of study a day.": "المذاكرة المطلوبة كل أسبوع إذا بدأت في الوقت المناسب، مقارنة بوقتك الحر (9 ص إلى 10 م، بعد المحاضرات والعمل والأحداث والقيادة). يكون الأسبوع مزدحما إذا احتاج نحو 3 ساعات مذاكرة يوميا.",
-    "Comfortable": "مريح",
-    "Busy": "مشغول",
-    "Tight": "مزدحم",
-    "Free": "فارغ",
+    "Study each week asks for if you start on time, next to your free time (9 AM to 10 PM, after classes, work, events and the drive). A week is tight when it needs close to 3 h of study a day.":
+      "المذاكرة المطلوبة كل أسبوع إذا بدأت في الوقت المناسب، مقارنة بوقتك الحر (9 ص إلى 10 م، بعد المحاضرات والعمل والأحداث والقيادة). يكون الأسبوع مزدحما إذا احتاج نحو 3 ساعات مذاكرة يوميا.",
+    Comfortable: "مريح",
+    Busy: "مشغول",
+    Tight: "مزدحم",
+    Free: "فارغ",
     "Start now": "ابدئي الآن",
-    "Behind": "متأخر",
+    Behind: "متأخر",
     "No study needed": "لا حاجة للمذاكرة",
     "No slide analysis": "لا يوجد تحليل للشرائح",
     "Working it out...": "جار الحساب...",
     "At a glance": "نظرة سريعة",
-    "Slides": "الشرائح",
-    "Chapters": "الفصول",
+    Slides: "الشرائح",
+    Chapters: "الفصول",
     "Study time": "وقت المذاكرة",
-    "Topics": "المواضيع",
-    "Formulas": "المعادلات",
+    Topics: "المواضيع",
+    Formulas: "المعادلات",
     "Key numbers": "أرقام مهمة",
-    "Lists": "القوائم",
+    Lists: "القوائم",
     "Problem types": "أنواع المسائل",
-    "Comparisons": "المقارنات",
-    "Processes": "العمليات",
+    Comparisons: "المقارنات",
+    Processes: "العمليات",
     "Final weight": "وزن النهائي",
     "What to study": "ما يجب مذاكرته",
-    "Every chapter on this exam, with its slide count and pages. Open one to see its topics.": "كل فصل في هذا الاختبار مع عدد شرائحه وصفحاته. افتحي فصلا لرؤية مواضيعه.",
-    "Every chapter on this exam, with its slide count and pages.": "كل فصل في هذا الاختبار مع عدد شرائحه وصفحاته.",
+    "Every chapter on this exam, with its slide count and pages. Open one to see its topics.":
+      "كل فصل في هذا الاختبار مع عدد شرائحه وصفحاته. افتحي فصلا لرؤية مواضيعه.",
+    "Every chapter on this exam, with its slide count and pages.":
+      "كل فصل في هذا الاختبار مع عدد شرائحه وصفحاته.",
     "course overview": "نظرة عامة على المقرر",
-    "Memorize": "الحفظ",
-    "Drill": "تدريب",
+    Memorize: "الحفظ",
+    Drill: "تدريب",
     "Tap to reveal": "اضغطي للإظهار",
     "Most repeated": "الأكثر تكرارا",
-    "Slides that come back to each topic. The more it repeats, the safer a bet it is.": "الشرائح التي تعود لكل موضوع. كلما تكرر كان احتمال وروده أكبر.",
+    "Slides that come back to each topic. The more it repeats, the safer a bet it is.":
+      "الشرائح التي تعود لكل موضوع. كلما تكرر كان احتمال وروده أكبر.",
     "Must know": "يجب معرفته",
-    "Likely": "محتمل",
-    "Lower": "أقل أهمية",
-    "New": "جديد",
-    "Shaky": "غير متقن",
-    "Solid": "متقن",
-    "Readiness": "الجاهزية",
-    "Concept": "مفهوم",
-    "Formula": "معادلة",
-    "Number": "رقم",
-    "List": "قائمة",
-    "Process": "عملية",
-    "Compare": "مقارنة",
-    "Problem": "مسألة",
+    Likely: "محتمل",
+    Lower: "أقل أهمية",
+    New: "جديد",
+    Shaky: "غير متقن",
+    Solid: "متقن",
+    Readiness: "الجاهزية",
+    Concept: "مفهوم",
+    Formula: "معادلة",
+    Number: "رقم",
+    List: "قائمة",
+    Process: "عملية",
+    Compare: "مقارنة",
+    Problem: "مسألة",
     "How the exam asks": "كيف يسأل الاختبار",
     "Grade weights and resources": "أوزان الدرجات والموارد",
     "Finishing the course safely": "إنهاء المقرر بأمان",
@@ -581,8 +671,8 @@
     "Final exam needed (out of 40)": "المطلوب في النهائي (من 40)",
     "No slide analysis yet": "لا يوجد تحليل للشرائح بعد",
     "Exam season": "موسم الاختبارات",
-    "Tutorials": "التمارين",
-    "Breakdown": "الشرح",
+    Tutorials: "التمارين",
+    Breakdown: "الشرح",
     "Formula sheet (all chapters)": "ورقة المعادلات (كل الفصول)",
     "Past exam": "اختبار سابق",
     "Review slides": "مراجعة الشرائح",
@@ -604,20 +694,23 @@
     "Move this meeting to another date": "نقل هذه المحاضرة إلى تاريخ آخر",
     "Switch to Online": "التحويل إلى عن بعد",
     "Back to In Person": "العودة إلى حضوري",
-    "Reschedule": "إعادة جدولة",
+    Reschedule: "إعادة جدولة",
     "Undo Reschedule": "إلغاء إعادة الجدولة",
     "Add Meeting Link": "إضافة رابط المحاضرة",
     "Remove This Class": "إزالة هذه المحاضرة",
     "Edit Reschedule": "تعديل إعادة الجدولة",
-    "For a week, a single meeting or any dates. Your regular schedule stays the same.": "لأسبوع أو محاضرة واحدة أو أي تواريخ. يبقى جدولك المعتاد كما هو.",
+    "For a week, a single meeting or any dates. Your regular schedule stays the same.":
+      "لأسبوع أو محاضرة واحدة أو أي تواريخ. يبقى جدولك المعتاد كما هو.",
     "Adjusted around exam": "معدلة بسبب اختبار",
     "Paste, update, or leave blank": "الصقي أو حدثي أو اتركي فارغا",
     "Library, home, online": "المكتبة، المنزل، عن بعد",
     "ETHCS303 lecture": "محاضرة ETHCS303",
     "Review weak topics": "مراجعة المواضيع الصعبة",
-    "Room or building for in-person days": "القاعة أو المبنى للمحاضرات الحضورية",
+    "Room or building for in-person days":
+      "القاعة أو المبنى للمحاضرات الحضورية",
     "Listing vault": "الملفات",
-    "No skipped, cancelled, exam-conflict, or excused classes": "لا توجد محاضرات متغيبة أو ملغاة أو متعارضة أو بعذر",
+    "No skipped, cancelled, exam-conflict, or excused classes":
+      "لا توجد محاضرات متغيبة أو ملغاة أو متعارضة أو بعذر",
     "Sign in to save exams": "سجلي الدخول لحفظ الاختبارات",
     "and the final": "والنهائي",
     "Class added": "تمت إضافة المحاضرة",
@@ -629,15 +722,19 @@
     "Study block added": "تمت إضافة جلسة المذاكرة",
     "Study plan deleted": "تم حذف خطة المذاكرة",
     "Calendar exported": "تم تصدير التقويم",
-    "Calendar items cleared. PSU dates stay automatic.": "تم مسح عناصر التقويم. تبقى تواريخ الجامعة تلقائية.",
-    "Could not save. Check your connection and try again.": "تعذر الحفظ. تحققي من الاتصال وحاولي مرة أخرى.",
+    "Calendar items cleared. PSU dates stay automatic.":
+      "تم مسح عناصر التقويم. تبقى تواريخ الجامعة تلقائية.",
+    "Could not save. Check your connection and try again.":
+      "تعذر الحفظ. تحققي من الاتصال وحاولي مرة أخرى.",
     "Could not delete that exam": "تعذر حذف الاختبار",
     "Could not save that exam": "تعذر حفظ الاختبار",
     "Could not load saved calendar": "تعذر تحميل التقويم المحفوظ",
     "Enter a score and what it's out of": "أدخلي الدرجة والدرجة الكاملة",
-    "Give it a name and a weight between 0 and 100": "أدخلي اسما ووزنا بين 0 و100",
+    "Give it a name and a weight between 0 and 100":
+      "أدخلي اسما ووزنا بين 0 و100",
     "End time must be after start time": "يجب أن يكون وقت النهاية بعد البداية",
-    "End date cannot be before start date": "لا يمكن أن يسبق تاريخ النهاية تاريخ البداية",
+    "End date cannot be before start date":
+      "لا يمكن أن يسبق تاريخ النهاية تاريخ البداية",
     "Add a class name and days": "أضيفي اسم المحاضرة والأيام",
     "Add an event title and date": "أضيفي عنوان الحدث وتاريخه",
     "Add a title and date": "أضيفي عنوانا وتاريخا",
@@ -648,32 +745,40 @@
     "Sign in to save your study plan": "سجلي الدخول لحفظ خطة المذاكرة",
     "Exam format saved": "تم حفظ صيغة الاختبار",
     "Exam format updated": "تم تحديث صيغة الاختبار",
-    "Pick at least one question type, or type what your instructor said": "اختاري نوع سؤال واحدا على الأقل أو اكتبي ما قاله مدرسك",
+    "Pick at least one question type, or type what your instructor said":
+      "اختاري نوع سؤال واحدا على الأقل أو اكتبي ما قاله مدرسك",
     "Unavailable time added": "تمت إضافة وقت غير متاح",
     "Score cleared": "تم مسح الدرجة",
     "Assessment deleted": "تم حذف التقييم",
-    "Your part is done. Reminders stopped, and your partners' timing won't count against you.": "تم تسجيل إنهاء جزئك. توقفت التذكيرات ولن يؤثر توقيت زملائك عليك.",
+    "Your part is done. Reminders stopped, and your partners' timing won't count against you.":
+      "تم تسجيل إنهاء جزئك. توقفت التذكيرات ولن يؤثر توقيت زملائك عليك.",
     "Type a task first": "اكتبي مهمة أولا",
     "Due notifications enabled": "تم تفعيل تنبيهات التسليم",
     "Due notifications disabled": "تم إيقاف تنبيهات التسليم",
     "That time is in the future": "هذا الوقت في المستقبل",
     "Start With Your Classes": "ابدئي بمحاضراتك",
-    "Add each class once, or import your whole EduGate schedule. Your absences are tracked here too.": "أضيفي كل محاضرة مرة واحدة أو استوردي جدولك من إديوجيت. تتابع غياباتك هنا أيضا.",
+    "Add each class once, or import your whole EduGate schedule. Your absences are tracked here too.":
+      "أضيفي كل محاضرة مرة واحدة أو استوردي جدولك من إديوجيت. تتابع غياباتك هنا أيضا.",
     "Add Anything From Here": "أضيفي أي شيء من هنا",
-    "Events, assignments, projects, exams, classes and study sessions all start from this one button.": "الأحداث والواجبات والمشاريع والاختبارات والمحاضرات وجلسات المذاكرة كلها من هذا الزر.",
+    "Events, assignments, projects, exams, classes and study sessions all start from this one button.":
+      "الأحداث والواجبات والمشاريع والاختبارات والمحاضرات وجلسات المذاكرة كلها من هذا الزر.",
     "Today at a Glance": "اليوم بنظرة سريعة",
-    "Today’s classes, exams, study sessions and any real conflicts.": "محاضرات اليوم واختباراته وجلسات المذاكرة وأي تعارضات.",
+    "Today’s classes, exams, study sessions and any real conflicts.":
+      "محاضرات اليوم واختباراته وجلسات المذاكرة وأي تعارضات.",
     "Open Any Day": "افتحي أي يوم",
-    "Click a day to see its hours, add something, or change a single class meeting.": "اضغطي على يوم لرؤية ساعاته أو إضافة شيء أو تعديل محاضرة واحدة.",
+    "Click a day to see its hours, add something, or change a single class meeting.":
+      "اضغطي على يوم لرؤية ساعاته أو إضافة شيء أو تعديل محاضرة واحدة.",
     "Everything That’s Due": "كل ما هو مستحق",
     "Your Exams by Type": "اختباراتك حسب النوع",
-    "Quizzes, midterms and finals are listed separately, each with a countdown.": "الاختبارات القصيرة والنصفية والنهائية منفصلة، ولكل منها عد تنازلي.",
+    "Quizzes, midterms and finals are listed separately, each with a countdown.":
+      "الاختبارات القصيرة والنصفية والنهائية منفصلة، ولكل منها عد تنازلي.",
     "A Schedule Built for You": "جدول مبني لك",
     "Just Type Your Scores": "فقط أدخلي درجاتك",
-    "Each course lists its assessments from the syllabus. Fill in your scores to see your GPA and what you still need.": "يعرض كل مقرر تقييماته من الخطة. أدخلي درجاتك لتري معدلك وما تحتاجينه.",
+    "Each course lists its assessments from the syllabus. Fill in your scores to see your GPA and what you still need.":
+      "يعرض كل مقرر تقييماته من الخطة. أدخلي درجاتك لتري معدلك وما تحتاجينه.",
     "Next →": "التالي ←",
     "Done ✓": "تم",
-    "Skip": "تخطي",
+    Skip: "تخطي",
   };
 
   var DAYS = {
@@ -700,141 +805,890 @@
     Dec: "ديسمبر",
   };
   var PATTERNS = [
-    [/^(\d+) of (\d+) slides repeat earlier ones, so the breakdown is the faster read\.$/, function (a, b) { return "تكرر " + a + " من " + b + " شريحة ما سبقها، لذلك التحليل أسرع للقراءة."; }],
-    [/^(\d+) of (\d+) slides repeat earlier ones\. There's no breakdown for this chapter, so skim the repeats\.$/, function (a, b) { return "تكرر " + a + " من " + b + " شريحة ما سبقها. لا يوجد تحليل لهذا الفصل، فمري سريعا على المكرر."; }],
-    [/^Only (\d+) of (\d+) slides repeat, so the annotated slides explain each one without wasting your time\.$/, function (a, b) { return "لا يتكرر سوى " + a + " من " + b + " شريحة، لذلك تشرح الشرائح المشروحة كل واحدة دون إضاعة وقتك."; }],
-    [/^(Annotated slides|Slide breakdown|Mind map) · (.+)$/, function (a, b) { return translate(a) + " · " + b; }],
-    [/^Estimated minimum: (.+)$/, function (h) { return "الحد الأدنى المقدر: " + translate(h); }],
-    [/^(Most|Less than half) of this plan fits\. About (.+) of study is still unscheduled before the exams at your (\d+) h\/day( and (\d+) h\/week)? limits\. Increase either limit to see whether the remaining work fits, or mark chapters you already know as Solid\.$/, function (m, h, d, w, wk) { return (m === "Most" ? "معظم هذه الخطة يتسع. " : "أقل من نصف هذه الخطة يتسع. ") + "يبقى نحو " + translate(h) + " من المذاكرة دون جدولة قبل الاختبارات بحدودك: " + d + " ساعات في اليوم" + (w ? " و" + wk + " ساعة في الأسبوع" : "") + ". زيدي أحد الحدين لتري هل يتسع الباقي، أو حددي الفصول التي تعرفينها على أنها متقنة."; }],
-    [/^You have free time on (\d+) days$/, function (n) { return "لديك وقت فراغ في " + n + " أيام"; }],
-    [/^You have free time on (.+)$/, function (a) { return "لديك وقت فراغ يوم " + translate(a); }],
-    [/^(.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) is cancelled\.$/, function (c, d) { return "أُلغي " + c + " يوم " + translate(d) + "."; }],
-    [/^You're skipping (.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+)\.$/, function (c, d) { return "ستتغيبين عن " + c + " يوم " + translate(d) + "."; }],
-    [/^(.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) moved online\.$/, function (c, d) { return "أصبح " + c + " عن بعد يوم " + translate(d) + "."; }],
-    [/^From ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) to ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+)$/, function (a, b) { return "من " + translate(a) + " إلى " + translate(b); }],
-    [/^(\d+) study sessions? moved up$/, function (n) { return "تم تقديم " + n + " جلسات"; }],
-    [/^(.+) · study plan updated(, but not everything fits before the exam)?$/, function (w, s) { return translate(w) + " · تم تحديث خطة المذاكرة" + (s ? "، لكن لا يتسع الوقت لكل شيء قبل الاختبار" : ""); }],
-    [/^· (.+)$/, function (a) { return "· " + translate(a); }],
-    [/^\+(\d+) more$/, function (n) { return "+" + n + " أخرى"; }],
-    [/^(\d+) open$/, function (n) { return n + " مفتوحة"; }],
-    [/^(\d+) done$/, function (n) { return n + " مكتملة"; }],
-    [/^(\d+) overdue$/, function (n) { return n + " متأخرة"; }],
-    [/^(\d+) study sessions? this week$/, function (n) { return n + " جلسات مذاكرة هذا الأسبوع"; }],
-    [/^Show all (\d+) sessions this week$/, function (n) { return "إظهار كل الجلسات (" + n + ") هذا الأسبوع"; }],
-    [/^(\d+)% ready$/, function (n) { return "جاهزية " + n + "%"; }],
-    [/^(\d+) slides?$/, function (n) { return n + " شريحة"; }],
-    [/^(\d+) decks?$/, function (n) { return n + " ملف"; }],
-    [/^(\d+) topics?$/, function (n) { return n + " موضوع"; }],
-    [/^(\d+) practice$/, function (n) { return n + " تدريب"; }],
-    [/^(\d+) days?$/, function (n) { return n + " يوم"; }],
-    [/^(\d+) items?$/, function (n) { return n + " عنصر"; }],
-    [/^(\d+) hours?$/, function (n) { return n + " ساعات"; }],
-    [/^([\d.]+) h$/, function (n) { return n + " ساعة"; }],
-    [/^([\d.]+) min$/, function (n) { return n + " دقيقة"; }],
-    [/^([\d.]+) h left$/, function (n) { return "متبقي " + n + " ساعة"; }],
-    [/^([\d.]+) h to go$/, function (n) { return "متبقي " + n + " ساعة"; }],
-    [/^([\d.]+) h to study$/, function (n) { return n + " ساعة مذاكرة"; }],
-    [/^([\d.]+) h of work$/, function (n) { return n + " ساعة عمل"; }],
-    [/^([\d.]+) h free$/, function (n) { return n + " ساعة حرة"; }],
-    [/^([\d.]+) h a day$/, function (n) { return n + " ساعة يوميا"; }],
-    [/^(.+) a day$/, function (a) { return translate(a) + " يوميا"; }],
-    [/^Covers: (.+)$/, function (a) { return "يشمل: " + a.replace(/\bCh /g, "الفصل ").replace(/\bLecture /g, "المحاضرة "); }],
-    [/^(\d+) waiting on group$/, function (n) { return n + " بانتظار المجموعة"; }],
-    [/^(Submitted|My part done|Group submitted) (.+)$/, function (a, b) { return phrase(a === "Submitted" ? "Submitted" : a) + " " + translate(b); }],
-    [/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2}), (.+)$/, function (m, d, t) { return d + " " + MONTHS[m] + "، " + translate(t); }],
-    [/^(.+) (early|late)$/, function (a, b) { return a + (b === "early" ? " مبكرا" : " متأخرا"); }],
-    [/^([\d.]+) h of study$/, function (n) { return n + " ساعة مذاكرة"; }],
-    [/^Step (\d+) of (\d+)$/, function (a, b) { return "الخطوة " + a + " من " + b; }],
-    [/^Walkthrough (\d+) \/ (\d+)$/, function (a, b) { return "الجولة " + a + " / " + b; }],
-    [/^about (.+)$/i, function (a) { return "حوالي " + translate(a); }],
-    [/^About ([\d.]+) h of study$/, function (n) { return "حوالي " + n + " ساعة مذاكرة"; }],
-    [/^(.+)\. Starting the next exam a few days early would spread this out\.$/, function (a) { return translate(a) + ". البدء مبكرا بأيام يخفف هذا الضغط."; }],
-    [/^([\d.]+) h planned before (.+)$/, function (n, a) { return n + " ساعة مخططة قبل " + translate(a); }],
-    [/^(\d+)% of the grade$/, function (n) { return n + "% من الدرجة"; }],
-    [/^(\d+) due$/, function (n) { return n + " مستحق"; }],
-    [/^(\d+) submitted$/, function (n) { return n + " مسلم"; }],
-    [/^(\d+)% on time$/, function (n) { return n + "% في الوقت"; }],
-    [/^(\d+) exams? still to go$/, function (n) { return "متبقي " + n + " اختبار"; }],
-    [/^(\d+) steps? left$/, function (n) { return "متبقي " + n + " خطوات"; }],
-    [/^(\d+) upcoming exams?$/, function (n) { return n + " اختبارات قادمة"; }],
-    [/^(\d+) saved items?$/, function (n) { return n + " عناصر محفوظة"; }],
-    [/^PSU dates automatic$/, function () { return "تواريخ الجامعة تلقائية"; }],
-    [/^(\d+) sessions? on your calendar$/, function (n) { return n + " جلسات في تقويمك"; }],
-    [/^(\d+) study sessions? added to your calendar$/, function (n) { return "تمت إضافة " + n + " جلسات إلى تقويمك"; }],
-    [/^(\d+) study sessions? moved around your calendar$/, function (n) { return "تم نقل " + n + " جلسات حول تقويمك"; }],
-    [/^Add (\d+) sessions? to calendar$/, function (n) { return "إضافة " + n + " جلسات إلى التقويم"; }],
-    [/^And (\d+) more on your calendar\.$/, function (n) { return "و" + n + " أخرى في تقويمك."; }],
-    [/^(\d+) hours? through this term$/, function (n) { return n + " ساعات حتى هذا الفصل"; }],
-    [/^(\d+) hours?$/, function (n) { return n + " ساعات"; }],
-    [/^(\d+) things need your time right now$/, function (n) { return n + " أمور تحتاج وقتك الآن"; }],
-    [/^([\d.]+) more of the (\d+) left$/, function (a, b) { return a + " إضافية من أصل " + b + " متبقية"; }],
-    [/^(\d+)h estimate$/, function (n) { return "تقدير " + n + " ساعات"; }],
-    [/^(\d+) cards\. Say each one out loud, then tap to check\.$/, function (n) { return n + " بطاقة. قوليها بصوت عال ثم اضغطي للتحقق."; }],
-    [/^(\d+) items, word for word\.$/, function (n) { return n + " عنصر، حرفيا."; }],
-    [/^([\d.]+) marks earned, ([\d.]+) lost, ([\d.]+) still to come$/, function (a, b, c) { return a + " مكتسبة، " + b + " مفقودة، " + c + " متبقية"; }],
-    [/^Busiest day needs ([\d.]+) h of study\.$/, function (n) { return "أكثر يوم ازدحاما يحتاج " + n + " ساعة مذاكرة."; }],
-    [/^Average needed on the remaining ([\d.]+)%$/, function (n) { return "المعدل المطلوب في الـ" + n + "% المتبقية"; }],
-    [/^Breakdown: (.+)$/, function (a) { return "شرح: " + a; }],
-    [/^Slides part (\d+)$/, function (n) { return "الشرائح جزء " + n; }],
-    [/^Slides with notes$/, function () { return "شرائح مع ملاحظات"; }],
-    [/^Lecture (\d+)$/, function (n) { return "المحاضرة " + n; }],
-    [/^Ch ([\d.]+)$/, function (n) { return "الفصل " + n; }],
-    [/^Quiz (\d+)$/, function (n) { return "اختبار قصير " + n; }],
-    [/^([A-Z]{2,7} ?\d{3}[A-Z]?) (Final|FINAL)$/, function (c) { return c + " نهائي"; }],
-    [/^([A-Z]{2,7} ?\d{3}[A-Z]?) (Midterm|MIDTERM)$/, function (c) { return c + " نصفي"; }],
-    [/^([A-Z]{2,7} ?\d{3}[A-Z]?) (Quiz|QUIZ)$/, function (c) { return c + " قصير"; }],
-    [/^Coursework (\d+)% *$/, function (n) { return "أعمال الفصل " + n + "%"; }],
-    [/^Final (\d+)%$/, function (n) { return "النهائي " + n + "%"; }],
-    [/^Coursework weights add up to ([\d.]+)%, expected ([\d.]+)%$/, function (a, b) { return "مجموع أوزان أعمال الفصل " + a + "% والمتوقع " + b + "%"; }],
-    [/^Course settings$/, function () { return "إعدادات المقرر"; }],
-    [/^final worth ([\d.]+)%$/, function (n) { return "النهائي " + n + "%"; }],
-    [/^Show (\d+) hidden syllabus items?$/, function (n) { return "إظهار " + n + " عناصر مخفية"; }],
-    [/^(Show|Hide) uncounted assessments?$/, function (a) { return (a === "Show" ? "إظهار" : "إخفاء") + " التقييمات غير المحسوبة"; }],
-    [/^Quiz (\d+) is optional\. You have full marks on (.+), and only the best (\w+) count\.$/, function (n, a) { return "الاختبار " + n + " اختياري. حصلت على الدرجة الكاملة في " + a.replace(/ and /g, " و") + "، ويحسب الأفضلان فقط."; }],
-    [/^Quiz (\d+) isn't counted\. Only your best (\w+) count, and it's your lowest\.$/, function (n) { return "الاختبار " + n + " غير محسوب لأنه الأقل، ويحسب الأفضلان فقط."; }],
-    [/^from the ([\d.]+) coursework points graded, with ([\d.]+) still to come\. Best grade still possible:$/, function (a, b) { return "من " + a + " درجة مقيمة من أعمال الفصل، ومتبقي " + b + ". أفضل تقدير ممكن:"; }],
-    [/^(First|Second) Semester (\d{4})$/, function (a, y) { return (a === "First" ? "الفصل الأول " : "الفصل الثاني ") + y; }],
-    [/^Summer (\d{4})$/, function (y) { return "الصيف " + y; }],
-    [/^(\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})$/, function (a, b) { return a + " إلى " + b; }],
-    [/^For the (\w+): every chapter\.$/, function () { return "يشمل كل الفصول."; }],
-    [/^For (.+): (.+) \((\d+) of (\d+) chapters\)\.$/, function (a, b, c, d) { return a + ": " + c + " من " + d + " فصول."; }],
-    [/^covers every chapter, from the$/, function () { return "يشمل كل الفصول، بحسب"; }],
-    [/^covers (\d+) of (\d+) chapters, from the$/, function (a, b) { return "يشمل " + a + " من " + b + " فصول، بحسب"; }],
-    [/^Covers (\d+) of (\d+) chapters$/, function (a, b) { return "يشمل " + a + " من " + b + " فصول"; }],
-    [/^Finished exams \((\d+)\)$/, function (n) { return "الاختبارات المنتهية (" + n + ")"; }],
-    [/^Your other events \((\d+)\)$/, function (n) { return "أحداثك الأخرى (" + n + ")"; }],
-    [/^Show completed \((\d+)\)$/, function (n) { return "إظهار المكتملة (" + n + ")"; }],
-    [/^Hide completed \((\d+)\)$/, function (n) { return "إخفاء المكتملة (" + n + ")"; }],
-    [/^In (\d+) days$/, function (n) { return "بعد " + n + " يوم"; }],
-    [/^in (\d+) days?$/, function (n) { return "بعد " + n + " يوم"; }],
-    [/^(\d+) of (\d+) set$/, function (a, b) { return a + " من " + b; }],
-    [/^(\d+) of (\d+) solid$/, function (a, b) { return a + " من " + b + " متقن"; }],
-    [/^(\d+) exams? without a format\. Set them$/, function (n) { return n + " اختبارات بلا صيغة. حدديها"; }],
-    [/^Due (.+)$/, function (a) { return "التسليم " + translate(a); }],
-    [/^due (.+)$/, function (a) { return "التسليم " + translate(a); }],
-    [/^Start by (.+)$/, function (a) { return "ابدئي بحلول " + translate(a); }],
-    [/^Available (.+)$/, function (a) { return "متاح " + translate(a); }],
-    [/^(\d+) days to complete$/, function (n) { return n + " أيام للإنجاز"; }],
-    [/^(\d+)-day work window$/, function (n) { return "مدة العمل " + n + " أيام"; }],
-    [/^Leave home (.+)$/, function (a) { return "مغادرة المنزل " + translate(a); }],
-    [/^leave uni (.+)$/, function (a) { return "مغادرة الجامعة " + translate(a); }],
-    [/^home (.+)$/, function (a) { return "الوصول للمنزل " + translate(a); }],
-    [/^(Today|Tomorrow), (.+)$/, function (a, b) { return translate(a) + "، " + translate(b); }],
-    [/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})$/, function (m, d) { return d + " " + MONTHS[m]; }],
-    [/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/, function (m, y) { return LONG_MONTHS[m] + " " + y; }],
-    [/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) - (January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2}), (\d{4})$/, function (w, m, d, y) { return DAYS[w.slice(0, 3)] + " - " + d + " " + LONG_MONTHS[m] + " " + y; }],
-    [/^(sunday|monday|tuesday|wednesday|thursday|friday|saturday) leave (home|uni)$/, function (w, a) { return DAYS[w.charAt(0).toUpperCase() + w.slice(1, 3)] + (a === "home" ? " مغادرة المنزل" : " مغادرة الجامعة"); }],
-    [/^(Mark done: |Mark )(.+?)( done)?$/, function (a, b) { return "تحديد الإنجاز: " + translate(b); }],
-    [/^(Show|Hide) topics in (.+)$/, function (a, b) { return (a === "Show" ? "إظهار" : "إخفاء") + " مواضيع " + b; }],
-    [/^Show ([A-Z]{2,7} ?\d{3}[A-Z]?)$/, function (c) { return "إظهار " + c; }],
-    [/^Reorder (.+)\. Drag, or use the up and down arrow keys\.$/, function (a) { return "إعادة ترتيب " + translate(a) + ". اسحبي أو استخدمي أسهم لوحة المفاتيح."; }],
-    [/^Set from the course overview \((.+)\)\. Change it only if your instructor changed what's on the (\w+)\.$/, function (a) { return "محدد من نظرة المقرر (" + a + "). غيريه فقط إذا غير مدرسك ما يشمله الاختبار."; }],
-    [/^Starts on (\S+)\. Set an end date to make a connected range\.$/, function (a) { return "يبدأ في " + a + ". حددي تاريخ نهاية لجعله نطاقا متصلا."; }],
-    [/^This uses the final-exam analysis, limited to the chapters this (\w+) covers on the course overview\.$/, function () { return "يستخدم هذا تحليل الاختبار النهائي، محددا بفصول هذا الاختبار في نظرة المقرر."; }],
-    [/^Builds learn sessions chapter by chapter, .*$/, function () { return "يبني جلسات تعلم لكل فصل، ومراجعة بعد ثلاثة أيام، ومراجعة نهائية قبل كل اختبار بيوم، في وقتك الحر بين 9 ص و10 م حول المحاضرات والاختبارات والأحداث والقيادة."; }],
-    [/^Both columns assume the same average .*$/, function () { return "يفترض العمودان نفس المعدل في كل ما تبقى. إذا أديت أفضل في أحدهما احتجت أقل في الآخر."; }],
-    [/^Overdue by (\d+) days?$/, function (n) { return "متأخر " + n + " يوم"; }],
-    [/^(\d+) days? late$/, function (n) { return "متأخر " + n + " يوم"; }],
+    [
+      /^Practice · (Solve|Code|Diagrams|Scenarios|Timed exam)$/,
+      function (k) {
+        return (
+          "تدريب · " +
+          {
+            Solve: "حل",
+            Code: "برمجة",
+            Diagrams: "رسوم",
+            Scenarios: "سيناريوهات",
+            "Timed exam": "اختبار بوقت",
+          }[k]
+        );
+      },
+    ],
+    [
+      /^(\d+) of (\d+) slides repeat earlier ones, so the breakdown is the faster read\.$/,
+      function (a, b) {
+        return (
+          "تكرر " +
+          a +
+          " من " +
+          b +
+          " شريحة ما سبقها، لذلك التحليل أسرع للقراءة."
+        );
+      },
+    ],
+    [
+      /^(\d+) of (\d+) slides repeat earlier ones\. There's no breakdown for this chapter, so skim the repeats\.$/,
+      function (a, b) {
+        return (
+          "تكرر " +
+          a +
+          " من " +
+          b +
+          " شريحة ما سبقها. لا يوجد تحليل لهذا الفصل، فمري سريعا على المكرر."
+        );
+      },
+    ],
+    [
+      /^Only (\d+) of (\d+) slides repeat, so the annotated slides explain each one without wasting your time\.$/,
+      function (a, b) {
+        return (
+          "لا يتكرر سوى " +
+          a +
+          " من " +
+          b +
+          " شريحة، لذلك تشرح الشرائح المشروحة كل واحدة دون إضاعة وقتك."
+        );
+      },
+    ],
+    [
+      /^(Annotated slides|Slide breakdown|Mind map) · (.+)$/,
+      function (a, b) {
+        return translate(a) + " · " + b;
+      },
+    ],
+    [
+      /^Estimated minimum: (.+)$/,
+      function (h) {
+        return "الحد الأدنى المقدر: " + translate(h);
+      },
+    ],
+    [
+      /^(Most|Less than half) of this plan fits\. About (.+) of study is still unscheduled before the exams at your (\d+) h\/day( and (\d+) h\/week)? limits\. Increase either limit to see whether the remaining work fits, or mark chapters you already know as Solid\.$/,
+      function (m, h, d, w, wk) {
+        return (
+          (m === "Most"
+            ? "معظم هذه الخطة يتسع. "
+            : "أقل من نصف هذه الخطة يتسع. ") +
+          "يبقى نحو " +
+          translate(h) +
+          " من المذاكرة دون جدولة قبل الاختبارات بحدودك: " +
+          d +
+          " ساعات في اليوم" +
+          (w ? " و" + wk + " ساعة في الأسبوع" : "") +
+          ". زيدي أحد الحدين لتري هل يتسع الباقي، أو حددي الفصول التي تعرفينها على أنها متقنة."
+        );
+      },
+    ],
+    [
+      /^You have free time on (\d+) days$/,
+      function (n) {
+        return "لديك وقت فراغ في " + n + " أيام";
+      },
+    ],
+    [
+      /^You have free time on (.+)$/,
+      function (a) {
+        return "لديك وقت فراغ يوم " + translate(a);
+      },
+    ],
+    [
+      /^(.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) is cancelled\.$/,
+      function (c, d) {
+        return "أُلغي " + c + " يوم " + translate(d) + ".";
+      },
+    ],
+    [
+      /^You're skipping (.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+)\.$/,
+      function (c, d) {
+        return "ستتغيبين عن " + c + " يوم " + translate(d) + ".";
+      },
+    ],
+    [
+      /^(.+) on ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) moved online\.$/,
+      function (c, d) {
+        return "أصبح " + c + " عن بعد يوم " + translate(d) + ".";
+      },
+    ],
+    [
+      /^From ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+) to ((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), .+)$/,
+      function (a, b) {
+        return "من " + translate(a) + " إلى " + translate(b);
+      },
+    ],
+    [
+      /^(\d+) study sessions? moved up$/,
+      function (n) {
+        return "تم تقديم " + n + " جلسات";
+      },
+    ],
+    [
+      /^(.+) · study plan updated(, but not everything fits before the exam)?$/,
+      function (w, s) {
+        return (
+          translate(w) +
+          " · تم تحديث خطة المذاكرة" +
+          (s ? "، لكن لا يتسع الوقت لكل شيء قبل الاختبار" : "")
+        );
+      },
+    ],
+    [
+      /^· (.+)$/,
+      function (a) {
+        return "· " + translate(a);
+      },
+    ],
+    [
+      /^\+(\d+) more$/,
+      function (n) {
+        return "+" + n + " أخرى";
+      },
+    ],
+    [
+      /^(\d+) open$/,
+      function (n) {
+        return n + " مفتوحة";
+      },
+    ],
+    [
+      /^(\d+) done$/,
+      function (n) {
+        return n + " مكتملة";
+      },
+    ],
+    [
+      /^(\d+) overdue$/,
+      function (n) {
+        return n + " متأخرة";
+      },
+    ],
+    [
+      /^(\d+) study sessions? this week$/,
+      function (n) {
+        return n + " جلسات مذاكرة هذا الأسبوع";
+      },
+    ],
+    [
+      /^Show all (\d+) sessions this week$/,
+      function (n) {
+        return "إظهار كل الجلسات (" + n + ") هذا الأسبوع";
+      },
+    ],
+    [
+      /^(\d+)% ready$/,
+      function (n) {
+        return "جاهزية " + n + "%";
+      },
+    ],
+    [
+      /^(\d+) slides?$/,
+      function (n) {
+        return n + " شريحة";
+      },
+    ],
+    [
+      /^(\d+) decks?$/,
+      function (n) {
+        return n + " ملف";
+      },
+    ],
+    [
+      /^(\d+) topics?$/,
+      function (n) {
+        return n + " موضوع";
+      },
+    ],
+    [
+      /^(\d+) practice$/,
+      function (n) {
+        return n + " تدريب";
+      },
+    ],
+    [
+      /^(\d+) days?$/,
+      function (n) {
+        return n + " يوم";
+      },
+    ],
+    [
+      /^(\d+) items?$/,
+      function (n) {
+        return n + " عنصر";
+      },
+    ],
+    [
+      /^(\d+) hours?$/,
+      function (n) {
+        return n + " ساعات";
+      },
+    ],
+    [
+      /^([\d.]+) h$/,
+      function (n) {
+        return n + " ساعة";
+      },
+    ],
+    [
+      /^([\d.]+) min$/,
+      function (n) {
+        return n + " دقيقة";
+      },
+    ],
+    [
+      /^([\d.]+) h left$/,
+      function (n) {
+        return "متبقي " + n + " ساعة";
+      },
+    ],
+    [
+      /^([\d.]+) h to go$/,
+      function (n) {
+        return "متبقي " + n + " ساعة";
+      },
+    ],
+    [
+      /^([\d.]+) h to study$/,
+      function (n) {
+        return n + " ساعة مذاكرة";
+      },
+    ],
+    [
+      /^([\d.]+) h of work$/,
+      function (n) {
+        return n + " ساعة عمل";
+      },
+    ],
+    [
+      /^([\d.]+) h free$/,
+      function (n) {
+        return n + " ساعة حرة";
+      },
+    ],
+    [
+      /^([\d.]+) h a day$/,
+      function (n) {
+        return n + " ساعة يوميا";
+      },
+    ],
+    [
+      /^(.+) a day$/,
+      function (a) {
+        return translate(a) + " يوميا";
+      },
+    ],
+    [
+      /^Covers: (.+)$/,
+      function (a) {
+        return (
+          "يشمل: " +
+          a.replace(/\bCh /g, "الفصل ").replace(/\bLecture /g, "المحاضرة ")
+        );
+      },
+    ],
+    [
+      /^(\d+) waiting on group$/,
+      function (n) {
+        return n + " بانتظار المجموعة";
+      },
+    ],
+    [
+      /^(Submitted|My part done|Group submitted) (.+)$/,
+      function (a, b) {
+        return phrase(a === "Submitted" ? "Submitted" : a) + " " + translate(b);
+      },
+    ],
+    [
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2}), (.+)$/,
+      function (m, d, t) {
+        return d + " " + MONTHS[m] + "، " + translate(t);
+      },
+    ],
+    [
+      /^(.+) (early|late)$/,
+      function (a, b) {
+        return a + (b === "early" ? " مبكرا" : " متأخرا");
+      },
+    ],
+    [
+      /^([\d.]+) h of study$/,
+      function (n) {
+        return n + " ساعة مذاكرة";
+      },
+    ],
+    [
+      /^Step (\d+) of (\d+)$/,
+      function (a, b) {
+        return "الخطوة " + a + " من " + b;
+      },
+    ],
+    [
+      /^Walkthrough (\d+) \/ (\d+)$/,
+      function (a, b) {
+        return "الجولة " + a + " / " + b;
+      },
+    ],
+    [
+      /^about (.+)$/i,
+      function (a) {
+        return "حوالي " + translate(a);
+      },
+    ],
+    [
+      /^About ([\d.]+) h of study$/,
+      function (n) {
+        return "حوالي " + n + " ساعة مذاكرة";
+      },
+    ],
+    [
+      /^(.+)\. Starting the next exam a few days early would spread this out\.$/,
+      function (a) {
+        return translate(a) + ". البدء مبكرا بأيام يخفف هذا الضغط.";
+      },
+    ],
+    [
+      /^([\d.]+) h planned before (.+)$/,
+      function (n, a) {
+        return n + " ساعة مخططة قبل " + translate(a);
+      },
+    ],
+    [
+      /^(\d+)% of the grade$/,
+      function (n) {
+        return n + "% من الدرجة";
+      },
+    ],
+    [
+      /^(\d+) due$/,
+      function (n) {
+        return n + " مستحق";
+      },
+    ],
+    [
+      /^(\d+) submitted$/,
+      function (n) {
+        return n + " مسلم";
+      },
+    ],
+    [
+      /^(\d+)% on time$/,
+      function (n) {
+        return n + "% في الوقت";
+      },
+    ],
+    [
+      /^(\d+) exams? still to go$/,
+      function (n) {
+        return "متبقي " + n + " اختبار";
+      },
+    ],
+    [
+      /^(\d+) steps? left$/,
+      function (n) {
+        return "متبقي " + n + " خطوات";
+      },
+    ],
+    [
+      /^(\d+) upcoming exams?$/,
+      function (n) {
+        return n + " اختبارات قادمة";
+      },
+    ],
+    [
+      /^(\d+) saved items?$/,
+      function (n) {
+        return n + " عناصر محفوظة";
+      },
+    ],
+    [
+      /^PSU dates automatic$/,
+      function () {
+        return "تواريخ الجامعة تلقائية";
+      },
+    ],
+    [
+      /^(\d+) sessions? on your calendar$/,
+      function (n) {
+        return n + " جلسات في تقويمك";
+      },
+    ],
+    [
+      /^(\d+) study sessions? added to your calendar$/,
+      function (n) {
+        return "تمت إضافة " + n + " جلسات إلى تقويمك";
+      },
+    ],
+    [
+      /^(\d+) study sessions? moved around your calendar$/,
+      function (n) {
+        return "تم نقل " + n + " جلسات حول تقويمك";
+      },
+    ],
+    [
+      /^Add (\d+) sessions? to calendar$/,
+      function (n) {
+        return "إضافة " + n + " جلسات إلى التقويم";
+      },
+    ],
+    [
+      /^And (\d+) more on your calendar\.$/,
+      function (n) {
+        return "و" + n + " أخرى في تقويمك.";
+      },
+    ],
+    [
+      /^(\d+) hours? through this term$/,
+      function (n) {
+        return n + " ساعات حتى هذا الفصل";
+      },
+    ],
+    [
+      /^(\d+) hours?$/,
+      function (n) {
+        return n + " ساعات";
+      },
+    ],
+    [
+      /^(\d+) things need your time right now$/,
+      function (n) {
+        return n + " أمور تحتاج وقتك الآن";
+      },
+    ],
+    [
+      /^([\d.]+) more of the (\d+) left$/,
+      function (a, b) {
+        return a + " إضافية من أصل " + b + " متبقية";
+      },
+    ],
+    [
+      /^(\d+)h estimate$/,
+      function (n) {
+        return "تقدير " + n + " ساعات";
+      },
+    ],
+    [
+      /^(\d+) cards\. Say each one out loud, then tap to check\.$/,
+      function (n) {
+        return n + " بطاقة. قوليها بصوت عال ثم اضغطي للتحقق.";
+      },
+    ],
+    [
+      /^(\d+) items, word for word\.$/,
+      function (n) {
+        return n + " عنصر، حرفيا.";
+      },
+    ],
+    [
+      /^([\d.]+) marks earned, ([\d.]+) lost, ([\d.]+) still to come$/,
+      function (a, b, c) {
+        return a + " مكتسبة، " + b + " مفقودة، " + c + " متبقية";
+      },
+    ],
+    [
+      /^Busiest day needs ([\d.]+) h of study\.$/,
+      function (n) {
+        return "أكثر يوم ازدحاما يحتاج " + n + " ساعة مذاكرة.";
+      },
+    ],
+    [
+      /^Average needed on the remaining ([\d.]+)%$/,
+      function (n) {
+        return "المعدل المطلوب في الـ" + n + "% المتبقية";
+      },
+    ],
+    [
+      /^Breakdown: (.+)$/,
+      function (a) {
+        return "شرح: " + a;
+      },
+    ],
+    [
+      /^Slides part (\d+)$/,
+      function (n) {
+        return "الشرائح جزء " + n;
+      },
+    ],
+    [
+      /^Slides with notes$/,
+      function () {
+        return "شرائح مع ملاحظات";
+      },
+    ],
+    [
+      /^Lecture (\d+)$/,
+      function (n) {
+        return "المحاضرة " + n;
+      },
+    ],
+    [
+      /^Ch ([\d.]+)$/,
+      function (n) {
+        return "الفصل " + n;
+      },
+    ],
+    [
+      /^Quiz (\d+)$/,
+      function (n) {
+        return "اختبار قصير " + n;
+      },
+    ],
+    [
+      /^([A-Z]{2,7} ?\d{3}[A-Z]?) (Final|FINAL)$/,
+      function (c) {
+        return c + " نهائي";
+      },
+    ],
+    [
+      /^([A-Z]{2,7} ?\d{3}[A-Z]?) (Midterm|MIDTERM)$/,
+      function (c) {
+        return c + " نصفي";
+      },
+    ],
+    [
+      /^([A-Z]{2,7} ?\d{3}[A-Z]?) (Quiz|QUIZ)$/,
+      function (c) {
+        return c + " قصير";
+      },
+    ],
+    [
+      /^Coursework (\d+)% *$/,
+      function (n) {
+        return "أعمال الفصل " + n + "%";
+      },
+    ],
+    [
+      /^Final (\d+)%$/,
+      function (n) {
+        return "النهائي " + n + "%";
+      },
+    ],
+    [
+      /^Coursework weights add up to ([\d.]+)%, expected ([\d.]+)%$/,
+      function (a, b) {
+        return "مجموع أوزان أعمال الفصل " + a + "% والمتوقع " + b + "%";
+      },
+    ],
+    [
+      /^Course settings$/,
+      function () {
+        return "إعدادات المقرر";
+      },
+    ],
+    [
+      /^final worth ([\d.]+)%$/,
+      function (n) {
+        return "النهائي " + n + "%";
+      },
+    ],
+    [
+      /^Show (\d+) hidden syllabus items?$/,
+      function (n) {
+        return "إظهار " + n + " عناصر مخفية";
+      },
+    ],
+    [
+      /^(Show|Hide) uncounted assessments?$/,
+      function (a) {
+        return (a === "Show" ? "إظهار" : "إخفاء") + " التقييمات غير المحسوبة";
+      },
+    ],
+    [
+      /^Quiz (\d+) is optional\. You have full marks on (.+), and only the best (\w+) count\.$/,
+      function (n, a) {
+        return (
+          "الاختبار " +
+          n +
+          " اختياري. حصلت على الدرجة الكاملة في " +
+          a.replace(/ and /g, " و") +
+          "، ويحسب الأفضلان فقط."
+        );
+      },
+    ],
+    [
+      /^Quiz (\d+) isn't counted\. Only your best (\w+) count, and it's your lowest\.$/,
+      function (n) {
+        return "الاختبار " + n + " غير محسوب لأنه الأقل، ويحسب الأفضلان فقط.";
+      },
+    ],
+    [
+      /^from the ([\d.]+) coursework points graded, with ([\d.]+) still to come\. Best grade still possible:$/,
+      function (a, b) {
+        return (
+          "من " +
+          a +
+          " درجة مقيمة من أعمال الفصل، ومتبقي " +
+          b +
+          ". أفضل تقدير ممكن:"
+        );
+      },
+    ],
+    [
+      /^(First|Second) Semester (\d{4})$/,
+      function (a, y) {
+        return (a === "First" ? "الفصل الأول " : "الفصل الثاني ") + y;
+      },
+    ],
+    [
+      /^Summer (\d{4})$/,
+      function (y) {
+        return "الصيف " + y;
+      },
+    ],
+    [
+      /^(\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})$/,
+      function (a, b) {
+        return a + " إلى " + b;
+      },
+    ],
+    [
+      /^For the (\w+): every chapter\.$/,
+      function () {
+        return "يشمل كل الفصول.";
+      },
+    ],
+    [
+      /^For (.+): (.+) \((\d+) of (\d+) chapters\)\.$/,
+      function (a, b, c, d) {
+        return a + ": " + c + " من " + d + " فصول.";
+      },
+    ],
+    [
+      /^covers every chapter, from the$/,
+      function () {
+        return "يشمل كل الفصول، بحسب";
+      },
+    ],
+    [
+      /^covers (\d+) of (\d+) chapters, from the$/,
+      function (a, b) {
+        return "يشمل " + a + " من " + b + " فصول، بحسب";
+      },
+    ],
+    [
+      /^Covers (\d+) of (\d+) chapters$/,
+      function (a, b) {
+        return "يشمل " + a + " من " + b + " فصول";
+      },
+    ],
+    [
+      /^Finished exams \((\d+)\)$/,
+      function (n) {
+        return "الاختبارات المنتهية (" + n + ")";
+      },
+    ],
+    [
+      /^Your other events \((\d+)\)$/,
+      function (n) {
+        return "أحداثك الأخرى (" + n + ")";
+      },
+    ],
+    [
+      /^Show completed \((\d+)\)$/,
+      function (n) {
+        return "إظهار المكتملة (" + n + ")";
+      },
+    ],
+    [
+      /^Hide completed \((\d+)\)$/,
+      function (n) {
+        return "إخفاء المكتملة (" + n + ")";
+      },
+    ],
+    [
+      /^In (\d+) days$/,
+      function (n) {
+        return "بعد " + n + " يوم";
+      },
+    ],
+    [
+      /^in (\d+) days?$/,
+      function (n) {
+        return "بعد " + n + " يوم";
+      },
+    ],
+    [
+      /^(\d+) of (\d+) set$/,
+      function (a, b) {
+        return a + " من " + b;
+      },
+    ],
+    [
+      /^(\d+) of (\d+) solid$/,
+      function (a, b) {
+        return a + " من " + b + " متقن";
+      },
+    ],
+    [
+      /^(\d+) exams? without a format\. Set them$/,
+      function (n) {
+        return n + " اختبارات بلا صيغة. حدديها";
+      },
+    ],
+    [
+      /^Due (.+)$/,
+      function (a) {
+        return "التسليم " + translate(a);
+      },
+    ],
+    [
+      /^due (.+)$/,
+      function (a) {
+        return "التسليم " + translate(a);
+      },
+    ],
+    [
+      /^Start by (.+)$/,
+      function (a) {
+        return "ابدئي بحلول " + translate(a);
+      },
+    ],
+    [
+      /^Available (.+)$/,
+      function (a) {
+        return "متاح " + translate(a);
+      },
+    ],
+    [
+      /^(\d+) days to complete$/,
+      function (n) {
+        return n + " أيام للإنجاز";
+      },
+    ],
+    [
+      /^(\d+)-day work window$/,
+      function (n) {
+        return "مدة العمل " + n + " أيام";
+      },
+    ],
+    [
+      /^Leave home (.+)$/,
+      function (a) {
+        return "مغادرة المنزل " + translate(a);
+      },
+    ],
+    [
+      /^leave uni (.+)$/,
+      function (a) {
+        return "مغادرة الجامعة " + translate(a);
+      },
+    ],
+    [
+      /^home (.+)$/,
+      function (a) {
+        return "الوصول للمنزل " + translate(a);
+      },
+    ],
+    [
+      /^(Today|Tomorrow), (.+)$/,
+      function (a, b) {
+        return translate(a) + "، " + translate(b);
+      },
+    ],
+    [
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})$/,
+      function (m, d) {
+        return d + " " + MONTHS[m];
+      },
+    ],
+    [
+      /^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/,
+      function (m, y) {
+        return LONG_MONTHS[m] + " " + y;
+      },
+    ],
+    [
+      /^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) - (January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2}), (\d{4})$/,
+      function (w, m, d, y) {
+        return DAYS[w.slice(0, 3)] + " - " + d + " " + LONG_MONTHS[m] + " " + y;
+      },
+    ],
+    [
+      /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday) leave (home|uni)$/,
+      function (w, a) {
+        return (
+          DAYS[w.charAt(0).toUpperCase() + w.slice(1, 3)] +
+          (a === "home" ? " مغادرة المنزل" : " مغادرة الجامعة")
+        );
+      },
+    ],
+    [
+      /^(Mark done: |Mark )(.+?)( done)?$/,
+      function (a, b) {
+        return "تحديد الإنجاز: " + translate(b);
+      },
+    ],
+    [
+      /^(Show|Hide) topics in (.+)$/,
+      function (a, b) {
+        return (a === "Show" ? "إظهار" : "إخفاء") + " مواضيع " + b;
+      },
+    ],
+    [
+      /^Show ([A-Z]{2,7} ?\d{3}[A-Z]?)$/,
+      function (c) {
+        return "إظهار " + c;
+      },
+    ],
+    [
+      /^Reorder (.+)\. Drag, or use the up and down arrow keys\.$/,
+      function (a) {
+        return (
+          "إعادة ترتيب " +
+          translate(a) +
+          ". اسحبي أو استخدمي أسهم لوحة المفاتيح."
+        );
+      },
+    ],
+    [
+      /^Set from the course overview \((.+)\)\. Change it only if your instructor changed what's on the (\w+)\.$/,
+      function (a) {
+        return (
+          "محدد من نظرة المقرر (" +
+          a +
+          "). غيريه فقط إذا غير مدرسك ما يشمله الاختبار."
+        );
+      },
+    ],
+    [
+      /^Starts on (\S+)\. Set an end date to make a connected range\.$/,
+      function (a) {
+        return "يبدأ في " + a + ". حددي تاريخ نهاية لجعله نطاقا متصلا.";
+      },
+    ],
+    [
+      /^This uses the final-exam analysis, limited to the chapters this (\w+) covers on the course overview\.$/,
+      function () {
+        return "يستخدم هذا تحليل الاختبار النهائي، محددا بفصول هذا الاختبار في نظرة المقرر.";
+      },
+    ],
+    [
+      /^Builds learn sessions chapter by chapter, .*$/,
+      function () {
+        return "يبني جلسات تعلم لكل فصل، ومراجعة بعد ثلاثة أيام، ومراجعة نهائية قبل كل اختبار بيوم، في وقتك الحر بين 9 ص و10 م حول المحاضرات والاختبارات والأحداث والقيادة.";
+      },
+    ],
+    [
+      /^Both columns assume the same average .*$/,
+      function () {
+        return "يفترض العمودان نفس المعدل في كل ما تبقى. إذا أديت أفضل في أحدهما احتجت أقل في الآخر.";
+      },
+    ],
+    [
+      /^Overdue by (\d+) days?$/,
+      function (n) {
+        return "متأخر " + n + " يوم";
+      },
+    ],
+    [
+      /^(\d+) days? late$/,
+      function (n) {
+        return "متأخر " + n + " يوم";
+      },
+    ],
   ];
   var LONG_MONTHS = {
     January: "يناير",
@@ -930,7 +1784,9 @@
     attrs.set(el, store);
   }
   function isArabic() {
-    return (document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+    return (
+      (document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0
+    );
   }
   function walk(root, arabic) {
     var nodes = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -942,9 +1798,11 @@
       },
     });
     while (nodes.nextNode()) applyText(nodes.currentNode, arabic);
-    root.querySelectorAll("[placeholder],[title],[aria-label]").forEach(function (el) {
-      applyAttrs(el, arabic);
-    });
+    root
+      .querySelectorAll("[placeholder],[title],[aria-label]")
+      .forEach(function (el) {
+        applyAttrs(el, arabic);
+      });
   }
   var touched = false;
   function sync() {

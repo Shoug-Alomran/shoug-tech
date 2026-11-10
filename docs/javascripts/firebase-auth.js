@@ -267,7 +267,10 @@
     if (Boolean(match[1]) === light) return;
     img.setAttribute(
       "src",
-      src.replace(match[0], "/assets/avatars/" + (light ? "light/" : "") + match[2]),
+      src.replace(
+        match[0],
+        "/assets/avatars/" + (light ? "light/" : "") + match[2],
+      ),
     );
   }
 
@@ -1725,7 +1728,9 @@
           '">My Profile</a>',
         '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
         '  <a class="shoug-drop-link" href="/account/transcript/">Transcript</a>',
-        '  <a class="shoug-drop-link" href="' + planGridHref() + '">Academic Plan</a>',
+        '  <a class="shoug-drop-link" href="' +
+          planGridHref() +
+          '">Academic Plan</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
         '  <a class="shoug-drop-link" href="/community/">Community</a>',
@@ -3979,15 +3984,19 @@
       var account = localStorage.getItem(ACCOUNT_PLAN_KEY);
       if (account && PLAN_GRID_KEYS[account])
         return "/academic-plan-themes/" + account + "/grid.html";
-      var picked = /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
-        localStorage.getItem("shoug-transcript-plan") || "",
-      );
+      var picked =
+        /^(cs-ai|cs-cys|cs-dx|cs|se-ai|se-dx|se-cys|se|is-ai)(?:\/classic)?$/.exec(
+          localStorage.getItem("shoug-transcript-plan") || "",
+        );
       if (picked) return "/academic-plan-themes/" + picked[1] + "/grid.html";
       var best = null,
         bestCount = 0;
       Object.keys(PLAN_GRID_KEYS).forEach(function (plan) {
-        var saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[plan]) || "null");
-        var count = saved && saved.statusMap ? Object.keys(saved.statusMap).length : 0;
+        var saved = JSON.parse(
+          localStorage.getItem(PLAN_GRID_KEYS[plan]) || "null",
+        );
+        var count =
+          saved && saved.statusMap ? Object.keys(saved.statusMap).length : 0;
         if (count > bestCount) {
           best = plan;
           bestCount = count;

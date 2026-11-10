@@ -1,0 +1,6430 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-sg-styled>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CS316 · Chapter 3 · Annotated Slides</title>
+    <meta
+      name="description"
+      content="CS316 Chapter 3 annotated slides: every original slide with numbered study notes linked to the highlighted words, past-exam links and practice questions."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/computer-science/cs316/annotated-slides/05-statistical-learning/"
+    />
+    <meta name="robots" content="noindex, follow" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <script>
+      try {
+        var t = localStorage.getItem("shoug-theme");
+        document.documentElement.setAttribute(
+          "data-theme",
+          t === "dark" || t === "light"
+            ? t
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light",
+        );
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #f6f5f2;
+        --panel: #ffffff;
+        --ink: #1d1d1f;
+        --muted: #5b5b63;
+        --line: #dedcd6;
+        --accent: #2f5bb7;
+        --accent-ink: #ffffff;
+        --hl: rgba(255, 206, 0, 0.42);
+        --hl-strong: rgba(255, 170, 0, 0.62);
+        --hl-ring: #d99a00;
+        --code: #f1f0ec;
+        --past: #1d6b45;
+        --past-bg: #e3f3ea;
+        --pred: #6b5a1d;
+        --pred-bg: #f6efd8;
+        --trap: #a3361f;
+        --trick: #5b3fa8;
+        --radius: 12px;
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      html[data-theme="dark"] {
+        --bg: #121316;
+        --panel: #1b1c20;
+        --ink: #ecebe8;
+        --muted: #a9a8b0;
+        --line: #2e3036;
+        --accent: #8fb0ff;
+        --accent-ink: #0d1220;
+        --code: #24262c;
+        --past: #8fe0b4;
+        --past-bg: #173326;
+        --pred: #f0d58a;
+        --pred-bg: #352d14;
+        --trap: #ff9a85;
+        --trick: #c6b2ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      html,
+      body {
+        overflow-x: clip;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      a {
+        color: var(--accent);
+      }
+      code,
+      pre {
+        font-variant-ligatures: none;
+        font-feature-settings:
+          "liga" 0,
+          "calt" 0;
+      }
+      code {
+        font-family:
+          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.86em;
+        background: var(--code);
+        padding: 0.08em 0.32em;
+        border-radius: 5px;
+        overflow-wrap: anywhere;
+      }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+      }
+      .top .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px var(--gutter);
+      }
+      .brand {
+        min-width: 0;
+      }
+      .brand small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .brand strong {
+        display: block;
+        font-size: 15px;
+        line-height: 1.3;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      button,
+      .btn {
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 6px 12px;
+        cursor: pointer;
+        text-decoration: none;
+        line-height: 1.3;
+      }
+      button[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      button:hover,
+      .btn:hover {
+        border-color: var(--accent);
+      }
+      button:focus-visible,
+      .btn:focus-visible,
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      :root {
+        --gutter: clamp(12px, 3vw, 40px);
+      }
+      main {
+        padding: 20px var(--gutter) 48px;
+        display: grid;
+        gap: 22px;
+        container-type: inline-size;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: clamp(14px, 2vw, 24px);
+        scroll-margin-top: 72px;
+        min-width: 0;
+      }
+      .card-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 14px;
+        margin-bottom: 14px;
+      }
+      .card-head h3 {
+        margin: 0;
+        font-size: clamp(17px, 1.6vw, 21px);
+        line-height: 1.3;
+        flex: 1 1 240px;
+        overflow-wrap: anywhere;
+      }
+      .sn {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .sn span {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px 26px;
+        align-items: start;
+      }
+      @container (min-width:1080px) {
+        .row {
+          grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+        }
+        .row > .slide {
+          position: sticky;
+          top: 76px;
+        }
+        .card.bare .row {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .card.bare .row > .slide {
+          position: relative;
+          top: auto;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        .card.notes-hidden .row > .slide {
+          position: relative;
+          top: auto;
+        }
+      }
+      .slide {
+        margin: 0;
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        line-height: 0;
+      }
+      .slide img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .hl-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .hl {
+        fill: var(--hl);
+        mix-blend-mode: multiply;
+        cursor: pointer;
+        transition: fill 0.15s;
+      }
+      .hl.free {
+        cursor: default;
+      }
+      .hl.on {
+        fill: var(--hl-strong);
+        stroke: var(--hl-ring);
+        stroke-width: 0.0015;
+      }
+      body.no-hl .hl-layer {
+        display: none;
+      }
+      .notes {
+        min-width: 0;
+      }
+      .notes h4,
+      .exam h4 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .notes ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .notes li {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        border-radius: 10px;
+        padding: 6px;
+        margin: -6px;
+        transition: background 0.15s;
+      }
+      .notes li.on,
+      .notes li.flash {
+        background: color-mix(in srgb, var(--hl) 45%, transparent);
+      }
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 700;
+        background: var(--accent);
+        color: var(--accent-ink);
+        margin-top: 1px;
+      }
+      .kind {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-right: 2px;
+      }
+      .kind.trap {
+        color: var(--trap);
+      }
+      .kind.trick {
+        color: var(--trick);
+      }
+      .kind.tip,
+      .kind.seen {
+        color: var(--accent);
+      }
+      .body > p {
+        margin: 0;
+        text-align: justify;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+      }
+      .body > * + * {
+        margin-top: 8px;
+      }
+      table.walk {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        line-height: 1.45;
+        table-layout: fixed;
+      }
+      table.walk th {
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 4px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      table.walk th:first-child {
+        width: 46%;
+      }
+      table.walk td {
+        vertical-align: top;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      table.walk td.src code {
+        display: block;
+        background: none;
+        padding: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 12.5px;
+      }
+      table.walk tr:nth-child(odd) td.src {
+        background: var(--code);
+      }
+      dl.reading {
+        margin: 0;
+        display: grid;
+        gap: 8px;
+        font-size: 14.5px;
+      }
+      dl.reading div {
+        border-left: 3px solid var(--line);
+        padding: 2px 0 2px 10px;
+      }
+      dl.reading dt {
+        font-weight: 700;
+        line-height: 1.4;
+      }
+      dl.reading dd {
+        margin: 2px 0 0;
+        line-height: 1.5;
+      }
+      pre {
+        margin: 0;
+        background: var(--code);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .exam {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--line);
+        display: grid;
+        gap: 10px;
+      }
+      .notes > .exam:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+      .q {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .q header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .q p {
+        margin: 0;
+        text-align: justify;
+        hyphens: auto;
+      }
+      .q.ptr p {
+        text-align: left;
+      }
+      .notes .q ol.opts {
+        display: block;
+        list-style: upper-alpha;
+        margin: 6px 0 0;
+        padding-left: 26px;
+        font-size: 15px;
+      }
+      .notes .q ol.opts li {
+        display: list-item;
+        margin: 0 0 2px;
+        padding: 0;
+        border-radius: 0;
+      }
+      .qn {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .picks {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 6px;
+      }
+      .notes .picks > li {
+        margin: 0;
+        padding: 0;
+        display: block;
+        border-radius: 0;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+        font-size: 15px;
+        line-height: 1.45;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        cursor: pointer;
+        margin: 0;
+      }
+      .choice:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      .choice:disabled {
+        cursor: default;
+        opacity: 1;
+      }
+      .choice .ltr {
+        font-weight: 700;
+        color: var(--muted);
+        flex: none;
+      }
+      .choice.right {
+        border-color: #2e9e62;
+        background: color-mix(in srgb, #2e9e62 14%, var(--panel));
+      }
+      .choice.wrong {
+        border-color: #d9534f;
+        background: color-mix(in srgb, #d9534f 12%, var(--panel));
+      }
+      .opt-why {
+        font-size: 14.5px;
+        margin: 5px 2px 4px 10px;
+        padding-left: 10px;
+        border-left: 2px solid var(--line);
+      }
+      .opt-why[hidden] {
+        display: none;
+      }
+      li[data-c] > .opt-why {
+        border-left-color: #2e9e62;
+      }
+      .verdict {
+        margin: 8px 0 0;
+        font-weight: 700;
+        font-size: 14.5px;
+        text-align: left;
+      }
+      .verdict:empty {
+        display: none;
+      }
+      .verdict.good {
+        color: #2e9e62;
+      }
+      .verdict.bad {
+        color: #d9534f;
+      }
+      .verdict.shown {
+        color: var(--muted);
+      }
+      .reveal-ans {
+        margin-top: 6px;
+        font-size: 13px;
+      }
+      .reveal-ans[hidden] {
+        display: none;
+      }
+      .q textarea {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 8px;
+        font: inherit;
+        font-size: 15px;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        resize: vertical;
+      }
+      .tips {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 8px;
+      }
+      .tips h4 {
+        margin: 0 0 6px;
+      }
+      .tips ul {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 15px;
+      }
+      .tips li {
+        margin: 0 0 4px;
+        display: list-item;
+        padding: 0;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 11.5px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 2px 9px;
+        line-height: 1.5;
+      }
+      .tag a {
+        color: inherit;
+      }
+      .tag.past {
+        background: var(--past-bg);
+        color: var(--past);
+      }
+      .tag.predict {
+        background: var(--pred-bg);
+        color: var(--pred);
+      }
+      details summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--accent);
+        margin-top: 8px;
+      }
+      details[open] summary {
+        margin-bottom: 6px;
+      }
+      .card.notes-hidden .notes {
+        display: none;
+      }
+      .card.notes-hidden .row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .card.notes-hidden .slide {
+        position: relative;
+      }
+      .overview .lead {
+        font-size: 17px;
+        margin: 0 0 16px;
+        text-align: justify;
+        hyphens: auto;
+      }
+      .ideas {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .idea {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .idea h4 {
+        margin: 0 0 4px;
+        font-size: 14.5px;
+      }
+      .idea p {
+        margin: 0;
+        font-size: 14.5px;
+      }
+      .ov-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+        gap: 12px 28px;
+      }
+      .ov-grid h4 {
+        margin: 6px 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .ov-grid p {
+        margin: 0 0 10px;
+        text-align: justify;
+        hyphens: auto;
+      }
+      .secs {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 6px;
+      }
+      .secs li {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 12px;
+      }
+      .secs a {
+        white-space: nowrap;
+      }
+      .secs a {
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .key-hl {
+        background: var(--hl);
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      .toc {
+        margin-top: 8px;
+      }
+      .toc ol {
+        columns: auto 260px;
+        column-gap: 28px;
+        padding: 0;
+        list-style: none;
+        margin: 8px 0 0;
+      }
+      .toc li {
+        break-inside: avoid;
+        padding: 2px 0;
+      }
+      .toc a {
+        text-decoration: none;
+        color: var(--ink);
+      }
+      .toc b {
+        color: var(--accent);
+        display: inline-block;
+        min-width: 2.2em;
+      }
+      .ov-body[hidden] {
+        display: none;
+      }
+      footer.end {
+        padding: 0 var(--gutter) 40px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .seg {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+      .seg button {
+        border: 0;
+        border-radius: 0;
+        margin: 0;
+      }
+      .seg button + button {
+        border-left: 1px solid var(--line);
+      }
+      body.flip main > .card {
+        display: none;
+      }
+      body.flip main > .card.current {
+        display: block;
+      }
+      body.flip main {
+        padding-bottom: 96px;
+      }
+      body.flip footer.end {
+        display: none;
+      }
+      .flipbar {
+        position: fixed;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        z-index: 6;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: color-mix(in srgb, var(--panel) 94%, transparent);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        max-width: calc(100vw - 24px);
+      }
+      .flipbar[hidden] {
+        display: none;
+      }
+      .flipbar select {
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 0;
+        max-width: min(52vw, 420px);
+        text-overflow: ellipsis;
+      }
+      .flipbar button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      @media (max-width: 700px) {
+        .top {
+          position: static;
+        }
+        .brand small {
+          display: none;
+        }
+        .brand strong {
+          font-size: 14px;
+        }
+        .top .wrap {
+          padding: 8px var(--gutter);
+        }
+        .controls {
+          gap: 5px;
+        }
+        button,
+        .btn {
+          font-size: 12px;
+          padding: 5px 10px;
+        }
+        .slide {
+          position: relative;
+        }
+        .card {
+          scroll-margin-top: 8px;
+        }
+      }
+      @media (max-width: 560px) {
+        body {
+          font-size: 15.5px;
+        }
+        .overview .lead {
+          text-align: left;
+          font-size: 16px;
+        }
+        .secs li {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        pre {
+          white-space: pre-wrap;
+          word-break: break-word;
+          font-size: 12px;
+        }
+        table.walk thead {
+          display: none;
+        }
+        table.walk,
+        table.walk tbody,
+        table.walk tr,
+        table.walk td {
+          display: block;
+          width: 100%;
+        }
+        table.walk td.src {
+          border-bottom: 0;
+        }
+      }
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 12mm;
+        }
+        :root {
+          --bg: #fff;
+          --panel: #fff;
+        }
+        html,
+        body {
+          background: #fff;
+          font-size: 10.5pt;
+          line-height: 1.5;
+        }
+        .top,
+        .note-toggle,
+        .ov-toggle,
+        .toc,
+        .flipbar {
+          display: none !important;
+        }
+        body.flip main > .card {
+          display: block !important;
+        }
+        main {
+          padding: 0;
+          gap: 0;
+          display: block;
+        }
+        .card {
+          border: 0;
+          border-radius: 0;
+          padding: 0 0 14pt;
+          margin: 0 0 14pt;
+          border-bottom: 1px solid var(--line);
+        }
+        .card-head {
+          break-after: avoid;
+          margin-bottom: 6pt;
+        }
+        .card.overview {
+          break-after: page;
+          border-bottom: 0;
+        }
+        .exam {
+          break-inside: avoid;
+        }
+        .exam h4,
+        .notes > h4 {
+          break-after: avoid;
+        }
+        .notes li {
+          margin: 0;
+          padding: 0;
+        }
+        footer.end {
+          padding: 10pt 0 0;
+        }
+        .row {
+          grid-template-columns: minmax(0, 1fr) !important;
+          gap: 10px;
+        }
+        .slide {
+          position: relative !important;
+          top: auto !important;
+          break-inside: avoid;
+        }
+        .notes,
+        .ov-body {
+          display: block !important;
+        }
+        .notes li,
+        .q,
+        .idea,
+        table.walk tr,
+        pre,
+        dl.reading dd {
+          break-inside: avoid;
+        }
+        .hl-layer {
+          display: block !important;
+        }
+        .hl,
+        .key-hl,
+        .num,
+        .tag,
+        code,
+        pre,
+        table.walk tr:nth-child(odd) td.src {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        details > *:not(summary) {
+          display: block;
+        }
+        details summary {
+          display: none;
+        }
+        details > p::before {
+          content: "Answer: ";
+          font-weight: 700;
+        }
+        .opt-why {
+          display: block !important;
+        }
+        .picks > li[data-c] .choice {
+          border-color: #2e9e62;
+          font-weight: 700;
+        }
+        .q textarea,
+        .reveal-ans,
+        .verdict {
+          display: none !important;
+        }
+      }
+      @media (max-width: 640px) {
+        :root {
+          --gutter: 8px;
+        }
+        .card {
+          padding: 12px;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
+  <body data-key="cs316-05-statistical-learning">
+    <header class="top">
+      <div class="wrap">
+        <div class="brand">
+          <small>CS316 · Chapter 3 · Annotated Slides</small
+          ><strong>Statistical Learning</strong>
+        </div>
+        <div class="controls" role="group" aria-label="Page controls">
+          <div class="seg" role="group" aria-label="View mode">
+            <button
+              type="button"
+              id="m-scroll"
+              aria-pressed="true"
+              title="All slides on one scrolling page"
+            >
+              Scroll</button
+            ><button
+              type="button"
+              id="m-flip"
+              aria-pressed="false"
+              title="One slide at a time (arrow keys or swipe to turn)"
+            >
+              Flip
+            </button>
+          </div>
+          <button
+            type="button"
+            id="t-notes"
+            aria-pressed="true"
+            title="Show or hide all notes"
+          >
+            Notes
+          </button>
+          <button
+            type="button"
+            id="t-hl"
+            aria-pressed="true"
+            title="Show or hide the highlights on the slides"
+          >
+            Highlights
+          </button>
+
+          <a
+            class="btn"
+            href="/academics/computer-science/cs316/slides/chapter-3-statistical-learning/"
+            target="_top"
+            >Original</a
+          >
+          <button type="button" id="t-theme" title="Switch light or dark theme">
+            Dark
+          </button>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section class="card overview" id="overview">
+        <header class="card-head">
+          <span class="sn">Overview</span>
+          <h3>Statistical Learning</h3>
+          <button
+            type="button"
+            class="ov-toggle"
+            aria-expanded="true"
+            aria-controls="ov-body"
+          >
+            Hide overview
+          </button>
+        </header>
+        <div id="ov-body" class="ov-body">
+          <p class="lead">
+            The language of statistical learning: the model Y = f(X) + error,
+            loss and risk, the optimal predictor, supervised and unsupervised
+            learning, training and test loss, overfitting and generalization.
+          </p>
+
+          <div class="ov-grid">
+            <div>
+              <h4>How to read this page</h4>
+              <p>
+                Every original slide is shown unchanged.
+                <span class="key-hl">Yellow marks</span> on a slide point to a
+                numbered note: hover or tap a mark to jump to its note, and
+                hover a note to see its marks. Questions tagged
+                <span class="tag past">Past exam</span> appeared on a real
+                paper; <span class="tag predict">Prediction</span> questions are
+                likely angles, not confirmed. Pick an answer to each question: a
+                wrong pick tells you why it is wrong, so you can try again.
+              </p>
+            </div>
+          </div>
+          <details class="toc">
+            <summary>All 30 slides</summary>
+            <ol>
+              <li>
+                <a href="#slide-1"><b>1</b> Chapter 3 Statistical Learning</a>
+              </li>
+              <li>
+                <a href="#slide-2"><b>2</b> Handwritten Notes</a>
+              </li>
+              <li>
+                <a href="#slide-3"><b>3</b> Overview</a>
+              </li>
+              <li>
+                <a href="#slide-4"><b>4</b> What is Statistical Learning?</a>
+              </li>
+              <li>
+                <a href="#slide-5"><b>5</b> Two Goals for a Model</a>
+              </li>
+              <li>
+                <a href="#slide-6"><b>6</b> Example: Predicting House Prices</a>
+              </li>
+              <li>
+                <a href="#slide-7"><b>7</b> What is Statistical Learning?</a>
+              </li>
+              <li>
+                <a href="#slide-8"><b>8</b> What is Statistical Learning?</a>
+              </li>
+              <li>
+                <a href="#slide-9"><b>9</b> Statistical Learning</a>
+              </li>
+              <li>
+                <a href="#slide-10"><b>10</b> Regression and Classification</a>
+              </li>
+              <li>
+                <a href="#slide-11"><b>11</b> Loss Function</a>
+              </li>
+              <li>
+                <a href="#slide-12"><b>12</b> Error</a>
+              </li>
+              <li>
+                <a href="#slide-13"><b>13</b> Risk</a>
+              </li>
+              <li>
+                <a href="#slide-14"><b>14</b> Statistical Learning</a>
+              </li>
+              <li>
+                <a href="#slide-15"><b>15</b> Statistical Learning</a>
+              </li>
+              <li>
+                <a href="#slide-16"><b>16</b> Optimal Prediction Function</a>
+              </li>
+              <li>
+                <a href="#slide-17"><b>17</b> Training set</a>
+              </li>
+              <li>
+                <a href="#slide-18"><b>18</b> Supervised Learning</a>
+              </li>
+              <li>
+                <a href="#slide-19"><b>19</b> Unsupervised Learning</a>
+              </li>
+              <li>
+                <a href="#slide-20"><b>20</b> Training Loss</a>
+              </li>
+              <li>
+                <a href="#slide-21"><b>21</b> Error / Loss / Risk</a>
+              </li>
+              <li>
+                <a href="#slide-22"><b>22</b> Learner</a>
+              </li>
+              <li>
+                <a href="#slide-23"><b>23</b> Overfitting</a>
+              </li>
+              <li>
+                <a href="#slide-24"><b>24</b> Generalization Risk</a>
+              </li>
+              <li>
+                <a href="#slide-25"><b>25</b> Expected Generalization Risk</a>
+              </li>
+              <li>
+                <a href="#slide-26"><b>26</b> Test Loss</a>
+              </li>
+              <li>
+                <a href="#slide-27"><b>27</b> Test and Validation Sets</a>
+              </li>
+              <li>
+                <a href="#slide-28"><b>28</b> Notation</a>
+              </li>
+              <li>
+                <a href="#slide-29"><b>29</b> Finding Good Learners</a>
+              </li>
+              <li>
+                <a href="#slide-30"><b>30</b> Example</a>
+              </li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="card bare" id="slide-1" data-slide="1">
+        <header class="card-head">
+          <span class="sn">Slide 1 <span>/ 30</span></span>
+          <h3>Chapter 3 Statistical Learning</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-01.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 1: Chapter 3 Statistical Learning"
+              loading="eager"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card bare" id="slide-2" data-slide="2">
+        <header class="card-head">
+          <span class="sn">Slide 2 <span>/ 30</span></span>
+          <h3>Handwritten Notes</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-02.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 2: Handwritten Notes"
+              loading="eager"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card bare" id="slide-3" data-slide="3">
+        <header class="card-head">
+          <span class="sn">Slide 3 <span>/ 30</span></span>
+          <h3>Overview</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-03.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 3: Overview"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card bare" id="slide-4" data-slide="4">
+        <header class="card-head">
+          <span class="sn">Slide 4 <span>/ 30</span></span>
+          <h3>What is Statistical Learning?</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-04.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 4: What is Statistical Learning?"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0470"
+                y="0.1332"
+                width="0.7747"
+                height="0.0306"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0470"
+                y="0.2348"
+                width="0.8008"
+                height="0.0306"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0470"
+                y="0.3369"
+                width="0.0695"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.1027"
+                y="0.3796"
+                width="0.2425"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.4137"
+                y="0.3796"
+                width="0.3675"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.1032"
+                y="0.4145"
+                width="0.1669"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+            </svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card bare" id="slide-5" data-slide="5">
+        <header class="card-head">
+          <span class="sn">Slide 5 <span>/ 30</span></span>
+          <h3>Two Goals for a Model</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-05.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 5: Two Goals for a Model"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0220"
+                y="0.1103"
+                width="0.5633"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.1663"
+                y="0.2166"
+                width="0.1977"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.6423"
+                y="0.2166"
+                width="0.1826"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0517"
+                y="0.3614"
+                width="0.3237"
+                height="0.0170"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5288"
+                y="0.3614"
+                width="0.3461"
+                height="0.0170"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0907"
+                y="0.4812"
+                width="0.7899"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0142"
+                y="0.5302"
+                width="0.0852"
+                height="0.0139"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+            </svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card" id="slide-6" data-slide="6">
+        <header class="card-head">
+          <span class="sn">Slide 6 <span>/ 30</span></span>
+          <h3>Example: Predicting House Prices</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-6"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-06.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 6: Example: Predicting House Prices"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0658"
+                y="0.1457"
+                width="0.2524"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5428"
+                y="0.1676"
+                width="0.2175"
+                height="0.0134"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0215"
+                y="0.2395"
+                width="0.1154"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0215"
+                y="0.2608"
+                width="0.4378"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6715"
+                y="0.2640"
+                width="0.1253"
+                height="0.0154"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0215"
+                y="0.2796"
+                width="0.2654"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0215"
+                y="0.3619"
+                width="0.0951"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0210"
+                y="0.3833"
+                width="0.4201"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5434"
+                y="0.3973"
+                width="0.3794"
+                height="0.0154"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0215"
+                y="0.4020"
+                width="0.1393"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5678"
+                y="0.4135"
+                width="0.0961"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0142"
+                y="0.5302"
+                width="0.0852"
+                height="0.0139"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-6">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n6-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    A coefficient is read &quot;holding the other features
+                    fixed&quot;. The interval around it is the uncertainty the
+                    previous slide talked about.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card bare" id="slide-7" data-slide="7">
+        <header class="card-head">
+          <span class="sn">Slide 7 <span>/ 30</span></span>
+          <h3>What is Statistical Learning?</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-07.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 7: What is Statistical Learning?"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card" id="slide-8" data-slide="8">
+        <header class="card-head">
+          <span class="sn">Slide 8 <span>/ 30</span></span>
+          <h3>What is Statistical Learning?</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-8"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-08.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 8: What is Statistical Learning?"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1090"
+                y="0.1228"
+                width="0.1461"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4038"
+                y="0.1223"
+                width="0.3612"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3512"
+                y="0.1577"
+                width="0.1216"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1835"
+                y="0.1811"
+                width="0.0815"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2991"
+                y="0.1822"
+                width="0.0623"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3944"
+                y="0.1811"
+                width="0.1013"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1418"
+                y="0.1811"
+                width="0.3539"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4996"
+                y="0.1874"
+                width="0.0956"
+                height="0.0160"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1085"
+                y="0.2108"
+                width="0.0925"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2668"
+                y="0.2108"
+                width="0.1867"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1085"
+                y="0.2400"
+                width="0.4586"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1085"
+                y="0.4140"
+                width="0.2591"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1085"
+                y="0.5208"
+                width="0.3221"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5017"
+                y="0.5208"
+                width="0.2524"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-8">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n8-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Learn the vocabulary here: response or target Y, features or
+                    predictors X, and error. The rest of the deck is built on
+                    this equation.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 8">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>In Y = f(X) + error, what does the error term capture?</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span
+                        >The difference between training and test loss</span
+                      >
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>The features left out of the training set</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>The slope of the fitted regression line</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>Measurement errors and other discrepancies</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      The slide defines it that way.
+                    </div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-9" data-slide="9">
+        <header class="card-head">
+          <span class="sn">Slide 9 <span>/ 30</span></span>
+          <h3>Statistical Learning</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-9"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-09.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 9: Statistical Learning"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1142"
+                y="0.1379"
+                width="0.1815"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3913"
+                y="0.1379"
+                width="0.2685"
+                height="0.0290"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6642"
+                y="0.1389"
+                width="0.1685"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1178"
+                y="0.2134"
+                width="0.3112"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4335"
+                y="0.2155"
+                width="0.1466"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1147"
+                y="0.2463"
+                width="0.6935"
+                height="0.0326"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1142"
+                y="0.2812"
+                width="0.2477"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1142"
+                y="0.3156"
+                width="0.6570"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1147"
+                y="0.3515"
+                width="0.0899"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1147"
+                y="0.3906"
+                width="0.4206"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6402"
+                y="0.3906"
+                width="0.1242"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1147"
+                y="0.4250"
+                width="0.2570"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5168"
+                y="0.4250"
+                width="0.2242"
+                height="0.0311"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-9">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n9-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    A good f gives prediction and understanding, and the
+                    complexity of f decides how much you can interpret.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-10" data-slide="10">
+        <header class="card-head">
+          <span class="sn">Slide 10 <span>/ 30</span></span>
+          <h3>Regression and Classification</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-10"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-10.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 10: Regression and Classification"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0918"
+                y="0.1978"
+                width="0.3086"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5085"
+                y="0.1978"
+                width="0.0940"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4032"
+                y="0.2035"
+                width="0.1024"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0913"
+                y="0.2327"
+                width="0.0706"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1215"
+                y="0.3015"
+                width="0.0992"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5626"
+                y="0.3015"
+                width="0.1310"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1460"
+                y="0.3322"
+                width="0.1654"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5991"
+                y="0.3322"
+                width="0.2315"
+                height="0.0300"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3137"
+                y="0.3327"
+                width="0.2831"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0918"
+                y="0.3650"
+                width="0.7508"
+                height="0.0342"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-10">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n10-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    The response type decides the problem. Real-valued means
+                    regression; a finite set of classes means classification.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 10">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>Predicting whether a tumour is benign or malignant is:</p>
+                <ol class="picks">
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span><span>Classification</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      The response lies in a finite set of classes.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>Dimensionality reduction</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span><span>Regression</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span><span>Clustering</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-11" data-slide="11">
+        <header class="card-head">
+          <span class="sn">Slide 11 <span>/ 30</span></span>
+          <h3>Loss Function</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-11"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-11.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 11: Loss Function"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2689"
+                y="0.1473"
+                width="0.0362"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1340"
+                y="0.1525"
+                width="0.3154"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0939"
+                y="0.2400"
+                width="0.6581"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5256"
+                y="0.3322"
+                width="0.2346"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0939"
+                y="0.3327"
+                width="0.1149"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4241"
+                y="0.3374"
+                width="0.0987"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3652"
+                y="0.3640"
+                width="0.4430"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0939"
+                y="0.3963"
+                width="0.5664"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0939"
+                y="0.4573"
+                width="0.0602"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1543"
+                y="0.4604"
+                width="0.2216"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-11">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n11-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Loss compares one prediction with one truth. Squared error
+                    goes with regression and zero-one with classification.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 11">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>
+                  What is the zero-one loss when the predicted class equals the
+                  true class?
+                </p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span><span>1</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>The class probability</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>The squared difference</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span><span>0</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      It incurs 1 only when they differ.
+                    </div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card bare" id="slide-12" data-slide="12">
+        <header class="card-head">
+          <span class="sn">Slide 12 <span>/ 30</span></span>
+          <h3>Error</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-12.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 12: Error"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card" id="slide-13" data-slide="13">
+        <header class="card-head">
+          <span class="sn">Slide 13 <span>/ 30</span></span>
+          <h3>Risk</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-13"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-13.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 13: Risk"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0949"
+                y="0.1311"
+                width="0.6513"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0944"
+                y="0.2181"
+                width="0.3107"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5402"
+                y="0.2181"
+                width="0.2279"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0944"
+                y="0.3051"
+                width="0.0784"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4861"
+                y="0.3057"
+                width="0.1341"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1751"
+                y="0.3103"
+                width="0.1065"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6215"
+                y="0.3103"
+                width="0.0758"
+                height="0.0165"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0934"
+                y="0.3348"
+                width="0.6195"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0949"
+                y="0.3656"
+                width="0.3190"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5819"
+                y="0.4224"
+                width="0.1393"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1803"
+                y="0.4270"
+                width="0.0633"
+                height="0.0165"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0944"
+                y="0.4526"
+                width="0.2221"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3184"
+                y="0.4521"
+                width="0.0320"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3147"
+                y="0.5036"
+                width="0.2419"
+                height="0.0311"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-13">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n13-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Even with the same x, y can differ, so we treat (x, y) as
+                    random. Risk is the loss averaged over that randomness.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 13">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>Risk is best defined as:</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>The squared distance of one prediction</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>The loss on a single observation</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>The average loss on the training set</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>The expected loss over the data distribution</span>
+                    </button>
+                    <div class="opt-why" hidden>Risk is E Loss(Y, g(X)).</div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-14" data-slide="14">
+        <header class="card-head">
+          <span class="sn">Slide 14 <span>/ 30</span></span>
+          <h3>Statistical Learning</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-14"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-14.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 14: Statistical Learning"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2350"
+                y="0.2041"
+                width="0.0524"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1704"
+                y="0.3515"
+                width="0.5534"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4647"
+                y="0.3828"
+                width="0.0789"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2251"
+                y="0.4020"
+                width="0.3169"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1710"
+                y="0.4828"
+                width="0.1117"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1704"
+                y="0.5224"
+                width="0.5576"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-14">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n14-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    At X = 4 there are many Y values, so the best single guess
+                    under squared error is their average. That is the regression
+                    function.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 14">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>The regression function at X = x is:</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span><span>P(Y = 1 | X = x)</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span><span>E(Y | X = x)</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      It is the conditional average, and it minimizes mean
+                      squared error.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>argmax P(Y = y | X = x)</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span><span>Var(Y | X = x)</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-15" data-slide="15">
+        <header class="card-head">
+          <span class="sn">Slide 15 <span>/ 30</span></span>
+          <h3>Statistical Learning</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-15"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-15.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 15: Statistical Learning"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0564"
+                y="0.0957"
+                width="0.2867"
+                height="0.0311"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0501"
+                y="0.1342"
+                width="0.2841"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0397"
+                y="0.1890"
+                width="0.2409"
+                height="0.0368"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0496"
+                y="0.2280"
+                width="0.2565"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4522"
+                y="0.2280"
+                width="0.1971"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0496"
+                y="0.2577"
+                width="0.2492"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4881"
+                y="0.2640"
+                width="0.0997"
+                height="0.0154"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0496"
+                y="0.2864"
+                width="0.2779"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0663"
+                y="0.3218"
+                width="0.2998"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4569"
+                y="0.3223"
+                width="0.2065"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1434"
+                y="0.3510"
+                width="0.1112"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4121"
+                y="0.3510"
+                width="0.1128"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5288"
+                y="0.3515"
+                width="0.1352"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0496"
+                y="0.3802"
+                width="0.6128"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0501"
+                y="0.4156"
+                width="0.4044"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5449"
+                y="0.4401"
+                width="0.0649"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3788"
+                y="0.4463"
+                width="0.0836"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5402"
+                y="0.4687"
+                width="0.0675"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1131"
+                y="0.5047"
+                width="0.1096"
+                height="0.0212"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3814"
+                y="0.5104"
+                width="0.2456"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3730"
+                y="0.5297"
+                width="0.0899"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1163"
+                y="0.5328"
+                width="0.0508"
+                height="0.0118"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4272"
+                y="0.5500"
+                width="0.0477"
+                height="0.0132"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-15">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n15-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Reducible error is the gap between the estimate and f, and a
+                    better model can shrink it. Var(error) cannot be removed
+                    even if f is known exactly.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 15">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>
+                  Why does prediction error remain even if we knew f exactly?
+                </p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>The training set can never be large enough</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>Squared-error loss overstates large errors</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span
+                        >At each x there is a distribution of possible Y
+                        values</span
+                      >
+                    </button>
+                    <div class="opt-why" hidden>
+                      That spread is the irreducible error.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>The model class is always too simple</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+              <article class="q written predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q2</span>
+                </header>
+                <p>
+                  State the reducible and irreducible parts of expected squared
+                  error and how each can be changed.
+                </p>
+                <textarea
+                  rows="3"
+                  aria-label="Your answer to Q2"
+                  placeholder="Write your answer, then compare."
+                ></textarea>
+                <details>
+                  <summary>Compare with the model answer</summary>
+                  <p>
+                    The reducible part is the squared gap between the estimate
+                    and f; a better model lowers it. The irreducible part is
+                    Var(error), which comes from randomness and no model can
+                    remove.
+                  </p>
+                </details>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-16" data-slide="16">
+        <header class="card-head">
+          <span class="sn">Slide 16 <span>/ 30</span></span>
+          <h3>Optimal Prediction Function</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-16"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-16.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 16: Optimal Prediction Function"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5663"
+                y="0.1019"
+                width="0.3154"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.9777"
+                y="0.1019"
+                width="0.0180"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0621"
+                y="0.1520"
+                width="0.7227"
+                height="0.0290"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0621"
+                y="0.1853"
+                width="0.6826"
+                height="0.0290"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3277"
+                y="0.2452"
+                width="0.1003"
+                height="0.0483"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0621"
+                y="0.3473"
+                width="0.7362"
+                height="0.0342"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3173"
+                y="0.4151"
+                width="0.1805"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0621"
+                y="0.4437"
+                width="0.0721"
+                height="0.0233"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-16">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n16-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Optimal means smallest risk. For classification with
+                    zero-one loss, risk is simply the probability of being
+                    wrong.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-17" data-slide="17">
+        <header class="card-head">
+          <span class="sn">Slide 17 <span>/ 30</span></span>
+          <h3>Training set</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-17"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-17.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 17: Training set"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4892"
+                y="0.1926"
+                width="0.2404"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4470"
+                y="0.1952"
+                width="0.0404"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4538"
+                y="0.2233"
+                width="0.0258"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0715"
+                y="0.2504"
+                width="0.6357"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.8033"
+                y="0.2499"
+                width="0.0482"
+                height="0.0165"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0725"
+                y="0.2812"
+                width="0.5440"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4522"
+                y="0.3249"
+                width="0.0383"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3309"
+                y="0.3291"
+                width="0.1138"
+                height="0.0332"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0715"
+                y="0.3390"
+                width="0.2581"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6402"
+                y="0.3400"
+                width="0.1029"
+                height="0.0212"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3663"
+                y="0.3515"
+                width="0.1701"
+                height="0.0457"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5381"
+                y="0.3708"
+                width="0.1664"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0715"
+                y="0.4281"
+                width="0.6690"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-17">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n17-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    g* needs the true distribution, which we do not know. The
+                    training set is the practical substitute.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-18" data-slide="18">
+        <header class="card-head">
+          <span class="sn">Slide 18 <span>/ 30</span></span>
+          <h3>Supervised Learning</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-18"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-18.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 18: Supervised Learning"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.9069"
+                y="0.1191"
+                width="0.0623"
+                height="0.0165"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.1249"
+                width="0.1977"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3663"
+                y="0.1249"
+                width="0.3034"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2835"
+                y="0.1275"
+                width="0.0820"
+                height="0.0217"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.8173"
+                y="0.1462"
+                width="0.1524"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0861"
+                y="0.1514"
+                width="0.5998"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3569"
+                y="0.2009"
+                width="0.0409"
+                height="0.0306"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.2056"
+                width="0.0904"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1767"
+                y="0.2082"
+                width="0.1768"
+                height="0.0186"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4428"
+                y="0.2077"
+                width="0.0774"
+                height="0.0154"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.2556"
+                width="0.5899"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.3327"
+                width="0.6018"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.4104"
+                width="0.5560"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0855"
+                y="0.4369"
+                width="0.1227"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3220"
+                y="0.4880"
+                width="0.1779"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5006"
+                y="0.4880"
+                width="0.1951"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0861"
+                y="0.5146"
+                width="0.1919"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2793"
+                y="0.5151"
+                width="0.1206"
+                height="0.0212"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4376"
+                y="0.5146"
+                width="0.1268"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-18">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n18-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Supervised means examples come with answers, as if a teacher
+                    provided them.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-19" data-slide="19">
+        <header class="card-head">
+          <span class="sn">Slide 19 <span>/ 30</span></span>
+          <h3>Unsupervised Learning</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-19"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-19.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 19: Unsupervised Learning"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.1499"
+                width="0.5831"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6220"
+                y="0.1551"
+                width="0.0925"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.7751"
+                y="0.1593"
+                width="0.0456"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.9131"
+                y="0.1577"
+                width="0.0419"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.1811"
+                width="0.6638"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.8725"
+                y="0.1942"
+                width="0.1096"
+                height="0.0154"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.7855"
+                y="0.1957"
+                width="0.1503"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1314"
+                y="0.2124"
+                width="0.4029"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.7913"
+                y="0.2186"
+                width="0.0388"
+                height="0.0165"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1074"
+                y="0.2395"
+                width="0.2159"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.7944"
+                y="0.2431"
+                width="0.0466"
+                height="0.0118"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.2713"
+                width="0.3909"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.8303"
+                y="0.2728"
+                width="0.0612"
+                height="0.0139"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.3307"
+                width="0.7086"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3251"
+                y="0.3906"
+                width="0.2133"
+                height="0.0389"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6381"
+                y="0.4401"
+                width="0.1096"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.4713"
+                width="0.3044"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3871"
+                y="0.4713"
+                width="0.2628"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-19">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n19-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    No response variable here: the task is to learn the
+                    structure of the data itself.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 19">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>Which method is unsupervised on the slides?</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>Decision rules learned from labels</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>Binary classification</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span><span>Regression</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>Principal component analysis</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      PCA learns structure with no response variable.
+                    </div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-20" data-slide="20">
+        <header class="card-head">
+          <span class="sn">Slide 20 <span>/ 30</span></span>
+          <h3>Training Loss</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-20"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-20.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 20: Training Loss"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0553"
+                y="0.1421"
+                width="0.6555"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0553"
+                y="0.2254"
+                width="0.3659"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4939"
+                y="0.2254"
+                width="0.2029"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0553"
+                y="0.2551"
+                width="0.3346"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3105"
+                y="0.3734"
+                width="0.0393"
+                height="0.0139"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0553"
+                y="0.3958"
+                width="0.2945"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0548"
+                y="0.4500"
+                width="0.5820"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-20">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n20-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Training loss averages the loss over the training set. For a
+                    fixed g it is an unbiased estimate of the risk.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-21" data-slide="21">
+        <header class="card-head">
+          <span class="sn">Slide 21 <span>/ 30</span></span>
+          <h3>Error / Loss / Risk</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-21"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-21.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 21: Error / Loss / Risk"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1204"
+                y="0.1457"
+                width="0.0586"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5730"
+                y="0.1452"
+                width="0.0617"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1204"
+                y="0.1780"
+                width="0.0399"
+                height="0.0144"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2262"
+                y="0.1775"
+                width="0.1539"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4449"
+                y="0.1775"
+                width="0.0810"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2262"
+                y="0.1973"
+                width="0.0961"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4449"
+                y="0.1968"
+                width="0.1091"
+                height="0.0191"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2256"
+                y="0.2176"
+                width="0.0831"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1204"
+                y="0.2692"
+                width="0.0357"
+                height="0.0144"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2262"
+                y="0.2687"
+                width="0.0654"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4449"
+                y="0.2687"
+                width="0.0430"
+                height="0.0181"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3439"
+                y="0.2713"
+                width="0.0362"
+                height="0.0123"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1204"
+                y="0.3791"
+                width="0.3753"
+                height="0.0191"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4454"
+                y="0.3994"
+                width="0.1086"
+                height="0.0170"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1236"
+                y="0.4119"
+                width="0.0998"
+                height="0.0123"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4449"
+                y="0.4192"
+                width="0.0503"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1262"
+                y="0.4250"
+                width="0.0622"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1204"
+                y="0.4510"
+                width="0.0352"
+                height="0.0149"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2262"
+                y="0.4494"
+                width="0.3784"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5866"
+                y="0.4692"
+                width="0.1013"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1189"
+                y="0.4719"
+                width="0.0221"
+                height="0.0118"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-21">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n21-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Memorize this table. What changes along it is the amount of
+                    aggregation: none, then sample average, then expectation
+                    over the true distribution.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 21">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>Which term is an expectation over the true distribution?</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span><span>Loss</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span><span>Error</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span><span>Risk</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      Training loss is a sample average; loss and error apply to
+                      one point.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span><span>Training loss</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+              <article class="q written predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q2</span>
+                </header>
+                <p>Distinguish error, loss, training loss and risk.</p>
+                <textarea
+                  rows="3"
+                  aria-label="Your answer to Q2"
+                  placeholder="Write your answer, then compare."
+                ></textarea>
+                <details>
+                  <summary>Compare with the model answer</summary>
+                  <p>
+                    Error is a general distance between a true value and its
+                    approximation. Loss is a specific function for one
+                    prediction. Training or test loss is the sample average of
+                    the loss. Risk is the expected loss over the true
+                    distribution.
+                  </p>
+                </details>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-22" data-slide="22">
+        <header class="card-head">
+          <span class="sn">Slide 22 <span>/ 30</span></span>
+          <h3>Learner</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-22"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-22.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 22: Learner"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.1400"
+                width="0.7206"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0605"
+                y="0.2119"
+                width="0.7133"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3871"
+                y="0.3755"
+                width="0.1503"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.4515"
+                width="0.6638"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0371"
+                y="0.5161"
+                width="0.2221"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-22">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n22-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Two steps: choose a class of functions, then pick the member
+                    with the smallest training loss. Linear functions are the
+                    simplest useful class.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 22">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>The learner is defined as the function in class G that:</p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>Minimizes the true risk directly</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>Fits only the test sample exactly</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>Minimizes the training loss</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      True risk is unavailable, so training loss is minimized.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>Maximizes the test accuracy</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-23" data-slide="23">
+        <header class="card-head">
+          <span class="sn">Slide 23 <span>/ 30</span></span>
+          <h3>Overfitting</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-23"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-23.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 23: Overfitting"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0611"
+                y="0.1243"
+                width="0.6190"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0616"
+                y="0.1535"
+                width="0.6685"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0871"
+                y="0.2687"
+                width="0.1003"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1892"
+                y="0.2681"
+                width="0.2300"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4548"
+                y="0.2681"
+                width="0.2159"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0611"
+                y="0.2978"
+                width="0.3326"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4605"
+                y="0.2978"
+                width="0.2555"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0616"
+                y="0.3270"
+                width="0.6018"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0949"
+                y="0.4213"
+                width="0.6013"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1460"
+                y="0.4510"
+                width="0.0258"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1772"
+                y="0.4505"
+                width="0.1253"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3069"
+                y="0.4505"
+                width="0.1315"
+                height="0.0243"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4819"
+                y="0.4510"
+                width="0.2143"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0954"
+                y="0.4802"
+                width="0.0659"
+                height="0.0212"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2283"
+                y="0.4802"
+                width="0.4680"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0949"
+                y="0.5099"
+                width="0.0524"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-23">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n23-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    If any function is allowed, one that memorizes the training
+                    data has zero loss and generalizes badly. The slide&#x27;s
+                    conclusion: minimizing training loss is not the ultimate
+                    goal.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 23">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>
+                  A model has zero training loss but poor predictions on new
+                  data. This is:
+                </p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>Model selection bias</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span><span>Overfitting</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      Poor generalization despite minimal training loss.
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span><span>Underfitting</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span><span>Irreducible error</span>
+                    </button>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+              <article class="q written predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q2</span>
+                </header>
+                <p>
+                  Explain why minimizing training loss is not the ultimate goal.
+                </p>
+                <textarea
+                  rows="3"
+                  aria-label="Your answer to Q2"
+                  placeholder="Write your answer, then compare."
+                ></textarea>
+                <details>
+                  <summary>Compare with the model answer</summary>
+                  <p>
+                    A function can match every training pair and reach zero loss
+                    but predict new data poorly. The goal is low generalization
+                    risk on unseen data.
+                  </p>
+                </details>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-24" data-slide="24">
+        <header class="card-head">
+          <span class="sn">Slide 24 <span>/ 30</span></span>
+          <h3>Generalization Risk</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-24"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-24.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 24: Generalization Risk"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0569"
+                y="0.1290"
+                width="0.1445"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2928"
+                y="0.1290"
+                width="0.3753"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3486"
+                y="0.2171"
+                width="0.0925"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0574"
+                y="0.2603"
+                width="0.4659"
+                height="0.0269"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4095"
+                y="0.3994"
+                width="0.1050"
+                height="0.0373"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2006"
+                y="0.4323"
+                width="0.0242"
+                height="0.0128"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0902"
+                y="0.4786"
+                width="0.3956"
+                height="0.0212"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0579"
+                y="0.5094"
+                width="0.6107"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-24">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n24-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    Generalization risk fixes the training set and asks how the
+                    resulting learner does on new pairs.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card bare" id="slide-25" data-slide="25">
+        <header class="card-head">
+          <span class="sn">Slide 25 <span>/ 30</span></span>
+          <h3>Expected Generalization Risk</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-25.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 25: Expected Generalization Risk"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0131"
+                y="0.1066"
+                width="0.4331"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5329"
+                y="0.1077"
+                width="0.4503"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0137"
+                y="0.1358"
+                width="0.2893"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.3861"
+                y="0.1337"
+                width="0.5899"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0131"
+                y="0.1645"
+                width="0.4430"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5329"
+                y="0.1639"
+                width="0.3216"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0137"
+                y="0.1931"
+                width="0.1445"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5303"
+                y="0.2041"
+                width="0.4497"
+                height="0.0290"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.2402"
+                y="0.2384"
+                width="0.1096"
+                height="0.0358"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5329"
+                y="0.2327"
+                width="0.4649"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.5329"
+                y="0.2629"
+                width="0.1195"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0137"
+                y="0.2968"
+                width="0.4378"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.6256"
+                y="0.3062"
+                width="0.3404"
+                height="0.0306"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0704"
+                y="0.4896"
+                width="0.0300"
+                height="0.0144"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+              <rect
+                class="hl free"
+                data-n="0"
+                x="0.0137"
+                y="0.5151"
+                width="0.5175"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Key term</title>
+              </rect>
+            </svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card" id="slide-26" data-slide="26">
+        <header class="card-head">
+          <span class="sn">Slide 26 <span>/ 30</span></span>
+          <h3>Test Loss</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-26"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-26.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 26: Test Loss"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6434"
+                y="0.0790"
+                width="0.0695"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.1389"
+                width="0.5768"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3126"
+                y="0.3291"
+                width="0.4654"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.3624"
+                width="0.2195"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4111"
+                y="0.3619"
+                width="0.2846"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0574"
+                y="0.3650"
+                width="0.0409"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3215"
+                y="0.3650"
+                width="0.0878"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6975"
+                y="0.3677"
+                width="0.0565"
+                height="0.0170"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1684"
+                y="0.3942"
+                width="0.0727"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.2428"
+                y="0.3937"
+                width="0.3425"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5855"
+                y="0.3937"
+                width="0.0341"
+                height="0.0274"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6220"
+                y="0.3937"
+                width="0.0346"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0579"
+                y="0.3994"
+                width="0.0737"
+                height="0.0227"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1371"
+                y="0.4255"
+                width="0.3388"
+                height="0.0264"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0574"
+                y="0.4859"
+                width="0.2883"
+                height="0.0280"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.4251"
+                y="0.4854"
+                width="0.3544"
+                height="0.0285"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0574"
+                y="0.5177"
+                width="0.0748"
+                height="0.0222"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-26">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n26-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    The test sample is drawn the same way as the training set
+                    but kept separate from it, which is what makes the estimate
+                    unbiased.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 26">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>
+                  What makes test loss an unbiased estimate of generalization
+                  risk?
+                </p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>The test sample is larger than training</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>The test loss is always lower</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span
+                        >The test sample uses a different distribution</span
+                      >
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>The test sample is separate from training</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      It must be independent of the training data.
+                    </div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card" id="slide-27" data-slide="27">
+        <header class="card-head">
+          <span class="sn">Slide 27 <span>/ 30</span></span>
+          <h3>Test and Validation Sets</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-27"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-27.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 27: Test and Validation Sets"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3907"
+                y="0.1322"
+                width="0.2096"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6012"
+                y="0.1348"
+                width="0.0471"
+                height="0.0175"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0444"
+                y="0.1598"
+                width="0.2701"
+                height="0.0207"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0439"
+                y="0.2077"
+                width="0.6159"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0444"
+                y="0.2332"
+                width="0.6289"
+                height="0.0295"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3814"
+                y="0.2635"
+                width="0.2747"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0444"
+                y="0.2640"
+                width="0.0612"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0444"
+                y="0.2916"
+                width="0.1774"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1100"
+                y="0.3244"
+                width="0.1888"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.3835"
+                y="0.3244"
+                width="0.1925"
+                height="0.0196"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0444"
+                y="0.5146"
+                width="0.6086"
+                height="0.0238"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-27">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n27-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    If you choose a model using one set, you need another
+                    untouched set for the final score. That is the point of
+                    validation versus test.
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <section class="exam" aria-label="Exam practice for slide 27">
+              <h4>Exam angle</h4>
+              <article class="q pick predict">
+                <header>
+                  <span class="tag predict">Prediction</span
+                  ><span class="qn">Q1</span>
+                </header>
+                <p>
+                  If the test set is used for model selection, what else is
+                  needed?
+                </p>
+                <ol class="picks">
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">A</span
+                      ><span>Fewer training examples</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">B</span
+                      ><span>A larger learning rate</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="choice">
+                      <span class="ltr">C</span
+                      ><span>A second loss function</span>
+                    </button>
+                  </li>
+                  <li data-c="1">
+                    <button type="button" class="choice">
+                      <span class="ltr">D</span
+                      ><span>A third set for final testing</span>
+                    </button>
+                    <div class="opt-why" hidden>
+                      The slide calls for a third set once selection uses the
+                      second.
+                    </div>
+                  </li>
+                </ol>
+                <p class="verdict" role="status"></p>
+                <button type="button" class="reveal-ans" hidden>
+                  Show the answer
+                </button>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="card bare" id="slide-28" data-slide="28">
+        <header class="card-head">
+          <span class="sn">Slide 28 <span>/ 30</span></span>
+          <h3>Notation</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-28.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 28: Notation"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+      <section class="card" id="slide-29" data-slide="29">
+        <header class="card-head">
+          <span class="sn">Slide 29 <span>/ 30</span></span>
+          <h3>Finding Good Learners</h3>
+          <button
+            type="button"
+            class="note-toggle"
+            aria-expanded="true"
+            aria-controls="notes-29"
+          >
+            Hide notes
+          </button>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-29.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 29: Finding Good Learners"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0527"
+                y="0.1322"
+                width="0.0706"
+                height="0.0207"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1241"
+                y="0.1327"
+                width="0.5029"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0736"
+                y="0.1957"
+                width="0.6055"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5751"
+                y="0.2249"
+                width="0.0784"
+                height="0.0201"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.2530"
+                width="0.5497"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.2822"
+                width="0.4096"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5100"
+                y="0.2827"
+                width="0.1492"
+                height="0.0248"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.3171"
+                width="0.5326"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0710"
+                y="0.4093"
+                width="0.6029"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.5163"
+                y="0.4432"
+                width="0.0998"
+                height="0.0207"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.1001"
+                y="0.4672"
+                width="0.5154"
+                height="0.0253"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.6168"
+                y="0.4719"
+                width="0.0862"
+                height="0.0207"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+              <rect
+                class="hl"
+                data-n="1"
+                x="0.0996"
+                y="0.4953"
+                width="0.4352"
+                height="0.0259"
+                rx="0.004"
+              >
+                <title>Note 1</title>
+              </rect>
+            </svg>
+          </figure>
+          <div class="notes" id="notes-29">
+            <h4>Notes</h4>
+            <ol>
+              <li id="n29-1" data-n="1">
+                <span class="num" aria-hidden="true">1</span>
+                <div class="body">
+                  <p>
+                    The three pillars: function approximation represents the
+                    relationship, optimization finds the best member, and
+                    probability explains the data.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="card bare" id="slide-30" data-slide="30">
+        <header class="card-head">
+          <span class="sn">Slide 30 <span>/ 30</span></span>
+          <h3>Example</h3>
+        </header>
+        <div class="row">
+          <figure class="slide">
+            <img
+              src="figures/slide-30.jpg"
+              width="1440"
+              height="811"
+              alt="Slide 30: Example"
+              loading="lazy"
+              decoding="async"
+            />
+            <svg
+              class="hl-layer"
+              viewBox="0 0 1 0.56319"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            ></svg>
+          </figure>
+        </div>
+      </section>
+    </main>
+    <nav class="flipbar" aria-label="Slide navigation" hidden>
+      <button type="button" id="f-prev" aria-label="Previous slide">
+        Previous
+      </button>
+      <select id="f-jump" aria-label="Go to slide"></select>
+      <button type="button" id="f-next" aria-label="Next slide">Next</button>
+    </nav>
+    <footer class="end">
+      Original slides from the CS316 lecture deck, with study notes. Check exact
+      wording against the
+      <a
+        href="/academics/computer-science/cs316/slides/chapter-3-statistical-learning/"
+        target="_top"
+        >original deck</a
+      >. Notes and questions are study aids. Made by Shoug Alomran.
+    </footer>
+    <script>
+      (function () {
+        var root = document.documentElement,
+          body = document.body,
+          K = body.getAttribute("data-key") || "annotated";
+        function store(k, v) {
+          try {
+            localStorage.setItem(k, v);
+          } catch (e) {}
+        }
+        function read(k) {
+          try {
+            return localStorage.getItem(k);
+          } catch (e) {
+            return null;
+          }
+        }
+        // theme toggle (shared key with the rest of the site)
+        var tbtn = document.getElementById("t-theme");
+        function paintTheme() {
+          tbtn.textContent =
+            root.getAttribute("data-theme") === "dark" ? "Light" : "Dark";
+        }
+        tbtn.addEventListener("click", function () {
+          var t = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          root.setAttribute("data-theme", t);
+          store("shoug-theme", t);
+          paintTheme();
+        });
+        window.addEventListener("storage", function (ev) {
+          if (ev.key === "shoug-theme" && ev.newValue) {
+            root.setAttribute("data-theme", ev.newValue);
+            paintTheme();
+          }
+        });
+        paintTheme();
+        // global toggles
+        function setPressed(b, on) {
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        var bn = document.getElementById("t-notes"),
+          bh = document.getElementById("t-hl"),
+          ba = document.getElementById("t-ans");
+        function setCardNotes(card, show) {
+          var b = card.querySelector(".note-toggle");
+          if (!b) return;
+          card.classList.toggle("notes-hidden", !show);
+          b.textContent = show ? "Hide notes" : "Show notes";
+          b.setAttribute("aria-expanded", show ? "true" : "false");
+        }
+        bn.addEventListener("click", function () {
+          var on = bn.getAttribute("aria-pressed") !== "true";
+          setPressed(bn, on);
+          document.querySelectorAll(".card[data-slide]").forEach(function (c) {
+            setCardNotes(c, on);
+          });
+          store(K + "-notes", on ? "1" : "0");
+        });
+        bh.addEventListener("click", function () {
+          var on = bh.getAttribute("aria-pressed") !== "true";
+          setPressed(bh, on);
+          body.classList.toggle("no-hl", !on);
+          store(K + "-hl", on ? "1" : "0");
+        });
+        if (ba)
+          ba.addEventListener("click", function () {
+            var on = ba.getAttribute("aria-pressed") !== "true";
+            setPressed(ba, on);
+            document.querySelectorAll(".exam details").forEach(function (d) {
+              d.open = on;
+            });
+          });
+        // pick-an-answer questions: a wrong pick explains itself and can be retried; the right one ends the question
+        document.querySelectorAll(".q.pick").forEach(function (q) {
+          var verdict = q.querySelector(".verdict"),
+            reveal = q.querySelector(".reveal-ans"),
+            lis = [].slice.call(q.querySelectorAll(".picks>li"));
+          function finish(picked) {
+            lis.forEach(function (li) {
+              var b = li.querySelector(".choice"),
+                w = li.querySelector(".opt-why");
+              b.disabled = true;
+              if (li.hasAttribute("data-c")) b.classList.add("right");
+              if (w) w.hidden = false;
+            });
+            reveal.hidden = true;
+            q.classList.add("done");
+            verdict.className = "verdict " + (picked ? "good" : "shown");
+            verdict.textContent = picked
+              ? "Correct."
+              : "Here is the answer, and why the others are wrong.";
+          }
+          lis.forEach(function (li) {
+            var b = li.querySelector(".choice");
+            b.addEventListener("click", function () {
+              if (li.hasAttribute("data-c")) {
+                finish(true);
+                return;
+              }
+              b.classList.add("wrong");
+              b.disabled = true;
+              var w = li.querySelector(".opt-why");
+              if (w) w.hidden = false;
+              verdict.className = "verdict bad";
+              verdict.textContent = w
+                ? "Not quite. Read why below, then try again."
+                : "Not quite. Try again.";
+              reveal.hidden = false;
+            });
+          });
+          reveal.addEventListener("click", function () {
+            finish(false);
+          });
+        });
+        document.querySelectorAll(".note-toggle").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var c = b.closest(".card");
+            setCardNotes(c, c.classList.contains("notes-hidden"));
+          });
+        });
+        // overview show/hide (control lives inside the overview)
+        var ob = document.querySelector(".ov-toggle"),
+          ovb = document.getElementById("ov-body");
+        function setOv(show) {
+          ovb.hidden = !show;
+          ob.textContent = show ? "Hide overview" : "Show overview";
+          ob.setAttribute("aria-expanded", show ? "true" : "false");
+          store(K + "-ov", show ? "1" : "0");
+        }
+        ob.addEventListener("click", function () {
+          setOv(ovb.hidden);
+        });
+        if (read(K + "-ov") === "0") setOv(false);
+        if (read(K + "-notes") === "0") bn.click();
+        if (read(K + "-hl") === "0") bh.click();
+        // highlight <-> note linking
+        function link(card, n, on) {
+          card.querySelectorAll('[data-n="' + n + '"]').forEach(function (el) {
+            el.classList.toggle("on", on);
+          });
+        }
+        document.querySelectorAll(".card[data-slide]").forEach(function (card) {
+          card.querySelectorAll(".notes li[data-n]").forEach(function (li) {
+            var n = li.getAttribute("data-n");
+            li.addEventListener("mouseenter", function () {
+              link(card, n, true);
+            });
+            li.addEventListener("mouseleave", function () {
+              link(card, n, false);
+            });
+          });
+          card.querySelectorAll("rect.hl:not(.free)").forEach(function (r) {
+            var n = r.getAttribute("data-n");
+            r.addEventListener("mouseenter", function () {
+              link(card, n, true);
+            });
+            r.addEventListener("mouseleave", function () {
+              link(card, n, false);
+            });
+            r.addEventListener("click", function () {
+              if (card.classList.contains("notes-hidden"))
+                setCardNotes(card, true);
+              var li = card.querySelector('.notes li[data-n="' + n + '"]');
+              if (li) {
+                li.scrollIntoView({ behavior: "smooth", block: "center" });
+                li.classList.add("flash");
+                setTimeout(function () {
+                  li.classList.remove("flash");
+                }, 1600);
+              }
+            });
+          });
+        });
+        // scroll / flip view: flip shows one card (overview or slide) at a time
+        var cards = [].slice.call(document.querySelectorAll("main>.card")),
+          bar = document.querySelector(".flipbar"),
+          ms = document.getElementById("m-scroll"),
+          mf = document.getElementById("m-flip"),
+          jump = document.getElementById("f-jump"),
+          fp = document.getElementById("f-prev"),
+          fn = document.getElementById("f-next"),
+          cur = 0;
+        cards.forEach(function (c, i) {
+          var o = document.createElement("option");
+          var h = c.querySelector("h3");
+          o.value = i;
+          o.textContent =
+            (c.dataset.slide ? c.dataset.slide + " · " : "") +
+            (c.dataset.slide ? (h ? h.textContent : "") : "Overview");
+          jump.appendChild(o);
+        });
+        function indexOf(id) {
+          for (var i = 0; i < cards.length; i++) {
+            if (cards[i].id === id) return i;
+          }
+          return -1;
+        }
+        function show(i, noScroll) {
+          cur = Math.max(0, Math.min(cards.length - 1, i));
+          cards.forEach(function (c, k) {
+            c.classList.toggle("current", k === cur);
+          });
+          jump.value = cur;
+          fp.disabled = cur === 0;
+          fn.disabled = cur === cards.length - 1;
+          try {
+            history.replaceState(null, "", "#" + cards[cur].id);
+          } catch (e) {}
+          if (!noScroll) window.scrollTo(0, 0);
+        }
+        function setMode(flip) {
+          body.classList.toggle("flip", flip);
+          bar.hidden = !flip;
+          setPressed(mf, flip);
+          setPressed(ms, !flip);
+          store(K + "-mode", flip ? "flip" : "scroll");
+          if (flip) {
+            var top = 0;
+            for (var i = 0; i < cards.length; i++) {
+              if (cards[i].getBoundingClientRect().bottom > 90) {
+                top = i;
+                break;
+              }
+            }
+            show(top);
+          } else {
+            cards[cur].scrollIntoView();
+          }
+        }
+        ms.addEventListener("click", function () {
+          if (body.classList.contains("flip")) setMode(false);
+        });
+        mf.addEventListener("click", function () {
+          if (!body.classList.contains("flip")) setMode(true);
+        });
+        fp.addEventListener("click", function () {
+          show(cur - 1);
+        });
+        fn.addEventListener("click", function () {
+          show(cur + 1);
+        });
+        jump.addEventListener("change", function () {
+          show(+jump.value);
+        });
+        document.addEventListener("keydown", function (ev) {
+          if (
+            !body.classList.contains("flip") ||
+            ev.altKey ||
+            ev.ctrlKey ||
+            ev.metaKey
+          )
+            return;
+          var t = ev.target.tagName;
+          if (t === "INPUT" || t === "SELECT" || t === "TEXTAREA") return;
+          if (ev.key === "ArrowRight" || ev.key === "PageDown") {
+            show(cur + 1);
+            ev.preventDefault();
+          } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") {
+            show(cur - 1);
+            ev.preventDefault();
+          }
+        });
+        var sx = null,
+          sy = null;
+        document.addEventListener(
+          "touchstart",
+          function (ev) {
+            if (ev.touches.length === 1) {
+              sx = ev.touches[0].clientX;
+              sy = ev.touches[0].clientY;
+            }
+          },
+          { passive: true },
+        );
+        document.addEventListener(
+          "touchend",
+          function (ev) {
+            if (sx === null || !body.classList.contains("flip")) return;
+            var dx = ev.changedTouches[0].clientX - sx,
+              dy = ev.changedTouches[0].clientY - sy;
+            sx = null;
+            if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy))
+              show(cur + (dx < 0 ? 1 : -1));
+          },
+          { passive: true },
+        );
+        // in-page links (contents list, "seen again") go to the right card in flip mode
+        document.addEventListener("click", function (ev) {
+          var a = ev.target.closest && ev.target.closest('a[href^="#"]');
+          if (!a || !body.classList.contains("flip")) return;
+          var i = indexOf(a.getAttribute("href").slice(1));
+          if (i >= 0) {
+            ev.preventDefault();
+            show(i);
+          }
+        });
+        var start = indexOf(location.hash.slice(1));
+        if (read(K + "-mode") === "flip") {
+          body.classList.add("flip");
+          bar.hidden = false;
+          setPressed(mf, true);
+          setPressed(ms, false);
+          show(start >= 0 ? start : 0);
+        }
+      })();
+    </script>
+
+    <script src="/javascripts/annotated-search.js?v=1"></script>
+    <script src="/javascripts/slide-bookmarks.js?v=3"></script>
+  </body>
+</html>

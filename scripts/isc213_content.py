@@ -2015,6 +2015,234 @@ LECTURE_WRITTEN = {
 }
 
 
+# Lectures 10–12 — taught after Midterm 2, so they sit outside MIDTERM_2_SCOPE.
+# Correct answers are written first; _spread rotates them.
+LECTURE_MCQ.update({
+    10: [
+        ("Sara loads 2,000 riyals onto a card and spends only from that balance. What is the ruling on using it?", "L10 · Block 3",
+         ["Permissible, because it works like cash and involves no loan", "Not permitted, because every card is a form of interest-based loan", "Permissible only if she settles the balance within forty days", "Disliked, because the card’s limit is not renewed automatically"], 0,
+         "A covered card is functionally equivalent to paying in cash and involves no loan (qard)."),
+        ("A card’s balance must be paid in full within 40 days, and the limit returns only once it is settled. Which card is this?", "L10 · Block 4",
+         ["Instant credit (charge card)", "Revolving (renewed) credit", "Prepaid (covered) card", "Global organization card"], 0,
+         "Instant credit is paid in full by the due date; the limit is not restored until the balance is settled."),
+        ("A customer repays in monthly installments with interest, and the limit renews as payments continue. The ruling on this card?", "L10 · Block 7",
+         ["Not permitted, because of riba on deferred payments", "Permitted, as long as the installments stay on time", "Permitted, if the interest rate is low and is fixed", "Permitted, because the limit renews with each payment"], 0,
+         "Revolving credit involves interest on deferred payments, so it is not permitted."),
+        ("An instant-credit card has no interest during the grace period but stipulates a fee for late payment. Does it meet the conditions?", "L10 · Blocks 4 and 7",
+         ["No: a stipulated late charge is a forbidden element", "Yes: the fee applies only if the holder pays late", "Yes: an instant-credit card is always permissible", "No: instant-credit cards are forbidden in every case"], 0,
+         "Stipulating a penalty or extra charge for payment delays is one of the forbidden elements."),
+        ("In the five parties to a card transaction, which one is the acquirer?", "L10 · Block 5",
+         ["The merchant’s bank", "The client’s bank", "The global card organization", "The cardholder"], 0,
+         "The issuer is the client’s bank; the acquirer is the merchant’s bank."),
+        ("Which order is correct for a card transaction, after the purchase and receipt?", "L10 · Block 6",
+         ["Merchant’s bank seeks clearance, issuer pays, merchant’s bank is paid, issuer collects", "Issuer collects, merchant’s bank seeks clearance, global organization pays the issuer", "Global organization collects from the cardholder, then pays the merchant directly", "Issuer pays the merchant directly, and the merchant’s bank then bills the cardholder"], 0,
+         "Clearance goes through the global organization; the issuer pays it, it pays the merchant’s bank, and the issuer collects from the cardholder."),
+        ("Omar’s card contract stipulates interest, but he always pays within the grace period and never pays any. The Fiqh Council’s ruling?", "L10 · Block 8",
+         ["Not permissible to issue or use it", "Permissible, as he never pays interest", "Permissible if he pays at the first opportunity", "Permissible for purchases, but not for withdrawals"], 0,
+         "The resolution forbids it even if the holder is determined to pay within the free grace period."),
+        ("A bank charges a fixed fee for issuing a card. When is that fee permissible?", "L10 · Blocks 8 and 9",
+         ["When it is based on the real cost of the service", "When it rises with the cardholder’s credit limit", "When the cardholder has agreed to it in writing", "When it is collected only in the first year"], 0,
+         "Set issue and renewal fees are allowed on the basis of the real cost of the services."),
+        ("A store adds 3% to card purchases so that the bank’s commission is covered. Why is the bank’s commission now a problem?", "L10 · Blocks 8 and 9",
+         ["The business must sell at the same price as for cash", "The bank may never take commission from a business", "The commission should be charged to the cardholder", "The store ought to pay the global organization first"], 0,
+         "The bank may take commission so long as the business sells at the same price as transactions for cash."),
+        ("A bank charges a cash-withdrawal fee of 2% of the amount withdrawn. Why does that conflict with the resolution?", "L10 · Block 8",
+         ["Fees must not be tied to the amount of the loan", "Cash can never be withdrawn using a credit card", "Withdrawal fees must be paid by the merchant’s bank", "Only the global organization may charge any such fee"], 0,
+         "A withdrawal is a loan; set fees must have nothing to do with its amount or period, and anything above actual cost is riba."),
+        ("Why does the Council forbid buying gold with an uncovered card?", "L10 · Block 8",
+         ["Because of the delayed payment", "Because gold cannot be priced in riyals", "Because card fees apply to gold", "Because merchants cannot accept cards"], 0,
+         "Point 4 of the resolution gives the delayed payment as the reason."),
+        ("Lina is offered a job selling a revolving credit card. What is the ruling on taking it?", "L10 · Block 10",
+         ["Not permissible, because it helps in sin and transgression", "Permissible, because she will not use the card herself", "Permissible, provided that her salary comes from lawful work", "Permissible, provided that customers understand the interest"], 0,
+         "Marketing a haram type of card helps in sin; the hadith of Jaabir curses all who enable riba."),
+    ],
+    11: [
+        ("Per the lecture’s definitions, placing money on who will win tonight’s match is...", "L11 · Block 1",
+         ["Betting: risking money on an event decided by others’ effort", "Gambling only if it takes place inside of a licensed casino", "A permitted contest because the result depends on real skill", "A sale, because the money is exchanged for a promised result"], 0,
+         "Betting risks money on a future event that depends on other people’s effort."),
+        ("Which of these is listed in the lecture as a non-casino gambling game?", "L11 · Block 2",
+         ["Lotteries and scratch cards", "Horse racing with prizes", "Sponsored charity quizzes", "Store gift vouchers"], 0,
+         "Lotteries, pull-tab games and scratch cards are listed among non-casino games."),
+        ("A shop raises its usual prices and enters each buyer in a prize draw. How does the lecture classify this?", "L11 · Block 2",
+         ["A form of gambling, since buyers fund the prize", "An excluded store reward, since goods are sold", "A sponsored contest, since the shop gives prizes", "Permissible, as long as the prize is not cash"], 0,
+         "No one can enter without buying, and the raised price contributes to the prize."),
+        ("A TV show charges viewers per text message to enter its prize draw. This is...", "L11 · Block 2",
+         ["A listed form of gambling", "A third-party sponsored prize", "An excluded promotional reward", "Allowed if the charge is small"], 0,
+         "Competitions requiring payment for a call, message or other financial cost are listed forms."),
+        ("In the verse on gambling, what are al-Ansaab and al-Azlaam?", "L11 · Block 3",
+         ["Sacrifices for idols and arrows for seeking luck", "Types of intoxicants and types of card games", "Two kinds of prize allowed in the archery contest", "Sacrifices at Hajj and arrows used for hunting"], 0,
+         "The verse explains al-Ansaab as sacrifices for idols and al-Azlaam as arrows for seeking luck or decision."),
+        ("Friends play for no money, but the game regularly causes arguments and makes them miss prayer. The ruling?", "L11 · Block 4",
+         ["Not allowed, even with no monetary wager", "Allowed, because no money changes hands", "Allowed, if they agree to stop arguing", "Disliked, but it is never truly forbidden"], 0,
+         "The verse’s reasons, not only the money, are behind the prohibition."),
+        ("Which is one of the stated wisdoms behind the ban on gambling?", "L11 · Block 5",
+         ["Earnings come from luck rather than hard work", "It raises the price of goods in the market", "It shrinks what banks can earn in interest", "It reduces the money collected through zakat"], 0,
+         "Gambling makes a person rely on luck and wishful thinking instead of hard work."),
+        ("A company donates a prize for a free university quiz. Why is this outside gambling?", "L11 · Block 6",
+         ["A non-participant funds it, so no contestant risks loss", "The contest is educational and takes place on a campus", "The prize is given as goods rather than as a cash sum", "All contests that take place at universities are exempt"], 0,
+         "With third-party sponsorship, competitors do not contribute to the prize pool."),
+        ("Competitors in a horse race each contribute to the prize. Why is this allowed when the same arrangement in chess is not?", "L11 · Blocks 6 and 7",
+         ["The hadith excepts camel-racing, horse-racing and archery", "Horse racing depends on luck much less than chess does", "A horse race always has a third-party sponsor behind it", "Chess is forbidden in itself, with or without any prize"], 0,
+         "Contestant-funded prizes are a classical exception for horse racing, camel racing and archery only."),
+        ("According to Ibn al-Qayyim, why were those contests permitted?", "L11 · Block 6",
+         ["To encourage preparation for Jihad", "To support trade between the tribes", "To raise funds for the needy and poor", "To entertain the people during Eid"], 0,
+         "He says they were permitted to encourage Muslims to learn horse-riding and prepare for Jihad."),
+        ("A store gives a voucher to anyone spending over 500 riyals, at no extra charge. How is this classified?", "L11 · Block 6",
+         ["Excluded: the customer pays only for the goods", "Gambling: the voucher’s value is unknown beforehand", "Gambling: customers must spend money to receive it", "Excluded: only because it is under 500 riyals in value"], 0,
+         "Promotional vouchers carry no extra charge for entry, so there is no element of unlawful risk."),
+        ("A free contest makes participants forfeit a deposit if they lose. Which condition does it fail?", "L11 · Block 7",
+         ["Zero-loss participation", "Legitimate purpose", "No neglect of obligations", "Third-party announcement"], 0,
+         "Each contestant must win a prize or leave without a loss."),
+    ],
+    12: [
+        ("A distributor earns on her own sales and a percentage on the sales of those she recruited. This describes...", "L12 · Block 1",
+         ["Multi-level marketing", "A covered credit card", "A single-tier retail job", "A third-party competition"], 0,
+         "MLM distributors earn from personal sales and from sales by their recruits."),
+        ("Which is named in the lecture as a company using MLM?", "L12 · Block 1",
+         ["Discovery Toys", "Mastercard", "Murabaha Bank", "Dream Contest"], 0,
+         "Avon, Telecom Plus and Discovery Toys are the named examples."),
+        ("Why do MLM distributors keep hiring new workers?", "L12 · Block 1",
+         ["More layers bring greater commissions for early joiners", "The company’s rules require a new hire every single month", "New recruits take over the distributor’s existing debt", "The law requires a minimum number in each sales network"], 0,
+         "As layers increase, early joiners earn greater commissions, which drives recruitment."),
+        ("A program promises returns mainly for signing up new members and has no real product. It is...", "L12 · Blocks 2 and 3",
+         ["A pyramid scheme", "A marketing strategy", "A store reward", "An installment sale"], 0,
+         "Returns primarily for enrolling new people, not for selling real products, define a pyramid scheme."),
+        ("Why does a pyramid scheme inevitably fail?", "L12 · Block 2",
+         ["Recruitment becomes mathematically impossible to sustain", "Its products are too expensive to keep in regular stock", "The commissions that it pays are taxed at the highest rate", "Its top members retire and take the customer lists away"], 0,
+         "As recruitment expands, the model quickly becomes mathematically impossible to sustain."),
+        ("Where does the money flow in a pyramid scheme?", "L12 · Block 2",
+         ["Exclusively upward", "From top to bottom", "Equally among all members", "To the buyers of products"], 0,
+         "Pyramid schemes involve money flowing exclusively upward, with no genuine sale of products."),
+        ("Which row of the comparison chart is the same for MLM and pyramid schemes?", "L12 · Block 3",
+         ["Ruling in Islam", "Legality in law", "Core focus", "Product"], 0,
+         "They differ in law and in setup, but the ruling in Islam is the same for both."),
+        ("“This MLM is a legal, registered company selling real products, so it must be halal.” What is wrong with this?", "L12 · Blocks 3 and 4",
+         ["Legal status does not settle the ruling in Islam", "MLM companies are always illegal under the law", "Registered companies may not sell real products", "Selling real products is what makes MLM forbidden"], 0,
+         "MLM is legal in law but forbidden in Islam, because the drive is commission rather than the product."),
+        ("What is the main reason given by the Standing Committee for the prohibition?", "L12 · Block 4",
+         ["The drive is commission, not the product", "The goods are priced above the market", "The distributors are not paid a salary", "The companies are based outside the region"], 0,
+         "Because the focus is commission and not the product, it leads to the forbidden deeds listed."),
+        ("Which set lists the three forbidden elements?", "L12 · Block 4",
+         ["Usury, gharar, and taking money unjustly", "Bribery, hoarding, and false advertising", "Usury, gambling, and selling intoxicants", "Gharar, monopoly, and breach of contract"], 0,
+         "The slide lists usury, gharar and taking people’s money unjustly."),
+        ("A company requires new members to buy a starter kit before they can sell. Which condition does it fail?", "L12 · Block 5",
+         ["No upfront costs", "Genuine product sales", "Direct-sale commissions", "Search before joining"], 0,
+         "Joining must be entirely free, with no required fees or mandatory purchases."),
+        ("A free program sells real products but also pays you on your recruits’ sales. What must change for it to be permissible?", "L12 · Block 5",
+         ["Pay commissions on direct, personal sales only", "Charge a small fee for joining the program", "Pay the recruits a little more than the seller", "Limit the network to three levels of recruits"], 0,
+         "Commissions are paid solely on direct, personal sales, with no multi-tier payouts."),
+    ],
+})
+
+LECTURE_WRITTEN.update({
+    10: [
+        ("Compare covered, instant-credit and revolving cards in how they are funded, repaid and renewed, and give the ruling on each.", "L10 · Blocks 2–4",
+         '''<p><strong>Covered (prepaid):</strong> funds are loaded before use and purchases come off the balance; the limit
+     renews only when more funds are loaded. Permissible, because it works like cash and involves no loan (qard).</p>
+     <p><strong>Instant credit (charge card):</strong> the issuer pays first and the balance is due in full by a deadline,
+     such as 40 days; the limit returns only when it is settled. Permissible if free of riba conditions and late penalties.</p>
+     <p><strong>Revolving credit:</strong> repaid in installments subject to interest; the limit renews with ongoing
+     payments. Not permitted, because it involves riba on deferred payments.</p>'''),
+        ("Name the five parties to a card transaction and describe the steps from purchase to collection.", "L10 · Blocks 5–6",
+         '''<p><strong>Parties (MAGIC):</strong> Merchant, Acquirer (the merchant’s bank), Global organization (e.g. Visa or
+     Mastercard), Issuer (the client’s bank) and Cardholder.</p>
+     <p><strong>Steps:</strong> the cardholder presents the card; the merchant records the details and gives a receipt; the
+     merchant submits the month’s receipts to its bank; that bank requests clearance through the global organization with
+     the issuing bank; the issuer transfers the funds, typically in US dollars, to the global organization at the applicable
+     exchange rate; the global organization pays the merchant’s bank; the issuer collects from the cardholder.</p>'''),
+        ("State the conditions that make a credit card permissible, and explain why intending to pay within the grace period does not rescue a card that stipulates interest.", "L10 · Blocks 7–8",
+         '''<p>A card is permissible if free of three elements (PAR): a <strong>P</strong>enalty or extra charge for late payment,
+     an <strong>A</strong>bove-actual-cost charge for cash withdrawals, and <strong>R</strong>evolving credit.</p>
+     <p>Fiqh Council resolution 108 (1/12) says it is not permissible to issue or use a non-covered card if riba or interest
+     is stipulated, even if the holder is determined to pay within the free grace period. The ruling looks at the condition
+     in the contract, not at the holder’s intention.</p>'''),
+        ("Explain what the Fiqh Council permits and forbids regarding issue fees, merchant commission, cash withdrawals, and buying gold, silver or currencies.", "L10 · Blocks 8–9",
+         '''<p><strong>Issue and renewal fees:</strong> permitted as set fees on the basis of the real cost of the services.</p>
+     <p><strong>Merchant commission:</strong> permitted so long as the business sells at the same price as for cash.</p>
+     <p><strong>Cash withdrawals:</strong> a loan from the issuer. Acceptable if it leads to no interest and set fees have
+     nothing to do with the amount or period. Anything above the actual cost is haram because it is riba.</p>
+     <p><strong>Gold, silver and currencies:</strong> not permissible to buy with the uncovered card, because of the
+     delayed payment.</p>'''),
+        ("Is it permissible to work in marketing credit cards? Support your answer with the lecture’s evidence.", "L10 · Block 10",
+         '''<p>It depends on the card. Marketing a permissible type, free of haram matters, is fine. Marketing a haram type is not
+     permissible, because that helps in sin and transgression.</p>
+     <p>The evidence is the hadith narrated by Muslim (1598) from Jaabir: the Messenger of Allah ﷺ cursed the one who consumes
+     riba and the one who pays it, the one who writes it down and the two who witness it, and said they are all the same.
+     Everyone who enables riba shares the sin.</p>'''),
+    ],
+    11: [
+        ("Define gambling, distinguish it from betting, and give six forms it takes according to the lecture.", "L11 · Blocks 1–2",
+         '''<p><strong>Gambling</strong> is wagering money or something of material value on an event with an uncertain outcome,
+     with the primary intent of winning additional money or goods. In the lecture’s distinction, gambling is playing games of
+     chance for money, while <strong>betting</strong> is risking money on a future event that depends on other people’s effort.</p>
+     <p><strong>Forms:</strong> casino games; non-casino games such as lotteries and scratch cards; Pokémon cards; sports
+     betting; shop contests based on drawing that require a purchase; and competitions that require paying for a call or message.</p>'''),
+        ("Give the ruling on gambling with its evidence, then explain the ruling when no money is involved.", "L11 · Blocks 3–4",
+         '''<p><strong>Ruling:</strong> gambling is haram. The verse calls intoxicants, gambling, al-Ansaab and al-Azlaam an
+     abomination of Shaytaan’s handiwork and commands avoiding them.</p>
+     <p><strong>With no money:</strong> Allah says Satan wants to cause animosity and hatred through intoxicants and gambling
+     and to avert you from the remembrance of Allah and from prayer. These are the main reasons for the prohibition, not only
+     the money, so a game is not allowed if it causes these sins, even with no monetary wager.</p>'''),
+        ("Explain the wisdom behind the prohibition of gambling.", "L11 · Block 5",
+         '''<p><strong>Families destroyed:</strong> wealth is lost through haram means; rich families become poor and proud souls
+     are humiliated.</p>
+     <p><strong>Luck replaces work:</strong> earnings rest on luck and wishful thinking instead of hard work.</p>
+     <p><strong>Unwell:</strong> it causes stress, illness and nervous breakdowns, breeds hatred and, in most cases, leads to
+     crime, suicide, insanity and chronic illness.</p>
+     <p><strong>Bad behavior:</strong> it pushes the gambler toward alcohol, drugs, bad company, cheating and deception.</p>'''),
+        ("Describe the three kinds of competition excluded from gambling, with the evidence and reasoning for each.", "L11 · Block 6",
+         '''<p><strong>Third-party sponsored:</strong> the prize comes from a non-participant, so competitors do not contribute to
+     the prize pool and risk no financial loss.</p>
+     <p><strong>Horse racing, camel racing and archery:</strong> based on the hadith “There should be no (money) prizes for
+     competitions except in camel-racing, horse-racing and archery.” Jurists agree unanimously, and Ibn al-Qayyim explains they
+     were permitted to encourage Muslims to learn horse-riding and prepare for Jihad.</p>
+     <p><strong>Gift vouchers and store rewards:</strong> given to customers who buy over a specified amount. The customer pays
+     only for the goods, with no extra charge for entry, so there is no unlawful risk.</p>'''),
+        ("State the four conditions for a permissible competition, then apply them to a contest where each entrant pays 50 riyals and the winner takes the total.", "L11 · Blocks 7–8",
+         '''<p><strong>Conditions (LOSS):</strong> a Legitimate purpose and means; Obligations not neglected, with no haram acts; a
+     lawful Source of prize, not funded by the contestants (except horse racing, camel racing and archery); and Safety from
+     loss, so that each contestant either wins a prize or leaves without a loss.</p>
+     <p><strong>Application:</strong> this contest fails two conditions. The prize is funded by the contestants and it is not
+     one of the excepted contests, and every losing entrant loses 50 riyals. It is gambling.</p>'''),
+    ],
+    12: [
+        ("Define multi-level marketing and explain why its structure pushes distributors to keep recruiting.", "L12 · Block 1",
+         '''<p>In MLM, individuals sell products directly to the public through direct sales and word of mouth. Distributors earn
+     commissions on their own personal sales and on sales by the people they recruit.</p>
+     <p>As the layers increase, early joiners earn greater commissions, which can reach thousands of riyals, so distributors
+     are pushed to keep hiring new workers to maximize earnings from team sales. Examples include Avon, Telecom Plus and
+     Discovery Toys.</p>'''),
+        ("Define a pyramid scheme and explain why it cannot last.", "L12 · Block 2",
+         '''<p>A pyramid scheme promises members returns primarily for enrolling new people, rather than for selling actual
+     products or services.</p>
+     <p>As recruitment expands, the model quickly becomes mathematically impossible to sustain. Most members fail to profit,
+     money flows exclusively upward with no genuine sale of products, and participants try to make money without providing
+     real goods, services or sustainable effort. Such schemes are unsustainable and frequently illegal.</p>'''),
+        ("Compare multi-level marketing and pyramid schemes across the rows of the lecture’s chart.", "L12 · Block 3",
+         '''<p><strong>What it is:</strong> a marketing strategy vs. a fraudulent investment scheme.</p>
+     <p><strong>Core focus:</strong> selling to consumers through independent distributors vs. recruiting new members.</p>
+     <p><strong>Compensation:</strong> commissions on direct sales plus a percentage of recruits’ sales vs. almost exclusively
+     enrollment fees paid by new members.</p>
+     <p><strong>Product:</strong> a real channel for goods and services vs. often fake, overpriced or non-existent, a front
+     for recruitment.</p>
+     <p><strong>Legality in law:</strong> legal vs. illegal. <strong>Ruling in Islam:</strong> illegal for both.</p>'''),
+        ("Give the Islamic ruling on these practices and the reasons stated in the lecture.", "L12 · Block 4",
+         '''<p>The Standing Committee for Academic Research and Issuing Fatwas has stated that the practice is forbidden. The main
+     reason is that the drive of this strategy is to earn commission and is not focused on the product itself.</p>
+     <p>That leads to three forbidden deeds: it involves <strong>usury</strong>; it is <strong>gharar</strong>, a deceiving
+     practice of marketing in which more levels bring more commission; and it amounts to <strong>taking people’s money
+     unjustly</strong>.</p>'''),
+        ("State how this kind of sale can be made permissible, and the advice the lecture gives before joining a company.", "L12 · Blocks 5–6",
+         '''<p><strong>Conditions (DUG):</strong> <strong>D</strong>irect-sale commissions only, paid on personal sales with no
+     multi-tier payouts from recruits; no <strong>U</strong>pfront costs, with joining free and no required purchases;
+     <strong>G</strong>enuine sales of real, fairly-priced products rather than recruitment fees or commission chains.</p>
+     <p><strong>Advice:</strong> before working for a company or buying from it, search thoroughly into its history, how its
+     employees are paid and the types of products it sells. Aim to earn the profit from marketing the item, not from marketing
+     the commissions.</p>'''),
+    ],
+})
+
+
 def _spread(bank):
     """Rotate each question's options so the correct answer's position varies."""
     out = []
