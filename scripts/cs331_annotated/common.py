@@ -13,7 +13,7 @@ DECKS = {
     'ch2.2': ('04-physical-layer-part-2', 'physical-layer-part-2', 'physical-layer-part-2', 'Ch 2 Part 2 · Physical Layer'),
     'ch3.1': ('05-data-link-layer-part-1', 'data-link-layer-part-1', 'data-link-layer-part-1', 'Ch 3 Part 1 · Data Link Layer'),
     'ch3.2': ('06-data-link-layer-part-2', 'data-link-layer-part-2', 'data-link-layer-part-2', 'Ch 3 Part 2 · Data Link Layer'),
-    'ch4': ('07-local-area-networks', 'local-area-networks', 'data-link-layer-part-3', 'Ch 4 · Local Area Networks (Ethernet)'),
+    'ch4': ('07-local-area-networks', 'local-area-networks', 'local-area-networks', 'Ch 4 · Local Area Networks (Ethernet)'),
     'ch6': ('08-connecting-devices-and-vlans', 'connecting-devices-and-vlans', 'interconnecting-devices-and-vlans',
             'Ch 6 · Connecting Devices & Virtual LANs'),
     'ch7': ('09-network-layer-data-transfer', 'network-layer-data-transfer', 'network-layer-data-transfer-part-1',
