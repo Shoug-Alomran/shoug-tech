@@ -428,7 +428,9 @@
     var tipsHost;
     var faq = document.querySelector(".course-faq");
     var article = document.querySelector(".content-section");
-    var panel = document.createElement("div");
+    var panel =
+      document.getElementById("course-ratings-host") ||
+      document.createElement("div");
     panel.className = "crt-panel";
     panel.setAttribute("aria-live", "polite");
 
@@ -440,21 +442,29 @@
         },
       );
       var next = Math.max.apply(null, nums.concat(0)) + 1;
-      var label = document.createElement("div");
-      label.className = "section-label";
-      label.id = "section-course-ratings";
-      label.textContent = (next < 10 ? "0" : "") + next + "_COURSE_RATINGS";
-      article.appendChild(label);
-      article.appendChild(panel);
-      var tipsLabel = document.createElement("div");
-      tipsLabel.className = "section-label";
-      tipsLabel.id = "section-course-tips";
-      tipsLabel.textContent =
-        (next + 1 < 10 ? "0" : "") + (next + 1) + "_STUDENT_TIPS";
-      article.appendChild(tipsLabel);
-      tipsHost = document.createElement("div");
+      var label = document.getElementById("section-course-ratings");
+      if (!label) {
+        label = document.createElement("div");
+        label.className = "section-label";
+        label.id = "section-course-ratings";
+        label.textContent = (next < 10 ? "0" : "") + next + "_COURSE_RATINGS";
+        article.appendChild(label);
+      }
+      if (!panel.parentNode) article.appendChild(panel);
+      var tipsLabel = document.getElementById("section-course-tips");
+      if (!tipsLabel) {
+        tipsLabel = document.createElement("div");
+        tipsLabel.className = "section-label";
+        tipsLabel.id = "section-course-tips";
+        tipsLabel.textContent =
+          (next + 1 < 10 ? "0" : "") + (next + 1) + "_STUDENT_TIPS";
+        article.appendChild(tipsLabel);
+      }
+      tipsHost =
+        document.getElementById("course-tips-host") ||
+        document.createElement("div");
       tipsHost.className = "crt-panel crt-tips-panel";
-      article.appendChild(tipsHost);
+      if (!tipsHost.parentNode) article.appendChild(tipsHost);
     } else if (faq) {
       host = document.createElement("section");
       host.className = "crt-standalone";
@@ -471,7 +481,9 @@
       return;
     }
 
-    var meta = document.querySelector(".meta-content");
+    // Several content cards use `.meta-content`; only the course metadata
+    // panel should receive the injected rating shortcuts.
+    var meta = document.querySelector(".meta-panel .meta-content");
     var metaVal = null;
     if (meta) {
       var row = document.createElement("div");

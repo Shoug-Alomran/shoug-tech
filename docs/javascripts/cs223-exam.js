@@ -303,7 +303,13 @@
       bar.style.width = (parts.length ? (done / parts.length) * 100 : 0) + "%";
     var label = root.querySelector(".ex-progress-label");
     if (label)
-      label.textContent = done + " / " + parts.length + " parts marked";
+      label.textContent =
+        done +
+        " / " +
+        parts.length +
+        " " +
+        (root.getAttribute("data-progress-unit") || "parts") +
+        " marked";
     var score = root.querySelector("[data-score]");
     if (score) score.textContent = fmt(earned) + " / " + fmt(total);
     var res = root.querySelector(".ex-result");
