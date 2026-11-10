@@ -43,7 +43,7 @@ jobs:
           node scripts/build-course-manifest.js
           node scripts/build-search-index.js
           sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          sudo apt-get install -y poppler-utils qpdf
           python3 scripts/build_ai_slide_contexts.py
           python3 scripts/optimize_site_html.py
 
@@ -89,8 +89,19 @@ jobs:
       - name: Test indexing edge rules
         run: node --test workers/indexing/src/index.test.js
 
+      # qpdf recompresses PDF structure and Flate streams losslessly. It does not
+      # downsample, rasterize, or recompress embedded images; originals are kept
+      # whenever the optimized candidate is not smaller or fails validation.
+      - name: Compress PDFs losslessly
+        run: python3 scripts/compress_pdfs_losslessly.py docs
+
       - name: Seal paid course content before publishing
         run: python3 scripts/secure_ethics_content.py --seal --check
+
+      - name: Report deployment artifact size
+        run: |
+          du -sh docs
+          find docs -type f | wc -l
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
