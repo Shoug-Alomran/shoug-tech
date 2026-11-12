@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transport Layer Quiz — TCP &amp; UDP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-void: #05020a;
+        --surface: #0e0816;
+        --surface-2: #160d24;
+        --line: #2a1b40;
+        --text: #ece6f5;
+        --muted: #9a8db0;
+        --brand-purple: #b829ea;
+        --brand-soft: rgba(184, 41, 234, 0.14);
+        --ok: #2de2a6;
+        --ok-soft: rgba(45, 226, 166, 0.12);
+        --alert-red: #ff2a4b;
+        --alert-soft: rgba(255, 42, 75, 0.12);
+        --glow: 0 0 24px rgba(184, 41, 234, 0.28);
+        --f-head: "Rajdhani", "Inter", system-ui, sans-serif;
+        --f-body: "Inter", system-ui, sans-serif;
+        --f-mono: "JetBrains Mono", ui-monospace, monospace;
+        color-scheme: dark;
+      }
+      :root[data-theme="light"] {
+        --bg-void: #f6f1fb;
+        --surface: #ffffff;
+        --surface-2: #f0e8f8;
+        --line: #d9c8ec;
+        --text: #1b1029;
+        --muted: #6a5a80;
+        --brand-purple: #9a14c9;
+        --brand-soft: rgba(154, 20, 201, 0.09);
+        --ok: #0b8a62;
+        --ok-soft: rgba(11, 138, 98, 0.1);
+        --alert-red: #d4112f;
+        --alert-soft: rgba(212, 17, 47, 0.08);
+        --glow: 0 0 0 rgba(0, 0, 0, 0);
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg-void);
+        color: var(--text);
+        font-family: var(--f-body);
+        line-height: 1.55;
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          60% 40% at 50% -10%,
+          var(--brand-soft),
+          transparent 70%
+        );
+      }
+      .wrap {
+        position: relative;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 28px 18px 60px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .brand {
+        font-family: var(--f-mono);
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .brand b {
+        color: var(--brand-purple);
+        font-weight: 600;
+      }
+      .cursor {
+        display: inline-block;
+        width: 0.55em;
+        height: 1em;
+        background: var(--brand-purple);
+        vertical-align: -2px;
+        margin-left: 2px;
+        animation: blink 1.1s steps(1) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible,
+      .opt:focus-visible {
+        outline: 2px solid var(--brand-purple);
+        outline-offset: 2px;
+      }
+      .icon-btn {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-family: var(--f-mono);
+        font-size: 0.78rem;
+      }
+      .icon-btn:hover {
+        border-color: var(--brand-purple);
+      }
+      h1 {
+        font-family: var(--f-head);
+        font-weight: 700;
+        font-size: clamp(2rem, 6vw, 2.9rem);
+        line-height: 1.05;
+        margin: 0 0 10px;
+        letter-spacing: 0.01em;
+      }
+      h2 {
+        font-family: var(--f-head);
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin: 0 0 12px;
+        line-height: 1.25;
+      }
+      .lead {
+        color: var(--muted);
+        max-width: 56ch;
+        margin: 0 0 24px;
+      }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: var(--glow);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .primary {
+        background: var(--brand-purple);
+        color: #fff;
+        border: 0;
+        border-radius: 8px;
+        padding: 11px 22px;
+        font-family: var(--f-head);
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.03em;
+      }
+      .primary:hover {
+        filter: brightness(1.1);
+      }
+      .primary:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-weight: 500;
+      }
+      .ghost:hover {
+        border-color: var(--brand-purple);
+      }
+      .toggles {
+        display: grid;
+        gap: 10px;
+        margin: 0 0 22px;
+      }
+      .toggle {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      .toggle input {
+        accent-color: var(--brand-purple);
+        width: 18px;
+        height: 18px;
+      }
+      .bar {
+        height: 6px;
+        background: var(--surface-2);
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 0 0 6px;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--brand-purple);
+        transition: width 0.3s;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--f-mono);
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .opts {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .opt {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-align: left;
+        width: 100%;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .opt:hover:not(:disabled) {
+        border-color: var(--brand-purple);
+      }
+      .opt .k {
+        font-family: var(--f-mono);
+        font-size: 0.8rem;
+        color: var(--brand-purple);
+        border: 1px solid currentColor;
+        border-radius: 5px;
+        min-width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        flex: none;
+        margin-top: 1px;
+      }
+      .opt.correct {
+        border-color: var(--ok);
+        background: var(--ok-soft);
+      }
+      .opt.correct .k {
+        color: var(--ok);
+      }
+      .opt.wrong {
+        border-color: var(--alert-red);
+        background: var(--alert-soft);
+      }
+      .opt.wrong .k {
+        color: var(--alert-red);
+      }
+      .opt:disabled {
+        cursor: default;
+        color: inherit;
+      }
+      .fb {
+        border-left: 3px solid var(--ok);
+        background: var(--ok-soft);
+        border-radius: 0 8px 8px 0;
+        padding: 10px 14px;
+        font-size: 0.93rem;
+        margin: 0 0 16px;
+      }
+      .fb.bad {
+        border-color: var(--alert-red);
+        background: var(--alert-soft);
+      }
+      .fb strong {
+        font-family: var(--f-head);
+        font-size: 1.05rem;
+      }
+      .score {
+        font-family: var(--f-head);
+        font-weight: 700;
+        font-size: 4rem;
+        line-height: 1;
+        color: var(--brand-purple);
+      }
+      .score small {
+        font-size: 1.5rem;
+        color: var(--muted);
+      }
+      .review {
+        display: grid;
+        gap: 12px;
+        margin-top: 22px;
+      }
+      .rv {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px;
+        background: var(--surface-2);
+        font-size: 0.93rem;
+      }
+      .rv p {
+        margin: 0 0 6px;
+        font-weight: 500;
+      }
+      .rv .a {
+        color: var(--alert-red);
+      }
+      .rv .b {
+        color: var(--ok);
+      }
+      .hide {
+        display: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <b>&gt;</b> transport_layer.quiz<span class="cursor"></span>
+        </div>
+        <button
+          class="icon-btn"
+          id="themeBtn"
+          aria-label="Toggle light or dark theme"
+        >
+          light
+        </button>
+      </header>
+
+      <section id="start" class="panel">
+        <h1>Transport Layer Quiz</h1>
+        <p class="lead">
+          28 questions on TCP, UDP, ports, sequence numbers and the three-way
+          handshake.
+        </p>
+        <div class="toggles">
+          <label class="toggle"
+            ><input type="checkbox" id="shuffleQ" checked /> Shuffle question
+            order</label
+          >
+          <label class="toggle"
+            ><input type="checkbox" id="shuffleO" checked /> Shuffle answer
+            choices</label
+          >
+        </div>
+        <button class="primary" id="startBtn">Start quiz</button>
+      </section>
+
+      <section id="quiz" class="panel hide">
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="meta"><span id="count"></span><span id="live"></span></div>
+        <h2 id="qText"></h2>
+        <div class="opts" id="opts"></div>
+        <div id="fb"></div>
+        <div class="row">
+          <button class="primary" id="nextBtn" disabled>Next</button>
+        </div>
+      </section>
+
+      <section id="result" class="panel hide">
+        <div class="score" id="scoreBig"></div>
+        <h2 id="verdict"></h2>
+        <div class="row">
+          <button class="primary" id="retryAll">Retake quiz</button>
+          <button class="ghost" id="retryMiss">Retry missed only</button>
+        </div>
+        <div class="review" id="review"></div>
+      </section>
+    </div>
+
+    <script>
+      /* [question, [choices], correctIndex, optional explanation] */
+      const BANK = [
+        [
+          "What is the PDU at the Transport Layer?",
+          ["Bit", "Frame", "Packet", "Segment"],
+          3,
+        ],
+        [
+          "What is the main benefit of using port numbers at the Transport Layer?",
+          [
+            "Increase transmission speed.",
+            "Identify the application or process communicating on a device.",
+            "Identify the physical location of a computer.",
+            "Determine the destination IP address.",
+          ],
+          1,
+        ],
+        [
+          "What are dynamic port numbers?",
+          [
+            "Ports permanently assigned to servers.",
+            "Ports used only by DNS.",
+            "Temporary port numbers assigned to client applications.",
+            "Ports used by network routers.",
+          ],
+          2,
+        ],
+        [
+          "Which is a feature of UDP?",
+          [
+            "Guaranteed data delivery.",
+            "Connection-oriented communication.",
+            "No connection establishment before transmission.",
+            "Retransmission of lost segments.",
+          ],
+          2,
+        ],
+        [
+          "Which is a feature of TCP?",
+          [
+            "No sequence numbers.",
+            "Connectionless communication.",
+            "No acknowledgments.",
+            "Reliable and connection-oriented communication.",
+          ],
+          3,
+        ],
+        [
+          "What makes TCP reliable?",
+          [
+            "Port numbers and IP addresses only.",
+            "Sequence numbers, acknowledgments, and retransmissions.",
+            "Sending data without waiting for a response.",
+            "Two different IP addresses.",
+          ],
+          1,
+        ],
+        [
+          "What does the window size in TCP indicate?",
+          [
+            "The total number of computers in the network.",
+            "The amount of data the receiver is currently willing to accept.",
+            "The total size of the transmitted file.",
+            "The number of ports on the server.",
+          ],
+          1,
+        ],
+        [
+          "Must TCP receive an acknowledgment for every segment before sending the next segment?",
+          [
+            "No, because TCP does not use acknowledgments.",
+            "Yes, but only for large files.",
+            "No, TCP can send multiple segments before receiving acknowledgments, depending on the window size.",
+            "Yes, TCP must wait for every individual acknowledgment.",
+          ],
+          2,
+        ],
+        [
+          "What is a socket address?",
+          [
+            "An IP address and a port number.",
+            "A network address and broadcast address.",
+            "A MAC address and subnet mask.",
+            "A port number and protocol name only.",
+          ],
+          0,
+        ],
+        [
+          "Which transport-layer protocol does DNS typically use for standard queries, and why?",
+          [
+            "TCP, because it uses dynamic ports.",
+            "TCP, because it guarantees delivery.",
+            "UDP, because it provides low-overhead communication without connection establishment.",
+            "UDP, because it guarantees packet ordering.",
+          ],
+          2,
+        ],
+        [
+          "What is the main difference between connection-oriented and connectionless communication?",
+          [
+            "Connectionless communication always guarantees delivery.",
+            "Both require a three-way handshake.",
+            "Connection-oriented communication does not use ports.",
+            "Connection-oriented communication establishes a connection before data transmission; connectionless communication does not.",
+          ],
+          3,
+        ],
+        [
+          "In UDP, can messages arrive out of order?",
+          [
+            "No, because UDP uses acknowledgments.",
+            "No, UDP always arranges messages in order.",
+            "Yes, but only when using port 53.",
+            "Yes, UDP does not provide sequencing or reordering.",
+          ],
+          3,
+        ],
+        [
+          "Why does VoIP commonly use UDP?",
+          [
+            "UDP establishes a connection first.",
+            "UDP automatically corrects lost voice packets.",
+            "UDP provides low delay and avoids retransmission delays.",
+            "UDP guarantees all voice packets arrive.",
+          ],
+          2,
+        ],
+        [
+          "Why does SMTP use TCP?",
+          [
+            "TCP does not use acknowledgments.",
+            "TCP is faster than UDP in every situation.",
+            "SMTP does not require port numbers.",
+            "Email exchange requires reliable and ordered data transmission.",
+          ],
+          3,
+        ],
+        [
+          "Handshake complete: client sends 1,000 bytes starting at sequence number 7001. Server sends 500 bytes starting at sequence number 12001. What ACK numbers should the server and client send, respectively?",
+          [
+            "Server ACK 9001; Client ACK 13001.",
+            "Server ACK 8000; Client ACK 12500.",
+            "Server ACK 7001; Client ACK 12001.",
+            "Server ACK 8001; Client ACK 12501.",
+          ],
+          3,
+          "ACK = next byte expected. Server: 7001 + 1,000 = 8001. Client: 12001 + 500 = 12501.",
+        ],
+        [
+          "A TCP segment has sequence number 5000 and carries 300 bytes. What ACK number should the receiver send if all bytes arrive in order?",
+          ["5001", "5300", "5000", "5301"],
+          1,
+          "ACK = sequence number + bytes received = 5000 + 300 = 5300.",
+        ],
+        [
+          "In the first step of the TCP three-way handshake, which flag does the client set?",
+          ["ACK", "SYN", "FIN", "RST"],
+          1,
+        ],
+        [
+          "In the second step, the server sends SYN + ACK. What does this indicate?",
+          [
+            "The server has completed data transmission.",
+            "The server refuses the connection.",
+            "The server acknowledges the client's SYN and sends its own SYN.",
+            "The client has closed the connection.",
+          ],
+          2,
+        ],
+        [
+          "Client sends SYN with sequence number 8000. What ACK number should the server include in SYN + ACK?",
+          ["15000", "8000", "8001", "15001"],
+          2,
+          "SYN consumes one sequence number, so the server acknowledges 8000 + 1 = 8001.",
+        ],
+        [
+          "Server sends SYN + ACK with sequence number 15000. What ACK number should the client include in the final ACK?",
+          ["15000", "15001", "8001", "15002"],
+          1,
+          "The server's SYN consumes one sequence number: 15000 + 1 = 15001.",
+        ],
+        [
+          "When is the TCP connection considered established during the three-way handshake?",
+          [
+            "After the server receives SYN.",
+            "After the client sends SYN.",
+            "After the client sends the final ACK.",
+            "After application data is exchanged.",
+          ],
+          2,
+        ],
+        [
+          "Why does the server acknowledge the client's sequence number 8000 with ACK 8001?",
+          [
+            "The server adds its own sequence number.",
+            "The client sent one data segment.",
+            "SYN consumes one sequence number.",
+            "The server received 8001 bytes.",
+          ],
+          2,
+        ],
+        [
+          "What does rwnd: 5000 in the server's SYN + ACK represent?",
+          [
+            "The receiver's advertised window size of 5,000 bytes.",
+            "The server's port number.",
+            "The server's initial sequence number.",
+            "The number of bytes already received.",
+          ],
+          0,
+        ],
+        [
+          "Why is the client's acknowledgment number 15001 in the final ACK?",
+          [
+            "The server's SYN consumes one sequence number.",
+            "The server sent 1,000 bytes.",
+            "The client sent 15,001 bytes.",
+            "The client received 15,000 bytes.",
+          ],
+          0,
+        ],
+        [
+          "A TCP segment has sequence number 3000 and carries 500 bytes. What ACK number should the receiver send if all data arrives in order?",
+          ["3500", "3001", "3000", "3501"],
+          0,
+          "ACK = 3000 + 500 = 3500, the next byte the receiver expects.",
+        ],
+        [
+          "Which statement about TCP acknowledgments is correct?",
+          [
+            "TCP does not use ACK numbers.",
+            "ACK must acknowledge exactly one segment.",
+            "An ACK can cumulatively acknowledge multiple received bytes or segments.",
+            "ACKs are used only during connection establishment.",
+          ],
+          2,
+        ],
+        [
+          "What can TCP do if a segment is lost during transmission?",
+          [
+            "The receiver permanently closes the connection.",
+            "Automatically change to UDP.",
+            "Retransmit the lost data to support reliable delivery.",
+            "Ignore the lost segment without recovery.",
+          ],
+          2,
+        ],
+        [
+          "Which sequence correctly describes the TCP three-way handshake?",
+          [
+            "SYN → SYN + ACK → ACK",
+            "SYN → ACK → FIN",
+            "ACK → SYN → FIN",
+            "SYN + ACK → FIN → ACK",
+          ],
+          0,
+        ],
+      ];
+
+      const $ = (id) => document.getElementById(id),
+        L = "ABCD";
+      let set = [],
+        i = 0,
+        score = 0,
+        missed = [],
+        locked = false;
+
+      /* ---------- Theme: follows the host site, falls back to OS, manual toggle allowed ---------- */
+      const root = document.documentElement;
+      function norm(v) {
+        if (!v) return null;
+        v = String(v).toLowerCase();
+        if (/slate|dark|night|black/.test(v)) return "dark";
+        if (/default|light|day|white/.test(v)) return "light";
+        return null;
+      }
+      function fromDoc(d) {
+        try {
+          for (const el of [d.documentElement, d.body]) {
+            if (!el) continue;
+            const t =
+              norm(el.getAttribute("data-theme")) ||
+              norm(el.getAttribute("data-md-color-scheme")) ||
+              norm(el.getAttribute("data-bs-theme")) ||
+              norm(el.getAttribute("data-color-mode"));
+            if (t) return t;
+            if (
+              el.classList.contains("dark") ||
+              el.classList.contains("dark-mode") ||
+              el.classList.contains("theme-dark")
+            )
+              return "dark";
+            if (
+              el.classList.contains("light") ||
+              el.classList.contains("light-mode") ||
+              el.classList.contains("theme-light")
+            )
+              return "light";
+          }
+        } catch (e) {}
+        return null;
+      }
+      function fromStorage() {
+        try {
+          const keys = Object.keys(localStorage);
+          for (const k of keys) {
+            if (/palette/i.test(k)) {
+              // MkDocs Material: {"color":{"scheme":"slate"}}
+              try {
+                const p = JSON.parse(localStorage.getItem(k));
+                const t = norm(p && p.color && p.color.scheme);
+                if (t) return t;
+              } catch (e) {}
+            }
+          }
+          for (const k of [
+            "theme",
+            "color-theme",
+            "site-theme",
+            "data-theme",
+            "color-scheme",
+            "mode",
+          ]) {
+            const t = norm(localStorage.getItem(k));
+            if (t) return t;
+          }
+        } catch (e) {}
+        return null;
+      }
+      function siteTheme() {
+        let t = null;
+        try {
+          if (window.parent && window.parent !== window)
+            t = fromDoc(window.parent.document);
+        } catch (e) {}
+        return (
+          t ||
+          fromStorage() ||
+          (matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark")
+        );
+      }
+      function applyTheme(t) {
+        root.setAttribute("data-theme", t);
+        $("themeBtn").textContent = t === "dark" ? "light" : "dark";
+      }
+      let last = null;
+      function sync() {
+        const t = siteTheme();
+        if (t !== last) {
+          last = t;
+          applyTheme(t);
+        }
+      }
+      sync();
+      setInterval(sync, 800); // catches same-tab changes in the host site
+      addEventListener("storage", sync);
+      matchMedia("(prefers-color-scheme: light)").addEventListener(
+        "change",
+        sync,
+      );
+      addEventListener("message", (e) => {
+        const t = norm(e.data && (e.data.theme || e.data.scheme));
+        if (t) {
+          last = t;
+          applyTheme(t);
+        }
+      });
+      try {
+        if (window.parent && window.parent !== window) {
+          const mo = new MutationObserver(sync),
+            o = {
+              attributes: true,
+              attributeFilter: [
+                "data-theme",
+                "data-md-color-scheme",
+                "data-bs-theme",
+                "class",
+              ],
+            };
+          mo.observe(window.parent.document.documentElement, o);
+          mo.observe(window.parent.document.body, o);
+        }
+      } catch (e) {}
+      $("themeBtn").onclick = () => {
+        last = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        applyTheme(last);
+      };
+
+      /* ---------- Quiz ---------- */
+      const shuffle = (a) => {
+        a = a.slice();
+        for (let n = a.length - 1; n > 0; n--) {
+          const m = Math.floor(Math.random() * (n + 1));
+          [a[n], a[m]] = [a[m], a[n]];
+        }
+        return a;
+      };
+      function build(items) {
+        const so = $("shuffleO").checked;
+        return items.map(([q, o, c, e]) => {
+          let opts = o.map((t, n) => ({ t, ok: n === c }));
+          if (so) opts = shuffle(opts);
+          return { q, opts, e };
+        });
+      }
+      function begin(items) {
+        const sq = $("shuffleQ").checked;
+        set = build(sq ? shuffle(items) : items);
+        i = 0;
+        score = 0;
+        missed = [];
+        show("quiz");
+        render();
+      }
+      function show(id) {
+        ["start", "quiz", "result"].forEach((s) =>
+          $(s).classList.toggle("hide", s !== id),
+        );
+      }
+      function render() {
+        locked = false;
+        const q = set[i];
+        $("count").textContent = `Question ${i + 1} of ${set.length}`;
+        $("live").textContent = `Score ${score}`;
+        $("barFill").style.width = (i / set.length) * 100 + "%";
+        $("qText").textContent = q.q;
+        $("fb").innerHTML = "";
+        $("nextBtn").disabled = true;
+        $("nextBtn").textContent =
+          i === set.length - 1 ? "See results" : "Next";
+        const box = $("opts");
+        box.innerHTML = "";
+        q.opts.forEach((o, n) => {
+          const b = document.createElement("button");
+          b.className = "opt";
+          b.type = "button";
+          b.innerHTML = `<span class="k">${L[n]}</span><span></span>`;
+          b.lastChild.textContent = o.t;
+          b.onclick = () => pick(n);
+          box.appendChild(b);
+        });
+      }
+      function pick(n) {
+        if (locked) return;
+        locked = true;
+        const q = set[i],
+          bs = [...$("opts").children],
+          ok = q.opts[n].ok;
+        bs.forEach((b, k) => {
+          b.disabled = true;
+          if (q.opts[k].ok) b.classList.add("correct");
+          else if (k === n) b.classList.add("wrong");
+        });
+        if (ok) score++;
+        else
+          missed.push({
+            q: q.q,
+            mine: q.opts[n].t,
+            right: q.opts.find((o) => o.ok).t,
+            raw: [q.q, q.opts.map((o) => o.t), 0],
+          });
+        $("live").textContent = `Score ${score}`;
+        $("fb").innerHTML =
+          `<div class="fb ${ok ? "" : "bad"}"><strong>${ok ? "Correct." : "Not quite."}</strong>${q.e ? " " + q.e : ""}</div>`;
+        $("nextBtn").disabled = false;
+        $("nextBtn").focus();
+      }
+      function next() {
+        if (i < set.length - 1) {
+          i++;
+          render();
+        } else finish();
+      }
+      function finish() {
+        $("barFill").style.width = "100%";
+        const pct = Math.round((score / set.length) * 100);
+        $("scoreBig").innerHTML = `${score}<small> / ${set.length}</small>`;
+        $("verdict").textContent =
+          pct === 100
+            ? "Perfect run. 100%."
+            : pct >= 80
+              ? `Strong result — ${pct}%.`
+              : pct >= 50
+                ? `${pct}%. Review the misses below and go again.`
+                : `${pct}%. Review the misses below and retake.`;
+        $("retryMiss").classList.toggle("hide", !missed.length);
+        const rv = $("review");
+        rv.innerHTML = "";
+        missed.forEach((m) => {
+          const d = document.createElement("div");
+          d.className = "rv";
+          d.innerHTML = '<p></p><div class="a"></div><div class="b"></div>';
+          d.children[0].textContent = m.q;
+          d.children[1].textContent = "Your answer: " + m.mine;
+          d.children[2].textContent = "Correct answer: " + m.right;
+          rv.appendChild(d);
+        });
+        show("result");
+      }
+      const origIndex = (q) => BANK.find((b) => b[0] === q);
+      $("startBtn").onclick = () => begin(BANK);
+      $("nextBtn").onclick = next;
+      $("retryAll").onclick = () => begin(BANK);
+      $("retryMiss").onclick = () => begin(missed.map((m) => origIndex(m.q)));
+      addEventListener("keydown", (e) => {
+        if ($("quiz").classList.contains("hide")) return;
+        const n = "1234".indexOf(e.key);
+        const a = "abcd".indexOf(e.key.toLowerCase());
+        const idx = n > -1 ? n : a;
+        if (idx > -1 && idx < set[i].opts.length && !locked) pick(idx);
+        else if (e.key === "Enter" && locked) next();
+      });
+    </script>
+  </body>
+</html>
