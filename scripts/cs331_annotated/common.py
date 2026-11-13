@@ -46,3 +46,40 @@ def see(deck, n, label):
 
 def fig(name, alt, cap='', big=False):
     return (name, alt, cap, big)
+
+
+# Explained questions for the bank (questions.py): every wrong option says why it is wrong.
+from se423_annotated.common import likely, pick, truth  # noqa: E402,F401
+
+
+def _tutorial(d, paper, where):
+    title, folder = PAPERS[paper]
+    d.update(kind='past', ref='%s · %s' % (title, where),
+             href='/academics/computer-science/cs331/' + folder + ('' if folder.endswith('.html') else '/'))
+    return d
+
+
+def tut(paper, where, q, right, why, *wrongs, at=0):
+    """A tutorial MCQ, worded as in the tutorial, with the same (wrong option, why) pairs as pick().
+    Tutorial options keep their printed order (they are not shuffled): `at` is the right answer's printed position
+    and the wrong options are given in printed order."""
+    d = pick(q, right, why, *wrongs)
+    opts = [o for o in d['opts'][1:]]
+    reasons = [d['wrong'][i] for i in range(1, len(d['opts']))]
+    opts.insert(at, right)
+    reasons.insert(at, None)
+    d.update(opts=opts, a=at, wrong={i: r for i, r in enumerate(reasons) if r is not None})
+    return _tutorial(d, paper, where)
+
+
+def tut_truth(paper, where, q, value, why, wrong):
+    return _tutorial(truth(q, value, why, wrong), paper, where)
+
+
+def tut_written(paper, where, q, a):
+    return _tutorial(likely(q, a=a), paper, where)
+
+
+def written(q, a):
+    """A predicted written question: the model answer is shown after the attempt."""
+    return likely(q, a=a)

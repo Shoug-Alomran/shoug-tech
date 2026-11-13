@@ -1,0 +1,587 @@
+@code CS331
+@course Data Communications and Networks
+@path computer-science/cs331
+@brand Final
+@description CS331 final exam cheat sheet: layering, physical layer formulas, error detection, MAC protocols, Ethernet, devices and VLANs, IPv4 subnetting, routing, TCP/UDP and DNS, with the tutorials and Packet Tracer projects worked through.
+@h1 Final exam | cheat sheet
+@lede The final is comprehensive (40%, 22 November): every syllabus topic from Chapter 1 to Chapter 10 lists the final as an assessment. Chapters 1–4 come back as recap and formulas; Chapters 6–10 (devices, IPv4, routing, transport, DNS) get full depth because most of them have only been examined once.
+@lede Calculations decide this paper. Every formula is written out with a worked example. Four answers in the posted Tutorial 4 key are wrong; the corrected values are marked.
+@stat 9 | chapters | 210
+@stat 28 | formulas | 32
+@stat 6 | tutorials + projects | 150
+@stat 40% | of the grade | 300
+@legend 32 | Exam traps | Orange boxes: the slip that costs the mark.
+@legend 150 | How to answer | Green boxes: the steps the marker looks for.
+@legend 276 | Memory hooks | Purple boxes: mnemonics and shortcuts.
+@legend 210 | Answers hidden | Try the question, then open the answer.
+@footer Built from the CS331 slides and slide breakdowns, Major I and Major II (181), Quizzes 1–2, the online quizzes, Tutorials 1, 3, 4 and 5, the Physical Layer activity, Projects 1–3 (Packet Tracer and Wireshark) and the course formula sheets. All CRC, checksum and subnet answers were recomputed. Shoug Alomran.
+
+== exam | 300 | The final | 00 | How the final works
+> Expect the same mix as the majors and tutorials: computation with formula, units and steps; scenario questions where you pick and justify (topology, impairment, device, protocol); MCQ, true/false, fill in the blank, and "explain the difference".
+[grid]
+[card Grade weights]
+[table]
+Component | Weight
+Final exam | 40%
+Majors I and II | 30%
+Quizzes (best 2 of 3) | 10%
+Lab and Packet Tracer projects | 8%
+Assignments | 7%
+Attendance | 5%
+[/table]
+[/card]
+[card What each exam covered]
+- Quiz I: Ch 1–2 · Major I: Ch 1–3 · Quiz II: Ch 3
+- Quiz III: Ch 7 and 9 · Major II: Ch 6–7
+- **Final: Ch 1, 2, 3, 4, 6, 7, 8, 9, 10** (no Ch 5)
+!tip Ch 8 (routing) and Ch 10 (DNS) have barely been examined. Expect a forwarding table, a distance vector update and recursive vs iterative DNS.
+[/card]
+[card Most repeated topics]
+[chips]
+*OSI layers and jobs
+*Network address from an IP
+*Frequency and period
+*Subnetting
+*Network types (LAN/MAN/WAN)
+*Encapsulation
+*Graph costs
+*DNS purpose
+*MAC taxonomy
+*Data link services
+[/chips]
+!trap Units cost marks. Bytes vs bits (× 8), KB/MB, ms vs µs. Write the unit on every line.
+[/card]
+[/grid]
+
+== layers | 210 | Ch 1 | CH 01 | Data communications, networks and layering
+[grid]
+[card Five components and data flow]
+- Components: **message, sender, receiver, transmission medium, protocol**.
+- **Simplex:** one way (keyboard, monitor). **Half-duplex:** both ways, one at a time (walkie-talkie). **Full-duplex:** both at once (telephone).
+- Network criteria: **performance** (throughput up, delay down; they conflict), **reliability** (failure frequency, recovery time), **security**.
+- Point-to-point (dedicated link) vs multipoint (shared link).
+[/card]
+[card Topologies]
+[table]
+Topology | Links (N devices) | Pro | Con
+Mesh | N(N−1)/2, ports N−1 each | Robust, private, fault isolation | Costly cabling and ports
+Star | N | Easy install, one link fails alone | Hub is a single point of failure
+Bus | 1 backbone + N drops | Cheap, little cable | A backbone break kills all; hard fault isolation
+Ring | N | Easy to add, fault isolation via signal | One break can disable the ring
+[/table]
+!tip Mesh with 6 devices: 6 × 5 / 2 = 15 links, 5 ports per device.
+[/card]
+[card LAN, MAN, WAN]
+LAN: one building or campus, privately owned. MAN: a city. WAN: countries, uses point-to-point or switched WANs. An internetwork (internet) joins networks with routers. ISPs: tier 1 backbones, tier 2 national (STC, Mobily), tier 3 local; private peering vs IXPs.
+[/card]
+[card Standards bodies]
+ISO, ITU-T, ANSI, **IEEE** (LANs/MANs, 802.x), W3C. A protocol has syntax, semantics and timing.
+[/card]
+[/grid]
+### OSI vs TCP/IP
+[table]
+OSI layer | TCP/IP | PDU | Address | Job
+7 Application · 6 Presentation · 5 Session | Application | Message | Names (DNS) | User services; translation, encryption, compression; dialog control and sync
+4 Transport | Transport | Segment / user datagram | Port | Process-to-process delivery
+3 Network | Network | Packet / datagram | IP (logical) | Host-to-host, routing across networks
+2 Data link | Data link | Frame | MAC (physical) | Hop-to-hop (node-to-node) delivery
+1 Physical | Physical | Bits | – | Signals on the medium
+[/table]
+!hook "All People Seem To Need Data Processing" (7 → 1). Delivery scope grows as you climb: hop → host → process.
+[grid]
+[card Encapsulation]
+Going down, each layer adds its header (data link adds a trailer too): message → segment → packet → frame → bits. The receiver strips them in reverse (decapsulation). Routers decapsulate only up to the network layer; switches up to data link.
+[/card]
+[card Why layers]
+Each layer is independent and only uses the services of the layer below, so it can change without touching the others; easier design, testing and troubleshooting; interoperability between vendors.
+[/card]
+[card Addresses across a router]
+**IP addresses stay the same** end to end. **MAC addresses change at every hop** (source = the sending interface, destination = the next hop). Ports identify the process and also stay fixed.
+!trap A frame from host A to host B on another network carries the **router's** MAC as destination, but B's IP.
+[/card]
+[/grid]
+
+== physical | 190 | Ch 2 | CH 02 | Physical layer and transmission media
+[grid wide]
+[card Formulas]
+[calc]
+frequency / period     f = 1 / T          T = 1 / f
+wavelength             lambda = speed x T = speed / f
+bit interval           = 1 / bit rate
+propagation time       = distance / propagation speed
+transmission time      = message size (bits) / bandwidth (bps)
+latency                = propagation + transmission + queuing + processing
+bandwidth-delay        = bandwidth x delay   (bits that fill the link)
+burst length hit       = bandwidth x burst duration
+[/calc]
+!trap 1 MB = 8 × 2²⁰ bits = 8,388,608 bits (or 8 × 10⁶ if the question says so). Light: 3 × 10⁸ m/s in vacuum, about 2 × 10⁸ m/s in cable.
+[/card]
+[card Tutorial 3 worked]
+[calc]
+Q1  bit interval 50 us   -> rate = 1 / 0.00005 = 20,000 bps = 20 Kbps
+Q4  2,000 km at 2x10^8   -> 2x10^6 / 2x10^8 = 0.01 s = 10 ms
+Q5  f = 5 kHz            -> T = 1 / 5000 = 0.2 ms
+Q7  1 MB at 1 Mbps       -> 8,388,608 / 10^6 = 8.39 s  (8 s with 10^6)
+Q10 5 bps x 5 s          -> bandwidth-delay = 25 bits in the pipe
+[/calc]
+[/card]
+[/grid]
+[grid]
+[card Signals]
+- Analog (continuous) vs digital (discrete); periodic vs aperiodic.
+- Simple signal = one sine wave; composite = many frequencies added.
+- A sine wave is described by amplitude, frequency (period) and phase.
+[/card]
+[card Impairments]
+- **Attenuation:** energy lost with distance; fix with amplifiers (analog) or repeaters (digital, regenerate).
+- **Distortion:** shape changes because frequencies travel at different speeds.
+- **Noise:** thermal, induced (motors), **crosstalk** (one wire picks up another: the faint background call), impulse (lightning).
+!tip Tutorial 3 Q9 (errors near electrical equipment) = induced noise. Mitigate with shielding (STP/coax/fibre), distance, repeaters.
+[/card]
+[card Guided media]
+- **Twisted pair:** UTP/STP; twisting cancels noise. CAT5e 1 Gbps · CAT6 1 Gbps · CAT6a 10 Gbps · CAT7 10 Gbps shielded · CAT8 25–40 Gbps.
+- **Coaxial:** central conductor + shield; cable TV.
+- **Fibre:** core, cladding, jacket; light by total internal reflection. Pros: huge bandwidth, no EMI, light, secure. Cons: cost, installation skill, unidirectional.
+- Crossover cable for **like devices** (PC–PC, switch–switch, hub–hub, router–PC); straight-through otherwise.
+[/card]
+[card Unguided media]
+- **Radio** (< 300 MHz): omnidirectional, through walls, multicast.
+- **Microwave** (300 MHz–300 GHz): line of sight, unicast, dish antennas.
+- **Infrared** (300 GHz–400 THz): short range, blocked by walls (remote controls).
+[/card]
+[/grid]
+
+== dll | 262 | Ch 3 | CH 03 | Data link: framing, error detection, MAC
+> Services: framing, addressing, error control, flow control, and access control (MAC sublayer). Error detection is a guaranteed calculation.
+[grid]
+[card Framing]
+- Flag 01111110.
+- **Character-oriented:** byte stuffing, insert ESC before any flag or ESC byte in the data.
+- **Bit-oriented:** bit stuffing, insert a 0 after every five consecutive 1s.
+[/card]
+[card Errors]
+- Single-bit vs **burst** (length = first corrupted bit to last).
+- Bits hit = bandwidth × burst duration (1 ms noise at 1 Kbps hits 1 bit; at 1 Mbps, 1,000 bits).
+- Retransmission vs **forward error correction**: R = C₁ ⊕ … ⊕ Cₙ; a lost block = R ⊕ the others.
+[/card]
+[card Parity]
+- Even parity: add a bit so the total number of 1s is even.
+- Detects any **odd** number of errors, cannot locate or correct.
+- **2-D parity:** row and column parity bits plus a corner bit; catches more burst errors.
+[/card]
+[/grid]
+[grid wide]
+[card CRC: modulo-2 division]
+[calc]
+data 11010011, generator 1011 (degree 3) -> append 000
+11010011000 / 1011 (XOR when the leading bit is 1)
+remainder = 011   -> send 11010011 011
+receiver: divide the codeword; remainder 000 = accept
+received 11010011101 -> remainder 110 -> reject
+[/calc]
+!trap Posted Tutorial 4 key, corrected: Q7 data 101110 with 1011 gives CRC **110** (frame 101110110), not 100. Q10 data 1101 with 1011 gives CRC **001** (frame 1101001), not 111. Q6b codeword 10101010101 with 1101 leaves remainder **011**, so it is not valid.
+!hook Generator of degree r catches every burst of length ≤ r.
+[/card]
+[card Internet checksum: one's complement]
+[calc]
+  1100110011001100
++ 1010101010101010
+= 1 0111011101110110   carry out -> wrap around
+  0111011101110110 + 1 = 0111011101110111   (sum)
+checksum = invert   = 1000100010001000
+receiver adds all three words -> 1111111111111111 -> accept
+[/calc]
+!trap Posted Tutorial 4 key, corrected: Q2 even parity: 1010101 has four 1s, so its parity bit is **0** (10101010); 1111000 → **11110000**. On receipt 10101010 has four 1s, so it is **valid**; 11110001 has five 1s, so it is invalid.
+[/card]
+[/grid]
+### Media access control
+[grid]
+[card Taxonomy (repeated)]
+- **Random access:** ALOHA, CSMA, CSMA/CD (Ethernet), CSMA/CA (wireless).
+- **Controlled access:** reservation, polling (select / poll, primary station), token passing.
+- **Channelization:** FDMA (frequency bands), TDMA (time slots), CDMA (codes, all at once).
+[/card]
+[card CSMA]
+- Sense before sending. Vulnerable time = maximum propagation time.
+- **1-persistent:** send as soon as idle. **Non-persistent:** wait a random time, then sense again. **p-persistent:** send with probability p in slotted time.
+- **CSMA/CD:** keep listening; on collision abort, send a 48-bit jam, back off (binary exponential), retry. Minimum frame time ≥ 2 × max propagation time.
+- Fair share per node = R / M.
+[/card]
+[/grid]
+
+== ethernet | 32 | Ch 4 | CH 04 | Ethernet LANs
+[grid]
+[card IEEE 802.3]
+Data link is split into **LLC** (flow and error control, common to all LANs) and **MAC** (access method, framing, specific to Ethernet).
+[/card]
+[card Frame]
+Preamble 7 B + SFD 1 B (10101011) · destination 6 B · source 6 B · type/length 2 B · data **46–1500 B** (pad to 46) · CRC-32 4 B. Frame **64–1518 B**. Type ≥ 0x0600, length ≤ 1500.
+[/card]
+[card Address type]
+Look at the **second hex digit** of the destination: even = **unicast**, odd = **multicast**, all F = **broadcast**. 4A:30:10:21:10:1A → A is even → unicast. 47:20:1B:2E:08:EE → 7 odd → multicast. The source is always unicast.
+[/card]
+[card Switched full-duplex Ethernet]
+Needs full-duplex NICs, two wire pairs, a **switch** (not a hub) and point-to-point links. No CSMA/CD; a 100 Mbps link carries 200 Mbps total.
+- Fast Ethernet 100 Mbps, Gigabit 1000 Mbps (1000Base-F = fibre), 10-Gigabit.
+[/card]
+[/grid]
+
+== devices | 330 | Ch 6 | CH 06 | Connecting devices and VLANs
+> Major II material. Domain-counting and "which device" questions come straight from here.
+[table]
+Device | Layer | Unit | Collision domains | Broadcast domains
+Hub (repeater) | 1 Physical | Bits, copies to all ports | Whole hub = 1 | 1
+Switch (bridge) | 2 Data link | Frames, MAC table | **One per port** | 1 (unless VLANs)
+Router | 3 Network | Packets, IP | One per interface | **One per interface**
+[/table]
+!hook Hub hears bits, switch studies frames, router reads packets.
+[grid]
+[card Counting domains]
+1. Every router interface starts a new broadcast domain.
+2. Every switch port starts a new collision domain.
+3. Everything behind one hub is a single collision domain.
+!tip Example: a router with 2 interfaces; one goes to a switch with 4 PCs, the other to a hub with 3 PCs. Broadcast domains = 2. Collision domains = 5 switch ports (4 PCs + the uplink to the router) + 1 for the whole hub segment = **6**.
+[/card]
+[card Switch learning]
+- Learn: record the **source** MAC and incoming port.
+- Destination known → forward out that port only. Unknown or broadcast → **flood**. Destination on the same port it arrived from → drop (filter).
+- Store-and-forward checks the CRC first; cut-through starts sending after reading the destination.
+[/card]
+[card Loops and spanning tree]
+Redundant switch links make loops; broadcasts circulate forever (**broadcast storm**) and MAC tables flap. **Spanning tree** keeps a loop-free logical tree by **blocking** selected ports, while the physical links stay as backups.
+[/card]
+[card VLANs]
+Broadcast domains made in software: group stations logically, not by wiring. Advantages: **lower cost and installation time** (move by configuration), **more security**, **virtual workgroups**.
+!trap A switch alone separates collision domains, not broadcast domains. Routers and VLANs split broadcast domains.
+[/card]
+[card Limits and bandwidth]
+- Star cabling: 100 m from NIC to hub/switch, 200 m between any two nodes.
+- Hub: bandwidth shared, so each host gets bandwidth / N. Switch, full duplex: each host gets 2 × bandwidth.
+[/card]
+[/grid]
+
+== ipv4 | 150 | Ch 7 | CH 07 | Network layer: IPv4, subnetting, ARP, DHCP, NAT
+> The heaviest calculation chapter: Major II gave 4 of 15 marks to one VLSM table. Do the steps in the same order every time.
+[grid]
+[card Duties and switching]
+- **Packetizing**, **routing** (build the table), **forwarding** (per-packet decision).
+- Virtual circuit: connection-oriented, packets follow the set-up path. **Datagram:** connectionless, independent packets, may arrive out of order. **The Internet uses datagrams.**
+[/card]
+[card Classful ranges]
+[table]
+Class | First octet | Leading bits | Default mask
+A | 0–127 | 0 | /8 (255.0.0.0)
+B | 128–191 | 10 | /16 (255.255.0.0)
+C | 192–223 | 110 | /24 (255.255.255.0)
+D | 224–239 | 1110 | multicast
+E | 240–255 | 1111 | reserved
+[/table]
+127.x = loopback. Private: 10.0.0.0/8, 172.16–172.31, 192.168.0.0/16. IPv4 space = 2³² addresses.
+[/card]
+[card Address rules]
+- Network address: host bits all 0. Broadcast: host bits all 1. Hosts = 2^(host bits) − 2.
+- Subnet address = **IP AND mask** (255 keeps the octet, 0 clears it).
+- Classless: first address = keep the first n bits, zero the rest. 12.2.2.76/10 → **12.0.0.0**. /15 = **255.254.0.0**.
+- Limited broadcast 255.255.255.255 (local only) vs directed broadcast (all hosts of a named network).
+- Invalid dotted decimal: an octet > 255, leading zeros, wrong number of octets, mixed binary.
+[/card]
+[/grid]
+### Subnetting method
+[grid wide]
+[card Fixed-size subnets (Project 1)]
+[calc]
+block 199.19.30.0/24, mask /26 = 255.255.255.192
+block size = 2^(32-26) = 64   hosts = 64 - 2 = 62
+subnets   = 2^(26-24) = 4
+
+Network A  199.19.30.0/26    gateway .1   hosts .2-.62     bcast .63
+Network B  199.19.30.64/26   gateway .65  hosts .66-.126   bcast .127
+spare      .128/26  and  .192/26
+[/calc]
+!tip Bits to borrow for N subnets = bits needed to write N − 1. Six subnets → 5 = 101 → 3 bits → /27, block 32, 30 hosts.
+[/card]
+[card VLSM: largest first (Major II Q5)]
+[calc]
+block 204.15.5.0/24; B needs 118 hosts, A needs 50
+B: 118 + 2 = 120 -> 128 block -> /25
+   network .0   first .1    last .126   broadcast .127
+A: 50 + 2 = 52   -> 64 block  -> /26
+   network .128 first .129  last .190   broadcast .191
+[/calc]
+!trap Always allocate the biggest network first and start each block on a multiple of its own size, or the blocks overlap.
+[/card]
+[/grid]
+[grid]
+[card ARP]
+Maps **IP → MAC** on the local link. Request is **broadcast**, reply is **unicast**. For a remote destination the host ARPs for the **default gateway's** MAC.
+[/card]
+[card DHCP]
+Gives the 4 settings a host needs: **IP address, subnet mask, default gateway, DNS server**. Static database (fixed MAC–IP bindings) and dynamic pool with **leases**.
+[/card]
+[card NAT]
+Translates private addresses to a public one at the router using a translation table, so many hosts share one public IP; hides internal addresses.
+[/card]
+[card IPv4 header]
+Header 20–60 B; total length ≤ 65,535; **TTL** decremented by every router, packet discarded at 0; protocol field (6 TCP, 17 UDP); header checksum recomputed at every router (header only).
+[/card]
+[card Fragmentation]
+Each link has an **MTU**. Routers may fragment; the identification, flags (**D** = don't fragment, **M** = more fragments) and offset fields rebuild it. Reassembly only at the **destination**. Routers never change the source or destination address.
+[/card]
+[/grid]
+
+== routing | 20 | Ch 8 | CH 08 | Routing: forwarding tables, distance vector, link state
+> Tutorial 5 is the model: build or read a forwarding table, then update a distance vector.
+[grid]
+[card Routing vs forwarding]
+- **Routing:** run protocols, compute least-cost paths, fill the table.
+- **Forwarding:** for each arriving packet, pick the outgoing interface.
+- **Static:** set by hand, slow to change. **Dynamic:** protocols adapt.
+- The Internet is a weighted graph: routers = nodes, links = edges, cost = delay, bandwidth or hops. **Shortest = least total cost**, not fewest hops.
+[/card]
+[card Forwarding lookup (longest mask first)]
+1. Sort entries from the longest mask to the shortest.
+2. AND the destination with each mask; the first match wins.
+3. No match → default route **0.0.0.0/0**.
+Route types: network-specific, host-specific (/32), default.
+[/card]
+[card Major II Q11]
+[calc]
+dest 180.70.65.132
+/26 -> 180.70.65.128  vs 180.70.65.192  no
+/25 -> 180.70.65.128  vs 180.70.65.128  yes -> m0
+[/calc]
+[/card]
+[/grid]
+[grid wide]
+[card Distance vector update (Tutorial 5, Ex. 4)]
+Node C's neighbours: B (cost 5), D (cost 6), G (cost 2). New cost to X = min over neighbours of (link cost + neighbour's cost to X).
+[table]
+Dest | via B (+5) | via D (+6) | via G (+2) | New cost | Next hop
+A | 5+2 = 7 | 6+8 = 14 | 2+4 = 6 | **6** | G
+B | 5+0 = 5 | 6+10 | 2+6 = 8 | **5** | B
+D | 5+10 | 6+0 = 6 | 2+4 = 6 | **6** | D
+E | 5+9 = 14 | 6+1 = 7 | 2+3 = 5 | **5** | G
+F | 5+8 = 13 | 6+2 = 8 | 2+2 = 4 | **4** | G
+G | 5+6 | 6+4 | 2+0 = 2 | **2** | G
+H | 5+3 = 8 | 6+7 | 2+3 = 5 | **5** | G
+[/table]
+!tip Bellman-Ford: Dₓ(y) = min over neighbours v of { c(x,v) + Dᵥ(y) }. Show every candidate sum.
+[/card]
+[card Distance vector vs link state]
+[table]
+ | Distance vector | Link state
+Shares | Its whole vector | Costs of its own links (LSPs)
+With | Neighbours only | Everyone (flooding)
+Builds | Table from neighbours' tables | Full map (LSDB), then Dijkstra
+Protocol | RIP (hop count) | OSPF
+Weakness | Slow convergence, count to infinity | More memory and computation
+[/table]
+!hook Distance vector is neighbour gossip; link state is everyone drawing the same map.
+[/card]
+[card Autonomous systems]
+An AS is a network under one administration with a unique AS number. **Interior** (intra-AS): RIP, OSPF, EIGRP. **Exterior** (inter-AS): **BGP**. Border routers run both (Major II Q10: R1 and R4 run RIP inside and BGP outside).
+[/card]
+[/grid]
+
+== transport | 45 | Ch 9 | CH 09 | Transport layer: ports, TCP and UDP
+[grid]
+[card Seven duties]
+Process-to-process delivery, addressing (ports), encapsulation/decapsulation, multiplexing/demultiplexing, connection control, reliability (flow + error control), congestion control.
+!hook IP finds the host; the port finds the process.
+[/card]
+[card Ports and sockets]
+- 16-bit: 0–65535. Well-known 0–1023 (IANA).
+- FTP 20/21 · Telnet 23 · SMTP 25 · DNS 53 · HTTP 80 · HTTPS 443.
+- **Socket address = IP + port.** A TCP connection is unique by source IP, source port, destination IP, destination port.
+[/card]
+[card TCP vs UDP]
+[table]
+ | TCP | UDP
+Connection | Oriented (handshake) | Connectionless
+Reliability | Seq, ACK, retransmit, ordered | None
+Flow/congestion control | Yes (windows) | No
+Overhead | Higher | Low
+Used by | HTTP, FTP, SMTP, file transfer | DNS, streaming, VoIP, real-time
+[/table]
+[/card]
+[/grid]
+[grid wide]
+[card Sequence and ACK numbers]
+[calc]
+next seq = previous seq + bytes carried
+ACK      = last byte received + 1   (cumulative, next byte expected)
+
+file of 5,000 bytes, first byte numbered 10,001, 1,000-byte segments
+seg 1  seq 10,001  (10,001-11,000)
+seg 2  seq 11,001  (11,001-12,000)
+...
+seg 5  seq 14,001  (14,001-15,000)
+ACK after seg 2 arrives = 12,001
+[/calc]
+!trap Sequence numbers count **bytes**, not segments. SYN and FIN each consume one sequence number.
+[/card]
+[card Connection management]
+- **Three-way handshake:** SYN → SYN + ACK (carries the receive window) → ACK.
+- **Termination:** FIN → ACK → FIN → ACK (four steps, or three with FIN + ACK combined).
+- **Flow control** protects the receiver (receive window). **Congestion control** protects the network.
+[/card]
+[/grid]
+
+== dns | 280 | Ch 10 | CH 10 | Application layer: DNS
+[grid]
+[card What DNS is]
+A client-server **directory service** that maps host names to IP addresses (name resolution). Application layer, **port 53, UDP or TCP** (UDP for normal queries, TCP for zone transfers or big replies).
+[/card]
+[card Name space]
+- Hierarchical tree; the root has an empty label (a dot). Labels are read from the leaf up to the root.
+- Children of one node have different labels, so names are unique.
+- IANA controls top-level domains; organizations manage their subdomains. A **domain** = a subtree.
+[/card]
+[card FQDN vs PQDN]
+- **FQDN** ends with a dot: `challenger.atc.fhda.edu.` Only an FQDN maps to an IP.
+- **PQDN** has no final dot: `challenger`; the resolver completes the suffix.
+!hook Fully = finished (has the dot); partially = pending.
+[/card]
+[card Name servers]
+- **Root servers (13)** point to the top-level domain servers.
+- **Primary** server holds the zone file on disk (authoritative). **Secondary** copies it from the primary: a **zone transfer**.
+- Distributed, not centralized: no single point of failure, less traffic, easier upkeep.
+- **Caching** speeds repeated lookups; records carry a TTL so stale entries expire.
+[/card]
+[/grid]
+[table]
+ | Recursive resolution | Iterative resolution
+Who asks the next server | Each server asks the next one for you | The local server asks every server itself
+Replies | The final answer travels back down the chain | Each server returns a referral (the next server's address)
+Steps (8) | A → local → root → .com → mcgraw.com, then back 5–8 | A → local; local ↔ root, local ↔ .com, local ↔ mcgraw.com; local → A
+Hook | Relay race | "I do it myself"
+[/table]
+
+== projects | 110 | Projects | LABS | Tutorials and projects: what they trained
+[table]
+Assignment | What you did | Exam skill
+Tutorial 1 | Data communication basics, topologies, layers | Name/justify a topology, layer jobs
+Tutorial 3 + Physical Layer activity | Bit rate, propagation, transmission time, impairments | Physical layer formulas with units
+Tutorial 4 | 2-D parity, parity, checksum, CRC | Error detection by hand (watch the key slips above)
+Tutorial 5 | Router R1 table, topology from a table, RIP update at C | Forwarding lookup and distance vector
+Project 1 (Packet Tracer) | 199.19.30.0/24 → /26 subnets for two LANs on a 2901 router | Subnet table: address, mask, gateway; ping across the router
+Project 2 (Packet Tracer) | Web server 192.168.1.10/24 with HTTP/HTTPS, PC browsing by IP | Same network, so no gateway needed; HTTP uses port 80
+Project 3 (Wireshark) | Captured ping and HTTP; filtered icmp, ip.src, dns, http | Encapsulation fields: Ethernet type 0x0800, MAC vs IP, ICMP echo
+[/table]
+[grid]
+[card Wireshark fields worth knowing]
+- `icmp`, `dns`, `http`, `ip.src == x`, `ip.addr == x` filters.
+- Ethernet II frame: destination MAC, source MAC, **type 0x0800 = IPv4** (0x0806 = ARP).
+- A ping = ICMP echo request + echo reply; the frame's MACs are your NIC and your **router**, while the IPs are you and the far server.
+- HTTPS sites show as TLS, not HTTP.
+[/card]
+[card Packet Tracer checklist]
+1. Subnet first, fill the addressing table (IP, mask, default gateway).
+2. Router interfaces: `ip address` then `no shutdown`.
+3. Hosts: static IP, mask, gateway = the router interface on their LAN.
+4. Verify with ping, then the web browser to the server's IP.
+!tip The first usable address of each subnet is the usual gateway; the last address is the broadcast and can never be assigned.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Major II (181) :: What is the first address of the block that contains 12.2.2.76/10?
+= 12.0.0.0
++ Keep the first 10 bits (00001100.00) and zero the rest.
+
+? Major II (181) :: The CIDR mask /15 written in dotted decimal is ______.
+= 255.254.0.0
+
+? Major II (181) :: A router receives a packet for 180.70.65.132. Table: 180.70.65.192/26 → m2, 180.70.65.128/25 → m0, 201.4.22.0/24 → m3, 201.4.16.0/22 → m1, default → m4. Which interface?
+= m0
++ /26 gives .128 (not .192); /25 gives .128, which matches.
+
+? Major II (181) :: Channelization techniques for sharing the medium are:
+- CDMA
+- TDMA
+- Both CDMA and TDMA
+- CSMA/CD
+= c) Both (plus FDMA)
+
+? Tutorial 3 :: A signal has a bit interval of 50 µs. What is the bit rate?
+= 20 Kbps (1 / 0.00005 s)
+
+? Tutorial 3 :: Link bandwidth 5 bps, delay 5 s. Bandwidth-delay product?
+= 25 bits
+
+? Practice :: How many links and ports per device does a full mesh of 8 devices need?
+= 28 links, 7 ports each
++ 8 × 7 / 2 = 28.
+
+? Practice :: Data 1001, generator 1011. Find the CRC and the codeword.
+= CRC 110, codeword 1001110
++ Append 000 → 1001000. XOR 1011 under the leading 1 each time: 1001000 → 0010000 → 0000110. Remainder 110.
+
+? Practice :: Is 47:20:1B:2E:08:EE a unicast, multicast or broadcast address?
+= Multicast
++ The second hex digit, 7, is odd.
+
+? Practice :: Divide 192.168.10.0/24 into 6 equal subnets. Mask, block size and the third subnet?
+= /27 (255.255.255.224), block 32, third subnet 192.168.10.64–.95
++ 6 − 1 = 5 needs 3 bits. Subnets start at .0, .32, .64 … Hosts .65–.94, broadcast .95.
+
+? Practice :: What is the network address of 172.16.45.200 with mask 255.255.240.0?
+= 172.16.32.0
++ 45 AND 240 = 00101101 AND 11110000 = 00100000 = 32.
+
+? Practice :: A segment carries bytes 4,001–6,000. What ACK does the receiver send, and what is the next sequence number?
+= ACK 6,001; next seq 6,001
+
+? Practice :: Which device would you use to split one LAN into two broadcast domains without a router?
+= A switch configured with VLANs
+
+? Practice :: Why does DNS normally use UDP?
+= One short query and one short reply; no handshake overhead. TCP is used for zone transfers and large replies.
+
+? Practice :: In iterative resolution, what does the root server send back?
+= A referral: the address of the top-level domain server to ask next, not the final answer.
+
+? Practice :: A host on 10.1.1.0/24 sends to 10.1.2.5. Whose MAC does it ARP for?
+= Its default gateway's
++ The destination is on another network, so the frame goes to the router.
+
+? Practice :: True or false: a switch with 8 connected ports has 8 broadcast domains.
+= False: 8 collision domains, 1 broadcast domain.
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[check]
+7 | OSI layers with PDU and address per layer
+5 | Data communication components
+4 | Topologies with link formula, pro and con
+3 | Impairments: attenuation, distortion, noise (4 noise types)
+8 | Physical formulas: f, λ, bit interval, propagation, transmission, latency, BDP, burst
+5 | Data link services: framing, addressing, error, flow, access control
+3 | Error checks: parity (1-D/2-D), checksum, CRC
+3 | MAC families: random, controlled, channelization
+3 | Devices: hub L1, switch L2, router L3
+3 | VLAN advantages: cost/time, security, workgroups
+4 | DHCP settings: IP, mask, gateway, DNS
+3 | Route types: network, host, default 0.0.0.0/0
+7 | Transport duties
+3 | DNS servers: root (13), primary, secondary
+[/check]
+### Can you do it from memory?
+[ready cs331-final]
+Find the class, network address and broadcast address of any IPv4 address.
+Subnet a block into N equal subnets and list network, first, last and broadcast.
+Do a VLSM table, largest network first.
+Look up a destination in a forwarding table using longest mask first.
+Update a distance vector from three neighbours and write the routing table.
+Compute a CRC by modulo-2 division and check a received codeword.
+Compute an Internet checksum with end-around carry and verify it.
+Add even parity (1-D and 2-D) and say what parity cannot do.
+Work f/T, wavelength, propagation, transmission time and bandwidth-delay with units.
+Count collision and broadcast domains in a mixed hub/switch/router diagram.
+Explain switch learning, flooding and why spanning tree blocks ports.
+Track TCP sequence and ACK numbers across segments.
+Draw the three-way handshake and four-step close.
+Trace recursive and iterative DNS resolution in eight steps.
+Explain which addresses (MAC, IP, port) change across a router.
+[/ready]
