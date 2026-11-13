@@ -629,19 +629,18 @@
     embedded = window.self !== window.top;
   } catch (error) {}
 
-  // Header on normal pages, the account bar on app pages, else a floating button.
+  // Header on normal pages, the account bar on app pages. Study pages (annotated
+  // slides, breakdowns, cheat sheets) have neither and get no picker: they still
+  // follow the saved theme, but a floating button covers their content.
   function placePicker() {
     if (!builtControl) return;
     var host =
       document.getElementById("shoug-app-nav") ||
       document.querySelector(".shoug-header-actions");
     if (!host) {
-      builtControl.setAttribute("data-site-palette-floating", "");
-      if (builtControl.parentNode !== document.body)
-        document.body.appendChild(builtControl);
+      if (builtControl.parentNode) builtControl.parentNode.removeChild(builtControl);
       return;
     }
-    builtControl.removeAttribute("data-site-palette-floating");
     if (builtControl.parentNode === host) return;
     var next = host.querySelector(
       ":scope > .shoug-lang-btn, :scope > #shoug-theme-toggle",
