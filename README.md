@@ -21,7 +21,7 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 ## Live Site
 
 - [SHOUG.TECH](https://shoug-tech.com/)
-- [GitHub Pages Deployment](https://shoug-alomran.github.io/shoug-tech/)
+- [Site map for AI assistants](https://shoug-tech.com/llms.txt)
 
 ## Tech Stack
 
@@ -34,9 +34,10 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 - [mkdocs-static-i18n](https://github.com/ultrabug/mkdocs-static-i18n)
 - **Firebase Authentication**
 - **Firebase**
+- **Firebase Hosting** (main site, since November 2026)
 - **GitHub Actions**
-- **GitHub Pages**
-- **Cloudflare**
+- **GitHub Pages** (project subdomains only)
+- **Cloudflare** (DNS, `www` redirect, email routing and Workers)
 
 ## Repository Structure
 
@@ -247,26 +248,63 @@ The QA process includes:
 
 ## Deployment
 
-Deployment is automated through **GitHub Actions**.
+Deployment is automated through **GitHub Actions** and published to **Firebase Hosting**.
 
-On pushes to the `main` branch, the deployment workflow:
+On every push to `main`, the workflow in `.github/workflows/deploy-mkdocs.yml`:
 
-1. Installs project dependencies
-2. Runs English/Arabic parity checks
-3. Builds the MkDocs site using strict validation
-4. Validates generated routes
-5. Checks internal links and assets
-6. Publishes the generated site through GitHub Pages
-
-Workflow:
-
-```text
-.github/workflows/deploy-mkdocs.yml
-```
+1. Embeds new resource files and repairs generated viewer pages
+2. Builds the course manifest, search index and AI page-text files
+3. Optimizes the HTML and normalizes canonical URLs to each page's real address
+4. Adds a text version to slide pages and writes `llms.txt`
+5. Rebuilds `sitemap.xml` from the final pages
+6. Validates routes, internal links, SEO metadata and the sitemap
+7. Compresses PDFs and seals the paid ETHCS303 course content
+8. Turns meta-refresh redirect pages into real 301 redirects in `firebase.json`
+9. Deploys to the Firebase Hosting live channel and notifies IndexNow of changed URLs
 
 The primary public domain is:
 
 **https://shoug-tech.com/**
+
+`www.shoug-tech.com` redirects to it through Cloudflare. The `operating-systems` and `database` subdomains are served from GitHub Pages, and `lilly-kitchen` from Vercel.
+
+## Search Engines and AI Access
+
+Updates made in November 2026 so that Google indexes the right pages and AI assistants (ChatGPT, Claude, Perplexity) can read the site.
+
+### Search indexing
+
+- **Removed hreflang tags.** A deploy step had been pointing every page's Arabic alternate at `/ar/...`, which does not exist, so Google collected thousands of 404 URLs. Arabic is applied in the browser on the same page, so the build now strips hreflang tags (`optimize_site_html.py`, `normalize_page_urls.py`), and `check_seo_metadata.py` fails the deploy if they return.
+- **Cleaned the sitemap.** Removed pages are dropped and the sitemap is rebuilt from the final HTML on every deploy. Course-access sample pages that redirect are excluded.
+- **Mapped old URLs.** `scripts/build_legacy_redirects.py` reads renamed and deleted pages from git history and writes about 2,000 safe old-to-new redirects to `workers/indexing/src/legacy-redirects.json`. These are served by the `shoug-indexing` Cloudflare Worker, which only runs on hostnames that go through Cloudflare. Since the move to Firebase, the main domain does not, so these redirects are not active on it yet.
+
+### AI assistant access
+
+- **Slide text on slide pages.** Slides live inside a PDF viewer that bots cannot read, so `scripts/add_slide_text.py` adds a collapsed "Text version" section with the text of every slide.
+- **`llms.txt`.** `scripts/build_llms_txt.py` publishes a short map of the site and all courses at `/llms.txt`, the file AI tools look for first.
+- **Page text as JSON.** Extracted text for academic pages is available at `/ai-context/<page path>/context.json`.
+- **Real redirects.** `scripts/build_firebase_redirects.py` converts meta-refresh pages, which many bots do not follow, into 301 redirects at deploy time.
+- **Cloudflare bot settings.** Bot Fight Mode and AI Labyrinth are off, so AI fetchers are not challenged. These settings now apply only to `www`.
+
+The paid ETHCS303 course is excluded from all of the above.
+
+### Hosting and DNS security
+
+- The main site is served over HTTPS with HSTS by Firebase Hosting.
+- The old GitHub Pages A record that Cloudflare flagged as dangling was replaced when the domain moved to Firebase.
+- The GitHub Pages subdomains serve their own sites, so they cannot be taken over.
+- SPF and DMARC records protect the domain's email from spoofing.
+
+### Maintenance
+
+After renaming or moving pages, commit and push the change, then run:
+
+```bash
+python3 scripts/build_legacy_redirects.py
+python3 scripts/build_indexing_manifest.py
+```
+
+`build_legacy_redirects.py` needs full git history, so it runs by hand and never in CI. The slide text, `llms.txt` and Firebase redirects are generated automatically on every deploy.
 
 ## Project Philosophy
 

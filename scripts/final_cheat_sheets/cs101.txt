@@ -1,0 +1,224 @@
+@code CS101
+@course Introduction to Programming (Java)
+@path computer-science/cs101
+@brand Final
+@description CS101 final exam cheat sheet: Java basics, data types and operators, selections, Math, characters and strings, loops, methods, arrays and exceptions with file I/O, with output-tracing traps and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers Chapters 1–7 and 12 of the Java textbook. Expect output-tracing questions ("what does this print?"), finding errors, and writing short methods with loops and arrays.
+@lede The traps are always the same: integer division, ++ order, == on strings, off-by-one loops, and arrays passed by reference. Each is called out below.
+@stat 8 | chapters | 210
+@stat 12 | classic traps | 32
+@stat 16 | practice questions | 150
+@stat 1 | page to revise | 300
+@legend 32 | Exam traps | Orange boxes: the output questions people get wrong.
+@legend 150 | How to answer | Green boxes: how to trace code.
+@legend 276 | Memory hooks | Purple boxes: rules worth memorizing.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the CS101 slides (Chapters 1–7 and 12 of the Java textbook). Shoug Alomran.
+
+== basics | 210 | Ch 1–2 | CH 1–2 | Java basics and elementary programming
+[grid]
+[card Program structure]
+- Source `.java` → `javac` compiles to bytecode `.class` → the **JVM** runs it (write once, run anywhere).
+- `public static void main(String[] args)` is the entry point; the class name must match the file name.
+- Errors: **syntax** (compile), **runtime** (crash, e.g. divide by zero), **logic** (wrong output).
+[/card]
+[card Primitive types]
+[table]
+Type | Size | Example
+byte / short / int / long | 1 / 2 / 4 / 8 bytes | `int x = 5; long y = 5L;`
+float / double | 4 / 8 bytes | `3.5f`, `3.5`
+char | 2 bytes (Unicode) | `'A'` (65)
+boolean | – | `true`, `false`
+[/table]
+[/card]
+[card Operators and casting]
+- `/` on two ints is **integer division**: 7 / 2 = 3; 7 / 2.0 = 3.5. `%` remainder: 7 % 2 = 1, −7 % 2 = −1.
+- Widening is automatic (int → double); narrowing needs a cast: `(int) 3.9` = 3 (truncates).
+- `i++` uses then increments; `++i` increments then uses.
+- Compound: `x += 2` means `x = x + 2` (with an implicit cast).
+!trap `int a = 5; int b = a++ + ++a;` → 5 + 7 = 12, and a ends at 7.
+[/card]
+[card Input and constants]
+- `Scanner in = new Scanner(System.in); int n = in.nextInt(); String s = in.nextLine();`
+- `final double PI = 3.14159;` constants in UPPER_CASE.
+- Identifiers: letters, digits, _ and $, cannot start with a digit or be a keyword.
+!trap After `nextInt()`, a following `nextLine()` reads the leftover newline and returns "".
+[/card]
+[/grid]
+
+== selections | 190 | Ch 3 | CH 03 | Selections
+[grid]
+[card if / else / switch]
+- `if (cond) {...} else if {...} else {...}`
+- `switch (x) { case 1: ...; break; default: ... }`: without `break` execution **falls through** to the next case.
+- Conditional operator: `max = (a > b) ? a : b;`
+[/card]
+[card Boolean logic]
+- `&&` and `||` short-circuit: `(x != 0 && 10 / x > 1)` is safe.
+- Precedence: `!` > relational > `==` > `&&` > `||`.
+- De Morgan: `!(a && b)` = `!a || !b`.
+!trap `if (x = 5)` does not compile in Java (int is not boolean); `if (x == 5)` is meant. A `;` right after `if (...)` ends the if.
+[/card]
+[card Dangling else]
+An `else` belongs to the nearest unmatched `if`, whatever the indentation says. Use braces.
+[/card]
+[/grid]
+
+== strings | 150 | Ch 4 | CH 04 | Math, characters and strings
+[grid]
+[card Math class]
+`Math.pow(2, 3)` = 8.0 (double) · `Math.sqrt(16)` = 4.0 · `Math.abs(-3)` · `Math.max/min` · `Math.round(2.5)` = 3 · `Math.ceil(2.1)` = 3.0 · `Math.floor(2.9)` = 2.0 · `Math.random()` in [0, 1).
+!tip Random int in [a, b]: `a + (int)(Math.random() * (b - a + 1))`.
+[/card]
+[card char]
+Chars are numbers: `'A'` = 65, `'a'` = 97, `'0'` = 48. `(char)('A' + 2)` = 'C'. `'5' - '0'` = 5. `Character.isDigit(c)`, `isLetter`, `toUpperCase`.
+[/card]
+[card String methods]
+`length()` · `charAt(i)` · `substring(a, b)` (a inclusive, b exclusive) · `indexOf("x")` (−1 if absent) · `toUpperCase()` · `trim()` · `equals()` · `equalsIgnoreCase()` · `compareTo()` (negative, 0, positive) · `contains`.
+!trap Compare strings with `.equals`, never `==` (which compares references). Strings are immutable: `s.toUpperCase()` alone does not change s.
+[/card]
+[card Concatenation order]
+`"1" + 2 + 3` = "123" but `1 + 2 + "3"` = "33" (left to right).
+[/card]
+[/grid]
+
+== loops | 262 | Ch 5 | CH 05 | Loops
+[grid]
+[card Three loops]
+- `while (cond) {...}`: may run 0 times.
+- `do {...} while (cond);`: runs at least once.
+- `for (int i = 0; i < n; i++) {...}`: counter loops.
+- `break` leaves the loop; `continue` skips to the next iteration.
+[/card]
+[card Tracing a loop]
+!tip Make a table with one column per variable and one row per iteration, including the final check that ends the loop.
+[calc]
+int sum = 0;
+for (int i = 1; i <= 4; i++) sum += i;
+i:   1  2  3  4  5 (stop)
+sum: 1  3  6  10      -> prints 10
+[/calc]
+[/card]
+[card Off-by-one and nesting]
+- `i < n` runs n times from 0; `i <= n` runs n + 1 times.
+- Nested loops multiply: outer n × inner m iterations.
+!trap `for (int i = 0; i < 5; i++);` with a semicolon runs an empty body; the block after runs once.
+[/card]
+[/grid]
+
+== methods | 205 | Ch 6 | CH 06 | Methods
+[grid]
+[card Defining methods]
+`public static int max(int a, int b) { return a > b ? a : b; }`
+- `void` methods return nothing. A non-void method must return on every path.
+- Parameters are local; the caller's arguments are **copied** (pass by value).
+[/card]
+[card Overloading and scope]
+- **Overloading:** same name, different parameter lists (return type alone is not enough).
+- A local variable's scope is the block where it is declared.
+[/card]
+[card Pass by value]
+!trap Changing a primitive parameter inside a method does not change the caller's variable. But an array parameter refers to the same array, so changing its elements **does** affect the caller.
+[/card]
+[/grid]
+
+== arrays | 330 | Ch 7 | CH 07 | Single-dimensional arrays
+[grid]
+[card Basics]
+- `int[] a = new int[5];` default values 0 (false, null for objects). `int[] b = {1, 2, 3};`
+- Indices 0 to `a.length - 1`; `a[5]` on length 5 → ArrayIndexOutOfBoundsException.
+- Enhanced for: `for (int x : a) sum += x;` (read only).
+[/card]
+[card Common algorithms]
+- Sum/average, max/min with an index, reverse (swap i and n−1−i up to the middle).
+- **Linear search** O(n); **binary search** O(log n) on a sorted array.
+- Selection sort; `Arrays.sort(a)`, `Arrays.toString(a)`.
+[/card]
+[card Copying]
+`int[] b = a;` copies the **reference** (both names, one array). Real copy: loop, `System.arraycopy`, or `a.clone()`.
+[/card]
+[/grid]
+
+== exceptions | 45 | Ch 12 | CH 12 | Exceptions and text I/O
+[grid]
+[card try / catch / finally]
+`try { ... } catch (ArithmeticException e) { ... } finally { ... }`: `finally` always runs. Catch specific exceptions before general ones (Exception last).
+[/card]
+[card Checked vs unchecked]
+- **Checked** (IOException, FileNotFoundException): must be caught or declared with `throws`.
+- **Unchecked** (RuntimeException: ArithmeticException, NullPointerException, ArrayIndexOutOfBounds, NumberFormatException): programming errors.
+- `throw new IllegalArgumentException("msg");`
+[/card]
+[card Files]
+- Write: `PrintWriter out = new PrintWriter("data.txt"); out.println(x); out.close();`
+- Read: `Scanner in = new Scanner(new File("data.txt")); while (in.hasNext()) { ... }`
+- Forgetting `close()` may leave the file empty.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: What does `System.out.println(7 / 2 * 2.0);` print?
+= 6.0
++ 7 / 2 = 3 (integer), 3 × 2.0 = 6.0.
+
+? Practice :: `int x = 3; System.out.println(x++ + x);` prints?
+= 7 (3 + 4)
+
+? Practice :: `System.out.println(1 + 2 + "3" + 4 + 5);`
+= 3345
+
+? Practice :: `"Hello".substring(1, 3)` is?
+= "el"
+
+? Practice :: Why can `s1 == s2` be false when both hold "Java"?
+= `==` compares references; use `s1.equals(s2)`.
+
+? Practice :: How many times does `for (int i = 10; i > 0; i -= 3)` run?
+= 4 (i = 10, 7, 4, 1)
+
+? Practice :: A switch on 2 with cases 1, 2, 3 printing A, B, C and no breaks prints?
+= BC
+
+? Practice :: `(int) 'a' + 1` and `(char)('a' + 1)`?
+= 98 and 'b'
+
+? Practice :: `Math.round(-2.5)`?
+= -2 (rounds half up toward positive infinity)
+
+? Practice :: A method sets its int parameter to 0. Does the caller's variable change?
+= No: Java passes a copy of the value.
+
+? Practice :: A method sets `arr[0] = 0`. Does the caller's array change?
+= Yes: both refer to the same array object.
+
+? Practice :: Default value of `new boolean[3]` elements?
+= false
+
+? Practice :: Which loop always runs at least once?
+= do-while
+
+? Practice :: Is IOException checked or unchecked?
+= Checked: catch it or declare `throws IOException`.
+
+? Practice :: Write a method returning the maximum of an int array.
+= int max = a[0]; for (int i = 1; i < a.length; i++) if (a[i] > max) max = a[i]; return max;
+
+? Practice :: Output: `int[] a = {1,2,3}; int[] b = a; b[0] = 9; System.out.println(a[0]);`
+= 9
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready cs101-final]
+Predict output involving integer division, casting and ++/--.
+Explain the difference between syntax, runtime and logic errors.
+Trace if/else chains and switch fall-through.
+Use String methods correctly and compare strings with equals.
+Trace for, while and do-while loops in a variable table.
+Write and overload methods, and explain pass by value.
+Declare arrays, loop over them and avoid index errors.
+Write linear search, max/min and reverse for an array.
+Write try/catch/finally and tell checked from unchecked exceptions.
+Read and write a text file with Scanner and PrintWriter.
+[/ready]

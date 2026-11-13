@@ -1,0 +1,239 @@
+@code CS340
+@course Database Systems
+@path computer-science/cs340
+@brand Final
+@prev /academics/computer-science/cs340/extra-resources/04-summary/
+@description CS340 final exam cheat sheet: database concepts and architecture, ER/EER modeling, the relational model and constraints, ER-to-relational mapping, SQL (basic and advanced), normalization (1NF to BCNF) and NoSQL, with worked examples and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers Chapters 1–7, 9 and 10. Expect an ER diagram to draw or map to tables, SQL queries to write (joins, GROUP BY, nested queries), a normalization problem from functional dependencies, and concept questions.
+@stat 9 | chapters | 210
+@stat 7 | mapping steps | 32
+@stat 16 | practice questions | 150
+@stat 4 | normal forms | 300
+@legend 32 | Exam traps | Orange boxes: SQL and mapping slips.
+@legend 150 | How to answer | Green boxes: step-by-step methods.
+@legend 276 | Memory hooks | Purple boxes: shortcuts.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the CS340 slides, slide breakdowns, cheat sheets, symbols sheet and past exams on this site (Elmasri and Navathe). Shoug Alomran.
+
+== concepts | 210 | Ch 1–2 | CH 1–2 | Database concepts and architecture
+[grid]
+[card Definitions]
+- **Database:** a collection of related data. **DBMS:** software to define, build, manipulate and share it.
+- DB approach vs files: self-describing (catalog/metadata), program–data independence, multiple views, shared concurrent access, less redundancy, integrity, backup.
+- Actors: DBA, designers, end users, system analysts and programmers.
+[/card]
+[card Three-schema architecture]
+- **External** (user views) → **conceptual** (whole DB logically) → **internal** (physical storage).
+- **Logical data independence:** change the conceptual schema without changing views. **Physical:** change storage without changing the conceptual schema.
+- Schema (structure, rarely changes) vs instance/state (data at a moment).
+[/card]
+[card Languages and models]
+- DDL (define), DML (manipulate), DCL (grant/revoke).
+- Data models: conceptual (ER), representational (relational), physical.
+- Architectures: centralized, client-server (2-tier, 3-tier with an application server).
+[/card]
+[/grid]
+
+== er | 190 | Ch 3 | CH 03 | ER and EER modeling
+[grid]
+[card ER notation]
+- **Entity** (rectangle), **weak entity** (double rectangle, identified through its owner with a partial key, dashed underline).
+- **Attributes** (ovals): key (underlined), composite, multivalued (double oval), derived (dashed oval).
+- **Relationship** (diamond; identifying relationship = double diamond).
+[/card]
+[card Constraints on relationships]
+- **Cardinality ratio:** 1:1, 1:N, M:N.
+- **Participation:** total (double line, every entity must participate) vs partial (single line).
+- (min, max) notation is the alternative.
+!trap Read the cardinality from each side: "an employee works for one department; a department has many employees" = 1:N with N on the employee side.
+[/card]
+[card EER]
+- **Specialization / generalization** with superclass and subclasses (inheritance).
+- **Disjoint (d)** vs **overlapping (o)**; **total** vs **partial** specialization.
+- Categories (union types).
+[/card]
+[/grid]
+
+== relational | 150 | Ch 4–5 | CH 4–5 | Relational model and ER-to-relational mapping
+[grid]
+[card Terms]
+Relation (table), tuple (row), attribute (column), domain, degree (number of attributes), cardinality (number of tuples). Superkey ⊇ candidate key (minimal) → one chosen as primary key.
+[/card]
+[card Constraints]
+- **Domain**, **key** (unique), **entity integrity** (PK not null), **referential integrity** (FK matches an existing PK or is null).
+- Violations: insert can break all four; delete can break referential (handle by restrict, cascade, set null); update can break key/referential.
+[/card]
+[card Mapping algorithm]
+1. Strong entity → table, simple attributes, PK.
+2. Weak entity → table with the owner's PK as FK + partial key → composite PK.
+3. 1:1 → FK on the total-participation side.
+4. 1:N → FK on the **N side**.
+5. M:N → new table with both PKs (composite PK) + relationship attributes.
+6. Multivalued attribute → new table (PK of entity + the value).
+7. N-ary relationship → new table with all participating PKs.
+EER: superclass/subclass → separate tables sharing the PK (or one table with a type attribute).
+!trap Composite attributes become their simple parts; derived attributes are usually not stored.
+[/card]
+[/grid]
+
+== sql | 262 | Ch 6–7 | CH 6–7 | SQL
+[grid]
+[card DDL]
+[calc]
+CREATE TABLE Employee (
+  ssn   CHAR(9) PRIMARY KEY,
+  name  VARCHAR(30) NOT NULL,
+  salary DECIMAL(10,2) CHECK (salary > 0),
+  dno   INT,
+  FOREIGN KEY (dno) REFERENCES Department(dnumber)
+     ON DELETE SET NULL ON UPDATE CASCADE );
+ALTER TABLE Employee ADD email VARCHAR(50);
+DROP TABLE Employee CASCADE;
+[/calc]
+[/card]
+[card Query skeleton]
+[calc]
+SELECT   d.dname, COUNT(*) AS n, AVG(e.salary)
+FROM     Employee e JOIN Department d ON e.dno = d.dnumber
+WHERE    e.salary > 3000          -- filters rows
+GROUP BY d.dname
+HAVING   COUNT(*) > 2             -- filters groups
+ORDER BY n DESC;
+[/calc]
+!hook Execution order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY.
+[/card]
+[card Useful pieces]
+- `DISTINCT`, `LIKE 'A%'` (% any, _ one char), `BETWEEN`, `IN (...)`, `IS NULL`.
+- Joins: inner, LEFT/RIGHT/FULL OUTER, natural, self-join (aliases).
+- Set operations: UNION, INTERSECT, EXCEPT.
+- Aggregates: COUNT, SUM, AVG, MIN, MAX (ignore NULLs, except COUNT(*)).
+[/card]
+[card Nested queries]
+- `WHERE salary > (SELECT AVG(salary) FROM Employee)`
+- `IN` / `NOT IN`, `EXISTS` / `NOT EXISTS` (correlated), `> ALL`, `> ANY`.
+- Division ("employees who work on **all** projects"): NOT EXISTS (… EXCEPT …).
+!trap A non-aggregated column in SELECT must appear in GROUP BY. `= NULL` is never true: use `IS NULL`. Use HAVING (not WHERE) for conditions on aggregates.
+[/card]
+[card Changes and views]
+- `INSERT INTO T VALUES (...)`, `UPDATE T SET a = ... WHERE ...`, `DELETE FROM T WHERE ...`.
+- `CREATE VIEW v AS SELECT ...` (virtual table). Assertions and triggers enforce complex rules.
+[/card]
+[/grid]
+
+== normalization | 205 | Ch 9 | CH 09 | Normalization
+[grid]
+[card Functional dependencies]
+X → Y: equal X values imply equal Y values.
+- Armstrong: reflexivity, augmentation, transitivity (+ union, decomposition).
+- **Closure X⁺:** all attributes determined by X; X is a key if X⁺ = all attributes (and minimal).
+[/card]
+[card Normal forms]
+[table]
+Form | Rule | Removes
+1NF | Atomic values, no repeating groups | Multivalued cells
+2NF | 1NF + no **partial** dependency on part of a composite key | Partial dependencies
+3NF | 2NF + no **transitive** dependency (non-key → non-key) | Transitive dependencies
+BCNF | Every determinant is a superkey | Remaining anomalies
+[/table]
+!hook "The key, the whole key, and nothing but the key."
+[/card]
+[card Worked example]
+[calc]
+R(StudentID, CourseID, StudentName, Grade, Instructor, InstrOffice)
+FDs: StudentID -> StudentName
+     StudentID, CourseID -> Grade
+     CourseID -> Instructor
+     Instructor -> InstrOffice
+Key: (StudentID, CourseID)
+2NF: Student(StudentID, StudentName)
+     Course(CourseID, Instructor, InstrOffice)
+     Enroll(StudentID, CourseID, Grade)
+3NF: split Course -> Course(CourseID, Instructor)
+                      Instructor(Instructor, InstrOffice)
+[/calc]
+[/card]
+[card Why normalize]
+Removes redundancy and update, insert and delete anomalies. Decompositions must be **lossless join** (and ideally dependency-preserving).
+[/card]
+[/grid]
+
+== nosql | 45 | Ch 10 | CH 10 | NoSQL and object-oriented databases
+[grid]
+[card NoSQL]
+- For big, distributed, flexible-schema data; scale out horizontally.
+- Types: **key-value** (Redis, DynamoDB), **document** (MongoDB, JSON), **column-family** (Cassandra, HBase), **graph** (Neo4j).
+- **CAP theorem:** in a partition, choose consistency or availability. Many NoSQL systems use **eventual consistency** (BASE vs ACID).
+[/card]
+[card Object databases]
+Objects with identity (OID), encapsulation, inheritance and complex types; ODMG standard, OQL. Object-relational systems add these to SQL.
+[/card]
+[card ACID]
+Atomicity, consistency, isolation, durability: the transaction guarantees relational DBMSs provide.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: Where does the FK go in a 1:N relationship?
+= In the table on the N side.
+
+? Practice :: How is an M:N relationship mapped?
+= A new table holding both primary keys (as a composite PK) and the relationship's attributes.
+
+? Practice :: Which constraint says a primary key cannot be NULL?
+= Entity integrity
+
+? Practice :: WHERE vs HAVING?
+= WHERE filters rows before grouping; HAVING filters groups after aggregation.
+
+? Practice :: Write: names of departments with more than 5 employees.
+= SELECT d.dname FROM Department d JOIN Employee e ON e.dno = d.dnumber GROUP BY d.dname HAVING COUNT(*) > 5;
+
+? Practice :: Write: employees earning more than the average salary.
+= SELECT name FROM Employee WHERE salary > (SELECT AVG(salary) FROM Employee);
+
+? Practice :: Why does `WHERE phone = NULL` return nothing?
+= NULL comparisons are unknown; use `IS NULL`.
+
+? Practice :: Logical vs physical data independence?
+= Logical: change the conceptual schema without changing user views. Physical: change storage without changing the conceptual schema.
+
+? Practice :: R(A, B, C, D), key AB, FD B → C. Highest normal form?
+= 1NF: B → C is a partial dependency.
+
+? Practice :: R(A, B, C), key A, FD B → C. Which normal form fails?
+= 3NF (transitive A → B → C); it is in 2NF.
+
+? Practice :: What is BCNF?
+= Every determinant of a non-trivial FD is a superkey.
+
+? Practice :: How is a multivalued attribute mapped?
+= A separate table with the entity's PK and the attribute value.
+
+? Practice :: Double line between an entity and a relationship means?
+= Total participation
+
+? Practice :: Which NoSQL type stores JSON-like records?
+= Document stores (e.g. MongoDB)
+
+? Practice :: Degree vs cardinality of a relation?
+= Degree = number of attributes; cardinality = number of tuples.
+
+? Practice :: ON DELETE CASCADE does what?
+= Deleting the referenced row also deletes the rows that reference it.
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready cs340-final]
+Explain the three-schema architecture and data independence.
+Draw an ER diagram with keys, weak entities, cardinality and participation.
+Map ER and EER diagrams to relations with the seven steps.
+Name and give an example of each relational constraint and violation.
+Write CREATE TABLE with PK, FK, NOT NULL and CHECK.
+Write SELECT queries with joins, GROUP BY, HAVING and ORDER BY.
+Write nested queries with IN, EXISTS and ALL.
+Compute an attribute closure and find the key.
+Normalize a relation to 1NF, 2NF, 3NF and BCNF.
+Compare relational, NoSQL types and ACID vs eventual consistency.
+[/ready]

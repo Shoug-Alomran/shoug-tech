@@ -1,0 +1,244 @@
+@code CS102
+@course Object-Oriented Programming (Java)
+@path computer-science/cs102
+@brand Final
+@description CS102 final exam cheat sheet: classes and objects, interfaces with Comparable and Comparator, files, generics, inheritance, polymorphism, the collections framework, linked lists, recursion and 2D arrays, with code patterns and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers all ten topics plus multidimensional arrays. Expect "what does this print" questions on inheritance and polymorphism, writing a class with a constructor and compareTo, choosing the right collection, and tracing recursion.
+@stat 11 | topics | 210
+@stat 10 | code patterns | 32
+@stat 16 | practice questions | 150
+@stat 3 | OOP pillars to explain | 300
+@legend 32 | Exam traps | Orange boxes: the dynamic-binding and generics slips.
+@legend 150 | How to answer | Green boxes: code you should be able to write cold.
+@legend 276 | Memory hooks | Purple boxes: rules worth memorizing.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the CS102 slides (Topics 1–10 and Chapter 8). Shoug Alomran.
+
+== classes | 210 | Classes | T 1 | Classes and objects
+[grid]
+[card Anatomy of a class]
+[calc]
+public class Student {
+    private String name;          // field (encapsulated)
+    private static int count = 0; // shared by all objects
+    public Student(String name) { // constructor
+        this.name = name; count++;
+    }
+    public String getName() { return name; }      // getter
+    public void setName(String n) { name = n; }   // setter
+    @Override public String toString() { return "Student " + name; }
+}
+[/calc]
+[/card]
+[card Key ideas]
+- **Encapsulation:** private fields, public methods.
+- Constructor: same name as the class, no return type. Java gives a no-arg default constructor only if you write none.
+- `this` refers to the current object; `this(...)` calls another constructor.
+- **static** belongs to the class (one copy); instance members belong to each object. A static method cannot use `this`.
+- Objects are reached through references; `null` means no object.
+!trap Writing `void Student()` makes a method, not a constructor.
+[/card]
+[/grid]
+
+== interfaces | 190 | Interfaces | T 2 | Interfaces, Comparable and Comparator
+[grid]
+[card Interfaces]
+A contract of abstract methods (plus default/static methods). A class `implements` many interfaces but `extends` only one class. You cannot instantiate an interface.
+[/card]
+[card Comparable (natural order)]
+[calc]
+public class Student implements Comparable<Student> {
+    public int compareTo(Student o) {
+        return Double.compare(this.gpa, o.gpa); // <0, 0, >0
+    }
+}
+Collections.sort(list);   // uses compareTo
+[/calc]
+[/card]
+[card Comparator (other orders)]
+[calc]
+Comparator<Student> byName = (a, b) -> a.getName().compareTo(b.getName());
+list.sort(byName);
+Collections.sort(list, Comparator.comparing(Student::getName));
+[/calc]
+!hook Comparable is inside the class (one natural order); Comparator is outside (as many orders as you like).
+[/card]
+[/grid]
+
+== files | 150 | Files | T 3 | Files
+[grid]
+[card Text files]
+- Read: `Scanner sc = new Scanner(new File("in.txt")); while (sc.hasNextLine()) ...`
+- Write: `PrintWriter pw = new PrintWriter(new FileWriter("out.txt", true));` (true = append). Always `close()` (or try-with-resources).
+- `FileNotFoundException` and `IOException` are **checked**.
+[/card]
+[card try-with-resources]
+`try (Scanner sc = new Scanner(new File("in.txt"))) { ... } catch (FileNotFoundException e) { ... }` closes the file automatically.
+[/card]
+[card Binary / object files]
+`ObjectOutputStream.writeObject(obj)` needs the class to implement `Serializable`; `ObjectInputStream.readObject()` returns Object (cast it).
+[/card]
+[/grid]
+
+== generics | 262 | Generics | T 4 | Generic classes
+[grid]
+[card Generic class and method]
+[calc]
+public class Box<T> {
+    private T item;
+    public void set(T item) { this.item = item; }
+    public T get() { return item; }
+}
+public static <T extends Comparable<T>> T max(T a, T b) {
+    return a.compareTo(b) >= 0 ? a : b;
+}
+[/calc]
+[/card]
+[card Rules]
+- Type parameters take **reference types** only: `Box<Integer>`, not `Box<int>` (autoboxing converts).
+- Compile-time type safety; no casts when reading.
+- Bounded type: `<T extends Number>`. Wildcards: `<?>`, `<? extends T>` (read), `<? super T>` (write).
+!trap `List<Integer>` is **not** a subtype of `List<Number>`. Use `List<? extends Number>`.
+[/card]
+[/grid]
+
+== inheritance | 205 | Inheritance | T 5, 9 | Inheritance and polymorphism
+[grid]
+[card Inheritance]
+- `class Dog extends Animal`: Dog inherits Animal's non-private members ("is-a").
+- The subclass constructor calls `super(...)` first (implicitly `super()` if omitted; error if the parent has no no-arg constructor).
+- `super.method()` calls the parent's version. `protected` = visible to subclasses and the package.
+- Every class extends `Object` (toString, equals, hashCode).
+[/card]
+[card Overriding vs overloading]
+- **Override:** same signature in the subclass; chosen at **run time** by the actual object (dynamic binding). Use `@Override`.
+- **Overload:** same name, different parameters; chosen at **compile time**.
+- `final` method cannot be overridden; `final` class cannot be extended.
+[/card]
+[card Polymorphism]
+`Animal a = new Dog(); a.speak();` runs **Dog's** speak (actual type). But `a.fetch()` does not compile if only Dog has fetch (declared type decides what you may call).
+- Downcast: `if (a instanceof Dog) ((Dog) a).fetch();`
+- Wrong downcast → ClassCastException at run time.
+!hook Declared type decides **what you may call**; actual type decides **which version runs**.
+[/card]
+[card Abstract classes]
+`abstract class Shape { abstract double area(); }`: cannot be instantiated; subclasses must implement area() or be abstract themselves. Can have fields and constructors (unlike interfaces).
+[/card]
+[/grid]
+
+== collections | 330 | Collections | T 6–8 | Collections framework and linked lists
+[table]
+Interface | Implementation | Use when | Key cost
+List | ArrayList | Index access, mostly appending | get O(1), insert middle O(n)
+List | LinkedList | Many inserts/removes at the ends | get O(n), add/remove ends O(1)
+Set | HashSet / TreeSet | No duplicates (TreeSet keeps sorted) | O(1) / O(log n)
+Map | HashMap / TreeMap | Key → value lookups | O(1) / O(log n)
+Queue / Deque | ArrayDeque, LinkedList | FIFO, stack | O(1)
+PriorityQueue | binary heap | Smallest first | offer/poll O(log n)
+[/table]
+[grid]
+[card Iterating]
+- for-each: `for (String s : list)`.
+- Removing while iterating: use `Iterator it = list.iterator(); while (it.hasNext()) if (...) it.remove();`
+!trap Calling `list.remove(x)` inside a for-each throws ConcurrentModificationException. On an `ArrayList<Integer>`, `remove(1)` removes **index 1**; use `remove(Integer.valueOf(1))` for the value.
+[/card]
+[card Your own linked list]
+[calc]
+class Node<T> { T data; Node<T> next; }
+void addFirst(T x) { Node<T> n = new Node<>(); n.data = x; n.next = head; head = n; size++; }
+void print() { for (Node<T> c = head; c != null; c = c.next) System.out.println(c.data); }
+[/calc]
+!tip Always handle the empty list (head == null) and the single-node case.
+[/card]
+[card Map patterns]
+`map.put(k, map.getOrDefault(k, 0) + 1);` counts frequencies. `for (Map.Entry<K,V> e : map.entrySet())` iterates pairs.
+[/card]
+[/grid]
+
+== recursion | 45 | Recursion | T 10, Ch 8 | Recursion and 2D arrays
+[grid]
+[card Recursion]
+- A base case that stops it and a recursive case that moves toward it.
+- factorial(n) = n × factorial(n − 1), factorial(0) = 1.
+- fib(n) = fib(n−1) + fib(n−2): exponential without memoization.
+- Missing base case → StackOverflowError.
+[/card]
+[card Trace example]
+[calc]
+int f(int n) { if (n <= 1) return 1; return n + f(n - 2); }
+f(6) = 6 + f(4) = 6 + 4 + f(2) = 6 + 4 + 2 + f(0) = 13
+[/calc]
+[/card]
+[card 2D arrays]
+- `int[][] m = new int[3][4];` 3 rows, 4 columns. `m.length` rows, `m[0].length` columns.
+- Row-major loops: `for r … for c … m[r][c]`.
+- Ragged arrays: rows can have different lengths.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: `Animal a = new Dog(); a.speak();` Dog overrides speak. Which runs?
+= Dog's speak (dynamic binding on the actual object)
+
+? Practice :: Same code, but only Dog defines bark(). Does `a.bark()` compile?
+= No: the declared type Animal has no bark().
+
+? Practice :: Overloading vs overriding: which is resolved at compile time?
+= Overloading
+
+? Practice :: A parent has only `Parent(int x)`. The child constructor has no super call. Result?
+= Compile error: the implicit super() has no matching constructor.
+
+? Practice :: Can you write `List<int>`?
+= No: use `List<Integer>` (generics take reference types).
+
+? Practice :: Collection with no duplicates kept in sorted order?
+= TreeSet
+
+? Practice :: `ArrayList<Integer> l = [5, 1, 7]; l.remove(1);` What is left?
+= [5, 7]: remove(int) removes index 1.
+
+? Practice :: Comparable or Comparator to sort students by name without changing the class?
+= Comparator
+
+? Practice :: compareTo should return what when this < other?
+= A negative number
+
+? Practice :: Abstract class vs interface: which can have constructors and instance fields?
+= Abstract class
+
+? Practice :: f(n) = n + f(n − 2), f(n ≤ 1) = 1. What is f(5)?
+= 5 + 3 + f(1) = 9
+
+? Practice :: Which exception does `(Dog) new Cat()` (both extend Animal, via an Animal reference) throw?
+= ClassCastException at run time
+
+? Practice :: Why use try-with-resources?
+= The resource is closed automatically, even if an exception occurs.
+
+? Practice :: Rows and columns of `new int[2][5]`?
+= 2 rows, 5 columns
+
+? Practice :: Best collection to count word frequencies?
+= HashMap<String, Integer> with getOrDefault
+
+? Practice :: What does `static` mean for a field?
+= One copy shared by all objects of the class.
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready cs102-final]
+Write a class with private fields, constructors, getters, setters and toString.
+Explain static vs instance members.
+Implement Comparable and write a Comparator lambda.
+Read and write a text file with exception handling.
+Write a generic class and a bounded generic method.
+Explain inheritance, super, overriding and dynamic binding with an example.
+Predict output of polymorphic calls and casts.
+Choose the right collection for a scenario and give its cost.
+Write addFirst and traversal for your own linked list.
+Trace a recursive method and identify its base case.
+Loop over a 2D array by rows and columns.
+[/ready]

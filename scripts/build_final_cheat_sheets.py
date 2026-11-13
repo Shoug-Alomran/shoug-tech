@@ -379,7 +379,47 @@ TEMPLATE = """<!doctype html>
 """
 
 
+TRACKS = {
+    "computer-science": "Computer Science",
+    "cybersecurity": "Cybersecurity",
+    "software-engineering": "Software Engineering",
+    "other-courses": "Other Courses",
+    "information-system": "Information Systems",
+}
+GENERIC_FROM = "cybersecurity/cys401"
+
+
+def make_generic_wrapper(page):
+    """Courses without a single-page wrapper of their own reuse the CYS401 final wrapper.
+
+    Header `@prev <url>` sets the PREVIOUS link (the item listed before this sheet);
+    without it the link is disabled. The sidebar is restamped afterwards by
+    build_academic_sidebar.py, so the copied CYS401 sidebar never survives."""
+    src = open(os.path.join(REPO, "docs", "academics", GENERIC_FROM, "extra-resources", FOLDER, "index.html"),
+               encoding="utf-8").read()
+    path, code = page.meta["path"], page.meta["code"]
+    track = path.split("/")[0]
+    out = src.replace('href="/academics/cybersecurity/"\n              >Cybersecurity</a',
+                      'href="/academics/%s/"\n              >%s</a' % (track, TRACKS.get(track, track)))
+    out = out.replace("/academics/" + GENERIC_FROM + "/", "/academics/%s/" % path)
+    out = out.replace("CYS401", code)
+    if track != "cybersecurity":  # the template is a cybersecurity page; other tracks keep their own colours
+        out = re.sub(r'[ \t]*<link rel="stylesheet" href="/styles/cyber-track.css" />\n', "", out)
+    desc = esc(page.meta.get("description", ""))
+    old_desc = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', src).group(1)
+    out = out.replace(old_desc, desc)
+    prev = page.meta.get("prev")
+    m = re.search(r'<a\s+href="[^"]*"\s+class="nav-link prev"\s*>&lt;- PREVIOUS</a\s*>', out)
+    if prev:
+        out = out[:m.start()] + '<a href="%s" class="nav-link prev">&lt;- PREVIOUS</a>' % prev + out[m.end():]
+    else:
+        out = out[:m.start()] + '<span class="nav-link prev disabled">&lt;- PREVIOUS</span>' + out[m.end():]
+    return out
+
+
 def make_wrapper(page, folder_dir):
+    if page.name not in WRAPPER_FROM:
+        return make_generic_wrapper(page)
     course_dir = os.path.dirname(folder_dir)
     src_name = WRAPPER_FROM[page.name]
     src = open(os.path.join(course_dir, src_name, "index.html"), encoding="utf-8").read()

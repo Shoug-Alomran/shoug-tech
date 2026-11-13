@@ -70,6 +70,13 @@ jobs:
           python3 scripts/build_academic_sidebar.py
           python3 scripts/sync_site_shell.py
 
+      # Bots and AI assistants read pages without opening the PDF viewer, so give
+      # slide pages a text version and publish /llms.txt as a map of the site.
+      - name: Add text versions for bots and AI assistants
+        run: |
+          python3 scripts/add_slide_text.py
+          python3 scripts/build_llms_txt.py
+
       - name: Rebuild final sitemap
         run: python3 scripts/check_sitemap.py --write
 
@@ -91,8 +98,25 @@ jobs:
       # qpdf recompresses PDF structure and Flate streams losslessly. It does not
       # downsample, rasterize, or recompress embedded images; originals are kept
       # whenever the optimized candidate is not smaller or fails validation.
+      # Results are cached by each original PDF's hash, so only new or changed
+      # PDFs are recompressed; the rest are copied from the previous run.
+      - name: Restore PDF compression cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .pdf-cache
+          key: pdf-cache-v2-${{ github.run_id }}
+          restore-keys: pdf-cache-v2-
+
       - name: Compress PDFs losslessly
-        run: python3 scripts/compress_pdfs_losslessly.py docs
+        id: compress-pdfs
+        run: python3 scripts/compress_pdfs_losslessly.py docs --cache .pdf-cache
+
+      - name: Save PDF compression cache
+        if: steps.compress-pdfs.outputs.new != '0'
+        uses: actions/cache/save@v4
+        with:
+          path: .pdf-cache
+          key: pdf-cache-v2-${{ github.run_id }}
 
       - name: Seal paid course content before publishing
         run: python3 scripts/secure_ethics_content.py --seal --check
@@ -127,6 +151,10 @@ jobs:
         with:
           name: firebase-site
           path: docs
+
+      # Meta-refresh pages become real 301s, which bots and AI fetchers follow.
+      - name: Generate Firebase redirects
+        run: python3 scripts/build_firebase_redirects.py
 
       - name: Deploy to Firebase Hosting live channel
         id: deployment

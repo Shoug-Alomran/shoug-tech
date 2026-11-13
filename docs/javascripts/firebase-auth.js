@@ -779,10 +779,15 @@
 
   // ── Remember me / inactivity sign-out ─────────────────────────────────────
   // Sessions stay in Firebase's default local storage, so they work across
-  // tabs. A device that isn't remembered is signed out after 30 minutes with
-  // no activity in any tab; the shared timestamp also catches a closed browser.
+  // tabs. A device that isn't remembered is signed out when the browser closes
+  // (a cookie with no expiry date is dropped then) and after 30 minutes with no
+  // activity in any tab.
   var REMEMBER_KEY = "shoug-remember-device";
   var LAST_ACTIVE_KEY = "shoug-last-active";
+  var SESSION_COOKIE = "shoug_browser_session";
+  // Set at every sign-in since the closed-browser rule; sessions from before it
+  // get one free browser session instead of being signed out on the spot.
+  var SESSION_RULE_KEY = "shoug-session-rule";
   var IDLE_LIMIT_MS = 30 * 60 * 1000;
   var ACTIVITY_EVENTS = [
     "pointerdown",
@@ -795,6 +800,16 @@
   var idleWatchOn = false;
   var lastActivityWrite = 0;
 
+  function markBrowserSession() {
+    document.cookie =
+      SESSION_COOKIE + "=1; path=/; SameSite=Lax" +
+      (location.protocol === "https:" ? "; Secure" : "");
+  }
+
+  function browserSessionOpen() {
+    return document.cookie.split(/;\s*/).indexOf(SESSION_COOKIE + "=1") !== -1;
+  }
+
   function saveRememberChoice() {
     if (firebase.auth().currentUser) return;
     var box = document.getElementById("auth-remember");
@@ -803,7 +818,20 @@
       else localStorage.removeItem(REMEMBER_KEY);
       // Clear the old session's clock so this sign-in isn't counted as idle.
       localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
+      localStorage.setItem(SESSION_RULE_KEY, "1");
     } catch (e) {}
+    markBrowserSession();
+  }
+
+  function endSession(message) {
+    firebase
+      .auth()
+      .signOut()
+      .then(function () {
+        if (!message) return;
+        openModal();
+        errorEl.textContent = message;
+      });
   }
 
   // Returns true when this call signed the visitor out.
@@ -811,6 +839,15 @@
     if (!firebase.auth().currentUser) return false;
     try {
       if (localStorage.getItem(REMEMBER_KEY) === "1") return false;
+      if (!browserSessionOpen()) {
+        if (localStorage.getItem(SESSION_RULE_KEY) === "1") {
+          // The browser was closed since this device signed in.
+          endSession("");
+          return true;
+        }
+        localStorage.setItem(SESSION_RULE_KEY, "1");
+        markBrowserSession();
+      }
       var last = Number(localStorage.getItem(LAST_ACTIVE_KEY));
       if (!last) {
         localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
@@ -820,13 +857,7 @@
     } catch (e) {
       return false;
     }
-    firebase
-      .auth()
-      .signOut()
-      .then(function () {
-        openModal();
-        errorEl.textContent = "Signed out after 30 minutes of inactivity.";
-      });
+    endSession("Signed out after 30 minutes of inactivity.");
     return true;
   }
 
