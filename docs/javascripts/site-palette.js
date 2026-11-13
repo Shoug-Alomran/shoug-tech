@@ -1,6 +1,12 @@
 (function () {
   "use strict";
 
+  // The deployed shared header carries its own copy of this script, and most pages
+  // also load it in <head>. A second copy would bind the Theme button twice, so one
+  // click opened and closed the menu at once on every page but the home page.
+  if (window.__shougSitePalette) return;
+  window.__shougSitePalette = true;
+
   var storageKey = "shoug-palette";
   var root = document.documentElement;
   var palettes = {

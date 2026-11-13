@@ -849,11 +849,26 @@ def build_page(deck, mod, out):
         extra_questions = bank.QUESTIONS.get(deck['key'], {})
         extra_notes = getattr(bank, 'NOTES', {}).get(deck['key'], {})
     except ModuleNotFoundError:
-        extra_questions, extra_notes = {}, {}
+        bank, extra_questions, extra_notes = None, {}, {}
+    if deck['key'] in getattr(bank, 'REPLACE', ()):
+        # The bank rewrites every question of this deck with reasons for each wrong pick, so drop the old ones
+        # that have none (pointer-only links to a real paper have no 'q' and stay).
+        for n, slide in list(spec['slides'].items()):
+            spec['slides'][n] = dict(slide, exam=[q for q in slide.get('exam', ()) if not q.get('q') or q.get('wrong')])
     for n, new_notes in extra_notes.items():  # explaining notes replace a slide's first notes, so note numbers stay valid
         slide = dict(spec['slides'].get(n, {}))
         old_notes = list(slide.get('notes', ()))
-        slide['notes'] = [new if new is not None else old_notes[i] for i, new in enumerate(new_notes)] + old_notes[len(new_notes):]
+        if deck['key'] in getattr(bank, 'REPLACE', ()):
+            # Replace only the plain notes (tips and cross-references follow them). Extra notes join the last plain
+            # note, or go at the end when the slide had none.
+            plain = next((i for i, x in enumerate(old_notes) if not isinstance(x, str)), len(old_notes))
+            new_notes = list(new_notes)
+            if 0 < plain < len(new_notes):
+                new_notes = new_notes[:plain - 1] + [' '.join(new_notes[plain - 1:])]
+            head = [new if new is not None else old_notes[i] for i, new in enumerate(new_notes[:plain])]
+            slide['notes'] = head + old_notes[len(head):] + new_notes[plain:]
+        else:
+            slide['notes'] = [new if new is not None else old_notes[i] for i, new in enumerate(new_notes)] + old_notes[len(new_notes):]
         spec['slides'][n] = slide
     for n, questions in extra_questions.items():
         slide = dict(spec['slides'].get(n, {}))
