@@ -1,0 +1,238 @@
+@code SE401
+@course Software Testing and Quality
+@path software-engineering/se401
+@brand Final
+@prev /academics/software-engineering/se401/extra-resources/summary/
+@description SE401 final exam cheat sheet: testing principles, testing in the SDLC, software quality and its models, test cases, black-box techniques (equivalence partitioning, boundary values, decision tables, state transitions), white-box testing and coverage, JUnit, regression testing, metrics and tools, with worked examples and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers all thirteen topics. The marks are in the techniques: derive equivalence classes and boundary values, build a decision table, draw a control-flow graph and compute cyclomatic complexity and coverage, and write a JUnit test.
+@stat 13 | topics | 210
+@stat 6 | techniques to drill | 32
+@stat 16 | practice questions | 150
+@stat 7 | testing principles | 300
+@legend 32 | Exam traps | Orange boxes: coverage and boundary slips.
+@legend 150 | How to answer | Green boxes: step-by-step techniques.
+@legend 276 | Memory hooks | Purple boxes: shortcuts.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the SE401 slides, slide breakdowns, mind maps, summary and past exams on this site (ISTQB-based). Shoug Alomran.
+
+== basics | 210 | T 1–2 | T 1–2 | Testing basics and the SDLC
+[grid]
+[card Error, defect, failure]
+A human **error (mistake)** introduces a **defect (fault, bug)** in the code; executing it may cause a **failure** (observed wrong behaviour).
+[/card]
+[card Seven principles]
+1. Testing shows the presence of defects, not their absence.
+2. Exhaustive testing is impossible.
+3. Early testing saves time and money.
+4. Defects cluster together.
+5. Pesticide paradox (repeated tests stop finding bugs).
+6. Testing is context dependent.
+7. Absence-of-errors fallacy.
+[/card]
+[card Levels and types]
+- Levels: **unit (component)** → **integration** → **system** → **acceptance** (UAT, alpha, beta, operational, contract).
+- Integration: big bang, top-down (stubs), bottom-up (drivers).
+- Types: functional, non-functional (performance, load, stress, usability, security), structural (white-box), change-related (confirmation/re-testing, regression).
+- V-model pairs each development phase with a test level.
+- Static testing (reviews, inspections, static analysis) vs dynamic (executing code).
+[/card]
+[/grid]
+
+== quality | 190 | T 3–4 | T 3–4 | Software quality
+[grid]
+[card Quality]
+Conformance to requirements and fitness for use. QA (process, prevent defects) vs QC (product, find defects) vs testing (one QC activity).
+[/card]
+[card Quality models]
+- **ISO/IEC 25010:** functional suitability, performance efficiency, compatibility, usability, reliability, security, maintainability, portability.
+- McCall: product operation, revision, transition.
+- Cost of quality: prevention + appraisal + internal and external failure costs.
+[/card]
+[card Verification vs validation]
+Verification: built right (against the spec). Validation: right product (against user needs).
+[/card]
+[/grid]
+
+== cases | 150 | T 5 | T 05 | Test cases
+[grid]
+[card A good test case]
+ID, title, preconditions, test data, steps, **expected result**, actual result, status (pass/fail), priority, traceability to a requirement.
+[/card]
+[card Process]
+Test planning → analysis (what to test: test conditions) → design (how: test cases) → implementation → execution → completion. Entry and exit criteria; test oracle decides expected results.
+[/card]
+[/grid]
+
+== blackbox | 262 | T 6–7 | T 6–7 | Black-box techniques
+[grid wide]
+[card Equivalence partitioning and boundary values]
+[calc]
+age accepted 18..60
+partitions:  <18 (invalid) | 18..60 (valid) | >60 (invalid)
+EP tests:    10, 35, 70                     (one per partition)
+BVA (2-value): 17, 18, 60, 61
+BVA (3-value): 17, 18, 19, 59, 60, 61
+[/calc]
+!trap Boundaries come from the **edges** of each partition; also test invalid types (letters) and empty input if the spec allows.
+[/card]
+[card Decision table]
+[calc]
+Conditions        R1  R2  R3  R4
+Member?            Y   Y   N   N
+Order > 100?       Y   N   Y   N
+Actions
+10% discount       X
+5% discount            X   X
+No discount                    X
+2 conditions -> 2^2 = 4 rules (one test per rule)
+[/calc]
+[/card]
+[/grid]
+[grid]
+[card State transition testing]
+Model states, events and transitions (e.g. ATM card: idle → PIN wait → 3 wrong → blocked). Cover every transition at least once (0-switch); also test invalid transitions.
+[/card]
+[card Other techniques]
+Use case testing (main and alternative flows), pairwise testing, error guessing and exploratory testing (experience-based).
+[/card]
+[/grid]
+
+== whitebox | 205 | T 8–9 | T 8–9 | White-box testing and coverage
+[grid]
+[card Coverage levels]
+- **Statement:** every statement executed at least once.
+- **Branch (decision):** every true/false outcome taken.
+- **Condition:** every atomic condition true and false.
+- **Path:** every path (often impossible with loops).
+!hook 100% branch → 100% statement, but not the reverse.
+[/card]
+[card Cyclomatic complexity]
+[calc]
+V(G) = E - N + 2      (edges, nodes of the control-flow graph)
+V(G) = decisions + 1  (each if, while, for, case, && / ||)
+V(G) = number of regions of the planar graph
+= minimum number of independent paths to test (basis paths)
+[/calc]
+[/card]
+[card Worked example]
+[calc]
+read x, y
+if (x > 0)        // decision 1
+   if (y > 0)     // decision 2
+      print "Q1"
+   else print "Q4"
+else print "left"
+V(G) = 2 + 1 = 3 paths:
+ x=1,y=1 -> Q1 | x=1,y=-1 -> Q4 | x=-1 -> left
+statement coverage needs all 3 here; branch coverage also 3
+[/calc]
+[/card]
+[/grid]
+
+== junit | 330 | T 10–11 | T 10–11 | Unit testing, JUnit and regression
+[grid]
+[card JUnit 5]
+[calc]
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+class CalculatorTest {
+    Calculator c;
+    @BeforeEach void setUp() { c = new Calculator(); }
+    @Test void addsTwoNumbers() { assertEquals(5, c.add(2, 3)); }
+    @Test void divideByZero() {
+        assertThrows(ArithmeticException.class, () -> c.divide(1, 0));
+    }
+}
+[/calc]
+Other annotations: @AfterEach, @BeforeAll / @AfterAll (static), @Disabled, @ParameterizedTest. Asserts: assertTrue, assertFalse, assertNull, assertNotNull, assertArrayEquals.
+[/card]
+[card Test doubles and TDD]
+- **Stub** returns canned answers; **mock** also verifies calls (Mockito); **driver** calls the unit under test; fake, spy.
+- TDD: red (failing test) → green (minimal code) → refactor.
+[/card]
+[card Regression testing]
+Re-run tests after changes to catch side effects. Strategies: retest all, regression test selection, prioritization by risk; automate it in CI. Confirmation (re-)testing checks that a fixed bug is fixed.
+[/card]
+[/grid]
+
+== metrics | 45 | T 12–13 | T 12–13 | Metrics, tools and advanced topics
+[grid]
+[card Metrics]
+- Defect density = defects / KLOC (or per function point).
+- Test coverage %, pass rate, defects found per phase, **defect removal efficiency** = defects found before release / total defects.
+- Mean time to failure, defect leakage.
+[/card]
+[card Tools]
+Test management (TestRail, Jira), unit (JUnit), UI automation (Selenium), API (Postman), performance (JMeter), coverage (JaCoCo), static analysis (SonarQube), CI (Jenkins, GitHub Actions).
+[/card]
+[card Advanced]
+Performance (load, stress, spike, endurance), security testing (penetration, fuzzing), mutation testing (mutation score = killed / total mutants), test automation pyramid (many unit, fewer integration, few UI tests).
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: A programmer misreads a requirement, writes wrong code, the user sees a crash. Name the three terms in order.
+= Error (mistake) → defect (fault) → failure
+
+? Practice :: Which principle says running the same tests again finds fewer new bugs?
+= The pesticide paradox
+
+? Practice :: Input valid range 1–100. Two-value boundary tests?
+= 0, 1, 100, 101
+
+? Practice :: Equivalence classes for a password of 8–16 characters?
+= < 8 (invalid), 8–16 (valid), > 16 (invalid)
+
+? Practice :: How many rules in a full decision table with 3 boolean conditions?
+= 8
+
+? Practice :: Code with 3 if-statements and one while loop. Cyclomatic complexity?
+= 5 (4 decisions + 1)
+
+? Practice :: CFG with 9 edges and 7 nodes. V(G)?
+= 4
+
+? Practice :: Does 100% statement coverage guarantee 100% branch coverage?
+= No: an if without else can be fully covered by statements with only the true branch taken.
+
+? Practice :: Top-down integration uses stubs or drivers?
+= Stubs (bottom-up uses drivers)
+
+? Practice :: Testing done by real users at the customer's site before release?
+= Beta testing
+
+? Practice :: JUnit assertion for an expected exception?
+= assertThrows
+
+? Practice :: Which annotation runs before every test method?
+= @BeforeEach
+
+? Practice :: 30 defects found in testing, 10 more after release. Defect removal efficiency?
+= 30 / 40 = 75%
+
+? Practice :: QA vs QC?
+= QA prevents defects through the process; QC finds defects in the product.
+
+? Practice :: Re-running tests to check that a change did not break existing features is…
+= Regression testing
+
+? Practice :: Black-box or white-box: deriving tests from the requirements only?
+= Black-box
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready se401-final]
+Explain error, defect and failure and the seven principles.
+Name the test levels, integration strategies and test types.
+Compare QA, QC and testing, and verification vs validation.
+Write a complete test case with an expected result.
+Derive equivalence partitions and boundary values.
+Build a decision table and a state transition test set.
+Draw a control-flow graph and compute cyclomatic complexity.
+Design tests for statement, branch and condition coverage.
+Write a JUnit 5 test class with setup and assertions.
+Explain stubs, mocks, drivers, TDD and regression testing.
+Compute defect density and defect removal efficiency.
+[/ready]

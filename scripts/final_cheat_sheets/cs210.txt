@@ -1,0 +1,261 @@
+@code CS210
+@course Data Structures
+@path computer-science/cs210
+@brand Final
+@prev /academics/computer-science/cs210/extra-resources/02-cheat-sheet-2/
+@description CS210 final exam cheat sheet: algorithm analysis, recursion, lists, stacks and queues, sorting, trees, BSTs, AVL trees, heaps, hash tables and graphs, with complexities, traces and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers all sixteen topics. Most questions are traces (insert into an AVL tree, run a heap operation, hash with linear probing, BFS/DFS order) and Big-O questions, plus short Java methods on linked structures.
+@lede The two midterm cheat sheets have the detail; this sheet is the one-pass review with every complexity in one place.
+@stat 16 | topics | 210
+@stat 1 | Big-O table | 32
+@stat 17 | practice questions | 150
+@stat 11 | traces to practise | 300
+@legend 32 | Exam traps | Orange boxes: classic tracing slips.
+@legend 150 | How to answer | Green boxes: the steps to show in a trace.
+@legend 276 | Memory hooks | Purple boxes: shortcuts.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the CS210 slides, slide breakdowns, both cheat sheets and the past exams on this site. Shoug Alomran.
+
+== bigo | 300 | Big-O | 00 | Every complexity in one table
+[table]
+Structure / algorithm | Access / search | Insert | Delete | Notes
+Array | O(1) index · O(n) search | O(n) (shift) | O(n) (shift) | Binary search O(log n) if sorted
+Singly linked list | O(n) | O(1) at head (or tail with tail ref) | O(1) head · O(n) tail | No backward moves
+Doubly linked list | O(n) | O(1) at either end | O(1) given the node | Sentinels header/trailer
+Stack / queue | – | O(1) push / enqueue | O(1) pop / dequeue | Array or linked
+Binary search tree | O(h): O(log n) avg, O(n) worst | O(h) | O(h) | Sorted keys sorted entry order makes it a list
+AVL tree | O(log n) | O(log n) | O(log n) | ≤ 1 rotation (insert), O(log n) rotations (delete)
+Binary heap | max/min O(1) | O(log n) | delMax O(log n) | Build heap bottom-up O(n)
+Hash table | O(1) average | O(1) avg | O(1) avg | O(n) worst (all collide)
+Graph BFS / DFS | – | – | – | O(V + E) with adjacency lists
+[/table]
+[table]
+Sort | Best | Average | Worst | Stable | Extra space
+Selection | n² | n² | n² | No | O(1)
+Insertion | n | n² | n² | Yes | O(1)
+Bubble | n | n² | n² | Yes | O(1)
+Merge | n log n | n log n | n log n | Yes | O(n)
+Quick | n log n | n log n | n² (bad pivot) | No | O(log n)
+Heap | n log n | n log n | n log n | No | O(1)
+[/table]
+!hook Growth order: 1 < log n < n < n log n < n² < n³ < 2ⁿ < n!.
+
+== analysis | 190 | Analysis | T 1–2 | Algorithm analysis and recursion
+[grid]
+[card Big-O, Omega, Theta]
+- **O(g):** f(n) ≤ c·g(n) for n ≥ n₀ (upper bound).
+- **Ω(g):** lower bound. **Θ(g):** both.
+- Drop constants and lower-order terms: 3n² + 5n + 2 = O(n²).
+- Count primitive operations; nested loops over n → n².
+- A loop that halves (i = i / 2) → log n.
+[/card]
+[card Recursion]
+- Every recursive method needs a **base case** and progress toward it.
+- Linear recursion (one call), binary recursion (two calls, e.g. Fibonacci), multiple recursion.
+- Recursion depth uses the call stack: too deep → StackOverflowError.
+- Naive Fibonacci is O(2ⁿ); with memoization or a loop O(n).
+- Binary search recursive: T(n) = T(n/2) + O(1) → O(log n).
+!trap Tail recursion can be rewritten as a loop; Java does not optimize it for you.
+[/card]
+[/grid]
+
+== lists | 150 | Lists | T 3–5 | Lists, stacks and queues
+[grid]
+[card Singly linked list]
+- Node: element + next. Keep head (and tail) plus size.
+- addFirst: new node points to head, head = new. addLast: tail.next = new, tail = new.
+- removeFirst: head = head.next. removeLast needs the node before tail → O(n).
+[/card]
+[card Doubly and circular lists]
+- Doubly: prev + next, header and trailer sentinels; insert between two nodes in O(1).
+- Circular: tail.next = head; keep only tail; rotate() moves the head by one step (round robin).
+[/card]
+[card Stack (LIFO)]
+push, pop, top/peek, size, isEmpty. Uses: undo, browser back, matching parentheses, expression evaluation, recursion.
+!tip Parentheses: push each opener; on a closer pop and check it matches; valid only if the stack is empty at the end.
+[/card]
+[card Queue (FIFO)]
+enqueue (rear), dequeue (front), first. Circular array: rear = (front + size) mod N. Deque allows both ends.
+[/card]
+[/grid]
+
+== sorting | 262 | Sorting | T 6–8 | Sorting
+[grid]
+[card Elementary sorts]
+- **Selection:** find the minimum of the unsorted part, swap it to the front. Always n²/2 compares.
+- **Insertion:** take the next item, shift larger items right, insert. Fast on nearly sorted input.
+- **Bubble:** swap adjacent out-of-order pairs; the largest bubbles to the end each pass.
+[/card]
+[card Merge sort]
+Divide in half, sort each half recursively, **merge** two sorted halves. T(n) = 2T(n/2) + n → n log n. Needs an auxiliary array; stable.
+[/card]
+[card Quick sort]
+Pick a pivot, **partition** so smaller left and larger right, recurse on both sides. Shuffle first to avoid the n² worst case (already sorted input with first-element pivot). In place, not stable.
+[/card]
+[card Heap sort]
+Build a max-heap (bottom-up, O(n)), then repeatedly swap the root with the last element and sink. O(n log n), in place, not stable.
+[/card]
+[/grid]
+!tip Trace questions: write the array after **each pass** (or each partition / merge) on its own line.
+
+== trees | 205 | Trees | T 9–11 | Trees, BSTs and AVL trees
+[grid]
+[card Terminology]
+Root, internal node (has a child), leaf, parent, child, siblings, ancestors, descendants, **depth** (number of ancestors), **height** (max depth), subtree.
+- Binary tree: at most 2 children. Proper (full): 0 or 2. Complete: all levels full except the last, filled left to right.
+- A binary tree of height h has at most 2^(h+1) − 1 nodes.
+[/card]
+[card Traversals]
+- **Preorder:** node, left, right.
+- **Inorder:** left, node, right (gives a BST in sorted order).
+- **Postorder:** left, right, node (sizes, deleting, expression evaluation).
+- **Level order (BFS):** with a queue.
+[/card]
+[card BST]
+Left subtree < key < right subtree.
+- Search / insert: go left or right until found or null.
+- **Delete:** leaf → remove; one child → splice it up; two children → replace with the **inorder successor** (min of the right subtree) or predecessor, then delete that node.
+!trap Inserting keys in sorted order gives a height-n chain: O(n) operations.
+[/card]
+[card AVL trees]
+- Balance factor = h(left) − h(right) ∈ {−1, 0, +1}. Height O(log n).
+- After insert, walk up to the first unbalanced node z; y = its taller child, x = y's taller child.
+- **LL** → single right rotation · **RR** → single left · **LR** → left on y then right on z · **RL** → right on y then left on z.
+!hook Same direction (LL/RR) = single rotation; zig-zag (LR/RL) = double rotation. The middle key of x, y, z becomes the root of the subtree.
+[/card]
+[/grid]
+
+== heaps | 330 | Heaps | T 12–13 | Heaps and priority queues
+[grid]
+[card Heap properties]
+- **Complete binary tree** stored in an array.
+- Max-heap: parent ≥ children (min-heap: ≤).
+- 1-based array: children of k are 2k and 2k+1, parent is k/2. (0-based: 2k+1, 2k+2, (k−1)/2.)
+- Height = ⌊log n⌋.
+[/card]
+[card Operations]
+- **insert:** add at the end, **swim** up while larger than the parent. O(log n).
+- **delMax:** swap root with last, remove last, **sink** the root (swap with the larger child). O(log n).
+- Build heap bottom-up: sink from n/2 down to 1. O(n).
+[/card]
+[card Trace example]
+[calc]
+max-heap insert 5, 3, 8, 1, 9
+[5] -> [5,3] -> [5,3,8] swim 8 -> [8,3,5]
+-> [8,3,5,1] -> [8,3,5,1,9] swim 9: swap 3 -> [8,9,5,1,3]
+                             swap 8 -> [9,8,5,1,3]
+delMax: swap 9 and 3 -> [3,8,5,1] sink 3 -> [8,3,5,1]
+[/calc]
+[/card]
+[/grid]
+
+== hash | 45 | Hashing | T 14 | Hash tables
+[grid]
+[card Hash function]
+- Map a key to an index in [0, M): h(k) = k mod M (M prime). Java: `(key.hashCode() & 0x7fffffff) % M`.
+- Goals: fast, uniform spread. Equal keys must have equal hash codes.
+- Load factor α = n / M.
+[/card]
+[card Separate chaining]
+Each slot holds a linked list. Average list length α. Keep α around 5 or less; resize when it grows.
+[/card]
+[card Linear probing]
+Collision → try i+1, i+2, … (wrap around). Keep α ≤ 1/2. Deletion needs re-inserting the cluster after the hole (or tombstones). Clusters slow it down.
+[/card]
+[card Trace example]
+[calc]
+M = 7, h(k) = k mod 7, linear probing
+insert 10 -> 3, 17 -> 3 taken -> 4, 24 -> 3,4 taken -> 5
+insert 5 -> 5 taken -> 6, 14 -> 0
+table: [14, -, -, 10, 17, 24, 5]
+[/calc]
+[/card]
+[/grid]
+
+== graphs | 20 | Graphs | T 15–16 | Undirected and directed graphs
+[grid]
+[card Terms]
+Vertex, edge, degree (in/out for digraphs), path, cycle, connected component, DAG. Sum of degrees = 2E.
+[/card]
+[card Representations]
+- **Adjacency matrix:** V² space, O(1) edge check.
+- **Adjacency lists:** V + E space, iterate neighbours fast (used in practice).
+[/card]
+[card DFS]
+Recursive or stack: go deep, mark visited, backtrack. Finds paths, connected components, cycles. **Topological sort** = reverse postorder of DFS on a DAG.
+[/card]
+[card BFS]
+Queue: visit all neighbours first, level by level. Gives **shortest paths in edges** from the source. O(V + E).
+!tip Traces: process neighbours in the order given (often increasing number) and write the visit order and the queue/stack after each step.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: Big-O of: for i in 1..n, for j in 1..i: constant work.
+= O(n²) (n(n+1)/2 iterations)
+
+? Practice :: Big-O of: while (n > 1) n = n / 2.
+= O(log n)
+
+? Practice :: Which sort is stable and always O(n log n)?
+= Merge sort
+
+? Practice :: Quick sort's worst case and when it happens?
+= O(n²) when the pivot is always the smallest or largest (already sorted input with first-element pivot); shuffle to avoid it.
+
+? Practice :: Inorder traversal of a BST gives…
+= The keys in sorted order
+
+? Practice :: Delete a node with two children from a BST.
+= Replace its key with the inorder successor (min of the right subtree), then delete the successor.
+
+? Practice :: Insert 10, 20, 30 into an empty AVL tree. What happens?
+= RR imbalance at 10 → single left rotation; 20 becomes the root with 10 and 30 as children.
+
+? Practice :: Insert 30, 10, 20 into an empty AVL tree.
+= LR case at 30 → left rotation on 10, then right rotation on 30; 20 becomes the root.
+
+? Practice :: In a 1-based heap array, children and parent of index 5?
+= Children 10 and 11, parent 2
+
+? Practice :: Cost of building a heap bottom-up vs inserting n items one by one?
+= O(n) vs O(n log n)
+
+? Practice :: Hash 15, 22, 8 into M = 7 with linear probing.
+= 15 → 1, 22 → 1 taken → 2, 8 → 1, 2 taken → 3
+
+? Practice :: Which structure gives shortest paths in an unweighted graph?
+= BFS
+
+? Practice :: Removing the last node of a singly linked list costs…
+= O(n): you must find the node before the tail.
+
+? Practice :: Check "(()[)]" with a stack.
+= Invalid: at ")" the top is "[", a mismatch.
+
+? Practice :: Sum of degrees in an undirected graph with 9 edges?
+= 18
+
+? Practice :: Why keep α ≤ 1/2 in linear probing?
+= Clusters grow fast as the table fills, making probes long.
+
+? Practice :: Postorder of a tree with root A, children B (children D, E) and C.
+= D, E, B, C, A
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready cs210-final]
+Write the Big-O of every operation in the table from memory.
+Compute the Big-O of nested and halving loops.
+Write addFirst, addLast and removeFirst for a singly linked list.
+Use a stack to check parentheses and a circular array for a queue.
+Trace selection, insertion, merge and quick sort pass by pass.
+Give pre-, in-, post- and level-order traversals of a tree.
+Insert into and delete from a BST, including the two-children case.
+Pick and perform the right AVL rotation (LL, RR, LR, RL).
+Trace heap insert (swim) and delMax (sink) in array form.
+Hash keys with separate chaining and with linear probing.
+Run BFS and DFS on a graph and give a topological order of a DAG.
+[/ready]

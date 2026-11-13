@@ -1,0 +1,212 @@
+@code CYS406
+@course Network Security
+@path cybersecurity/cys406
+@brand Final
+@prev /academics/cybersecurity/cys406/extra-resources/mindmaps/
+@description CYS406 final exam cheat sheet: network security fundamentals, authentication, DES and AES, RSA, elliptic curves, RC4 and modes, hash functions, Diffie-Hellman, key distribution, IPsec/TLS/SSH, firewalls, IDS/IPS, VPNs, honeypots, SIEM and data security, with worked calculations and practice questions.
+@h1 Final exam | cheat sheet
+@lede The final covers all sixteen chapters: a cryptography half (DES, AES, RSA, ECC, RC4, hashes, Diffie-Hellman) with small calculations, and a network-defence half (protocols, firewalls, IDS/IPS, VPNs, SIEM).
+@stat 16 | chapters | 210
+@stat 3 | calculations to drill | 32
+@stat 17 | practice questions | 150
+@stat 2 | halves of the course | 300
+@legend 32 | Exam traps | Orange boxes: classic crypto and protocol slips.
+@legend 150 | How to answer | Green boxes: calculation steps.
+@legend 276 | Memory hooks | Purple boxes: shortcuts.
+@legend 210 | Answers hidden | Try first, then open.
+@footer Built from the CYS406 slides, slide breakdowns, mind maps and past exams on this site. Shoug Alomran.
+
+== fund | 210 | Ch 1–2 | CH 1–2 | Fundamentals and authentication
+[grid]
+[card Security goals and attacks]
+- CIA + authentication, non-repudiation, access control.
+- **Passive** attacks (eavesdropping, traffic analysis: hard to detect, prevent with encryption) vs **active** (masquerade, replay, modification, DoS: detect and recover).
+- Defense in depth; security services vs mechanisms (X.800).
+[/card]
+[card Identification, authentication, authorization]
+- Factors: something you know, have, are (+ somewhere you are).
+- MFA combines **different** factors.
+- Protocols: password, challenge-response, Kerberos (tickets, KDC = AS + TGS), RADIUS/TACACS+, 802.1X (EAP).
+- Authorization models: DAC, MAC, RBAC, ABAC.
+[/card]
+[/grid]
+
+== symmetric | 190 | Ch 3, 6 | CH 3, 6 | DES, AES, RC4 and modes
+[grid]
+[card DES and 3DES]
+- 64-bit block, **56-bit key** (+8 parity), **16 Feistel rounds**, S-boxes give non-linearity.
+- 3DES: EDE with 2 or 3 keys (112/168-bit). Broken DES by brute force (56 bits too short).
+[/card]
+[card AES]
+- 128-bit block; 128/192/256-bit keys → **10/12/14 rounds**.
+- Round: SubBytes → ShiftRows → MixColumns → AddRoundKey (last round has no MixColumns).
+- Not a Feistel network (substitution-permutation network).
+[/card]
+[card RC4 (stream)]
+KSA initializes a 256-byte state from the key; PRGA produces the keystream XORed with plaintext. Weak first bytes and related-key flaws broke WEP; now deprecated.
+[/card]
+[card Modes of operation]
+- **ECB:** blocks encrypted separately (patterns leak).
+- **CBC:** XOR with the previous ciphertext; needs an IV; sequential.
+- **CFB / OFB:** stream-like; OFB keystream independent of the plaintext.
+- **CTR:** encrypt a counter; parallel, random access.
+- **GCM:** CTR + authentication (AEAD).
+[/card]
+[/grid]
+
+== asymmetric | 150 | Ch 4–5, 8 | CH 4, 5, 8 | RSA, ECC and Diffie-Hellman
+[grid]
+[card RSA]
+[calc]
+n = p q, phi = (p-1)(q-1), gcd(e, phi) = 1, d = e^-1 mod phi
+encrypt C = M^e mod n     decrypt M = C^d mod n
+p = 5, q = 11: n = 55, phi = 40, e = 3, d = 27 (3 x 27 = 81 = 2 x 40 + 1)
+M = 7 -> C = 343 mod 55 = 13
+[/calc]
+Security rests on factoring n. Signatures use the private key.
+[/card]
+[card Diffie-Hellman]
+[calc]
+public p, g; A = g^a mod p, B = g^b mod p
+K = B^a mod p = A^b mod p
+p = 23, g = 5, a = 6, b = 15
+A = 5^6 mod 23 = 8      B = 5^15 mod 23 = 19
+K = 19^6 mod 23 = 2  =  8^15 mod 23 = 2
+[/calc]
+!trap Plain DH has no authentication: vulnerable to man-in-the-middle. Fix with signed or certificate-based DH.
+[/card]
+[card Elliptic curve cryptography]
+Curve y² = x³ + ax + b (mod p); security from the elliptic-curve discrete log problem. Same security with much **smaller keys** (256-bit ECC ≈ 3072-bit RSA), so faster and lighter (ECDH, ECDSA).
+[/card]
+[/grid]
+
+== hash | 262 | Ch 7, 9 | CH 7, 9 | Hash functions and key management
+[grid]
+[card Hash properties]
+- One-way (preimage resistance), second-preimage resistance, collision resistance; fixed-length output; avalanche effect.
+- MD5 128-bit (broken), SHA-1 160-bit (broken), SHA-256/512, SHA-3.
+- **HMAC** = hash with a secret key (integrity + authentication). Birthday attack: collisions after about 2^(n/2) tries.
+[/card]
+[card Key distribution]
+- Symmetric: a **KDC** shares a master key with each user and issues session keys (Kerberos, Needham-Schroeder).
+- Public keys: certificates signed by a **CA** (X.509), PKI, CRL/OCSP for revocation.
+- n users with pairwise symmetric keys need n(n−1)/2 keys.
+[/card]
+[/grid]
+
+== protocols | 205 | Ch 10, 13 | CH 10, 13 | Protocols and VPNs
+[grid]
+[card IPsec]
+- **AH:** integrity and origin authentication, no encryption. **ESP:** encryption (+ optional authentication).
+- **Transport mode:** protects the payload (host to host). **Tunnel mode:** wraps the whole packet (gateway to gateway, VPNs).
+- **IKE** negotiates SAs and keys (Diffie-Hellman).
+[/card]
+[card TLS / SSH]
+- TLS handshake: hello and cipher suite → server certificate → key exchange (ECDHE) → finished; then symmetric encryption + MAC. HTTPS = HTTP over TLS (443).
+- SSH (22): secure remote login, tunnels, SFTP.
+- Others: S/MIME and PGP (email), DNSSEC (signed DNS), SNMPv3.
+[/card]
+[card VPNs]
+- Site-to-site (gateway ↔ gateway) vs remote access (client ↔ gateway).
+- Technologies: IPsec, SSL/TLS VPN, (legacy PPTP, L2TP/IPsec).
+- Split tunneling: only corporate traffic goes through the tunnel (convenient, riskier).
+[/card]
+[/grid]
+
+== defence | 330 | Ch 11–12, 14–16 | CH 11–16 | Firewalls, IDS/IPS, honeypots, SIEM and data security
+[grid]
+[card Firewalls]
+- **Packet filter** (stateless: IPs, ports, protocol), **stateful inspection** (tracks connections), **application proxy / gateway**, **NGFW** (app awareness, IPS), **WAF** (HTTP).
+- Rules are read top-down, first match wins, end with **deny all**.
+- **DMZ** between two firewalls holds public servers. Segmentation and VLANs limit lateral movement.
+[/card]
+[card IDS / IPS]
+- **IDS** detects and alerts (out of band); **IPS** blocks inline.
+- **NIDS** vs **HIDS**. **Signature-based** (known attacks, low false positives) vs **anomaly-based** (unknown attacks, more false positives).
+- False positive = alarm without attack; false negative = missed attack (worse).
+- Snort, Suricata.
+[/card]
+[card Honeypots and proxies]
+- Honeypot: decoy system to attract and study attackers; low vs high interaction; honeynet.
+- Proxy: forward proxy (clients' requests out, filtering, caching) vs reverse proxy (in front of servers, load balancing, hiding servers).
+[/card]
+[card SIEM and UBA]
+- **SIEM:** collects and correlates logs from many sources, real-time alerts, dashboards, forensics, compliance reports.
+- **UBA/UEBA:** baselines normal user behaviour and flags anomalies (insider threats, compromised accounts).
+[/card]
+[card Data security]
+- Data at rest (disk/database encryption), in transit (TLS, VPN), in use.
+- **DLP** stops sensitive data leaving; classification, tokenization, masking, backups, secure deletion.
+[/card]
+[/grid]
+
+== test | 340 | Self-test | TEST | Check your understanding
+[qs]
+? Practice :: DES block size, key size and rounds?
+= 64-bit block, 56-bit key, 16 rounds
+
+? Practice :: AES-256 uses how many rounds?
+= 14
+
+? Practice :: Which AES step is skipped in the final round?
+= MixColumns
+
+? Practice :: Which mode leaks patterns because equal blocks give equal ciphertext?
+= ECB
+
+? Practice :: RSA with p = 3, q = 11, e = 7: find d.
+= φ = 20; 7 × 3 = 21 ≡ 1, so d = 3.
+
+? Practice :: DH: p = 11, g = 2, a = 3, b = 4. Shared key?
+= A = 8, B = 5; K = 5³ mod 11 = 4 = 8⁴ mod 11 = 4
+
+? Practice :: Why does ECC use shorter keys than RSA for the same security?
+= The elliptic-curve discrete log problem is harder per bit than factoring.
+
+? Practice :: Hash vs HMAC?
+= HMAC adds a secret key, so it also authenticates the sender.
+
+? Practice :: AH or ESP for confidentiality?
+= ESP (AH gives no encryption)
+
+? Practice :: Which IPsec mode is used for site-to-site VPNs?
+= Tunnel mode
+
+? Practice :: Stateless packet filter vs stateful firewall?
+= Stateful tracks connection state; a packet filter judges each packet alone.
+
+? Practice :: Where do public web servers sit?
+= In the DMZ
+
+? Practice :: IDS vs IPS?
+= IDS detects and alerts; IPS sits inline and blocks.
+
+? Practice :: Which detection catches zero-day attacks better?
+= Anomaly-based
+
+? Practice :: Which is worse for an IDS: false positive or false negative?
+= False negative (a missed attack)
+
+? Practice :: What does a SIEM do?
+= Collects and correlates logs, alerts in real time, supports forensics and compliance.
+
+? Practice :: Keys needed for 10 users with pairwise symmetric keys?
+= 45
+[/qs]
+
+== ready | 152 | Checklist | DONE | Last-night checklist
+[ready cys406-final]
+Explain passive vs active attacks and authentication factors.
+Give DES and AES parameters and AES round steps.
+Compare ECB, CBC, CFB, OFB, CTR and GCM.
+Do RSA key generation and encryption with small numbers.
+Compute a Diffie-Hellman key and explain the MITM problem.
+Explain why ECC keys are shorter.
+State hash properties and the role of HMAC.
+Explain KDC and CA-based key distribution.
+Compare AH and ESP, transport and tunnel mode.
+Describe the TLS handshake.
+Compare firewall types and design a DMZ.
+Compare IDS/IPS, signature/anomaly, NIDS/HIDS.
+Explain honeypots, proxies, SIEM, UBA and DLP.
+[/ready]

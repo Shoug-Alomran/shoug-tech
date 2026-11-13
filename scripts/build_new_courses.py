@@ -942,10 +942,10 @@ def update_academics_hub():
         t = t[: match.start()] + card + "\n\n          " + t[match.start() :]
     t = re.sub(r'("computer science":\s*")8 courses\.', r"\g<1>9 courses.", t)
     t = re.sub(r'("computer science":\s*\[\s*"CS Track",\s*")8 Courses"', r'\g<1>9 Courses"', t)
-    t = re.sub(r'("other courses":\s*")\d courses\.', r"\g<1>7 courses.", t)
-    t = re.sub(r'("other courses":\s*\[\s*"General Track",\s*")\d Courses"', r'\g<1>7 Courses"', t)
+    t = re.sub(r'("other courses":\s*")\d courses\.', r"\g<1>8 courses.", t)
+    t = re.sub(r'("other courses":\s*\[\s*"General Track",\s*")\d Courses"', r'\g<1>8 Courses"', t)
     t = re.sub(r'(href="/academics/computer-science/" class="track-card".*?<div class="card-count mono"[^>]*>)\d+', r"\g<1>09", t, count=1, flags=re.S)
-    t = re.sub(r'(href="/academics/other-courses/" class="track-card".*?<div class="card-count mono"[^>]*>)\d+', r"\g<1>07", t, count=1, flags=re.S)
+    t = re.sub(r'(href="/academics/other-courses/" class="track-card".*?<div class="card-count mono"[^>]*>)\d+', r"\g<1>08", t, count=1, flags=re.S)
     write(path, t)
 
 
