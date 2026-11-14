@@ -12,7 +12,8 @@ Writes docs/academics/<path>/extra-resources/final-roadmap/final-roadmap.html:
   02 Look-alikes: confusable concepts side by side, the question that separates
      them, what to study, and a quick test.
   03 Past papers: full papers to finish with.
-Statuses are saved in this browser (localStorage). The page has its own design in
+Statuses are saved in this browser (localStorage) and, for signed-in students, in
+users/{uid}/private/data.finalRoadmaps.<course> (see docs/javascripts/final-roadmap.js). The page has its own design in
 the site's terminal style (docs/styles/final-roadmap.css, docs/javascripts/final-roadmap.js),
 deliberately separate from the cheat sheets. The wrapper index.html is copied once
 from the course's final-exam-cheat-sheet wrapper; the course overview links to it
@@ -171,7 +172,7 @@ TEMPLATE = """<!doctype html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
 <script src="/javascripts/html-theme-sync.js"></script>
-<link rel="stylesheet" href="/styles/final-roadmap.css?v=4" />
+<link rel="stylesheet" href="/styles/final-roadmap.css?v=5" />
 </head>
 <body>
 <header class="rm-top">
@@ -201,7 +202,7 @@ TEMPLATE = """<!doctype html>
 <li><i class="s3"></i>Tested myself<b data-count="3">0</b></li>
 </ul>
 <div class="rm-next"><span class="rm-k">NEXT_UP</span><a href="#route" data-next>Start at level 01</a></div>
-<p class="rm-foot">Saved in this browser. <button type="button" class="rm-reset">Reset</button></p>
+<p class="rm-foot"><span class="rm-sync">Saved in this browser.</span> <button type="button" class="rm-reset">Reset</button></p>
 </aside>
 </section>
 
@@ -224,7 +225,7 @@ TEMPLATE = """<!doctype html>
 </section>
 <footer class="rm-footer">DATA_VERIFIED // Built from the course slides, breakdowns, labs and past papers. Shoug Alomran.</footer>
 </main>
-<script src="/javascripts/final-roadmap.js?v=2"></script>
+<script src="/javascripts/final-roadmap.js?v=3"></script>
 </body>
 </html>
 """

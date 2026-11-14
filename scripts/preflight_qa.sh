@@ -1,63 +1,25 @@
 #!/usr/bin/env bash
+# Check the committed docs/ site before a release: rebuild the page
+# inventories, optimize the HTML, then check routes, links and SEO metadata.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "[0/6] Regenerating page inventories..."
+echo "[1/5] Regenerating page inventories..."
 node scripts/build-course-manifest.js
 node scripts/build-search-index.js
 
-if [[ -f mkdocs.yml ]]; then
-  echo "[1/5] Checking EN/AR markdown parity (strict)..."
-  python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict
-
-  echo "[2/5] Building MkDocs site in strict mode..."
-  mkdocs build --strict --clean
-else
-  echo "[1/5] Skipping MkDocs source checks; mkdocs.yml is not present."
-  echo "[2/5] Optimizing committed docs/ static artifact..."
-  python3 scripts/optimize_site_html.py
-fi
+echo "[2/5] Optimizing the docs/ HTML..."
+python3 scripts/optimize_site_html.py
 
 echo "[3/5] Verifying generated course routes..."
 python3 scripts/verify_site_routes.py
 
-echo "[4/5] Checking generated internal links and assets..."
+echo "[4/5] Checking internal links and assets..."
 python3 scripts/check_site_links.py
 
-echo "[5/6] Checking generated SEO metadata..."
+echo "[5/5] Checking SEO metadata..."
 python3 scripts/check_seo_metadata.py
-
-echo "[6/6] Verifying configured theme assets exist..."
-python3 - <<'PY'
-from pathlib import Path
-import re
-import sys
-
-root = Path(".")
-config_path = root / "mkdocs.yml"
-if not config_path.exists():
-    print("[ok] mkdocs.yml not present; static docs artifact mode")
-    raise SystemExit(0)
-
-config_text = config_path.read_text(encoding="utf-8")
-
-required = []
-for key in ("favicon", "logo"):
-    match = re.search(rf"(?m)^  {re.escape(key)}:\s+(.+?)\s*$", config_text)
-    if match:
-        value = match.group(1).strip().strip("'\"")
-        required.append((key, root / "docs" / value))
-
-missing = [(key, path) for key, path in required if not path.exists()]
-if missing:
-    for key, path in missing:
-        print(f"[error] theme {key} asset not found: {path}")
-    sys.exit(1)
-
-for key, path in required:
-    print(f"[ok] theme {key}: {path}")
-PY
 
 echo "Preflight QA passed."

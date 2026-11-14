@@ -266,7 +266,7 @@
                 (f.displayName && f.displayName.stringValue) ||
                 (f.username && f.username.stringValue),
               username: f.username && f.username.stringValue,
-              color: (f.avatarColor && f.avatarColor.stringValue) || "#b829ea",
+              color: /^#[0-9a-fA-F]{3,8}$/.test(f.avatarColor && f.avatarColor.stringValue) ? f.avatarColor.stringValue : "#b829ea",
               replyTo: f.replyTo && f.replyTo.stringValue,
               at: f.createdAt && f.createdAt.timestampValue,
             };

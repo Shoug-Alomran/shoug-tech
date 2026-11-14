@@ -29,7 +29,7 @@ EXAMS_DIR = ROOT / "docs/academics/cybersecurity/cys401/exams"
 CHROME = EXAMS_DIR / "01-chapter-1-quiz/index.html"
 BASE = "/academics/cybersecurity/cys401/exams/"
 
-PAPER_FOOTER = ("Transcribed from the original paper for revision. Answers follow the official key; "
+PAPER_FOOTER = ("Answers follow the official key; "
                 "where the key is wrong or ambiguous, the explanation says so.")
 
 PAGE_CSS = """

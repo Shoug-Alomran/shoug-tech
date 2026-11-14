@@ -108,19 +108,19 @@ MID_SHORT = {
 }
 
 CASE_EDUGATE = (
-    "<h4>Case study: Edugate Integrated Mobile Scheduling Assistant</h4>"
-    "<p>Prince Sultan University (PSU) plans to introduce a new <b>mobile application service</b> integrated with the existing <b>Edugate system</b>. The purpose is to allow students to <b>proactively design their preferred schedules early</b>, before official course registration opens.</p>"
+    "<h4>Case study: Student Portal Integrated Mobile Scheduling Assistant</h4>"
+    "<p>A university plans to introduce a new <b>mobile application service</b> integrated with its existing <b>student portal</b>. The purpose is to allow students to <b>proactively design their preferred schedules early</b>, before official course registration opens.</p>"
     "<p><b>Key requirements</b></p><ul>"
     "<li>The app must allow students to create <b>draft schedules</b> with preferred timings, instructors, and free periods.</li>"
-    "<li>All schedules must comply with <b>PSU study plan rules</b> (course load limits, prerequisites, track requirements).</li>"
-    "<li>The app must <b>sync automatically with Edugate</b> so that official registration offerings match students’ pre-designed schedules.</li>"
+    "<li>All schedules must comply with <b>the university’s study plan rules</b> (course load limits, prerequisites, track requirements).</li>"
+    "<li>The app must <b>sync automatically with the student portal</b> so that official registration offerings match students’ pre-designed schedules.</li>"
     "<li>Advisors must be able to <b>view and comment</b> on student schedules before registration.</li>"
     "<li>The system must provide a <b>bilingual interface (Arabic/English)</b>.</li>"
-    "<li>Security and compliance with PSU’s IT policies must be ensured during integration.</li></ul>"
+    "<li>Security and compliance with the university’s IT policies must be ensured during integration.</li></ul>"
     "<p><b>Challenges</b></p><ul>"
     "<li>During sprint deployment, a critical feature was discovered to be <b>not properly tested</b>.</li>"
     "<li><b>Faculty advisors</b> request complex features (early alerts for overloaded students, GPA-based recommendations), creating scope creep.</li>"
-    "<li><b>Students</b> prioritize flexibility and ease of use, while administrators prioritize strict enforcement of PSU study plan rules.</li>"
+    "<li><b>Students</b> prioritize flexibility and ease of use, while administrators prioritize strict enforcement of the study plan rules.</li>"
     "<li>The project requires a <b>clear team structure</b> to balance technical, academic, and administrative needs.</li></ul>"
 )
 
@@ -138,14 +138,14 @@ EDUGATE_QS = [
     ], "Agile (Scrum) (0.5), because it handles the evolving requirements from students, advisors and IT, delivers iteratively so each sprint gets feedback, and integrates with DevOps pipelines for frequent tested releases (0.5).", "Development approaches"),
     short("Identify three main stakeholder groups for this project, describe their roles, and explain how their input will shape the system.", 1, [
         ["Students: end users, influence usability (0.3)", ["student"], 3],
-        ["IT / Edugate team: ensure integration and compliance (0.3)", ["it ", "edugate", "it team", "integration", "technical"], 3],
+        ["IT / portal team: ensure integration and compliance (0.3)", ["it ", "edugate", "portal", "it team", "integration", "technical"], 3],
         ["Faculty advisors / administration: ensure policy enforcement and monitoring (0.4)", ["advisor", "faculty", "admin", "registrar"], 4],
-    ], "Students are the end users; their input shapes usability and flexibility (0.3). The IT/Edugate team ensures integration, security and compliance with PSU IT policies (0.3). Faculty advisors and administration ensure study-plan rules are enforced and use the system to monitor students (0.4).", "Stakeholder identification"),
-    short("As the project manager, you must establish the team structure for this project. What team structure would you create to ensure smooth development, stakeholder engagement, and integration with Edugate, and why?", 1.5, [
-        ["Roles: PM, Product Owner (Edugate/IT rep), developers, UI/UX designer, QA/testers, faculty advisor rep, student rep (1.0)", ["product owner", "developer", "ui", "ux", "designer", "qa", "tester"], 2],
+    ], "Students are the end users; their input shapes usability and flexibility (0.3). The IT/portal team ensures integration, security and compliance with the university’s IT policies (0.3). Faculty advisors and administration ensure study-plan rules are enforced and use the system to monitor students (0.4).", "Stakeholder identification"),
+    short("As the project manager, you must establish the team structure for this project. What team structure would you create to ensure smooth development, stakeholder engagement, and integration with the student portal, and why?", 1.5, [
+        ["Roles: PM, Product Owner (portal/IT rep), developers, UI/UX designer, QA/testers, faculty advisor rep, student rep (1.0)", ["product owner", "developer", "ui", "ux", "designer", "qa", "tester"], 2],
         ["Includes stakeholder representatives (advisor and student reps)", ["advisor rep", "student rep", "representative", "faculty"], 1],
         ["Rationale: cross-functional Agile team, stakeholder voices, balances usability vs compliance, iterative delivery (0.5)", ["cross functional", "agile", "balance", "iterative", "voice"], 1.5],
-    ], "A cross-functional Agile team: a Project Manager, a Product Owner from Edugate/IT, developers, a UI/UX designer, QA testers, a faculty advisor representative and a student representative (1.0). This puts every stakeholder's voice inside the team, balances usability against compliance, and supports iterative delivery (0.5).", "Team structure"),
+    ], "A cross-functional Agile team: a Project Manager, a Product Owner from the portal/IT team, developers, a UI/UX designer, QA testers, a faculty advisor representative and a student representative (1.0). This puts every stakeholder's voice inside the team, balances usability against compliance, and supports iterative delivery (0.5).", "Team structure"),
 ]
 
 
@@ -467,26 +467,26 @@ def final251():
 PAPERS = [
     {"slug": "14-final-242", "file": "final-242", "title": "Final Exam (242)", "short": "FINAL · 242", "item": 13,
      "meta": [["Term", "242 (2nd term, 2024/2025)"], ["Date", "17 May 2025"], ["Duration", "3 hours"], ["Total", "40 marks"]],
-     "lede": "The real SE423 final from term 242, in its original order with its real marks. Every chapter is in scope. There was no answer key for this paper, so the model answers are written from the course slides, graded strictly by keyword. Drawing questions are self-marked against the model diagram.",
+     "lede": "The SE423 final from term 242. Every chapter is in scope. There was no answer key, so the model answers are written from the course slides, graded strictly by keyword. Drawing questions are self-marked against the model diagram.",
      "parts": final242},
     {"slug": "15-midterm-251-version-1", "file": "midterm-251-version-1", "title": "Midterm Exam (251) - Version 1", "short": "MIDTERM · 251 · V1", "item": 14,
      "meta": [["Term", "251 (1st term, 2025/2026)"], ["Date", "7 October 2025"], ["Duration", "50 minutes"], ["Total", "15 marks"]],
-     "lede": "The real SE423 midterm from term 251, version 1 (chapters 1–3), in its original order with its real marks. MCQ answers, the RACI cells and the case-study marks come from the instructor's key, which was written for version 2 and shares these questions. The other short answers are model answers written from the course slides.",
+     "lede": "The SE423 midterm from term 251, version 1 (chapters 1–3). MCQ answers, the RACI cells and the case-study marks come from the instructor's key, which was written for version 2 and shares these questions. The other short answers are model answers written from the course slides.",
      "parts": lambda: midterm(1)},
     {"slug": "16-midterm-251-version-2", "file": "midterm-251-version-2", "title": "Midterm Exam (251) - Version 2", "short": "MIDTERM · 251 · V2", "item": 15,
      "meta": [["Term", "251 (1st term, 2025/2026)"], ["Date", "7 October 2025"], ["Duration", "50 minutes"], ["Total", "15 marks"]],
-     "lede": "The real SE423 midterm from term 251, version 2 (chapters 1–3), the version the instructor's key was written for. MCQ answers, the RACI cells and the case-study marking scheme come from that key. The other short answers are model answers written from the course slides.",
+     "lede": "The SE423 midterm from term 251, version 2 (chapters 1–3), the version the instructor's key was written for. MCQ answers, the RACI cells and the case-study marking scheme come from that key. The other short answers are model answers written from the course slides.",
      "parts": lambda: midterm(2)},
     {"slug": "17-final-251", "file": "final-251", "title": "Final Exam (251)", "short": "FINAL · 251", "item": 16,
      "meta": [["Term", "251 (1st term, 2025/2026)"], ["Date", "Unknown"], ["Duration", "Unknown"], ["Total", "40 marks"]],
-     "lede": "The real SE423 final from term 251 (the year is read from the cover sheet in the photos), in its original order with its real marks. Every chapter is in scope. There was no answer key, so the model answers are written from the course slides, graded strictly by keyword. The network diagram is self-marked against the model.",
+     "lede": "The SE423 final from term 251. Every chapter is in scope. There was no answer key, so the model answers are written from the course slides, graded strictly by keyword. The network diagram is self-marked against the model.",
      "parts": final251},
 ]
 
 NOTES = {
-    "15-midterm-251-version-1": "Part 2 question 5 has no printed mark; it is set to 0.5 so Part 2 totals 5 like the cover sheet.",
-    "16-midterm-251-version-2": "Part 2 question 5 has no printed mark; it is set to 0.5 so Part 2 totals 5 like the cover sheet.",
-    "17-final-251": "Question 4's total is cut off in the photo; its parts add up to 6.",
+    "15-midterm-251-version-1": "Part 2 question 5 is worth 0.5, so Part 2 totals 5.",
+    "16-midterm-251-version-2": "Part 2 question 5 is worth 0.5, so Part 2 totals 5.",
+    "17-final-251": "Question 4 is worth 6 marks in total.",
 }
 
 PAGE_CSS = """
@@ -569,7 +569,7 @@ def esc_models(parts):
 def page(p, parts):
     url = f"{SITE}{BASE}{p['slug']}/"
     total = sum(it["pts"] for part in parts for it in part["items"])
-    desc = f"SE423 {p['title']} as an interactive exam: the real paper's questions and marks, check each answer as you go, strict keyword grading and model answers."
+    desc = f"SE423 {p['title']} as an interactive exam: check each answer as you go, strict keyword grading and model answers."
     nav = "\n".join(f'          <a href="#part-{i + 1}">{"Part " if p["file"].startswith("midterm") else "Q"}{i + 1}</a>' for i, part in enumerate(parts))
     meta = "".join(f"<div><b>{e(k)}</b>{e(v)}</div>" for k, v in p["meta"])
     note = f'<p class="note">{e(NOTES[p["slug"]])}</p>' if p["slug"] in NOTES else ""
@@ -628,7 +628,7 @@ def page(p, parts):
           <button class="btn primary" type="button" id="submit">Submit for grading</button>
         </div>
       </div>
-      <p class="foot">SE423 · {e(p['title'])} · {total:g} marks · original questions, model answers from the course slides</p>
+      <p class="foot">SE423 · {e(p['title'])} · {total:g} marks · model answers from the course slides</p>
     </main>
     <script src="./{p['file']}-bank.js"></script>
     <script src="../past-paper.js"></script>

@@ -77,6 +77,8 @@ def text_of(value):
 
 
 def render_markdown(source):
+    # Course notebooks open with an "Instructor: Dr. ..." line; the site leaves names off.
+    source = re.sub(r"(?im)^.*\binstructor\b\s*\**\s*:.*$\n?", "", source)
     stash = []
     def hold(match):
         stash.append(match.group(0))

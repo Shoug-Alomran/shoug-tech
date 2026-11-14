@@ -143,3 +143,17 @@ test("an older profile can still be edited, and the one-time move is allowed", a
   );
   await assertSucceeds(db.doc("users/legacy").update(drop));
 });
+
+test("final roadmap statuses are owner-only and stay off the public profile", async () => {
+  const roadmap = {
+    finalRoadmaps: { se322: { topics: { "c4-mvc": { v: 2, t: 1 } } } },
+  };
+  await assertSucceeds(
+    as("shoug").doc("users/shoug/private/data").set(roadmap, { merge: true }),
+  );
+  await assertFails(
+    as("someone").doc("users/shoug/private/data").set(roadmap, { merge: true }),
+  );
+  await assertFails(as("someone").doc("users/shoug/private/data").get());
+  await assertFails(as("shoug").doc("users/shoug").set(roadmap, { merge: true }));
+});

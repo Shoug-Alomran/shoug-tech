@@ -29,11 +29,8 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 - **HTML**
 - **CSS**
 - **JavaScript**
-- [MkDocs](https://www.mkdocs.org/)
-- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-- [mkdocs-static-i18n](https://github.com/ultrabug/mkdocs-static-i18n)
 - **Firebase Authentication**
-- **Firebase**
+- **Firestore**
 - **Cloudflare Pages** (main site) and **Cloudflare R2** (annotated-slide images)
 - **GitHub Actions**
 - **GitHub Pages** (project subdomains only)
@@ -43,34 +40,20 @@ SHOUG.TECH documents that work through real projects, academic material, technic
 
 ```text
 .
-├── docs/
-│   ├── academics/
-│   ├── projects/
-│   ├── workshops/
-│   ├── resources/
-│   ├── assets/
-│   └── *.ar.md
-│
-├── scripts/
-│   ├── check_i18n_parity.py
-│   ├── sync_arabic.py
-│   └── preflight_qa.sh
-│
-├── .github/
-│   └── workflows/
-│       └── deploy-mkdocs.yml
-│
-├── mkdocs.yml
-└── site/
+├── docs/          the published site: static HTML, assets, styles and page scripts
+├── scripts/       builders, checks and deploy steps (indexed in scripts/README.md)
+├── templates/     shared site header and footer, applied by scripts/sync_site_shell.py
+├── functions/     Cloudflare Pages middleware (.html URLs, redirects, PDF headers)
+├── workers/       Cloudflare Workers: course-access, indexing, slide-assistant
+├── firebase/      Firestore security rules
+├── tests/         Firestore rules tests
+└── .github/
+    └── workflows/
+        ├── deploy-mkdocs.yml               build, check and deploy to Cloudflare Pages
+        └── sync-psu-academic-calendar.yml  refreshes the PSU academic calendar
 ```
 
-### Key Files
-
-- `docs/` — website content, academic resources, projects, assets, custom styling, scripts, and Arabic pages
-- `mkdocs.yml` — navigation, theme configuration, plugins, extensions, and internationalization settings
-- `scripts/` — validation, localization, synchronization, and pre-release QA utilities
-- `.github/workflows/deploy-mkdocs.yml` — automated build and deployment workflow
-- `site/` — generated MkDocs output
+`docs/` is the site itself: there is no build step that generates it from another source. Course pages are written by hand or by the course builders in `scripts/`, and the deploy workflow post-processes them.
 
 ## Platform Sections
 
@@ -118,113 +101,26 @@ Background information, professional interests, technical focus areas, policies,
 
 ## Local Development
 
-Clone the repository:
+Clone the repository and set up Python:
 
 ```bash
 git clone https://github.com/Shoug-Alomran/shoug-tech.git
 cd shoug-tech
-```
-
-Create and activate a virtual environment:
-
-```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install the required dependencies:
+Serve the site locally:
 
 ```bash
-pip install --upgrade pip
-pip install mkdocs-material mkdocs-static-i18n
+python3 -m http.server 8000 --directory docs
 ```
 
-Start the local development server:
-
-```bash
-mkdocs serve
-```
-
-The local site will typically be available at:
-
-```text
-http://127.0.0.1:8000/
-```
+The site is then at `http://127.0.0.1:8000/`.
 
 ## Bilingual Architecture
 
-SHOUG.TECH supports both **English and Arabic** content using `mkdocs-static-i18n`.
-
-Arabic pages follow the naming convention:
-
-```text
-page.md
-page.ar.md
-```
-
-Several internal utilities help maintain synchronization between both versions.
-
-### EN/AR Parity Check
-
-Run:
-
-```bash
-python3 scripts/check_i18n_parity.py
-```
-
-Strict validation:
-
-```bash
-python3 scripts/check_i18n_parity.py --strict
-```
-
-Automatically create placeholders for missing Arabic pages:
-
-```bash
-python3 scripts/check_i18n_parity.py --autofix-missing-ar
-```
-
-## Arabic Synchronization Utility
-
-`scripts/sync_arabic.py` assists with synchronizing English content into formal, Saudi-friendly Arabic while preserving Markdown structure.
-
-Dry run:
-
-```bash
-python3 scripts/sync_arabic.py
-```
-
-Create missing Arabic files:
-
-```bash
-OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply
-```
-
-Update existing Arabic files when their corresponding English content changes:
-
-```bash
-OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply --update-existing
-```
-
-Additional options include:
-
-```text
---backup
-```
-
-Creates a `.bak` file before overwriting existing content.
-
-```text
---limit N
-```
-
-Processes only the first `N` files.
-
-```text
---force
-```
-
-Ignores the translation hash cache and forces regeneration.
+Pages carry both languages in one file. Translatable elements hold their Arabic text in a `data-ar-text` attribute, and the site's language toggle swaps it in. Slide breakdowns get their translation from `scripts/install_breakdown_language.py`, which the deploy workflow runs.
 
 ## Pre-Release Quality Assurance
 
@@ -234,17 +130,7 @@ Before deployment, the project can be validated using:
 bash scripts/preflight_qa.sh
 ```
 
-The QA process includes:
-
-- English/Arabic parity validation
-- Missing Arabic-page detection
-- Strict MkDocs builds
-- Clean build generation
-- Theme asset validation
-- Logo and favicon validation
-- Route validation
-- Internal-link validation
-- Static-asset validation
+It rebuilds the course manifest and search index, optimizes the HTML, then checks routes, internal links, assets and SEO metadata.
 
 ## Deployment
 

@@ -44,6 +44,7 @@
     "calendarTodos",
     "calendarStudyPlan",
     "calendarPsuAcademicVersion",
+    "finalRoadmaps",
   ];
   var privateReady = {};
   function privateRef(uid) {
@@ -1281,15 +1282,20 @@
       .map(function (d) {
         var n = d.data();
         var when = n.createdAt ? timeAgo(n.createdAt.toDate()) : "";
+        // Only on-site paths: a stored "javascript:" link must never become an href.
+        var safeUrl =
+          typeof n.pageUrl === "string" && /^\/(?!\/)/.test(n.pageUrl)
+            ? n.pageUrl
+            : "/";
         var pageLabel = n.pageUrl
-          ? n.pageUrl
+          ? safeUrl
               .replace(/^\/|\/$/g, "")
               .split("/")
               .pop() || "page"
           : "page";
         return (
           '<a class="shoug-notif-item unread" href="' +
-          escHtml(n.pageUrl || "/") +
+          escHtml(safeUrl) +
           '">' +
           '<span class="shoug-notif-text"><strong>' +
           escHtml(n.fromDisplayName || n.fromUsername || "Someone") +
@@ -1322,11 +1328,16 @@
       .doc(user.uid)
       .collection("items")
       .where("read", "==", false)
-      .orderBy("createdAt", "desc")
       .limit(20)
       .onSnapshot(
         function (snap) {
           var count = snap.size;
+          // Sorted here: ordering by createdAt in the query would need a
+          // composite index that the project doesn't have.
+          var docs = snap.docs.slice().sort(function (a, b) {
+            var ta = a.data().createdAt, tb = b.data().createdAt;
+            return (tb ? tb.toMillis() : Date.now()) - (ta ? ta.toMillis() : Date.now());
+          });
           var badge = document.getElementById("shoug-notif-badge");
           if (badge) {
             badge.textContent = count > 9 ? "9+" : String(count);
@@ -1336,7 +1347,7 @@
           // markNotifsRead fires). The list will clear naturally the next time it opens.
           var dropdownOpen = document.body.classList.contains("profile-open");
           if (!dropdownOpen || count > 0) {
-            renderNotifDropdown(snap.docs);
+            renderNotifDropdown(docs);
           }
         },
         function () {},
@@ -2057,7 +2068,7 @@
     var slug = pageSlug();
     var p = _cmtProfile;
     var hasProfile = p && p.username;
-    var c = hasProfile ? p.avatarColor || "#b829ea" : "#b829ea";
+    var c = hasProfile ? (/^#[0-9a-fA-F]{3,8}$/.test(p.avatarColor) ? p.avatarColor : "#b829ea") : "#b829ea";
     var init = hasProfile
       ? escHtml((p.displayName || p.username || "?")[0].toUpperCase())
       : "?";
@@ -2202,7 +2213,7 @@
         year: "numeric",
       });
       var isMe = cm.uid === user.uid;
-      var cc = cm.avatarColor || "#b829ea";
+      var cc = (/^#[0-9a-fA-F]{3,8}$/.test(cm.avatarColor) ? cm.avatarColor : "#b829ea");
       var ci = escHtml((cm.displayName || cm.username || "?")[0].toUpperCase());
       return (
         '<div class="scmt-item' +
@@ -2340,7 +2351,7 @@
               uid: user.uid,
               username: _cmtProfile.username || "",
               displayName: _cmtProfile.displayName || "",
-              avatarColor: _cmtProfile.avatarColor || "#b829ea",
+              avatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
               avatarPreset:
                 _cmtProfile.avatarPreset != null
                   ? _cmtProfile.avatarPreset
@@ -2361,7 +2372,7 @@
                   fromUid: user.uid,
                   fromUsername: _cmtProfile.username || "",
                   fromDisplayName: _cmtProfile.displayName || "",
-                  fromAvatarColor: _cmtProfile.avatarColor || "#b829ea",
+                  fromAvatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
                   pageUrl: window.location.pathname,
                   commentPreview: text.slice(0, 120),
                 });
@@ -2396,7 +2407,7 @@
         uid: user.uid,
         username: _cmtProfile.username || "",
         displayName: _cmtProfile.displayName || "",
-        avatarColor: _cmtProfile.avatarColor || "#b829ea",
+        avatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
         avatarPreset:
           _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
         text: text,
