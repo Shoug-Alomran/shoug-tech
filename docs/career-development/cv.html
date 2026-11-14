@@ -517,6 +517,41 @@
         flex-shrink: 0;
         line-height: 1;
         opacity: 0.8;
+        display: inline-block;
+        transition:
+          transform 0.2s ease,
+          opacity 0.15s;
+      }
+
+      /* Section headers fold their section open and closed. Collapsing is
+         screen-only: the PDF export and printing always show everything. */
+      .sec-head[role="button"] {
+        cursor: pointer;
+        user-select: none;
+        border-radius: 3px;
+      }
+      .sec-head[role="button"]:hover .fold {
+        opacity: 1;
+      }
+      .sec-head[role="button"]:focus-visible {
+        outline: 1px solid var(--orange);
+        outline-offset: 3px;
+      }
+      @media screen {
+        html:not(.pdf-export) section.is-collapsed > :not(.sec-head) {
+          display: none;
+        }
+        html:not(.pdf-export) section.is-collapsed .fold {
+          transform: rotate(-90deg);
+        }
+        html:not(.pdf-export) section.is-collapsed .sec-head {
+          margin-bottom: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fold {
+          transition: none;
+        }
       }
 
       .sec-lbl {
@@ -1450,6 +1485,11 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2025-11"
+                    data-end="present"
+                    data-format="total"
+                    data-prefix-en="Part-time"
+                    data-prefix-ar="دوام جزئي"
                     data-en="Part-time · 1 yr 1 mo"
                     data-ar="دوام جزئي · سنة وشهر"
                     >Part-time · 1 yr 1 mo</span
@@ -1475,6 +1515,8 @@
                       >
                       <span
                         class="e-date"
+                        data-start="2026-04"
+                        data-end="present"
                         data-en="Apr 2026 – Present · 8 mos"
                         data-ar="أبريل 2026 – الآن · ٨ أشهر"
                         >Apr 2026 – Present · 8 mos</span
@@ -1534,6 +1576,8 @@
                       >
                       <span
                         class="e-date"
+                        data-start="2025-11"
+                        data-end="2026-04"
                         data-en="Nov 2025 – Apr 2026 · 6 mos"
                         data-ar="نوفمبر 2025 – أبريل 2026 · ٦ أشهر"
                         >Nov 2025 – Apr 2026 · 6 mos</span
@@ -1569,6 +1613,8 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2026-03"
+                    data-end="present"
                     data-en="Mar 2026 – Present"
                     data-ar="مارس 2026 – الآن"
                     >Mar 2026 – Present</span
@@ -1609,6 +1655,8 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2025-08"
+                    data-end="present"
                     data-en="Aug 2025 – Present"
                     data-ar="أغسطس 2025 – الآن"
                     >Aug 2025 – Present</span
@@ -1619,13 +1667,20 @@
                     >Qimah | قمة</span
                   >
                   <span
-                    data-en=" · Riyadh, Saudi Arabia"
-                    data-ar=" · الرياض، السعودية"
+                    data-en=" · Contract · Remote"
+                    data-ar=" · عقد · عن بعد"
                   >
-                    · Riyadh, Saudi Arabia</span
+                    · Contract · Remote</span
                   >
                 </div>
                 <ul>
+                  <li
+                    data-en="Record video lessons and support students remotely with questions and follow-up."
+                    data-ar="أسجل دروس فيديو وأدعم الطلاب عن بعد بالرد على أسئلتهم ومتابعتهم."
+                  >
+                    Record video lessons and support students remotely with
+                    questions and follow-up.
+                  </li>
                   <li
                     data-en="Developed Psychology 101 learning materials and slides."
                     data-ar="جهزت محتوى وشرائح لمادة علم النفس 101."
@@ -1657,6 +1712,10 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2025-03"
+                    data-end="2026-05"
+                    data-note-en="On break"
+                    data-note-ar="فترة توقف مؤقت"
                     data-en="Mar 2025 – May 2026 · On break"
                     data-ar="مارس 2025 – مايو 2026 · فترة توقف مؤقت"
                     >Mar 2025 – May 2026 · On break</span
@@ -1718,6 +1777,8 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2025-01"
+                    data-end="present"
                     data-en="Jan 2025 – Present"
                     data-ar="يناير 2025 – الآن"
                     >Jan 2025 – Present</span
@@ -1763,6 +1824,8 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2023-05"
+                    data-end="present"
                     data-en="May 2023 – Present"
                     data-ar="مايو 2023 – الآن"
                     >May 2023 – Present</span
@@ -1808,6 +1871,8 @@
                   >
                   <span
                     class="e-date"
+                    data-start="2022-07"
+                    data-end="2022-08"
                     data-en="Jul 2022 – Aug 2022"
                     data-ar="يوليو 2022 – أغسطس 2022"
                     >Jul 2022 – Aug 2022</span
@@ -2542,8 +2607,226 @@
           if (el) el.textContent = val;
         }
 
+        // Dates and durations are worked out from today's date, so "Present"
+        // roles never go stale. Months count inclusively, like LinkedIn
+        // (Apr–Nov is 8 mos). The text in the HTML is only a fallback.
+        var MONTHS_EN = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        var MONTHS_AR = [
+          "يناير",
+          "فبراير",
+          "مارس",
+          "أبريل",
+          "مايو",
+          "يونيو",
+          "يوليو",
+          "أغسطس",
+          "سبتمبر",
+          "أكتوبر",
+          "نوفمبر",
+          "ديسمبر",
+        ];
+
+        function arDigits(n) {
+          return String(n).replace(/\d/g, function (d) {
+            return "٠١٢٣٤٥٦٧٨٩"[d];
+          });
+        }
+
+        function durationEn(total) {
+          var y = Math.floor(total / 12),
+            m = total % 12,
+            parts = [];
+          if (y) parts.push(y + (y === 1 ? " yr" : " yrs"));
+          if (m || !y) parts.push(m + (m === 1 ? " mo" : " mos"));
+          return parts.join(" ");
+        }
+
+        function durationAr(total) {
+          var y = Math.floor(total / 12),
+            m = total % 12;
+          var yr =
+            y === 1
+              ? "سنة"
+              : y === 2
+                ? "سنتان"
+                : y <= 10
+                  ? arDigits(y) + " سنوات"
+                  : arDigits(y) + " سنة";
+          var mo =
+            m === 1
+              ? "شهر"
+              : m === 2
+                ? "شهران"
+                : m <= 10
+                  ? arDigits(m) + " أشهر"
+                  : arDigits(m) + " شهرا";
+          if (y && m) return yr + " و" + mo;
+          return y ? yr : mo;
+        }
+
+        function parseMonth(value, now) {
+          if (value === "present")
+            return { y: now.getFullYear(), m: now.getMonth() };
+          var bits = value.split("-");
+          return { y: +bits[0], m: +bits[1] - 1 };
+        }
+
+        function dateTexts(el, total) {
+          var now = new Date();
+          var start = parseMonth(el.getAttribute("data-start"), now);
+          var endRaw = el.getAttribute("data-end");
+          var durEn = durationEn(total),
+            durAr = durationAr(total);
+          if (el.getAttribute("data-format") === "total") {
+            return [
+              el.getAttribute("data-prefix-en") + " · " + durEn,
+              el.getAttribute("data-prefix-ar") + " · " + durAr,
+            ];
+          }
+          var end = parseMonth(endRaw, now);
+          var en =
+            MONTHS_EN[start.m] +
+            " " +
+            start.y +
+            " – " +
+            (endRaw === "present"
+              ? "Present"
+              : MONTHS_EN[end.m] + " " + end.y) +
+            " · " +
+            durEn;
+          var ar =
+            MONTHS_AR[start.m] +
+            " " +
+            start.y +
+            " – " +
+            (endRaw === "present" ? "الآن" : MONTHS_AR[end.m] + " " + end.y) +
+            " · " +
+            durAr;
+          var noteEn = el.getAttribute("data-note-en");
+          if (noteEn) {
+            en += " · " + noteEn;
+            ar += " · " + el.getAttribute("data-note-ar");
+          }
+          return [en, ar];
+        }
+
+        function monthsBetween(el) {
+          var now = new Date();
+          var start = parseMonth(el.getAttribute("data-start"), now);
+          var end = parseMonth(el.getAttribute("data-end"), now);
+          return Math.max(1, (end.y - start.y) * 12 + (end.m - start.m) + 1);
+        }
+
+        function renderDate(el, total) {
+          var texts = dateTexts(el, total);
+          el.setAttribute("data-en", texts[0]);
+          el.setAttribute("data-ar", texts[1]);
+          el.textContent = isArabic ? texts[1] : texts[0];
+        }
+
+        function updateDates(animate) {
+          var els = Array.prototype.slice.call(
+            document.querySelectorAll(".e-date[data-start]"),
+          );
+          els.forEach(function (el) {
+            renderDate(el, monthsBetween(el));
+          });
+          var reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (!animate || reduce || !window.requestAnimationFrame) return;
+          // Count each duration up from 1 month to its real value.
+          var startTime = null,
+            DURATION = 900;
+          function frame(t) {
+            if (startTime === null) startTime = t;
+            var p = Math.min(1, (t - startTime) / DURATION);
+            var eased = 1 - Math.pow(1 - p, 3);
+            els.forEach(function (el) {
+              var target = monthsBetween(el);
+              renderDate(el, Math.max(1, Math.round(target * eased)));
+            });
+            if (p < 1) requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
+        }
+
+        // Clicking a section header folds it. Everything starts open; a
+        // visitor's own choices are remembered on their device only, so a
+        // first-time visitor always sees the full CV.
+        var FOLD_KEY = "cv-folded-sections";
+
+        function readFolded() {
+          try {
+            return JSON.parse(localStorage.getItem(FOLD_KEY)) || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function saveFolded() {
+          var folded = [];
+          document
+            .querySelectorAll("section.is-collapsed")
+            .forEach(function (sec) {
+              folded.push(sec.getAttribute("data-fold-key"));
+            });
+          try {
+            localStorage.setItem(FOLD_KEY, JSON.stringify(folded));
+          } catch (e) {}
+        }
+
+        function setFolded(sec, folded) {
+          sec.classList.toggle("is-collapsed", folded);
+          var head = sec.querySelector(".sec-head");
+          if (head)
+            head.setAttribute("aria-expanded", folded ? "false" : "true");
+        }
+
+        function initFolding() {
+          var folded = readFolded();
+          document.querySelectorAll("section").forEach(function (sec) {
+            var head = sec.querySelector(":scope > .sec-head");
+            var label = head && head.querySelector(".sec-lbl");
+            if (!label) return;
+            var key = label.getAttribute("data-en") || label.textContent.trim();
+            sec.setAttribute("data-fold-key", key);
+            head.setAttribute("role", "button");
+            head.setAttribute("tabindex", "0");
+            setFolded(sec, folded.indexOf(key) !== -1);
+            function toggle() {
+              setFolded(sec, !sec.classList.contains("is-collapsed"));
+              saveFolded();
+              populateGutter();
+              scale();
+            }
+            head.addEventListener("click", toggle);
+            head.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggle();
+              }
+            });
+          });
+        }
+
         window.addEventListener("resize", scale);
         document.addEventListener("DOMContentLoaded", function () {
+          initFolding();
+          updateDates(true);
           syncSystemTheme();
           populateGutter();
           scale();
