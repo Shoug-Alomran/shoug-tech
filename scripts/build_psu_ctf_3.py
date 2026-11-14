@@ -46,7 +46,7 @@ ABOUT = {
         "name": "Auditorium B105, Prince Sultan University",
         "address": "Riyadh, Saudi Arabia",
     },
-    "url": "https://ctf-psu.shoug-tech.com/",
+    "url": "https://acmchapter-psu.github.io/ACM-CTF-3.0./",
 }
 
 THEME_CSS = """
@@ -683,7 +683,7 @@ __SUBNAV__
                         built the official competition website, and I co-organize the event as ACM Vice President.
                     </p>
                     <div class="cmds">
-                        <a class="cmd solid" href="https://ctf-psu.shoug-tech.com/" target="_blank" rel="noopener">Visit the competition site</a>
+                        <a class="cmd solid" href="https://acmchapter-psu.github.io/ACM-CTF-3.0./" target="_blank" rel="noopener">Visit the competition site</a>
                         <a class="cmd" href="/workshops/psu-ctf-3/challenges/">Attack vectors</a>
                         <a class="cmd red" href="/workshops/psu-ctf-2/">CTF 2.0 archive</a>
                     </div>
@@ -712,7 +712,7 @@ __SUBNAV__
                 <h2 class="sec-title">The competition website</h2>
                 <div class="vectors" style="margin-top: 26px;">
                     <ul class="ops">
-                        <li><span><strong>I designed and built the official CTF 3.0 website</strong> at ctf-psu.shoug-tech.com &mdash; the mission brief, attack-vector pages, competition parameters, training schedule, rules, FAQ, team registry and results archive.</span></li>
+                        <li><span><strong>I designed and built the official CTF 3.0 website</strong> at acmchapter-psu.github.io/ACM-CTF-3.0. &mdash; the mission brief, attack-vector pages, competition parameters, training schedule, rules, FAQ, team registry and results archive.</span></li>
                         <li><span><strong>I built the scoreboard and archive views</strong> that publish the previous edition's verified record: 11 teams, 852 submissions, 89 captures and the final standings, with rosters for the top three teams.</span></li>
                         <li><span><strong>As Vice President of the ACM Club</strong>, I co-organize CTF 3.0 &mdash; leading event planning and coordination alongside the website work and supporting technical preparation.</span></li>
                         <li><span>Challenge development, infrastructure and the participant workshop are led by the other organizers. My own workshop teaching for this series was the previous edition, <a href="/workshops/psu-ctf-2/">ACM/Cyber-Tech CTF 2.0</a>.</span></li>
@@ -1012,7 +1012,7 @@ __SUBNAV__
                 <h2>Capture the flag.</h2>
                 <p>Assemble a team of two or three, prepare the system, and enter the cyber range on 24 October.</p>
                 <div class="cmds">
-                    <a class="cmd solid" href="https://ctf-psu.shoug-tech.com/" target="_blank" rel="noopener">ctf-psu.shoug-tech.com</a>
+                    <a class="cmd solid" href="https://acmchapter-psu.github.io/ACM-CTF-3.0./" target="_blank" rel="noopener">acmchapter-psu.github.io/ACM-CTF-3.0.</a>
                     <a class="cmd" href="/workshops/">All workshops</a>
                 </div>
             </div>
@@ -1076,7 +1076,7 @@ CTA = """
                 <h2>Capture the flag.</h2>
                 <p>Assemble a team of two or three, prepare the system, and enter the cyber range on 24 October.</p>
                 <div class="cmds">
-                    <a class="cmd solid" href="https://ctf-psu.shoug-tech.com/" target="_blank" rel="noopener">ctf-psu.shoug-tech.com</a>
+                    <a class="cmd solid" href="https://acmchapter-psu.github.io/ACM-CTF-3.0./" target="_blank" rel="noopener">acmchapter-psu.github.io/ACM-CTF-3.0.</a>
                     <a class="cmd" href="/workshops/">All workshops</a>
                 </div>
             </div>

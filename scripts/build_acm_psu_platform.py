@@ -24,7 +24,7 @@ ABOUT = {
     "@type": "WebSite",
     "name": "ACM PSU Digital Platform",
     "description": "Central platform for the ACM student chapter at Prince Sultan University: membership applications, open event positions, project case studies and a chapter archive.",
-    "url": "https://acm-psu.shoug-tech.com/",
+    "url": "https://acmchapter-psu.github.io/acm-psu-website/",
     "publisher": {
         "@type": "Organization",
         "name": "ACM Student Chapter, College of Computer & Information Sciences, Prince Sultan University",
@@ -461,7 +461,7 @@ __HEADER__
                     <span>Status: <b>In development</b></span>
                 </div>
                 <div class="actions">
-                    <a class="action filled" href="https://acm-psu.shoug-tech.com/" target="_blank" rel="noopener">Visit the platform</a>
+                    <a class="action filled" href="https://acmchapter-psu.github.io/acm-psu-website/" target="_blank" rel="noopener">Visit the platform</a>
                     <a class="action" href="#purpose">Why it exists</a>
                     <a class="action" href="/workshops/">All workshops</a>
                 </div>
@@ -473,7 +473,7 @@ __HEADER__
                 <div><span class="k">Audience</span><span class="v">Prospective members, current members, and anyone looking up the chapter's past work</span></div>
                 <div><span class="k">Documents</span><span class="v">WebForge 2026 &middot; ACM/CyberTech CTF 3.0 &middot; the CTF 2.0 record</span></div>
                 <div><span class="k">Sections</span><span class="v">Join &middot; Positions &middot; Projects &middot; Archive &middot; Team &middot; Member portal</span></div>
-                <div><span class="k">Live at</span><span class="v">acm-psu.shoug-tech.com</span></div>
+                <div><span class="k">Live at</span><span class="v">acmchapter-psu.github.io/acm-psu-website</span></div>
             </div>
 
             <section class="block" id="purpose">
@@ -695,7 +695,7 @@ __HEADER__
                 <h2>The archive <em>isn't finished.</em></h2>
                 <p>Your code, your designs, your leadership could define the next block.</p>
                 <div class="actions">
-                    <a class="action filled" href="https://acm-psu.shoug-tech.com/" target="_blank" rel="noopener">acm-psu.shoug-tech.com</a>
+                    <a class="action filled" href="https://acmchapter-psu.github.io/acm-psu-website/" target="_blank" rel="noopener">acmchapter-psu.github.io/acm-psu-website</a>
                     <a class="action" href="/workshops/">All workshops</a>
                 </div>
             </div>

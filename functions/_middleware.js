@@ -10,14 +10,27 @@
 import manifest from "../workers/indexing/src/manifest.json";
 import moved from "../.pages-build/meta-redirects.json";
 
+// The CSP is deliberately narrow: pages rely on inline scripts and several
+// CDNs, so it doesn't restrict script sources. It does block plugins, <base>
+// hijacking, mixed content and framing by other sites (clickjacking).
+// Other shoug-tech.com subdomains may still embed pages.
 const HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Content-Security-Policy":
+    "object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.shoug-tech.com; upgrade-insecure-requests",
+  // geolocation and fullscreen stay available to the site itself: an SE371
+  // JavaScript example uses geolocation and the PDF viewers go fullscreen.
+  "Permissions-Policy":
+    "camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), browsing-topics=(), geolocation=(self), fullscreen=(self)",
 };
 
 // Old links may omit the trailing slash or name index.html directly.
 function lookup(table, path) {
-  return table[path] ?? table[path + "/"] ?? table[path.replace(/index\.html$/, "")];
+  return (
+    table[path] ?? table[path + "/"] ?? table[path.replace(/index\.html$/, "")]
+  );
 }
 
 export async function onRequest({ request, next, env }) {
@@ -47,7 +60,10 @@ export async function onRequest({ request, next, env }) {
   if (!response) response = await next();
   response = new Response(response.body, response);
   if (response.ok && manifest.canonicals[path]) {
-    response.headers.set("Link", `<${manifest.canonicals[path]}>; rel="canonical"`);
+    response.headers.set(
+      "Link",
+      `<${manifest.canonicals[path]}>; rel="canonical"`,
+    );
   }
   for (const [name, value] of Object.entries(HEADERS)) {
     if (!response.headers.has(name)) response.headers.set(name, value);
