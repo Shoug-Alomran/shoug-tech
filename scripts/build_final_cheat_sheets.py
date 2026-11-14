@@ -386,34 +386,40 @@ TRACKS = {
     "other-courses": "Other Courses",
     "information-system": "Information Systems",
 }
-GENERIC_FROM = "cybersecurity/cys401"
+# Template wrapper per track: the cybersecurity pages use the red cyber palette
+# (cyber-track.css + red --brand-purple), every other track uses the purple one.
+GENERIC_FROM = {"cybersecurity": ("cybersecurity/cys401", "CYS401")}
+GENERIC_DEFAULT = ("software-engineering/se423", "SE423")
 
 
 def make_generic_wrapper(page):
-    """Courses without a single-page wrapper of their own reuse the CYS401 final wrapper.
+    """Courses without a single-page wrapper of their own reuse another course's final wrapper.
 
     Header `@prev <url>` sets the PREVIOUS link (the item listed before this sheet);
     without it the link is disabled. The sidebar is restamped afterwards by
-    build_academic_sidebar.py, so the copied CYS401 sidebar never survives."""
-    src = open(os.path.join(REPO, "docs", "academics", GENERIC_FROM, "extra-resources", FOLDER, "index.html"),
-               encoding="utf-8").read()
+    build_academic_sidebar.py, so the copied sidebar never survives."""
     path, code = page.meta["path"], page.meta["code"]
     track = path.split("/")[0]
-    out = src.replace('href="/academics/cybersecurity/"\n              >Cybersecurity</a',
-                      'href="/academics/%s/"\n              >%s</a' % (track, TRACKS.get(track, track)))
-    out = out.replace("/academics/" + GENERIC_FROM + "/", "/academics/%s/" % path)
-    out = out.replace("CYS401", code)
-    if track != "cybersecurity":  # the template is a cybersecurity page; other tracks keep their own colours
-        out = re.sub(r'[ \t]*<link rel="stylesheet" href="/styles/cyber-track.css" />\n', "", out)
+    src_path, src_code = GENERIC_FROM.get(track, GENERIC_DEFAULT)
+    src = open(os.path.join(REPO, "docs", "academics", src_path, "extra-resources", FOLDER, "index.html"),
+               encoding="utf-8").read()
+    src_track = src_path.split("/")[0]
+    out = re.sub(r'(href="/academics/)%s(/"\s*>)%s(</a)' % (src_track, re.escape(TRACKS[src_track])),
+                 lambda m: m.group(1) + track + m.group(2) + TRACKS.get(track, track) + m.group(3), src)
+    out = out.replace("/academics/" + src_path + "/", "/academics/%s/" % path)
+    out = out.replace(src_code, code)
     desc = esc(page.meta.get("description", ""))
     old_desc = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', src).group(1)
     out = out.replace(old_desc, desc)
     prev = page.meta.get("prev")
     m = re.search(r'<a\s+href="[^"]*"\s+class="nav-link prev"\s*>&lt;- PREVIOUS</a\s*>', out)
-    if prev:
-        out = out[:m.start()] + '<a href="%s" class="nav-link prev">&lt;- PREVIOUS</a>' % prev + out[m.end():]
-    else:
-        out = out[:m.start()] + '<span class="nav-link prev disabled">&lt;- PREVIOUS</span>' + out[m.end():]
+    if m:
+        link = ('<a href="%s" class="nav-link prev">&lt;- PREVIOUS</a>' % prev if prev
+                else '<span class="nav-link prev disabled">&lt;- PREVIOUS</span>')
+        out = out[:m.start()] + link + out[m.end():]
+    m = re.search(r'<a\s+href="[^"]*"\s+class="nav-link next"\s*>NEXT -&gt;</a\s*>', out)
+    if m:
+        out = out[:m.start()] + '<span class="nav-link next disabled">NEXT -&gt;</span>' + out[m.end():]
     return out
 
 
