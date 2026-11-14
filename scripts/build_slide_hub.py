@@ -255,15 +255,21 @@ def source_of(href, page_url, depth=0):
         return source_of(src[0], url, depth + 1)
     path = local_path(url)
     ext = os.path.splitext(path)[1].lower()
-    if ext == '.pdf' or ext == '.html' or ext in ('.png', '.jpg', '.jpeg', '.webp'):
+    if ext in ('.pdf', '.html', '.docx', '.png', '.jpg', '.jpeg', '.webp'):
         if not os.path.isfile(path):
             return None, ext
-        return ('pdf' if ext == '.pdf' else 'html' if ext == '.html' else 'image'), path
+        return ({'.pdf': 'pdf', '.html': 'html', '.docx': 'docx'}.get(ext, 'image')), path
     if ext:
         return None, ext
     pdfs = sorted(glob.glob(os.path.join(path, '*.pdf')))
     if pdfs:  # The handwritten set, when a chapter also has a highlighted copy.
         return 'pdf', next((p for p in pdfs if p.endswith('-notes.pdf')), pdfs[0])
+    # Word handouts: preview the document, not the viewer page around it. A listing
+    # folder previews its first row instead; ~$ files are Word lock files.
+    docs = [p for p in sorted(glob.glob(os.path.join(path, '*.docx'))) if not os.path.basename(p).startswith('~$')]
+    listing = os.path.join(path, 'index.html')
+    if docs and not (os.path.isfile(listing) and CONTAINER.search(read(listing))):
+        return 'docx', docs[0]
     pages = [p for p in sorted(glob.glob(os.path.join(path, '*.html'))) if not p.endswith('/index.html')]
     if pages:
         return 'html', pages[0]
@@ -271,9 +277,13 @@ def source_of(href, page_url, depth=0):
     if not os.path.isfile(index) or depth > 4:
         return None, ''
     text = read(index)
-    frame = re.search(r'<iframe\b[^>]*?\b(?:data-src|src)="([^"#]+)"', text[text.find('<main'):], re.S)
-    if frame and not frame.group(1).startswith(('http', 'about:', 'data:')):
-        found = source_of(frame.group(1), url, depth + 1)
+    # Word viewers lead with an Office Online frame; the local file is data-doc-src.
+    frames = r'<iframe\b[^>]*?\b(?:data-src|src)="([^"#]+)"|\bdata-doc-src="([^"#]+)"'
+    for frame in re.finditer(frames, text[text.find('<main'):], re.S):
+        frame = frame.group(1) or frame.group(2)
+        if frame.startswith(('http', 'about:', 'data:')):
+            continue
+        found = source_of(frame, url, depth + 1)
         if found[0]:
             return found
     first = extract_rows(text[text.find('<main'):], '') if CONTAINER.search(text) else []
@@ -356,6 +366,23 @@ class Renderer:
             data = page.screenshot(type='jpeg', quality=90)
         return Image.open(io.BytesIO(data)).convert('RGB')
 
+    def docx_page(self, path):
+        """First page of a Word file, via macOS textutil -> HTML, on a white A4-ish sheet."""
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, 'doc.html')
+            subprocess.run(['textutil', '-convert', 'html', '-output', out, path], check=True)
+            page = self.tabs['light']
+            page.set_viewport_size({'width': 816, 'height': 1056})
+            try:
+                page.goto('file://' + out, wait_until='load')
+                page.add_style_tag(content='html,body{background:#fff!important;margin:0}'
+                                           'body{padding:56px 64px!important;box-sizing:border-box}')
+                data = page.screenshot(type='jpeg', quality=90)
+            finally:
+                page.set_viewport_size({'width': 1280, 'height': 960})
+        return Image.open(io.BytesIO(data)).convert('RGB')
+
     def cells(self, kind, path):
         """(light, dark) cells for one item."""
         from PIL import Image
@@ -364,6 +391,9 @@ class Renderer:
             return cell, cell
         if kind == 'image':
             cell = fit_cell(Image.open(path).convert('RGB'))
+            return cell, cell
+        if kind == 'docx':
+            cell = fit_cell(self.docx_page(path))
             return cell, cell
         rel = os.path.relpath(path, os.path.join(REPO, 'docs')).replace(os.sep, '/')
         url = self.origin + '/' + urllib.parse.quote(rel)
