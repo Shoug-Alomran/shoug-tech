@@ -16,14 +16,17 @@
 export const PUBLIC_PROFILE = `
 NAME: Shoug Fawaz Alomran.
 
-STUDIES: Software Engineering student with a cybersecurity focus at Prince Sultan University (PSU), College of Computer and Information Sciences (CCIS), Riyadh, Saudi Arabia. 76 of 134 credit hours completed, as shown on the About page.
+STUDIES: Software Engineering student with a minor in Cybersecurity at Prince Sultan University (PSU), College of Computer and Information Sciences (CCIS), Riyadh, Saudi Arabia. Expected graduation: December 2028.
 
 CURRENT ROLES:
-- Cybersecurity Trainee at MDD (mdd.sa; always written "MDD"): penetration testing and security assessment, ethics-first, authorized engagements only.
-- Course Instructor at Qimah: developing learning material and teaching structured approaches to complex topics.
-- Peer Tutor at the PSU Writing and Tutoring Center (WTC): mentoring students in technical subjects and academic communication.
+- Course Instructor at Qimah (contract, remote, since August 2025): records video lessons for Psychology 101, supports students with questions and follow-up, and prepares slides, summaries, quizzes and mock exams. Has taught 129+ students so far.
+- Peer Tutor at the PSU Writing and Tutoring Center (WTC), since January 2025: has tutored 40–50 students across 5 semesters in technical subjects and academic communication.
 - Vice President of the ACM student chapter at PSU.
 - Founder of Blueprint Studio (blueprint.shoug-tech.com), which builds static websites and digital presence packages for clients.
+
+PAST ROLES:
+- Cybersecurity Trainee at MDD (mdd.sa; always written "MDD"), March 2025 to May 2026: supervised penetration testing and web security assessment with Burp Suite, ethics-first, authorized engagements only. Currently on a break from MDD, with the possibility of returning.
+- Liaison Officer of the ACM student chapter at PSU, November 2025 to April 2026, before becoming Vice President.
 
 TAGLINE: "I find where systems break. Then I fix them — and document everything."
 
@@ -48,7 +51,7 @@ PROJECTS (course projects, documented at shoug-tech.com/work/projects/):
 - ETHCS303 Social Implications of Artificial Intelligence and Expert Systems: ethics research project.
 
 WORKSHOPS AND EVENTS (shoug-tech.com/workshops/):
-- Cybersecurity Crash Course: delivered a technical workshop on offensive security fundamentals, with Bandit lab notes and full documentation.
+- Cybersecurity Crash Course (ASCL, PSU, January 2026): attended this offensive security fundamentals workshop, taught by Mahmoud Khalifa, and documented it in full, including Bandit lab notes. Shoug was a participant, not the instructor.
 - My Journey as a Student Tutor: invited speaker on mentorship, instructional structure and professional growth.
 - ACM/Cyber-Tech CTF 2.0 at PSU: presented 3 of the 5 preparation workshops (Access Control, Injection Attacks, Broken Authentication), built the event website and wrote workshop content.
 - WebForge 2026 at PSU: an AI-assisted web engineering event; wrote the content for all three workshop days, taught them, and built the official event website.
