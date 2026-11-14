@@ -621,7 +621,7 @@ q2 = {}
 q2["1"] = mcq(3, "q2", "Q1", "To separate one frame from another a ________ is added at the beginning and end of the frame.", ["CRC", "Flag", "Stuff Bits"], 1,
               "Framing marks each frame's start and end with a flag. Stuffing only protects flag patterns that appear inside the data.", labels=ABC)
 q2["2"] = mcq(4, "q2", "Q2", "A2:34:45:11:92:F1 is ________ Physical address.", ["Unicast", "Multicast", "Broadcast"], 0,
-              "Check the second hex digit from the left: 2 is even, so the last bit of the first byte is 0 and the address is <b>unicast</b> (Chapter 4 slides, even = unicast, odd = multicast). The graded paper ticked Multicast, which contradicts that rule.", labels=ABC)
+              "Check the second hex digit from the left: 2 is even, so the last bit of the first byte is 0 and the address is <b>unicast</b> (Chapter 4 slides, even = unicast, odd = multicast). Multicast is the trap answer here.", labels=ABC)
 q2["3"] = mcq(3, "q2", "Q3", "If the receiver using <b>checksum technique</b> gets result a non zero value, the receiver will discard that data word.", ["True", "False"], 0,
               "The receiver accepts only when the checked result is zero. Any non-zero result means an error, so the data word is discarded.", labels="a.|b.")
 q2["4"] = mcq(3, "q2", "Q4", "Reed-Solomon code used today for both detection and correction is a ____ code.", ["Block code", "Cyclic code", "Checksum code"], 1,
@@ -767,7 +767,7 @@ def m2_base():
 
 m2["6"] = Q(4, "m2", "Q6", 0.25, m2_base, "1000Base-F is Gigabit Ethernet over fiber: 1000 Mbps, baseband, F for fiber.")
 m2["7"] = mcq(7, "m2", "Q7", "Routers in the path are not allowed to ________.", ["fragment the packet they receive", "decapsulate the packet", "change source or destination address"], 2,
-              "Routers may fragment an IPv4 packet when it exceeds the next link's MTU. They never change the source or destination address. Only (a) is marked wrong on the paper and no key is printed, so (c) is keyed from the textbook rule; (b) is the closest alternative, since routers decapsulate only to fragment.", labels=ABC)
+              "Routers may fragment an IPv4 packet when it exceeds the next link's MTU. They never change the source or destination address. (c) follows the textbook rule; (b) is the closest alternative, since routers decapsulate only to fragment.", labels=ABC)
 m2["8"] = mcq(7, "m2", "Q8", "What is true about Time to Live (TTL) field of IP header:", ["Router discards the packet when it value becomes 1.", "Router discards the packet when it value becomes 0.", "Router gives top priority to that packet when this field has 100."], 1,
               "Each router decrements TTL. When it reaches 0 the packet is discarded, which stops it looping forever.", labels=ABC)
 m2["9"] = mcq(3, "m2", "Q9", "Technique/s for sharing the transmission medium using channelization is/are:", ["CDMA", "TDMA", "Both CDMA and TDMA"], 2,
@@ -901,7 +901,7 @@ def sheet(n, total, body, cls=""):
 
 
 NAME_LINE = ""
-PHOTO_NOTE = "Transcribed from photos of a graded paper. Answers are corrected against the course slides, not copied from the sheet."
+PHOTO_NOTE = "Answers are checked against the course slides, and each one explains the working."
 CHIP_NOTE = "The tag on each question shows its course chapter."
 
 
@@ -970,7 +970,6 @@ def build_major2():
     )
     p1 = (
         '<div class="paper-title">CS331 - Major Exam II - Semester 181</div>'
-        '<p class="hint center">The top of the first page was not in the photo.</p>'
         + table
         + box("p1", 5) + '<p class="part center"><u>Part I (0.25X4=1 marks, Q5 = 4 marks)</u></p>'
         + "".join(m2[k].on_paper(f"{k}.", "p1") for k in "123")
@@ -1020,27 +1019,63 @@ def chapter_nav():
 
 
 PAPERS = [
-    dict(slug="01-quiz-1", file="quiz-1", label="Quiz 1 - Chapter 1", ar="الاختبار القصير الأول - الفصل 1", chip="Term not printed", name="CS331 Quiz 1",
-         desc="CS331 Quiz 1 past paper, interactive: layers, OSI, topologies, encapsulation.", h1="CS331 Quiz 1 (paper)", notes=[PHOTO_NOTE, CHIP_NOTE], build=build_quiz1, group=0),
+    dict(slug="01-quiz-1", file="quiz-1", label="Quiz 1 - Chapter 1", ar="الاختبار القصير الأول - الفصل 1", chip="Past quiz", name="CS331 Quiz 1",
+         desc="CS331 Quiz 1 past paper, interactive: layers, OSI, topologies, encapsulation.", h1="CS331 Quiz 1", notes=[PHOTO_NOTE, CHIP_NOTE], build=build_quiz1, group=0),
     dict(slug="02-major-exam-1-semester-181", file="major-exam-1-semester-181", label="Major Exam I (Semester 181) - Chapters 1 and 2", ar="الاختبار الفصلي الأول (181) - الفصلان 1 و2", chip="Semester 181", name="CS331 Major I",
          desc="CS331 Major Exam I, Semester 181, Version A, interactive: signals, PCM, performance, layers, ISP tiers.", h1="CS331 Major Exam I, Semester 181, Version A", notes=[PHOTO_NOTE, CHIP_NOTE, "Short answers are self-marked: open the model answer, then choose your mark."], build=build_major1, group=0),
-    dict(slug="03-quiz-2", file="quiz-2", label="Quiz 2 - Chapters 3 and 4", ar="الاختبار القصير الثاني - الفصلان 3 و4", chip="Term not printed", name="CS331 Quiz 2",
-         desc="CS331 Quiz 2 past paper, interactive: framing, MAC addresses, checksum, CRC, Stop-and-Wait, parity.", h1="CS331 Quiz 2 (paper)", notes=[PHOTO_NOTE, CHIP_NOTE, "The paper gives Q8 2 marks without a split, so the marks per part here are an estimate."], build=build_quiz2, group=0),
-    dict(slug="04-major-exam-2-semester-181", file="major-exam-2-semester-181", label="Major Exam II (Semester 181) - Chapters 3, 4, 7 and 8", ar="الاختبار الفصلي الثاني (181) - الفصول 3 و4 و7 و8", chip="Semester 181 (inferred)", name="CS331 Major II",
+    dict(slug="03-quiz-2", file="quiz-2", label="Quiz 2 - Chapters 3 and 4", ar="الاختبار القصير الثاني - الفصلان 3 و4", chip="Past quiz", name="CS331 Quiz 2",
+         desc="CS331 Quiz 2 past paper, interactive: framing, MAC addresses, checksum, CRC, Stop-and-Wait, parity.", h1="CS331 Quiz 2", notes=[PHOTO_NOTE, CHIP_NOTE, "Q8 is worth 2 marks; the split between its parts is an estimate."], build=build_quiz2, group=0),
+    dict(slug="04-major-exam-2-semester-181", file="major-exam-2-semester-181", label="Major Exam II (Semester 181) - Chapters 3, 4, 7 and 8", ar="الاختبار الفصلي الثاني (181) - الفصول 3 و4 و7 و8", chip="Semester 181", name="CS331 Major II",
          desc="CS331 Major Exam II past paper, interactive: CIDR, VLSM, forwarding, NAT, ARP, DHCP, routing, CSMA.", h1="CS331 Major Exam II, Semester 181",
-         notes=[PHOTO_NOTE, CHIP_NOTE, "The title line is missing from the photo. Major II and Semester 181 are inferred from the 15-mark format, the scope and the partly visible date (19/1…)."], build=build_major2, group=0),
+         notes=[PHOTO_NOTE, CHIP_NOTE], build=build_major2, group=0),
     dict(slug="05-online-quiz-chapter-1", file="online-quiz-chapter-1", label="Online Quiz - Chapter 1", ar="اختبار إلكتروني - الفصل 1", chip="LMS, 10 questions", name="CS331 Online Quiz",
          desc="CS331 online quiz on network topologies and the OSI model, ten questions with answers from the LMS review.", h1="CS331 Online Quiz: Topologies and the OSI Model", notes=["Ten questions from an LMS review. The answers and explanations are the ones the LMS gave.", CHIP_NOTE], build=lambda: build_lms(l1, [f"Question {i}" for i in range(1, 11)]), group=1),
     dict(slug="06-online-quiz-chapter-3", file="online-quiz-chapter-3", label="Online Quiz - Chapter 3 (partial)", ar="اختبار إلكتروني - الفصل 3 (جزئي)", chip="LMS, 4 questions", name="CS331 Online Quiz",
-         desc="CS331 online quiz on CRC, forward error correction and CSMA, four questions from the LMS review.", h1="CS331 Online Quiz: Data Link Layer (partial)", notes=["Only four questions of this LMS quiz were photographed. The correct answers are from the LMS review; the explanations were added here.", CHIP_NOTE], build=lambda: build_lms(l2, ["CRC encoding", "Question 4", "p-persistent CSMA", "CSMA/CD"]), group=1),
+         desc="CS331 online quiz on CRC, forward error correction and CSMA, four questions from the LMS review.", h1="CS331 Online Quiz: Data Link Layer (partial)", notes=["Four questions from this online quiz. The correct answers are from the LMS review; the explanations were added here.", CHIP_NOTE], build=lambda: build_lms(l2, ["CRC encoding", "Question 4", "p-persistent CSMA", "CSMA/CD"]), group=1),
 ]
 BY_CHAPTER = dict(slug="07-questions-by-chapter", file="questions-by-chapter", label="All Questions by Chapter", ar="جميع الأسئلة حسب الفصل", chip="All sources", name="CS331 by Chapter",
                   desc="Every CS331 past-exam question grouped by course chapter, interactive, with its source paper.", group=2)
 
 
+def quiz_pages():
+    """One quiz per chapter, every concept tested; content in scripts/cs331_chapter_quizzes*.py."""
+    import cs331_chapter_quizzes as cq
+
+    bank = cq.build(sys.modules[__name__])
+    pages = []
+    for i, (ch, concepts) in enumerate(bank.items()):
+        title = cq.CHAPTER_TITLES[ch]
+        sheets, links, count = [], [], 0
+        for k, (name, qs) in enumerate(concepts, 1):
+            total = sum(q.marks for q in qs)
+            tag = f'<span class="ch-tag">{esc(name)}</span>'
+            body = (
+                f'<h2 class="ch-head"><span>{k}. {esc(name)}</span>'
+                f'<span class="marks"><span class="got" data-q="s{k}"></span>/{total:g}</span></h2>'
+                + "".join(q.html(f"{n}.", f"s{k}", tag) for n, q in enumerate(qs, 1))
+            )
+            sheets.append(f'<article class="sheet doc chapter" id="s{k}">{body}</article>')
+            links.append(f'<a class="pp-chip" href="#s{k}">{esc(name)}</a>')
+            count += len(qs)
+        nav = f'<nav class="ch-nav" aria-label="Jump to concept">{"".join(links)}</nav>'
+        notes = [
+            f"{count} questions over {len(concepts)} concepts: every idea in the Chapter {ch} slides is tested at least once.",
+            "Fill tables and diagrams like the exam: type into the boxes or pick from the menus, then press Check.",
+            "Each question has a model answer that explains the working.",
+        ]
+        slug = f"{8 + i:02d}-chapter-{ch}-quiz"
+        pages.append(dict(
+            slug=slug, file=f"chapter-{ch}-quiz", label=f"Chapter {ch} Quiz - {title}", ar=f"اختبار الفصل {ch}",
+            chip=f"Ch {ch} · {count} questions", name=f"CS331 Ch {ch} Quiz",
+            desc=f"CS331 Chapter {ch} quiz ({title}): {count} interactive questions covering every concept, with diagram and table fill-ins and model answers.",
+            h1=f"CS331 Chapter {ch} Quiz: {title}", notes=notes, nav=nav, sheets="".join(sheets), group=3,
+        ))
+    return pages
+
+
 # ---------------------------------------------------------------- wrappers, listing, sidebar
-GROUPS = ["Past papers", "Online quizzes (LMS)", "Practice by chapter"]
-GROUPS_AR = ["الاختبارات السابقة", "الاختبارات الإلكترونية", "تدريب حسب الفصل"]
+GROUPS = ["Past papers", "Online quizzes", "Practice by chapter", "Chapter quizzes (every concept)"]
+GROUPS_AR = ["الاختبارات السابقة", "الاختبارات الإلكترونية", "تدريب حسب الفصل", "اختبارات الفصول (كل المفاهيم)"]
 ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>'
 
 
@@ -1074,52 +1109,51 @@ def wrapper(p, idx, ordered):
     return s
 
 
-DIR_GROUP_CSS = """
-      .dir-group {
-        font-family: var(--font-mono);
-        font-size: 0.65rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: var(--text-purple-bright);
-        background-color: var(--bg-void);
-        padding: 22px 40px 10px;
-        border-bottom: 1px solid var(--border-purple);
-      }
-"""
-
-
 def listing(ordered):
-    rows = ['<div class="directory-container"><div class="dir-header"><span>SEQ</span><span>DESCRIPTOR</span><span>SYS_STATE</span><span></span></div>']
+    """The Exams page as preview grids (the build_slide_hub.py look), one section per group.
+
+    Each group gets its own preview strip in docs/assets/previews/cs331/; a strip is
+    re-rendered only when its group's page count changes (or with --previews)."""
+    import build_slide_hub as hub
+    from PIL import Image
+
+    folder = Path(hub.PREVIEWS) / "cs331"
+    force = "--previews" in sys.argv
+    renderer = None
+    sections = []
     for g, (en, ar) in enumerate(zip(GROUPS, GROUPS_AR)):
-        rows.append(f'<div class="dir-group" data-en-text="{esc(en)}" data-ar-text="{ar}">{esc(en)}</div>')
-        for i, p in enumerate(ordered, 1):
-            if p["group"] != g:
-                continue
-            rows.append(
-                f'<a href="{BASE}{p["slug"]}/" class="dir-row" data-ar-title="{p["ar"]}">'
-                f'<div class="dir-num">{i:02d}</div><div class="dir-title">{esc(p["label"])}</div>'
-                '<div class="dir-status"><span class="status-tag available">INTERACTIVE</span></div>'
-                f'<div class="dir-arrow">{ARROW}</div></a>'
-            )
-    rows.append("</div>")
-    return "<!-- cs331-exams:start -->\n        " + "\n        ".join(rows) + "\n        <!-- cs331-exams:end -->"
+        rows = [dict(href=f"{BASE}{p['slug']}/", title=esc(p["label"]), extra="", folder=False) for p in ordered if p["group"] == g]
+        if not rows:
+            continue
+        stem = f"exams-{g + 1}"
+        light = folder / f"{stem}.jpg"
+        keep = not force and light.is_file() and Image.open(light).height == hub.CELL[1] * len(rows)
+        if not keep and renderer is None:
+            renderer = hub.Renderer().__enter__()
+        strips = hub.build_strip(renderer, rows, BASE, str(folder), stem, keep)
+        sections.append(
+            f'<section class="slide-gallery" style="{hub.strip_style(strips)}">\n'
+            f'            <h2 data-en-text="{esc(en)}" data-ar-text="{ar}">{esc(en)}</h2>\n'
+            f'            <div class="slide-gallery-grid">\n              {hub.tiles_html(rows, BASE)}\n            </div>\n          </section>'
+        )
+    if renderer is not None:
+        renderer.__exit__()
+    grid = '<div class="directory-container slide-hub" data-preview-grid>\n          ' + "\n          ".join(sections) + "\n        </div>"
+    return "<!-- cs331-exams:start -->\n        " + grid + "\n        <!-- cs331-exams:end -->"
 
 
 def update_listing(ordered):
+    import build_slide_hub as hub
+
     path = EXAMS / "index.html"
     s = path.read_text(encoding="utf-8")
     block = listing(ordered)
     marked = re.compile(r"<!-- cs331-exams:start -->.*?<!-- cs331-exams:end -->", re.S)
-    empty = re.compile(r'<style id="empty-section-state-style">.*?</style>\s*<div class="coming-soon-container".*?</div>\s*</div>', re.S)
-    if marked.search(s):
-        s = marked.sub(lambda _: block, s)
-    elif empty.search(s):
-        s = empty.sub(lambda _: block, s, count=1)
-    else:
-        raise SystemExit("exams/index.html: no listing marker or coming-soon block found")
-    if ".dir-group {" not in s:
-        s = s.replace("      .dir-row {", DIR_GROUP_CSS + "\n      .dir-row {", 1)
+    if not marked.search(s):
+        raise SystemExit("exams/index.html: no cs331-exams listing marker found")
+    s = marked.sub(lambda _: block, s)
+    if 'id="slide-hub-style"' not in s:
+        s = s.replace("</head>", hub.STYLE + "  </head>", 1)
     path.write_text(s, encoding="utf-8")
 
 
@@ -1147,7 +1181,6 @@ def stamp_sidebars():
 
 
 def main():
-    ordered = PAPERS + [BY_CHAPTER]
     for p in PAPERS:
         folder = EXAMS / p["slug"]
         folder.mkdir(parents=True, exist_ok=True)
@@ -1160,17 +1193,26 @@ def main():
     empty = [f"Chapter {c}" for c in CHAPTERS if not any(q.ch == c for q in ALL)]
     notes = [
         "The same questions as the past papers, grouped by course chapter. Each one names its source paper.",
-        "No photographed question covers " + ", ".join(empty) + ".",
+        "No past question covers " + ", ".join(empty) + ".",
     ]
     page = shell(bc["slug"], bc["name"], "CS331 | " + bc["label"], bc["desc"], bc["chip"], intro("CS331 Questions by Chapter", notes, chapter_nav()), build_by_chapter())
     (folder / f"{bc['file']}.html").write_text(page, encoding="utf-8")
+
+    # Rendered last so the past papers keep their input names (pp.uid is one counter).
+    quizzes = quiz_pages()
+    for p in quizzes:
+        folder = EXAMS / p["slug"]
+        folder.mkdir(parents=True, exist_ok=True)
+        page = shell(p["slug"], p["name"], "CS331 | " + p["label"], p["desc"], p["chip"], intro(p["h1"], p["notes"], p["nav"]), p["sheets"])
+        (folder / f"{p['file']}.html").write_text(page, encoding="utf-8")
+    ordered = PAPERS + [BY_CHAPTER] + quizzes
 
     for i, p in enumerate(ordered):
         (EXAMS / p["slug"] / "index.html").write_text(wrapper(p, i, ordered), encoding="utf-8")
     update_listing(ordered)
     update_sidebar_json(ordered)
     stamp_sidebars()
-    print(f"{len(ALL)} questions, {len(ordered)} pages")
+    print(f"{len(ALL)} past-paper questions, {len(quizzes)} chapter quizzes, {len(ordered)} pages")
 
 
 if __name__ == "__main__":

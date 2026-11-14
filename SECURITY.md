@@ -15,7 +15,7 @@ If you discover a security vulnerability, please report it responsibly.
 
 ### How to report
 
-- Email: **security@shoug-tech.com**
+- Email: **Shoug.Alomran@Shoug-Tech.com**
 
 ### What to include
 

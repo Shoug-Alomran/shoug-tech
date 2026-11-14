@@ -418,7 +418,7 @@ COURSES: dict[str, dict[str, Any]] = {
     },
     "ENG103": {
         "track": "Other Courses",
-        "path": "old-design/docs/Academics/other/english/ENG103/overview.md",
+        "path": "",
         "url": "/Academics/other-courses/eng103/",
         "sections": {
             "Overview": "/Academics/other-courses/eng103/",
@@ -431,7 +431,7 @@ COURSES: dict[str, dict[str, Any]] = {
     },
     "ISC113": {
         "track": "Other Courses",
-        "path": "old-design/docs/Academics/other/Islamic/Islamic-113/Intro.md",
+        "path": "",
         "url": "/Academics/other-courses/isc113/",
         "sections": {
             "Overview": "/Academics/other-courses/isc113/",

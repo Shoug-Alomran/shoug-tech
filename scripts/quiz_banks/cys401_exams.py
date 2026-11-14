@@ -2,9 +2,9 @@
 """Question bank for the three CYS401 past papers rendered as interactive exams.
 
 Transcribed from the scanned papers Shoug supplied:
-  * Quiz 1, semester 222 (Dr. Rabia Latif, 29 January 2023)
-  * Final exam 221, version A (Dr. Suliman Mohamed Fati, 21 December 2022)
-  * Final exam 221, version B (Dr. Rabia Latif, 21 December 2022)
+  * Quiz 1, semester 222 (29 January 2023)
+  * Final exam 221, version A (21 December 2022)
+  * Final exam 221, version B (21 December 2022)
 
 Question shapes
 ---------------
@@ -24,7 +24,7 @@ QUIZ_222 = {
     "file": "quiz-1-semester-222.html",
     "title": "Quiz 1 (Semester 222)",
     "item": "ITEM_09",
-    "meta": "Dr. Rabia Latif · 29 January 2023 · Sections 360, 362, 1398 · 5 marks",
+    "meta": "29 January 2023 · Sections 360, 362, 1398 · 5 marks",
     "intro": "The first CYS401 quiz of semester 222: defence in depth, security "
              "measures, an availability calculation and attacker classification.",
     "sections": [
@@ -237,7 +237,7 @@ FINAL_221_A = {
     "file": "final-exam-221-version-a.html",
     "title": "Final Exam 221 (Version A)",
     "item": "ITEM_10",
-    "meta": "Dr. Suliman Mohamed Fati · 21 December 2022 · 3 hours · 40 marks",
+    "meta": "21 December 2022 · 3 hours · 40 marks",
     "intro": "Version A of the 221 final: security pillars and attacks, cryptography, "
              "access-control models, and attack identification from scenarios.",
     "sections": [
@@ -758,7 +758,7 @@ FINAL_221_B = {
     "file": "final-exam-221-version-b.html",
     "title": "Final Exam 221 (Version B)",
     "item": "ITEM_11",
-    "meta": "Dr. Rabia Latif · 21 December 2022 · 3 hours · 40 marks",
+    "meta": "21 December 2022 · 3 hours · 40 marks",
     "intro": "Version B of the 221 final: hashing and PKI, access-control models and "
              "rings, Bell-LaPadula, Diffie-Hellman with a man in the middle, and RSA.",
     "sections": [

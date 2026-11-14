@@ -18,7 +18,7 @@
 
 ### طريقة الإبلاغ
 
-- البريد الإلكتروني: **[security@shoug-tech.com](mailto:security@shoug-tech.com)**
+- البريد الإلكتروني: **[Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)**
 
 ### المعلومات المطلوبة
 

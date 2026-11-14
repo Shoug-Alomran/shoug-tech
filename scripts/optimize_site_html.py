@@ -311,6 +311,20 @@ def remove_hreflang(html: str) -> str:
     return HREFLANG_LINK.sub("", html)
 
 
+# Pages that show a student's own records (grades, transcript, calendar,
+# profile, comments). Clarity still counts visits there but masks all text, as
+# the privacy notice promises.
+CLARITY_MASKED = ("account/", "community/", "admin/")
+BODY_TAG = re.compile(r"<body\b([^>]*)>", re.I)
+
+
+def mask_private_pages(html: str, path: Path) -> str:
+    rel = path.relative_to(SITE).as_posix()
+    if not rel.startswith(CLARITY_MASKED) or "data-clarity-mask" in html:
+        return html
+    return BODY_TAG.sub(lambda m: f'<body{m.group(1)} data-clarity-mask="True">', html, count=1)
+
+
 def add_clarity(html: str) -> str:
     """Install Microsoft's official Clarity snippet once on every HTML page."""
     # Payment proof and buyer emails must never enter session replay.
@@ -423,6 +437,7 @@ def main() -> int:
         html = ensure_meta(html, path)
         html = remove_hreflang(html)
         html = add_clarity(html)
+        html = mask_private_pages(html, path)
 
         if html != original:
             path.write_text(html, encoding="utf-8")

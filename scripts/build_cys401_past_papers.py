@@ -188,11 +188,8 @@ def intro(title, lines):
     )
 
 
-PSU_HEAD = """<div class="psu-head">
-  <div class="psu-en"><div class="uni">Prince Sultan University</div><div class="col">College of Computer and Information Sciences</div></div>
-  <div class="psu-logo" aria-hidden="true">جامعة الأمير سلطان<span class="big">PRINCE SULTAN</span>UNIVERSITY</div>
-  <div class="psu-ar" lang="ar">جامعة الأمير سلطان<br />كلية علوم الحاسب ونظم المعلومات</div>
-</div>"""
+# The printed papers carry the university's letterhead; the site leaves it off.
+PSU_HEAD = ""
 
 
 def psu_page(n, total, body, foot_extra=""):
@@ -206,7 +203,7 @@ def psu_page(n, total, body, foot_extra=""):
 def missing(n, total, what):
     return (
         f'<article class="sheet missing" aria-label="Page {n} of {total}">'
-        f"<b>Page {n} of {total} was not photographed</b>{what}</article>"
+        f"<b>Page {n} of {total} is not included</b>{what}</article>"
     )
 
 
@@ -578,11 +575,8 @@ def paper_232():
     qn = "all"
     p1 = []
     p1.append(
-        '<div class="quiz-top"><span>Instructor: Dr. Rabia Latif</span><span>Date: 1 February 2024</span></div>'
-        '<div class="quiz-meta"><div class="quiz-title">CYS401- Fundamentals of Cybersecurity<br />'
-        "Semester 232- Sec: 1242/1249<br /><u>Quiz 1</u></div>"
-        '<div class="marks-box"><div>Marks</div><div><span class="got" data-q="all"></span>/5</div></div></div>'
-        '<p>Student ID: ______________________ &nbsp;&nbsp; Name: ______________________</p>'
+        # The paper's cover block (title, section, name and ID lines) is left off: the page opens on Q1.
+        ""
     )
     p1.append('<p class="part">Q1: Choose the best option: [0.5 Mark Each = 1 Marks]</p>')
     m, _ = mcq(
@@ -713,13 +707,8 @@ def paper_181():
     names = {}
     pages = {1: [], 2: [], 3: [], 4: [], 5: []}
     pages[1].append(
-        '<div class="doc-pageno">1</div><div class="doc-head"><div class="doc-logo">جامعة الأمير سلطان<br />PRINCE SULTAN<br />UNIVERSITY</div>'
-        '<div class="doc-title">Major Sem 181</div></div>'
-        '<div class="doc-info"><div>Course instructor: <u>Dr. Gabriela Mogos</u></div><div></div>'
-        "<div>Course title: <u>Fundamentals of Cybersecurity</u></div><div>Course code: <u>CYS401</u></div>"
-        "<div>Duration: &nbsp;70 minutes</div><div>Exam date: 18.11.2018</div>"
-        "<div>Student Name:</div><div>ID:</div></div>"
-        '<p style="text-align:right;font-weight:700;margin-top:22px">TOTAL MARKS: ( <span class="got" data-q="all"></span> /20)</p>'
+        # The cover block (title, course details, name and ID lines) is left off: the page opens on Section A.
+        '<div class="doc-pageno">1</div>'
         '<div class="doc-h">SECTION A. Multiple Choice Questions</div>'
         "<p><b><u>Note</u>: Answer all the questions and fill the TABLE at the end with appropriate answers.</b></p>"
         '<div class="doc-sub"><span>I. Choose the best answer/choice for the below statements:</span><span>( &nbsp; /1 marks)</span></div>'
@@ -736,22 +725,8 @@ def paper_181():
         names[f"tf{i}"] = name
         pages[3].append(m)
 
-    def cell(key):
-        return f'<td class="mirror" data-mirror="{names[key]}"></td>' if key in names else "<td></td>"
-
-    rows = ""
-    for r in range(6):
-        tfk = f"tf{r + 1}" if r < 4 else None
-        rows += (
-            f"<tr><td><b>{r + 1}</b></td>{cell(f'mc{r + 1}')}<td><b>{r + 7}</b></td>{cell(f'mc{r + 7}')}"
-            + (f"<td><b>{r + 1}</b></td>{cell(tfk)}" if tfk else "<td></td><td></td>")
-            + "</tr>"
-        )
     pages[4].append(
         '<div class="doc-pageno">4</div>'
-        '<table class="ptable answer-grid"><tr><th colspan="4">Multiple Choice Questions<br />( &nbsp; /1 marks)</th>'
-        '<th colspan="2">TRUE/FALSE<br />( &nbsp; /0,5 marks)</th></tr>' + rows + "</table>"
-        '<p style="font:13px var(--sans);color:var(--ink-2)">This table fills itself in from the options you pick above.</p>'
         '<div class="doc-h">SECTION B. ESSAY Questions</div>'
         "<p><b><u>Note</u>: Section B contains Three (3) questions. Answer all THREE (3) questions.</b></p>"
     )
@@ -809,7 +784,7 @@ def paper_a():
                  ["Confidentiality", "Integrity", "Authentication", "Non-repudiation"], "b",
                  "Integrity is protection against unauthorized modification. Confidentiality protects against disclosure.",
                  two_col=True)[0])
-    pages = [missing(1, T, "The cover page (student details and instructions)."), psu_page(2, T, "".join(p))]
+    pages = [psu_page(2, T, "".join(p))]
 
     # ---- page 3
     p = ['<p class="part boxed">B) Read carefully the following <u>wrong statements</u> and correct them. [2.5 Marks]</p>']
@@ -999,7 +974,7 @@ def paper_b():
                  ["Operational Plan", "Strategic Plan", "Tactical Plan", "Rollback Plan"], "b",
                  "A strategic plan is the long-term, stable plan that defines the security function and aligns it with the organization's goals, mission and objectives. Tactical plans are mid-term; operational plans are day-to-day.",
                  two_col=True)[0])
-    pages = [missing(1, T, "The cover page (student details and instructions)."), psu_page(2, T, "".join(p))]
+    pages = [psu_page(2, T, "".join(p))]
 
     terms = ["Utility", "Authenticity", "Brute-Force Attack", "Cyber criminal", "Tailgating", "Confidentiality", "Two factor authentication", "Firewall", "Phishing"]
     p = ['<p class="part">B) For each statement, choose the appropriate Term from the given table to fill the blank. [2.5 Marks]</p>',
@@ -1029,7 +1004,7 @@ def paper_b():
                f"<tbody>{rows}</tbody></table>", "2",
                f'<table class="ptable" style="margin-top:6px"><tr><th>Threat</th><th>Property</th><th>Category</th></tr>{key}</table>{CAT_NOTE}'))
     pages.append(psu_page(3, T, "".join(p)))
-    pages.append(missing(4, T, "This page held Question 2 parts B, C and D (3.5 marks). They aren't included, so this paper is marked out of 16.5."))
+    pages.append(missing(4, T, "Question 2 parts B, C and D (3.5 marks) aren't included, so this exam is marked out of 16.5."))
 
     p = ['<p class="part" style="font-weight:400"><b>E) You are presented with the following scenarios related to a company’s cybersecurity practices. For each scenario, classify it as either an example of due care or due diligence, and briefly explain your reasoning. [1 marks]</b></p>']
     dd = [
@@ -1095,7 +1070,7 @@ def paper_c():
     p.append(mcq(5, "Knowledge of letter frequencies, including pairs and triples can be used in cryptologic attacks against ______________ ciphers.",
                  ["Substitution ciphers", "Transposition ciphers", "Asymmetric ciphers", "Both (a) &amp; (b)"], "a",
                  "Substitution ciphers keep each letter's frequency pattern (just relabelled), so frequency analysis breaks them. Transposition keeps the letters themselves and is attacked by rearranging, not by letter frequencies.")[0])
-    pages = [missing(1, T, "The cover page (student details and instructions)."), psu_page(2, T, "".join(p))]
+    pages = [psu_page(2, T, "".join(p))]
 
     terms = ["Declassification", "Degaussing", "Destruction", "Purging", "Erasing", "Overwriting"]
     p = ['<p class="part">B) For each statement, choose the appropriate term from the given table. [2.5 Marks]</p>',
@@ -1129,7 +1104,7 @@ def paper_c():
     p.append(q('<table class="ptable stack table-stack-labels"><thead><tr><th>STRIDE THREAT</th><th>POTENTIAL THREAT ON ASSETS [1 Marks]</th><th>PROPERTY VIOLATED [1 Marks]</th><th>MITIGATION/ SECURITY CONTROL [1 Marks]</th></tr></thead>'
                f"<tbody>{rows}</tbody></table>", "2",
                "Properties: Spoofing → Authentication, Tampering → Integrity, Denial of Service → Availability, Elevation of Privileges → Authorization. "
-               "On the marked copy the property names went into the threat column; the threat column needs an actual attack on one of the app's assets."))
+               "A common mistake is putting the property names in the threat column; the threat column needs an actual attack on one of the app's assets."))
     pages.append(psu_page(3, T, "".join(p)))
 
     p = [q('<p class="part" style="font-weight:400"><b>B) What is ASP? When using an ASP, what should be conducted to ensure the protection of the data. [1 Marks]</b></p>'
@@ -1137,14 +1112,14 @@ def paper_c():
                         "<p>The organization stays accountable for its data, so it must perform <b>due diligence</b> on the provider before engaging it, and sign <b>contracts and SLAs</b> that define security requirements, responsibilities and breach notification (and audit the provider's controls).</p>", 3), "2")]
     p.append(q('<p class="part" style="font-weight:400"><b>C) For the commercial classification systems, write any THREE criteria’s used to classify information [1.5 Marks]</b></p>'
                + written(1.5, "<p>Any three of: <b>business value</b> of the information; <b>legal and regulatory</b> impact (e.g. PDPL, GDPR); <b>reputational damage</b> if it is disclosed; <b>operational impact</b> if it is altered or lost. (Also accepted in the textbooks: age / useful life and personal association.)</p>"
-                               "<p>Tactical, operational and strategic are types of <i>plans</i>, not classification criteria — the answer on the marked copy scored 0 for that reason.</p>", 3), "2"))
+                               "<p>Tactical, operational and strategic are types of <i>plans</i>, not classification criteria — answering with them scores 0.</p>", 3), "2"))
     p.append(q('<p class="part" style="font-weight:400"><b>D) Analyze why symmetric encryption algorithms are preferred for encrypting large amounts of data compared to asymmetric algorithms. [1 Mark]</b></p>'
                + written(1, "<p>Symmetric algorithms use one shared key and simple, fast operations (substitution, permutation, XOR), so they are much faster and need far less computation than asymmetric algorithms, which do heavy maths on very large numbers. That speed makes symmetric encryption practical for bulk data; asymmetric encryption is used only to exchange the symmetric key or sign (hybrid encryption).</p>"
-                           "<p>Symmetric uses <i>one</i> key, not two; \"more keys means more security\" scored 0 on the marked copy.</p>", 3), "2"))
+                           "<p>Symmetric uses <i>one</i> key, not two; \"more keys means more security\" scores 0.</p>", 3), "2"))
     p.append('<p class="part" style="font-weight:400"><b>E) You are presented with the following scenarios related to a company\'s cybersecurity practices. For each scenario, classify it as either an example of <u>due care, due diligence or both</u>, and briefly explain your reasoning. [1.5 Marks]</b></p>')
     dd = [
         ("Scenario A:", "After detecting a data breach, a company immediately activates its incident response plan, notifies affected customers, and begins remediation efforts.", "Due care",
-         "Due care: responding to the breach, notifying customers and fixing the damage is the reasonable action a responsible company takes. It is not research or assessment, so it is not due diligence (\"Both\" scored 0 on the marked copy)."),
+         "Due care: responding to the breach, notifying customers and fixing the damage is the reasonable action a responsible company takes. It is not research or assessment, so it is not due diligence (\"Both\" scores 0)."),
         ("Scenario B:", "A company suffers a ransomware attack that encrypts all their files. An investigation reveals that the company hadn’t updated its antivirus software in over a year and ignored security examination advise from their software vendors.", "Both",
          "Both are missing: not updating the antivirus is a failure of due care, and ignoring the vendors' security examination advice is a failure of due diligence. Answering only \"due care\" earned half marks."),
         ("Scenario C:", "The company requires all third-party vendors to sign a data protection agreement and undergo security audits before accessing sensitive information.", "Due diligence",
@@ -1167,7 +1142,7 @@ def paper_c():
                + f'<p class="q-text">Plaintext: {txt("COMMUNICATION|COMXMUNICATION|COMXMUNICATIONX", 1.5, "Playfair plaintext", show="COMMUNICATION")}</p>', "3",
                f"Matrix rows: {' / '.join(' '.join(r) for r in m)}. Decrypt each pair (same row → letter to the left, same column → letter above, rectangle → own row, other letter's column): "
                f"{' '.join(f'{a}→{b}' for a, b in zip(pairs, pl))}. That gives {''.join(pl)}; drop the filler X between the double M: <b>COMMUNICATION</b>. "
-               "The marked copy lost a quarter for decrypting FP as OC: in a rectangle each letter takes the corner in <i>its own</i> row, so FP → CO."))
+               "A common slip is decrypting FP as OC: in a rectangle each letter takes the corner in <i>its own</i> row, so FP → CO."))
     p.append(q('<p class="part" style="font-weight:400"><b>(b) In Playfair Cipher, the cryptanalysis depends on which factor? [1 Marks]</b></p>'
                + f'<p class="q-text">{txt("", 1, "Factor", pattern="key", show="the keyword (the key matrix)")}</p>', "3",
                "The whole cipher is the 5×5 matrix built from the keyword, so breaking Playfair means recovering the keyword / key square (usually through digram frequency analysis)."))
@@ -1190,7 +1165,7 @@ def paper_c():
 
     p = ['<p class="part" style="font-weight:400"><b>C) Read the scenarios below carefully, and answer the questions based on the information provided with no further assumptions</b></p>']
     p.append(q('<p class="q-text"><b><u>Scenario 1:</u></b><br />A company has gone through a round of phishing attacks. More than 200 users have had their workstation infected because they clicked on a link in an email. An incident analysis has determined an executable ran and compromised the administrator account on each workstation. Management is demanding the information security team prevent this from happening again.<br /><b>Which action do you need to take to prevent this from happening again? [0.5 Marks]</b></p>'
-               + written(0.5, "<p>Run <b>security awareness training</b> on phishing so users stop clicking malicious links (the action the marked copy got full marks for). Technical backups to mention: application whitelisting so unknown executables can't run, and removing administrator rights from everyday accounts (least privilege).</p>", 2), "3"))
+               + written(0.5, "<p>Run <b>security awareness training</b> on phishing so users stop clicking malicious links (this alone earns full marks). Technical backups to mention: application whitelisting so unknown executables can't run, and removing administrator rights from everyday accounts (least privilege).</p>", 2), "3"))
     p.append(q('<p class="q-text"><b><u>Scenario 2:</u></b><br />You receive a message on Instagram from a friend, asking if you would like to invest in a new cryptocurrency that’s "guaranteed to make huge returns." They provide a link to an investment website that looks very professional, and they urge you to act quickly.<br /><b>What type of phishing attack is targeting you and What action should you take? [1 Marks]</b></p>'
                + f'<p class="q-text">Type: {txt("", 0.5, "Phishing type", pattern="angler", show="Angler phishing")}</p>'
                + written(0.5, "<p>Don't open the link or send money. Verify with the friend through another channel (their account may be compromised), check the URL with a link checker, and report the account.</p>", 2, "Action"), "3",
@@ -1198,7 +1173,7 @@ def paper_c():
     p.append(q('<p class="q-text"><b><u>Scenario 3:</u></b><br />A company employee receives a call from someone claiming to be from the IT department, offering a free software upgrade in exchange for the employee’s login credentials. The caller insists that the credentials are necessary to complete the upgrade remotely. The employee, wanting to take advantage of the upgrade, provides their username and password.<br /><b>Identify the type of social engineering attack used in this scenario and write one way an organization can protect against such attacks. [1 Marks]</b></p>'
                + f'<p class="q-text">Type: {txt("", 0.5, "Attack type", pattern="quid", show="Quid pro quo")}</p>'
                + written(0.5, "<p>Security awareness training, plus a policy that IT never asks for passwords and that callers are verified by calling back the official help-desk number.</p>", 2, "Protection"), "3",
-               "Something offered <i>in exchange</i> for information is <b>quid pro quo</b> (it arrives by phone, so vishing is also a fair description). Baiting — the answer on the marked copy, which got half marks — leaves a lure such as an infected USB drive for the victim to pick up; it doesn't trade a service for credentials."))
+               "Something offered <i>in exchange</i> for information is <b>quid pro quo</b> (it arrives by phone, so vishing is also a fair description). Baiting, which earns only half marks, leaves a lure such as an infected USB drive for the victim to pick up; it doesn't trade a service for credentials."))
     pages.append(psu_page(6, T, "".join(p), '<div class="goodluck">GOODLUCK ☺</div>'))
     return "".join(pages)
 
@@ -1208,23 +1183,21 @@ PAPERS = [
     dict(
         slug="12-major-exam-semester-181",
         title="CYS401 | Major Exam (Semester 181)",
-        desc="The CYS401 major exam of semester 181 (Dr. Gabriela Mogos, 18 November 2018), laid out like the original paper and interactive: 12 MCQs, 4 true/false, the answer table and 3 essay questions with the instructor's answers.",
+        desc="The CYS401 major exam of semester 181 (18 November 2018), interactive: 12 MCQs, 4 true/false and 3 essay questions with the instructor's answers.",
         chip="Semester 181",
         h1="Major Exam · Semester 181",
         notes=[
-            "Source: the instructor's answer sheet (Dr. Gabriela Mogos, 18 November 2018, 70 minutes, 20 marks), laid out like the original paper.",
-            "Pick an option and the answer table on page 4 fills itself in. <b>Check paper</b> marks Section A; the essays show the instructor's answers so you can mark yourself.",
+            "<b>Check paper</b> marks Section A automatically; the essays show model answers so you can mark yourself.",
         ],
         build=paper_181,
     ),
     dict(
         slug="13-quiz-1-semester-232",
         title="CYS401 | Quiz 1 (Semester 232)",
-        desc="CYS401 Quiz 1 of semester 232 (Dr. Rabia Latif, 1 February 2024), laid out like the original paper and interactive: MCQs, CIA terms, the McCumber cube, SecSDLC and defense in depth.",
+        desc="CYS401 Quiz 1 of semester 232 (1 February 2024), interactive: MCQs, CIA terms, the McCumber cube, SecSDLC and defense in depth.",
         chip="Semester 232",
         h1="Quiz 1 · Semester 232",
         notes=[
-            "Source: a marked copy (Dr. Rabia Latif, 1 February 2024, sections 1242/1249, 5 marks). The answers here are corrected, not copied from the student.",
             "MCQs, the blanks and the McCumber labels are checked automatically; the SecSDLC and defense-in-depth answers show a model answer to mark yourself against.",
         ],
         build=paper_232,
@@ -1232,23 +1205,22 @@ PAPERS = [
     dict(
         slug="14-major-exam-a-term-unknown",
         title="CYS401 | Major Exam A (Term Unknown)",
-        desc="A CYS401 major exam from an unknown term, laid out like the original paper and interactive: Triple DES, Caesar, CFB, NIST SP 800-18, data remanence, STRIDE, due care, padding, Playfair, transposition, Vigenère, Hill and CBC.",
+        desc="A CYS401 major exam from an unknown term, interactive: Triple DES, Caesar, CFB, NIST SP 800-18, data remanence, STRIDE, due care, padding, Playfair, transposition, Vigenère, Hill and CBC.",
         chip="Term unknown",
         h1="Major Exam A · Term unknown",
         notes=[
-            "Source: photos of a marked copy (pages 2–7 of 7; the cover page wasn't photographed, so the term and instructor are unknown).",
-            "Every cipher answer is computed and checked automatically. Written parts show a model answer and, where the marked copy lost marks, why.",
+            "Every cipher answer is computed and checked automatically. Written parts show a model answer and the mistakes that cost marks.",
         ],
         build=paper_a,
     ),
     dict(
         slug="15-major-exam-b-term-unknown",
         title="CYS401 | Major Exam B (Term Unknown)",
-        desc="A CYS401 major exam from an unknown term, laid out like the original paper and interactive: nested DES, Caesar, security plans, STRIDE with properties, padding, Playfair, Vigenère and CBC.",
+        desc="A CYS401 major exam from an unknown term, interactive: nested DES, Caesar, security plans, STRIDE with properties, padding, Playfair, Vigenère and CBC.",
         chip="Term unknown",
         h1="Major Exam B · Term unknown",
         notes=[
-            "Source: photos of a blank copy (pages 2, 3, 5, 6 and 7 of 7). The cover and page 4 (Question 2 B–D, 3.5 marks) weren't photographed, so the paper is marked out of 16.5.",
+            "Question 2 parts B–D (3.5 marks) aren't included, so this exam is marked out of 16.5.",
             "It shares several questions with Major Exam C, so the two are probably versions of the same exam.",
         ],
         build=paper_b,
@@ -1256,12 +1228,11 @@ PAPERS = [
     dict(
         slug="16-major-exam-c-term-unknown",
         title="CYS401 | Major Exam C (Term Unknown)",
-        desc="A CYS401 major exam from an unknown term, laid out like the original paper and interactive: Caesar, media sanitization, STRIDE with mitigations, ASP, classification, due care, Playfair, Hill and social engineering scenarios.",
+        desc="A CYS401 major exam from an unknown term, interactive: Caesar, media sanitization, STRIDE with mitigations, ASP, classification, due care, Playfair, Hill and social engineering scenarios.",
         chip="Term unknown",
         h1="Major Exam C · Term unknown",
         notes=[
-            "Source: photos of a marked copy (pages 2–6 of 6; the cover page wasn't photographed, so the term and instructor are unknown).",
-            "The answers are corrected where the marked copy lost marks, and each one explains what the marker was looking for.",
+            "Each answer explains what the marker looks for.",
         ],
         build=paper_c,
     ),

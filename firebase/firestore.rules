@@ -13,7 +13,7 @@ service cloud.firestore {
         'calendarCourseCredits', 'calendarCourseFinals', 'calendarGpaRecord',
         'calendarClassSchedules', 'calendarClassAttendance', 'calendarClassOverrides',
         'calendarPsuAcademicVersion', 'calendarTodos',
-        'calendarStudyPlan'];
+        'calendarStudyPlan', 'finalRoadmaps'];
     }
     // A profile write may not add or change private fields. Older profiles still
     // carry them until the owner's next sign-in moves them; that move deletes
@@ -40,6 +40,26 @@ service cloud.firestore {
               && request.resource.data.academicRecord.transcript.hours > 0
               && request.resource.data.academicRecord.transcript.term is string
               && request.resource.data.academicRecord.transcript.term.matches('[0-9]{3}'))));
+    }
+
+    // Avatar colours end up inside style attributes, so only plain hex is allowed.
+    function validColor(d) {
+      return !('avatarColor' in d)
+        || (d.avatarColor is string && d.avatarColor.matches('#[0-9a-fA-F]{3,8}'));
+    }
+    // A comment carries its author's name for display. It must be the author's
+    // own profile name, so nobody can post as someone else.
+    function validComment() {
+      let d = request.resource.data;
+      let profilePath = /databases/$(database)/documents/users/$(request.auth.uid);
+      let profile = exists(profilePath) ? get(profilePath).data : {};
+      return signedIn() && d.uid == request.auth.uid
+        && d.keys().hasOnly(['uid', 'username', 'displayName', 'avatarColor', 'avatarPreset',
+          'text', 'replyTo', 'replyToUsername', 'createdAt'])
+        && d.text is string && d.text.size() > 0 && d.text.size() <= 1000
+        && d.get('username', '') == profile.get('username', '')
+        && d.get('displayName', '') == profile.get('displayName', '')
+        && validColor(d);
     }
 
     function ratingScore(v) { return v is int && v >= 1 && v <= 5; }
@@ -108,8 +128,8 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if signedIn();
-      allow create: if owns(uid) && profileKeepsPrivateOut();
-      allow update: if owns(uid) && profileKeepsPrivateOut();
+      allow create: if owns(uid) && profileKeepsPrivateOut() && validColor(request.resource.data);
+      allow update: if owns(uid) && profileKeepsPrivateOut() && validColor(request.resource.data);
       match /private/{docId} {
         allow read, delete: if owns(uid);
         allow create, update: if owns(uid) && docId == 'data' && validAcademicRecordUpdate();
@@ -124,14 +144,43 @@ service cloud.firestore {
       }
       match /pages/{pageId} { allow read, write: if owns(uid); }
     }
+    // Reply notifications. Anyone signed in can notify another student, but only
+    // as themselves, with their own profile name and a link back into this site.
+    // The recipient alone can read them, mark them read, or delete them.
+    function validNotification(toUid) {
+      let d = request.resource.data;
+      let profilePath = /databases/$(database)/documents/users/$(request.auth.uid);
+      let profile = exists(profilePath) ? get(profilePath).data : {};
+      return signedIn() && toUid != request.auth.uid
+        && d.keys().hasOnly(['type', 'fromUid', 'fromUsername', 'fromDisplayName',
+          'fromAvatarColor', 'pageUrl', 'commentPreview', 'read', 'createdAt'])
+        && d.keys().hasAll(['type', 'fromUid', 'pageUrl', 'read', 'createdAt'])
+        && d.type == 'reply' && d.fromUid == request.auth.uid
+        && d.get('fromUsername', '') == profile.get('username', '')
+        && d.get('fromDisplayName', '') == profile.get('displayName', '')
+        && (!('fromAvatarColor' in d)
+          || (d.fromAvatarColor is string && d.fromAvatarColor.matches('#[0-9a-fA-F]{3,8}')))
+        && d.pageUrl is string && d.pageUrl.size() <= 300 && d.pageUrl.matches('/([^/].*)?')
+        && (!('commentPreview' in d)
+          || (d.commentPreview is string && d.commentPreview.size() <= 120))
+        && d.read == false && d.createdAt == request.time;
+    }
+    match /notifications/{toUid}/items/{itemId} {
+      allow read, delete: if owns(toUid);
+      allow create: if validNotification(toUid);
+      allow update: if owns(toUid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+        && request.resource.data.read == true;
+    }
     match /usernames/{username} {
       allow read: if signedIn();
-      allow create: if signedIn();
+      // A username can only be claimed for yourself.
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
     }
     match /discussions/{courseId}/comments/{commentId} {
       allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
-        && request.resource.data.text.size() <= 1000;
+      allow create: if validComment();
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
     match /userProgress/{uid} {
@@ -140,9 +189,7 @@ service cloud.firestore {
     }
     match /pageComments/{pageSlug}/comments/{commentId} {
       allow read: if true;
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
-        && request.resource.data.text is string && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 1000;
+      allow create: if validComment();
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
     match /pageReactions/{pageKey}/votes/{uid} {
