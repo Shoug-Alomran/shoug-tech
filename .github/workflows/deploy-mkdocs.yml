@@ -13,13 +13,20 @@ concurrency:
   group: "site-deploy"
   cancel-in-progress: false
 
+# One job on purpose: the repo is ~6 GB of history, so every extra job paid
+# for another checkout plus an artifact upload/download of the whole site.
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: cloudflare-pages
+      url: https://shoug-tech.com/
     steps:
+      # Shallow: no build step reads git history. IndexNow fetches the one
+      # previous commit it needs at the end.
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-python@v6
         with:
@@ -80,12 +87,26 @@ jobs:
       - name: Rebuild final sitemap
         run: python3 scripts/check_sitemap.py --write
 
+      # The four checks only read docs/, so they run side by side; each one's
+      # output is printed in full and any failure fails the step.
       - name: Validate final static site
         run: |
-          python3 scripts/verify_site_routes.py
-          python3 scripts/check_site_links.py
-          python3 scripts/check_seo_metadata.py
-          python3 scripts/check_sitemap.py
+          mkdir -p .validate-logs
+          pids=()
+          for check in verify_site_routes check_site_links check_seo_metadata check_sitemap; do
+            python3 "scripts/$check.py" > ".validate-logs/$check.log" 2>&1 &
+            pids+=("$!:$check")
+          done
+          failed=0
+          for entry in "${pids[@]}"; do
+            pid="${entry%%:*}"; check="${entry#*:}"
+            if wait "$pid"; then status=ok; else status=FAILED; failed=1; fi
+            echo "::group::$check ($status)"
+            cat ".validate-logs/$check.log"
+            echo "::endgroup::"
+            [ "$status" = ok ] || echo "::error::$check failed"
+          done
+          [ "$failed" = 0 ]
           python3 scripts/build_indexing_manifest.py
 
       - uses: actions/setup-node@v5
@@ -154,40 +175,10 @@ jobs:
           du -sh docs
           find docs -type f | wc -l
 
-      - name: Upload site build artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: site
-          path: docs
-          retention-days: 1
-          compression-level: 0
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: cloudflare-pages
-      url: https://shoug-tech.com/
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Prepare the deploy directory
-        run: rm -rf docs
-
-      - name: Download the sealed build output
-        uses: actions/download-artifact@v5
-        with:
-          name: site
-          path: docs
-
       # Meta-refresh pages become real 301s in functions/_middleware.js, which
       # also serves .html URLs without Pages' extension-stripping redirect.
       - name: Generate redirects and routes for the Pages middleware
         run: python3 scripts/build_meta_redirects.py
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: "22"
 
       - name: Deploy to Cloudflare Pages
         env:
@@ -198,21 +189,15 @@ jobs:
           --project-name shoug-tech-site --branch main
           --commit-hash "$GITHUB_SHA" --commit-dirty=true
 
-  indexnow:
-    if: github.event_name == 'push'
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-
+      # Fetch only the pre-push commit so the diff works on the shallow clone.
+      # A missed ping is not worth failing a finished deploy over.
       - name: Notify IndexNow of changed URLs
-        run: >-
-          python3 scripts/submit_indexnow.py
-          --before "${{ github.event.before }}"
-          --after "${{ github.sha }}"
+        if: github.event_name == 'push'
+        continue-on-error: true
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            git fetch --no-tags --depth=1 origin "$BEFORE"
+          fi
+          python3 scripts/submit_indexnow.py --before "$BEFORE" --after "$GITHUB_SHA"
