@@ -1,5 +1,6 @@
 /**
- * Motion for the cybersecurity quiz pages (see styles/cyber-quiz-motion.css).
+ * Colour and motion for the exam pages of every course (see styles/quiz-motion.css,
+ * linked by scripts/install_quiz_motion.py).
  *
  * The quizzes come from several templates, and most build their questions in
  * JavaScript after load, so this script watches the page instead of expecting
@@ -9,19 +10,22 @@
  */
 (function () {
   "use strict";
-  if (window.__cyberQuizMotion) return;
-  window.__cyberQuizMotion = true;
+  if (window.__quizMotion) return;
+  window.__quizMotion = true;
 
   var root = document.documentElement;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var CARD = ".q, .question, .q-card";
-  var OPTION = "label, .opt, .opt-label, .option, .option-btn, .choice";
+  var CARD = ".q, .question, .q-card, .question-card, .question-block, .quiz-q, .ex-part";
+  var OPTION = "label, .opt, .opt-label, .option, .option-btn, .choice, .quiz-opt";
   var FEEDBACK = ".feedback, .fb, .explanation";
   var SCORE = ".score, .scorebar, .scorebox, .score-box, .progress-pill, #scoreBar, #score";
   var BAR = ".progress-fill, .progress > i, .progress > span, .progress-bar > *, .bar-fill";
   var HEAD = ".hero, .exam-head, .exam-header, .topbar, header.top, .top";
   var BUTTON = "button, .btn";
+  // Each question card takes the next accent; --cqm-c2 is the one after it.
+  var PALETTE = ["#ff3d8b", "#8b5cf6", "#22d3ee", "#f59e0b", "#10b981", "#3b82f6"];
+  var CTA = /check|submit|grade|finish|reveal|show (all|model)|answers/i;
   var OK = ["correct", "is-correct", "c-correct", "selected-correct", "correct-ans", "is-right", "correct-answer", "answered-correct"];
   var BAD = ["wrong", "is-wrong", "c-wrong", "selected-wrong", "wrong-ans", "picked-wrong", "incorrect", "incorrect-answer", "answered-wrong"];
 
@@ -46,9 +50,10 @@
     var layer = document.createElement("div");
     layer.className = "cqm-ambient";
     layer.setAttribute("aria-hidden", "true");
-    layer.innerHTML = "<i></i><i></i><i></i>";
+    layer.innerHTML = "<i></i><i></i><i></i><i></i>";
     document.body.insertBefore(layer, document.body.firstChild);
   }
+
 
   var order = 0;
   var revealer =
@@ -74,6 +79,10 @@
     if (card.__cqm || card.parentElement.closest(CARD)) return;
     card.__cqm = true;
     card.classList.add("cqm-card");
+    var hue = order % PALETTE.length;
+    card.style.setProperty("--cqm-c", PALETTE[hue]);
+    card.style.setProperty("--cqm-c2", PALETTE[(hue + 1) % PALETTE.length]);
+    if (!revealer) order++;
     // Cards without side padding would put the accent bar over the text.
     if (parseFloat(getComputedStyle(card).paddingLeft) < 10) card.classList.add("cqm-flush");
     if (revealer) {
@@ -95,6 +104,7 @@
     if (button.closest(".cqm-card") && !/check|submit|reveal|show|next|finish|grade/i.test(button.textContent)) return;
     button.__cqm = true;
     button.classList.add("cqm-btn");
+    if (CTA.test(button.textContent) && button.offsetWidth < 360) button.classList.add("cqm-cta");
   }
 
   function scan(node) {
@@ -173,14 +183,21 @@
     });
   }
 
+  // Page zoom from styles/site-shell.css (large screens). getBoundingClientRect and
+  // pointer coordinates are zoomed; CSS px set on elements are not.
+  function pageZoom() {
+    return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  }
+
   function ripple(event) {
     var option = event.target.closest && event.target.closest(".cqm-opt");
     if (!option || reduce) return;
     var rect = option.getBoundingClientRect();
     var dot = document.createElement("span");
     dot.className = "cqm-ripple";
-    dot.style.left = event.clientX - rect.left + "px";
-    dot.style.top = event.clientY - rect.top + "px";
+    var z = pageZoom();
+    dot.style.left = (event.clientX - rect.left) / z + "px";
+    dot.style.top = (event.clientY - rect.top) / z + "px";
     option.appendChild(dot);
     setTimeout(function () { dot.remove(); }, 650);
   }

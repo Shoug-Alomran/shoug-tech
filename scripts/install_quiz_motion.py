@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Link the shared quiz motion layer into every cybersecurity quiz page.
+"""Link the shared colour-and-motion layer into every course's exam pages.
 
-Adds /styles/cyber-quiz-motion.css and /javascripts/cyber-quiz-motion.js to the
-quiz content pages under docs/academics/cybersecurity/*/exams/ (the files the
-exam wrappers iframe, not the wrappers themselves), including the CYS401
-past-paper replicas, which the stylesheet turns into a card layout.
+Adds /styles/quiz-motion.css and /javascripts/quiz-motion.js to the exam
+content pages under docs/academics/*/*/exams/ (the files the exam wrappers
+iframe, not the wrappers or listings). Skipped: ETHCS303 (the paid course,
+sealed at deploy) and CS331, whose pages already have their own colourful theme
+(cs331-past-paper.css + cs331-paper-fx.js).
 
 Course builders don't include the tags, so re-run this after regenerating
-quizzes. Idempotent.
+exams. Idempotent.
 
-    python3 scripts/install_cyber_quiz_motion.py           # install
-    python3 scripts/install_cyber_quiz_motion.py --check   # list pages missing it; exit 1 if any
+    python3 scripts/install_quiz_motion.py           # install
+    python3 scripts/install_quiz_motion.py --check   # list pages missing it; exit 1 if any
 """
 from __future__ import annotations
 
@@ -19,16 +20,18 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMS = ROOT / "docs/academics/cybersecurity"
+ACADEMICS = ROOT / "docs/academics"
+SKIP = {"ethcs303", "cs331"}
 TAGS = (
-    '<link rel="stylesheet" href="/styles/cyber-quiz-motion.css" />\n'
-    '<script defer src="/javascripts/cyber-quiz-motion.js"></script>\n'
+    '<link rel="stylesheet" href="/styles/quiz-motion.css" />\n'
+    '<script defer src="/javascripts/quiz-motion.js"></script>\n'
 )
 
 
 def quiz_pages():
-    for page in sorted(EXAMS.glob("*/exams/*/*.html")):
-        if page.name == "index.html":
+    for page in sorted(ACADEMICS.glob("*/*/exams/**/*.html")):
+        course = page.relative_to(ACADEMICS).parts[1]
+        if page.name == "index.html" or course in SKIP:
             continue
         text = page.read_text(encoding="utf-8")
         if "</head>" not in text:
@@ -40,7 +43,7 @@ def main() -> int:
     check = "--check" in sys.argv
     missing = []
     for page, text in quiz_pages():
-        if "cyber-quiz-motion.js" in text:
+        if "quiz-motion.js" in text:
             continue
         missing.append(page)
         if not check:

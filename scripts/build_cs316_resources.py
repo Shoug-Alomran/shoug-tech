@@ -52,7 +52,7 @@ STYLE = """
 html[data-theme="dark"]{--bg:#0b0912;--panel:#14111e;--code:#1b1727;--text:#ece9f5;--muted:#a59fb8;--line:#2e2840;--accent:#c084fc}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}
 body{font:16px/1.65 Inter,system-ui,sans-serif;overflow-wrap:anywhere}
-main{max-width:1000px;margin:0 auto;padding:28px clamp(14px,4vw,40px) 60px}
+main{max-width:1320px;margin:0 auto;padding:28px clamp(14px,4vw,40px) 60px}
 h1,h2,h3,h4{line-height:1.25;margin:1.4em 0 .5em}h1{font-size:1.8rem}h2{font-size:1.4rem}h3{font-size:1.15rem}
 a{color:var(--accent)}img{max-width:100%;height:auto;background:#fff;border-radius:6px}
 .note{color:var(--muted);font-size:.9rem;border-bottom:1px solid var(--line);padding-bottom:12px}

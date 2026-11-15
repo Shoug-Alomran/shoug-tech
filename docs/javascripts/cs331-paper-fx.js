@@ -144,6 +144,12 @@
     });
   }
 
+  // Page zoom from styles/site-shell.css (large screens). getBoundingClientRect and
+  // pointer coordinates are zoomed; CSS px set on elements are not.
+  function pageZoom() {
+    return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  }
+
   function burst(x, y, count) {
     if (calm) return;
     for (var i = 0; i < count; i++) {
@@ -163,8 +169,9 @@
   }
 
   function burstFrom(el, count) {
-    var r = el.getBoundingClientRect();
-    burst(r.left + r.width / 2, r.top + r.height / 2, count);
+    var r = el.getBoundingClientRect(),
+      z = pageZoom();
+    burst((r.left + r.width / 2) / z, (r.top + r.height / 2) / z, count);
   }
 
   function react(q, withBurst) {

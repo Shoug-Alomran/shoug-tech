@@ -49,6 +49,8 @@ OVERVIEW = {
              'past paper here, so the LSP questions on this page are predictions.'),
 }
 
+from .common import asked
+
 SLIDES = {
     1: dict(
         hl=[('Principles of Detailed Design', 1)],
@@ -232,7 +234,10 @@ SLIDES = {
                    'Employee\n  - id, name, baseSalary          (data only)\n\nSalaryCalculator\n  + calculateSalary(e: Employee): double\nEmployeeRepository\n  + save(e: Employee): void\nEmployeeReportGenerator\n  + generate(e: Employee): String\n\nall three  - - ->  Employee    (dependency)'}],
         exam=[dict(kind='past', ref='Final 252 · Q5-1 · 2.5 marks',
                    q='NextGen Library: a junior developer put fee calculation, book data and report formatting into one BookManager class. Which detailed-design principle is violated? Draw a class diagram that fixes it.',
-                   a='The Single Responsibility Principle: BookManager has three reasons to change (book data, loan and fee rules, report format). Fix: Book (title, ISBN, author), LoanCalculator (due date and late fee) and MonthlyReportGenerator (text report), each with one responsibility; LoanCalculator and the report class use Book.')]),
+                   a='The Single Responsibility Principle: BookManager has three reasons to change (book data, loan and fee rules, report format). Fix: Book (title, ISBN, author), LoanCalculator (due date and late fee) and MonthlyReportGenerator (text report), each with one responsibility; LoanCalculator and the report class use Book.'),
+              asked('q2261', 'Q1 (UML)',
+                    'A hospital system models patient admission with one class, PatientAdmissionBoard, that admits patients, produces invoices, sends notifications and builds reports. Identify the violated SOLID principle, explain why, and draw the corrected class diagram.',
+                    a='**SRP.** PatientAdmissionBoard has several reasons to change: admission rules, the invoice format, the notification channel and the report layout would each mean editing the same class. Fix: keep only admission in PatientAdmission; move invoicing, notifications and reporting into their own classes, each with a dashed dependency arrow to PatientAdmission (they receive it as a parameter). Bonus (OCP): make Notification an interface realised by SmsNotification and EmailNotification, so a new channel is a new class.')]),
     22: dict(
         hl=[('reusable', 1), ('modifiable', 1), ('open to extension but', 2), ('closed for modification.', 2), ('untouched', 2),
             ('modifications should be done by adding new code', 3), ('does not require old', 3)],
@@ -314,7 +319,10 @@ SLIDES = {
                    '«interface» SalaryPolicy\n  + calculate(e: Employee): double\n\nMonthlySalary, HourlySalary, WeeklySalary\n  - - -|>  SalaryPolicy        (realization)\n\nSalaryCalculator               (never edited)\n  + calculateSalary(e: Employee,\n                    p: SalaryPolicy): double\n\nNew CommissionSalary = one new class\nthat implements SalaryPolicy.'}],
         exam=[dict(kind='past', ref='Final 252 · Q5-2 · 2.5 marks',
                    q='NextGen Library (physical books now, E-books soon): by applying the Open/Closed Principle for E-books, draw the class diagram.',
-                   a='Introduce an abstract class or interface (e.g. LibraryItem with title, ISBN, author and an abstract operation such as calculateLateFee()). PhysicalBook and EBook extend or implement it. The loan and report classes depend only on LibraryItem, so adding EBook (or audiobooks later) needs no change to existing classes.')]),
+                   a='Introduce an abstract class or interface (e.g. LibraryItem with title, ISBN, author and an abstract operation such as calculateLateFee()). PhysicalBook and EBook extend or implement it. The loan and report classes depend only on LibraryItem, so adding EBook (or audiobooks later) needs no change to existing classes.'),
+              asked('q2261', 'Q2 (UML)',
+                    'A booking service gives a passenger a paper boarding pass through a PaperBoardingPass class with printPaperBoardingPass(). The service should also be able to give other kinds of boarding passes. Identify the violated SOLID principle, explain why, and redesign it so new ticket types can be added.',
+                    a='**OCP** (and DIP). Tied to PaperBoardingPass, every new pass type means changing BookingService instead of adding a class; BookingService (high level) also depends on a concrete class. Fix: interface BoardingPass { provide(Booking) }; PaperBoardingPass and DigitalBoardingPass implement it; BookingService holds a BoardingPass passed in through its constructor. A new pass type is one new class and BookingService never changes.')]),
     32: dict(
         hl=[('implied contract', 1), ('replaceable with instances of', 2), ('"Treat Alike" Rule', 2), ('Signatures', 3), ('Subtype specification', 3)],
         notes=['The “implied contract” is everything callers rely on: the method names and types, but also the **behavior** (what the method promises to do and what it requires before it is called).',

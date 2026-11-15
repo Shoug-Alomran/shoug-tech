@@ -1,20 +1,31 @@
 /*
- * Motion and depth for the cybersecurity quiz pages.
+ * Colour and motion for the exam pages of every course.
  *
- * Loaded after each quiz page's own CSS and driven by cyber-quiz-motion.js,
- * which tags question cards, options, feedback boxes, progress bars and score
- * readouts with .cqm-* classes. Colours are written as plain hex/rgba so
+ * Linked by scripts/install_quiz_motion.py and driven by quiz-motion.js, which
+ * tags question cards, options, feedback boxes, progress bars and score
+ * readouts with .cqm-* classes and gives every card an accent (--cqm-c,
+ * --cqm-c2). .cqm-ambient is a fixed layer of drifting colour fields laid OVER
+ * the page with a blend mode (screen in dark mode, multiply in light mode), so
+ * black or white backgrounds pick up colour whatever containers a template
+ * uses, while text keeps its contrast. Colours are plain hex/rgba so
  * site-palette.js recolours them with the Theme button like the page itself.
  * Everything stops for visitors who ask for reduced motion.
  */
 
-/* ── Ambient backdrop ─────────────────────────────────────────────────── */
+/* ── Ambient colour fields ────────────────────────────────────────────── */
 .cqm-ambient {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 2147483000;
   overflow: hidden;
   pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+
+.cqm-light .cqm-ambient {
+  mix-blend-mode: multiply;
+  opacity: 0.35;
 }
 
 .cqm-ambient::before {
@@ -22,11 +33,11 @@
   position: absolute;
   inset: -40px;
   background-image:
-    linear-gradient(rgba(255, 42, 75, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 42, 75, 0.07) 1px, transparent 1px);
+    linear-gradient(rgba(139, 92, 246, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.09) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 72%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
   animation: cqm-grid-pan 26s linear infinite;
 }
 
@@ -35,50 +46,56 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: 140px;
-  top: -140px;
-  background: linear-gradient(180deg, transparent, rgba(255, 42, 75, 0.06), transparent);
-  animation: cqm-scan 9s ease-in-out infinite;
+  height: 160px;
+  top: -160px;
+  background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.07), transparent);
+  animation: cqm-scan 10s ease-in-out infinite;
 }
 
+/* One full-screen layer of colour fields (so nothing reaches past the viewport);
+   they drift by animating their positions. */
 .cqm-ambient i {
   position: absolute;
-  width: 46vmax;
-  height: 46vmax;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.22;
-  animation: cqm-drift 22s ease-in-out infinite alternate;
+  inset: 0;
+  background:
+    radial-gradient(42vmax 42vmax at var(--a, 8%) 6%, rgba(255, 61, 139, 0.55), transparent 70%),
+    radial-gradient(40vmax 40vmax at 96% var(--b, 26%), rgba(139, 92, 246, 0.55), transparent 70%),
+    radial-gradient(38vmax 38vmax at var(--c, 40%) 104%, rgba(34, 211, 238, 0.45), transparent 70%),
+    radial-gradient(30vmax 30vmax at 2% var(--d, 62%), rgba(245, 158, 11, 0.38), transparent 70%);
+  opacity: 0.8;
+  animation: cqm-aurora 22s ease-in-out infinite alternate;
 }
 
-.cqm-ambient i:nth-child(1) {
-  top: -18vmax;
-  left: -12vmax;
-  background: radial-gradient(circle, rgba(255, 42, 75, 0.55), transparent 65%);
+.cqm-ambient i + i {
+  display: none;
 }
 
-.cqm-ambient i:nth-child(2) {
-  top: 30%;
-  right: -20vmax;
-  background: radial-gradient(circle, rgba(184, 41, 234, 0.45), transparent 65%);
-  animation-duration: 28s;
-  animation-delay: -6s;
-}
+@property --a { syntax: "<percentage>"; inherits: false; initial-value: 8%; }
+@property --b { syntax: "<percentage>"; inherits: false; initial-value: 26%; }
+@property --c { syntax: "<percentage>"; inherits: false; initial-value: 40%; }
+@property --d { syntax: "<percentage>"; inherits: false; initial-value: 62%; }
 
-.cqm-ambient i:nth-child(3) {
-  bottom: -24vmax;
-  left: 25%;
-  background: radial-gradient(circle, rgba(255, 42, 75, 0.35), transparent 65%);
-  animation-duration: 34s;
-  animation-delay: -12s;
+@keyframes cqm-aurora {
+  50% {
+    --a: 30%;
+    --b: 48%;
+    --c: 62%;
+    --d: 40%;
+  }
+  100% {
+    --a: 14%;
+    --b: 70%;
+    --c: 24%;
+    --d: 82%;
+  }
 }
 
 .cqm-light .cqm-ambient i {
-  opacity: 0.12;
+  opacity: 0.75;
 }
 
 .cqm-light .cqm-ambient::before {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 /* ── Header entrance ──────────────────────────────────────────────────── */
@@ -112,8 +129,9 @@
   bottom: 10%;
   width: 3px;
   border-radius: 3px;
-  background: linear-gradient(180deg, #ff2a4b, #b829ea);
-  transform: scaleY(0);
+  background: linear-gradient(180deg, var(--cqm-c, #ff3d8b), var(--cqm-c2, #8b5cf6));
+  transform: scaleY(0.55);
+  opacity: 0.85;
   transform-origin: center;
   transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   pointer-events: none;
@@ -127,8 +145,8 @@
 .cqm-card:focus-within {
   transform: translateY(-3px);
   box-shadow:
-    0 18px 40px -22px rgba(255, 42, 75, 0.55),
-    0 0 0 1px rgba(255, 42, 75, 0.28);
+    0 22px 44px -22px color-mix(in srgb, var(--cqm-c, #ff3d8b) 75%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--cqm-c, #ff3d8b) 55%, transparent);
 }
 
 .cqm-card:hover::before,
@@ -164,9 +182,14 @@
   transform: translateX(4px) scale(0.99);
 }
 
+.cqm-opt:hover {
+  border-color: color-mix(in srgb, var(--cqm-c, #ff3d8b) 60%, transparent);
+  background-color: color-mix(in srgb, var(--cqm-c, #ff3d8b) 9%, transparent);
+}
+
 .cqm-opt:has(input:checked) {
-  box-shadow: inset 0 0 0 1px rgba(255, 42, 75, 0.55);
-  background-color: rgba(255, 42, 75, 0.08);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cqm-c, #ff3d8b) 75%, transparent);
+  background-color: color-mix(in srgb, var(--cqm-c, #ff3d8b) 16%, transparent);
 }
 
 .cqm-opt input:checked {
@@ -179,7 +202,7 @@
   height: 12px;
   margin: -6px 0 0 -6px;
   border-radius: 50%;
-  background: rgba(255, 42, 75, 0.35);
+  background: color-mix(in srgb, var(--cqm-c, #ff3d8b) 45%, transparent);
   pointer-events: none;
   animation: cqm-ripple 0.6s ease-out forwards;
 }
@@ -254,6 +277,96 @@
 
 .cqm-btn:active {
   transform: translateY(0) scale(0.97);
+}
+
+
+/* ── Colour: cards, headings, buttons, bars ───────────────────────────── */
+html.cqm .cqm-card {
+  border-color: color-mix(in srgb, var(--cqm-c) 55%, transparent);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cqm-c) 22%, transparent),
+    color-mix(in srgb, var(--cqm-c2) 8%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+html.cqm .cqm-card::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 0;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--cqm-c), var(--cqm-c2), var(--cqm-c));
+  background-size: 200% 100%;
+  animation: cqm-flow 6s linear infinite;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+html.cqm.cqm-light .cqm-card {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cqm-c) 10%, transparent),
+    color-mix(in srgb, var(--cqm-c2) 4%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+.cqm-head {
+  position: relative;
+  background-image: linear-gradient(
+    115deg,
+    rgba(255, 61, 139, 0.3),
+    rgba(139, 92, 246, 0.3),
+    rgba(34, 211, 238, 0.24),
+    rgba(245, 158, 11, 0.22),
+    rgba(255, 61, 139, 0.3)
+  );
+  background-size: 400% 100%;
+  animation:
+    cqm-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    cqm-flow 18s linear infinite;
+}
+
+html.cqm h1:not(.cqm-plain) {
+  background-image: linear-gradient(90deg, #ff3d8b, #8b5cf6, #22d3ee, #f59e0b, #ff3d8b);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: cqm-flow 10s linear infinite;
+}
+
+.cqm-cta {
+  background-image: linear-gradient(120deg, #ff3d8b, #8b5cf6, #22d3ee, #ff3d8b) !important;
+  background-size: 300% 100% !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  animation: cqm-flow 8s linear infinite;
+}
+
+.cqm-cta:hover {
+  box-shadow: 0 12px 26px -12px rgba(139, 92, 246, 0.8);
+}
+
+.cqm-bar {
+  background-image: linear-gradient(90deg, #ff3d8b, #8b5cf6, #22d3ee, #10b981, #ff3d8b) !important;
+  background-size: 300% 100% !important;
+  animation: cqm-flow 5s linear infinite;
+}
+
+.cqm-score {
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.45), 0 0 18px -6px rgba(255, 61, 139, 0.6);
+}
+
+@keyframes cqm-flow {
+  to {
+    background-position: 100% 0;
+  }
 }
 
 /* ── Keyframes ────────────────────────────────────────────────────────── */
@@ -399,6 +512,14 @@
   .cqm-bar::after,
   .cqm-btn::after {
     display: none;
+  }
+
+  .cqm-card::after,
+  .cqm-head,
+  .cqm-cta,
+  .cqm-bar,
+  html.cqm h1 {
+    animation: none !important;
   }
 }
 
@@ -621,4 +742,42 @@ html.cqm .sheet .q button {
 html.cqm .sheet .opts.is-wrong .opt:has(input:checked) {
   border-color: color-mix(in srgb, var(--bad) 60%, transparent);
   background: var(--bad-bg);
+}
+
+/* Laptop widths: the paper's side padding stacked with the card padding left a
+   wide empty margin, so trim each layer a little. */
+html.cqm .desk {
+  padding-left: clamp(8px, 1.4vw, 20px);
+  padding-right: clamp(8px, 1.4vw, 20px);
+}
+
+html.cqm .sheet {
+  padding-left: clamp(12px, 2vw, 28px);
+  padding-right: clamp(12px, 2vw, 28px);
+}
+
+html.cqm .sheet .q {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+html.cqm .sheet .q-row {
+  grid-template-columns: 2em minmax(0, 1fr);
+}
+
+@media (max-width: 560px) {
+  html.cqm .desk {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  html.cqm .sheet {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  html.cqm .sheet .q {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }

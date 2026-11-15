@@ -1921,11 +1921,15 @@
           });
         }
 
+        // Folders live in the owner-only private record, not the public
+        // profile that every signed-in student can read.
         function saveFolders() {
           firebase
             .firestore()
             .collection("users")
             .doc(_uid)
+            .collection("private")
+            .doc("data")
             .set({ bookmarkFolders: _folders }, { merge: true });
         }
 
@@ -2486,7 +2490,33 @@
           log(L().scanning);
           var db = firebase.firestore();
           Promise.all([
-            db.collection("users").doc(user.uid).get(),
+            // Private record first; an older profile copy is the fallback until
+            // the next sign-in moves it across.
+            Promise.all([
+              db
+                .collection("users")
+                .doc(user.uid)
+                .collection("private")
+                .doc("data")
+                .get()
+                .catch(function () {
+                  return null;
+                }),
+              db.collection("users").doc(user.uid).get(),
+            ]).then(function (docs) {
+              var priv = docs[0] && docs[0].exists ? docs[0].data() : {};
+              var pub = docs[1].exists ? docs[1].data() : {};
+              var folders =
+                priv.bookmarkFolders && priv.bookmarkFolders.length
+                  ? priv.bookmarkFolders
+                  : pub.bookmarkFolders || [];
+              return {
+                exists: true,
+                data: function () {
+                  return { bookmarkFolders: folders };
+                },
+              };
+            }),
             db
               .collection("userProgress")
               .doc(user.uid)

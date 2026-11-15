@@ -23,12 +23,15 @@ Run everything from the repo root, for example `python3 scripts/embed_resources.
 | `validate_slide_breakdown_viewers.py` | Fails the build if a breakdown viewer is broken |
 | `build_academic_sidebar.py` | Renders the academic sidebar from `academic-sidebar.json` |
 | `sync_site_shell.py` | Applies `templates/` header and footer and theme support |
+| `improve_seo_snippets.py` | Lengthens short titles and boilerplate meta descriptions (Bing "too short") |
 | `add_slide_text.py` | Puts slide text under PDF viewers for bots and assistants |
 | `build_llms_txt.py` | Writes `docs/llms.txt` |
 | `check_sitemap.py` | Rebuilds and checks both sitemaps |
 | `build_indexing_manifest.py` | Builds the edge SEO manifest for the indexing Worker |
 | `compress_pdfs_losslessly.py` | Optimizes PDFs with qpdf (cached between runs) |
+| `set_pdf_titles.py` | Sets PDF Title metadata from the viewer page (needs pypdf) |
 | `secure_ethics_content.py` | Seals the paid ETHCS303 content |
+| `scale_large_screens.py` | Divides vh/vw by `--zoom-fix` so the big-screen zoom in site-shell.css keeps full-height layouts exact; opts coordinate-heavy app pages out |
 | `offload_annotated_figures.py` | Moves annotated-slide figures to R2 |
 | `check_pages_limits.py` | Fails if the build exceeds the Cloudflare Pages limits |
 | `build_meta_redirects.py` | Turns meta-refresh pages into 301 redirects |
@@ -68,6 +71,7 @@ Run everything from the repo root, for example `python3 scripts/embed_resources.
 | `study_plans/`, `exam_analysis/` | Exam study plans and the calendar's Study Plan data |
 | `final_cheat_sheets/`, `final_roadmaps/` | Final exam cheat sheets and roadmaps |
 | `quiz_banks/` | Hand-written quiz banks (SE322) |
+| `past_exam_notes/` | Per course: which breakdown section each annotated slide's past-exam question belongs to |
 | `cys403_study/`, `se311_mindmaps/`, `slide-figures/` | Course-specific source data |
 | `*_content.py` | Content modules for one course's builder (CS223, CYS401, ISC213, SE201, SE322, SE365, SE371) |
 
@@ -94,8 +98,9 @@ These touch every course unless you scope them. Revert anything they change outs
 | `build_search_index.py` | Older Python search index. Use `build-search-index.js` instead |
 | `build_pdf_search_index.py` | Searchable text index of course PDFs |
 | `install_quiz_review.py` | "Review mistakes" tracker on quiz pages |
-| `install_cyber_quiz_motion.py` | Motion layer (cyber-quiz-motion.css/js) on cybersecurity quiz pages |
+| `install_quiz_motion.py` | Colour and motion layer (quiz-motion.css/js) on every course's exam pages (not CS331, ETHCS303) |
 | `build_exam_folders.py` | Sorts each course's Exams page into Chapter Quizzes / Midterm 1 / Midterm 2 / Final folders (+ sidebar data) |
+| `build_past_exam_notes.py` | "Past exam" blocks in a course's slide breakdowns, from the annotated slides' real-paper questions (`past_exam_notes/<course>.json`) |
 | `install_breakdown_contents.py` | Contents disclosure in standalone breakdowns |
 | `add_slide_rights_notice.py` | PSU rights notice on slide pages |
 | `add_mindmap_pdf_export.py` | PDF export on interactive mindmaps |
@@ -118,6 +123,7 @@ Every course with annotated slides has `build_<course>_annotated_slides.py`. Bui
 |---|---|
 | CS223 | `build_cs223_course.py` (+ `cs223_exam_content.py`) |
 | CS311, IS321, ECON101 | `build_new_courses.py`, `build_course_study.py` |
+| ECON101 cheat sheets | `build_econ101_cheat_sheets.py` (CS331 Major I style; content in `econ101_cheat_content.py`) |
 | CS316 | `build_cs316_course.py`, `build_cs316_study_tools.py`, `build_cs316_resources.py` |
 | CS331 | `build_cs331_past_papers.py` (chapter quizzes from `cs331_chapter_quizzes.py` Ch 1–4 and `cs331_chapter_quizzes_b.py` Ch 6–10) |
 | CYS401 | `build_cys401_past_papers.py`, `build_cys401_exam_pages.py`, `build_cys401_mindmaps.py`, `theme_cys401_breakdowns.py`, `upgrade_cys401_breakdowns.py` |

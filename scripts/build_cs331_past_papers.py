@@ -1211,6 +1211,11 @@ def main():
         (EXAMS / p["slug"] / "index.html").write_text(wrapper(p, i, ordered), encoding="utf-8")
     update_listing(ordered)
     update_sidebar_json(ordered)
+    # Sort the listing into the Chapter quizzes / Midterm / Final folders (build_exam_folders.py
+    # merges any new exams into its group pages and rewrites the sidebar entries), then stamp.
+    import subprocess
+
+    subprocess.run([sys.executable, str(ROOT / "scripts/build_exam_folders.py"), "cs331"], check=True)
     stamp_sidebars()
     print(f"{len(ALL)} past-paper questions, {len(quizzes)} chapter quizzes, {len(ordered)} pages")
 

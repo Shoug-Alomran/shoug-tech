@@ -45,6 +45,12 @@
     "calendarStudyPlan",
     "calendarPsuAcademicVersion",
     "finalRoadmaps",
+    "degreePlan",
+    "academicPlanGrids",
+    "bookmarkFolders",
+    "studyPlan",
+    "studyAvailability",
+    "studyPlannerChat",
   ];
   var privateReady = {};
   function privateRef(uid) {
@@ -1709,6 +1715,12 @@
 
   // ── Header button ─────────────────────────────────────────────────────────
 
+  // Page zoom from styles/site-shell.css (large screens). getBoundingClientRect and
+  // pointer coordinates are zoomed; CSS px set on elements are not.
+  function pageZoom() {
+    return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  }
+
   function keepUserDropdownInViewport(btn) {
     if (!btn || !document.body.classList.contains("profile-open")) return;
     var dropdown = btn.querySelector(".shoug-user-dropdown");
@@ -1720,7 +1732,7 @@
     if (rect.left < pad) shift = pad - rect.left;
     if (rect.right > window.innerWidth - pad)
       shift = window.innerWidth - pad - rect.right;
-    if (shift) dropdown.style.transform = "translateX(" + shift + "px)";
+    if (shift) dropdown.style.transform = "translateX(" + shift / pageZoom() + "px)";
   }
 
   function setHeaderButton(user) {
@@ -3474,10 +3486,21 @@
     }
 
     function positionCard(rect, position) {
+      // Work in layout px: divide zoomed measurements by the page zoom.
+      var Z = pageZoom();
+      if (rect && Z !== 1)
+        rect = {
+          left: rect.left / Z,
+          top: rect.top / Z,
+          right: rect.right / Z,
+          bottom: rect.bottom / Z,
+          width: rect.width / Z,
+          height: rect.height / Z,
+        };
       var cw = card.offsetWidth || 400;
       var ch = card.offsetHeight || 180;
-      var vw = window.innerWidth;
-      var vh = window.innerHeight;
+      var vw = window.innerWidth / Z;
+      var vh = window.innerHeight / Z;
       var GAP = 14;
       var top, left;
 
@@ -3633,9 +3656,10 @@
       // Final safety pass — re-measure after layout (fonts/images can change
       // the card's real size) and re-clamp so it can never spill off-screen.
       requestAnimationFrame(function () {
-        var vw2 = window.innerWidth;
-        var vh2 = window.innerHeight;
-        var r = card.getBoundingClientRect();
+        var vw2 = window.innerWidth / Z;
+        var vh2 = window.innerHeight / Z;
+        var b = card.getBoundingClientRect();
+        var r = { left: b.left / Z, top: b.top / Z, width: b.width / Z, height: b.height / Z };
         var newLeft = Math.min(Math.max(r.left, 8), vw2 - r.width - 8);
         var newTop = Math.min(Math.max(r.top, 8), vh2 - r.height - 8);
         if (Math.abs(newLeft - r.left) > 0.5) card.style.left = newLeft + "px";

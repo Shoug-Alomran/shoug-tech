@@ -2,9 +2,9 @@
 
 Schema: see annotated_page.py. Code on slides 7, 8 and 11–14 is a picture, so its marks use 'ocr' (skipped if
 OCR can't read them) and the notes walk through the code line by line. Past-exam questions are copied from the
-papers in exams/; everything else is a prediction (ISP and DIP have not appeared on a past paper yet).
+papers in exams/; everything else is a prediction (ISP has not appeared on a past paper yet; DIP came up in Quiz 2 261 Q2).
 """
-from .common import likely
+from .common import asked, likely
 
 TITLE = 'Principles of Detailed Design III: ISP, DIP, Internal Behaviour and Rules of Design'
 CHAPTER = 'SE322 · Chapter 5 · Lecture 3'
@@ -29,8 +29,8 @@ OVERVIEW = {
         ('Slides 16–23', 'Rules of design and common design mistakes'),
         ('Slide 24', 'From analysis models to design models'),
     ],
-    'exam': ('SRP and OCP from Lecture 2 have appeared on Final 252; ISP and DIP have not yet, so the questions here are '
-             'predictions. Expect “which principle is violated?” scenarios: a class forced to implement a method it can’t '
+    'exam': ('SRP and OCP from Lecture 2 appeared on Final 252 and Quiz 2 261, and Quiz 2 261 Q2 also marked DIP: a '
+             'BookingService holding a concrete PaperBoardingPass. ISP has not appeared yet. Expect “which principle is violated?” scenarios: a class forced to implement a method it can’t '
              'support (ISP), or a high-level class that holds a concrete low-level class (DIP).'),
 }
 
@@ -117,7 +117,10 @@ SLIDES = {
         notes=['The two rules. **(1)** High-level modules (policy, e.g. a Manager) must not depend on low-level modules (details, e.g. a Worker). **Both** depend on an abstraction (an interface).',
                '**(2)** Abstractions must not depend on details; details depend on abstractions.',
                'The diagram: **without** inversion, Object A in Package A references Object B in Package B directly. **With** inversion, Object A references Interface A, and Object B implements (inherits) Interface A. The arrow from B now points *toward* the abstraction, the opposite (“inverted”) direction of the original dependency.'],
-        exam=[likely('According to DIP, a high-level module should depend on:', a=0, opts=['Abstractions (interfaces)', 'Low-level modules', 'Concrete classes', 'Global variables'])]),
+        exam=[asked('q2261', 'Q2 (UML)',
+                    'A booking service gives passengers a paper boarding pass through a PaperBoardingPass class. The service should also be able to give other kinds of boarding passes. Which SOLID principles does BookingService violate, and how do you redesign it?',
+                    a='**DIP** (with OCP): BookingService is a high-level class that depends directly on the concrete PaperBoardingPass instead of an abstraction. Add an interface BoardingPass { provide(Booking) }; PaperBoardingPass and DigitalBoardingPass implement it, and BookingService holds a BoardingPass given to it through the constructor. Both sides now depend on the abstraction.'),
+              likely('According to DIP, a high-level module should depend on:', a=0, opts=['Abstractions (interfaces)', 'Low-level modules', 'Concrete classes', 'Global variables'])]),
     11: dict(
         hl=[('Bad idea', 1, 0, 'ocr'), ('Good idea', 2, 0, 'ocr'), ('WITHOUT Dependency Inversion', 3, 0, 'ocr')],
         notes=['The real-life idea: a charger that only works with Samsung phones is useless when you change phones (bad). A **USB** charger works with any phone (good): USB is the interface, the abstraction.',
