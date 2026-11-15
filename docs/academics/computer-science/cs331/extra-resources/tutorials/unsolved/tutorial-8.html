@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Application Layer &amp; DNS Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05020a;
+        --card: #0e0816;
+        --card2: #160d24;
+        --line: #2a1b40;
+        --text: #ece6f5;
+        --muted: #9a8db0;
+        --accent: #b829ea;
+        --accent2: #d77cff;
+        --accentbg: rgba(184, 41, 234, 0.14);
+        --ok: #2de2a6;
+        --okbg: rgba(45, 226, 166, 0.12);
+        --bad: #ff2a4b;
+        --badbg: rgba(255, 42, 75, 0.12);
+        --tip: #f5b83d;
+        --tipbg: rgba(245, 184, 61, 0.1);
+        --on-color: #05020a;
+        --glow: 0 0 24px rgba(184, 41, 234, 0.28);
+        --f-head: "Rajdhani", "Inter", system-ui, sans-serif;
+        --f-body: "Inter", system-ui, sans-serif;
+        --f-mono: "JetBrains Mono", ui-monospace, monospace;
+        color-scheme: dark;
+      }
+      :root[data-theme="light"] {
+        --bg: #f6f1fb;
+        --card: #ffffff;
+        --card2: #f0e8f8;
+        --line: #d9c8ec;
+        --text: #1b1029;
+        --muted: #6a5a80;
+        --accent: #9a14c9;
+        --accent2: #7a10a3;
+        --accentbg: rgba(154, 20, 201, 0.09);
+        --ok: #0b8a62;
+        --okbg: rgba(11, 138, 98, 0.1);
+        --bad: #d4112f;
+        --badbg: rgba(212, 17, 47, 0.08);
+        --tip: #a86b00;
+        --tipbg: rgba(168, 107, 0, 0.09);
+        --on-color: #ffffff;
+        --glow: 0 0 0 rgba(0, 0, 0, 0);
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--f-body);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5;
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          60% 40% at 50% -10%,
+          var(--accentbg),
+          transparent 70%
+        );
+      }
+      .wrap {
+        max-width: 760px;
+        position: relative;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px 16px 32px;
+        flex: 1;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 12px;
+      }
+      .brand {
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+      }
+      .brand span {
+        color: var(--accent);
+      }
+      .score-pill {
+        font-family: var(--f-mono);
+        font-size: 13px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .score-pill b {
+        color: var(--ok);
+      }
+      .progress {
+        height: 6px;
+        background: var(--card);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .progress > div {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        width: 0;
+        transition: width 0.35s;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tag {
+        background: var(--card2);
+        border: 1px solid var(--line);
+        padding: 2px 10px;
+        border-radius: 99px;
+        color: var(--accent2);
+        font-weight: 600;
+      }
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .icon-btn {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-family: var(--f-mono);
+        font-size: 0.78rem;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .icon-btn:hover {
+        border-color: var(--accent);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+      .card {
+        box-shadow: var(--glow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 22px 18px;
+      }
+      .q {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        line-height: 1.4;
+      }
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .opt {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-align: left;
+        width: 100%;
+        background: var(--card2);
+        border: 1.5px solid var(--line);
+        color: var(--text);
+        padding: 14px;
+        border-radius: 12px;
+        font: inherit;
+        font-size: 15px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s,
+          transform 0.1s;
+      }
+      .opt:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      .opt:active:not(:disabled) {
+        transform: scale(0.99);
+      }
+      .opt:disabled {
+        cursor: default;
+      }
+      .letter {
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--bg);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .opt.correct {
+        border-color: var(--ok);
+        background: var(--okbg);
+      }
+      .opt.correct .letter {
+        background: var(--ok);
+        color: var(--on-color);
+      }
+      .opt.wrong {
+        border-color: var(--bad);
+        background: var(--badbg);
+      }
+      .opt.wrong .letter {
+        background: var(--bad);
+        color: var(--on-color);
+      }
+      .opt.dim {
+        opacity: 0.5;
+      }
+      .feedback {
+        margin-top: 16px;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .verdict {
+        font-weight: 800;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .verdict.ok {
+        color: var(--ok);
+      }
+      .verdict.bad {
+        color: var(--bad);
+      }
+      .explain {
+        font-size: 14px;
+        color: var(--text);
+        opacity: 0.92;
+      }
+      .tipbox {
+        margin-top: 12px;
+        background: var(--tipbg);
+        border-left: 3px solid var(--tip);
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13.5px;
+      }
+      .tipbox b {
+        color: var(--tip);
+      }
+      .nav {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .btn {
+        flex: 1;
+        font: inherit;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: var(--accent);
+        color: #fff;
+        font-family: var(--f-head);
+        font-size: 17px;
+        letter-spacing: 0.03em;
+      }
+      .btn.ghost {
+        background: var(--card2);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+      .btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      /* start screen */
+      .hero h1 {
+        font-family: var(--f-head);
+        font-size: clamp(2rem, 6vw, 2.6rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 8px;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 15px;
+        margin-bottom: 18px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .stat {
+        background: var(--card2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 20px;
+        color: var(--accent);
+      }
+      .stat span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .modes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .mode {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: var(--card2);
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        cursor: pointer;
+      }
+      .mode input {
+        margin-top: 4px;
+        accent-color: var(--accent);
+      }
+      .mode.sel {
+        border-color: var(--accent);
+      }
+      .mode strong {
+        display: block;
+        font-size: 15px;
+      }
+      .mode small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 18px;
+        cursor: pointer;
+      }
+      .toggle input {
+        accent-color: var(--accent);
+        width: 18px;
+        height: 18px;
+      }
+      /* results */
+      .ring {
+        width: 150px;
+        height: 150px;
+        margin: 6px auto 14px;
+        position: relative;
+      }
+      .ring svg {
+        transform: rotate(-90deg);
+      }
+      .ring .num {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 32px;
+        font-weight: 800;
+      }
+      .ring .num small {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+        text-align: center;
+      }
+      .res-msg {
+        text-align: center;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+      .brow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        background: var(--card2);
+        padding: 10px 12px;
+        border-radius: 10px;
+      }
+      .bar {
+        flex: 1;
+        height: 6px;
+        background: var(--bg);
+        border-radius: 9px;
+        margin: 0 12px;
+        overflow: hidden;
+      }
+      .bar > div {
+        height: 100%;
+        background: var(--ok);
+      }
+      .review h3 {
+        font-size: 15px;
+        margin: 18px 0 10px;
+      }
+      .ritem {
+        background: var(--card2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+      .ritem .rq {
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .ritem .ra {
+        color: var(--ok);
+      }
+      .ritem .ry {
+        color: var(--bad);
+      }
+      .grid-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 16px;
+        justify-content: center;
+      }
+      .dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--card2);
+        color: var(--muted);
+        font: 600 12px var(--f-mono);
+        cursor: pointer;
+      }
+      .dot.cur {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .dot.c {
+        background: var(--okbg);
+        border-color: var(--ok);
+        color: var(--ok);
+      }
+      .dot.w {
+        background: var(--badbg);
+        border-color: var(--bad);
+        color: var(--bad);
+      }
+      .dot.a {
+        background: var(--card);
+        border-color: var(--accent2);
+        color: var(--accent2);
+      }
+      footer {
+        text-align: center;
+        padding: 18px;
+        font-size: 13px;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+      }
+      footer b {
+        color: var(--text);
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">CS 331 <span>·</span> Application Layer</div>
+        <div class="head-actions">
+          <div class="score-pill hidden" id="pill">
+            ✓ <b id="pillScore">0</b> / <span id="pillTotal">0</span>
+          </div>
+          <button
+            class="icon-btn"
+            id="themeBtn"
+            type="button"
+            aria-label="Toggle light or dark theme"
+          >
+            light
+          </button>
+        </div>
+      </header>
+
+      <!-- START -->
+      <section id="start" class="hero">
+        <div class="card">
+          <h1>Application Layer & DNS<br />Practice Exam</h1>
+          <p>
+            28 multiple-choice questions covering the application layer,
+            client-server, data integrity, and the full DNS lookup chain.
+          </p>
+          <div class="stats">
+            <div class="stat"><b>28</b><span>Questions</span></div>
+            <div class="stat"><b>4</b><span>Topics</span></div>
+            <div class="stat"><b>~15</b><span>Minutes</span></div>
+          </div>
+          <div class="modes" id="modes">
+            <label class="mode sel"
+              ><input type="radio" name="mode" value="practice" checked />
+              <div>
+                <strong>Practice mode</strong
+                ><small
+                  >Instant feedback, explanation and exam tip after every
+                  answer.</small
+                >
+              </div></label
+            >
+            <label class="mode"
+              ><input type="radio" name="mode" value="exam" />
+              <div>
+                <strong>Exam mode</strong
+                ><small
+                  >No feedback until the end — like the real final. Review
+                  everything after.</small
+                >
+              </div></label
+            >
+          </div>
+          <label class="toggle"
+            ><input type="checkbox" id="shuffle" /> Shuffle questions & answer
+            order</label
+          >
+          <button class="btn" id="startBtn">Start exam →</button>
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section id="quiz" class="hidden">
+        <div class="progress"><div id="bar"></div></div>
+        <div class="meta">
+          <span id="counter">Question 1 of 28</span
+          ><span class="tag" id="topic">DNS</span>
+        </div>
+        <div class="card">
+          <div class="q" id="qtext"></div>
+          <div class="opts" id="opts"></div>
+          <div class="feedback" id="fb">
+            <div class="verdict" id="verdict"></div>
+            <div class="explain" id="explain"></div>
+            <div class="tipbox" id="tip"></div>
+          </div>
+        </div>
+        <div class="nav">
+          <button class="btn ghost" id="prevBtn">← Back</button>
+          <button class="btn" id="nextBtn">Next →</button>
+        </div>
+        <div class="grid-nav" id="dots"></div>
+      </section>
+
+      <!-- RESULTS -->
+      <section id="results" class="hidden">
+        <div class="card">
+          <div class="ring">
+            <svg width="150" height="150">
+              <circle
+                cx="75"
+                cy="75"
+                r="64"
+                style="stroke: var(--card2)"
+                stroke-width="12"
+                fill="none"
+              />
+              <circle
+                id="ringArc"
+                cx="75"
+                cy="75"
+                r="64"
+                stroke="url(#g)"
+                stroke-width="12"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="402"
+                stroke-dashoffset="402"
+                style="transition: stroke-dashoffset 1s"
+              />
+              <defs>
+                <linearGradient id="g">
+                  <stop offset="0" style="stop-color: var(--accent)" />
+                  <stop offset="1" style="stop-color: var(--accent2)" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="num">
+              <div><span id="pct">0%</span><small id="raw">0 / 28</small></div>
+            </div>
+          </div>
+          <div class="res-msg" id="resMsg"></div>
+          <div class="breakdown" id="breakdown"></div>
+          <div class="nav" style="margin-top: 0">
+            <button class="btn ghost" id="retryWrong">Retry wrong ones</button>
+            <button class="btn" id="restart">Restart all</button>
+          </div>
+          <div class="review" id="review"></div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      CS 331 · Computer Networks · Prepared by <b>Shoug Alomran</b>
+    </footer>
+
+    <script>
+      const BANK = [
+        {
+          t: "Application Layer",
+          q: "What is the main responsibility of the application layer in a network model?",
+          o: [
+            "Providing network services directly to end-user applications",
+            "Routing packets between different networks",
+            "Transmitting electrical or radio signals",
+            "Dividing data into frames for local network delivery",
+          ],
+          a: 0,
+          e: "The application layer is the layer users and programs interact with — it provides services like web, email and DNS. Routing is the Network layer, signals are the Physical layer, framing is the Data Link layer.",
+          tip: "Application-layer protocols to know: HTTP, DNS, SMTP, FTP, DHCP.",
+        },
+        {
+          t: "Application Layer",
+          q: "Which of the following is an example of a client-server architecture?",
+          o: [
+            "A computer performing calculations without network communication",
+            "Two computers exchanging files directly without a server",
+            "A web browser requesting a webpage from a web server",
+            "A keyboard sending input to a computer",
+          ],
+          a: 2,
+          e: "The browser (client) initiates a request to an always-on web server. Two computers exchanging files directly with no server is peer-to-peer (P2P).",
+          tip: "Client-server: server always on, fixed IP, clients don't talk directly. P2P: peers talk directly, self-scalable (e.g. BitTorrent).",
+        },
+        {
+          t: "Application Layer",
+          q: "What does data integrity mean in the context of an application?",
+          o: [
+            "Ensuring that data is transmitted as quickly as possible",
+            "Ensuring that every user can modify the data",
+            "Ensuring that data is not altered, corrupted, or lost during storage or transmission",
+            "Ensuring that data is always publicly accessible",
+          ],
+          a: 2,
+          e: "Data integrity = data arrives exactly as sent — no loss or corruption. Speed is timing/throughput; access is access control/availability.",
+          tip: "The 4 transport services apps need: Data integrity, Timing, Throughput, Security. File transfer/email need 100% integrity (TCP); audio/video are loss-tolerant.",
+        },
+        {
+          t: "DNS Basics",
+          q: "What is the primary purpose of the Domain Name System (DNS)?",
+          o: [
+            "To assign MAC addresses to network devices",
+            "To determine the physical location of a web server",
+            "To encrypt all data sent over the Internet",
+            "To translate domain names into IP addresses",
+          ],
+          a: 3,
+          e: "DNS maps human-readable names (www.psu.edu.sa) to IP addresses. MAC addresses are burned into NICs (resolved by ARP); encryption is TLS's job.",
+          tip: "DNS runs over UDP port 53.",
+        },
+        {
+          t: "DNS Basics",
+          q: "Why is DNS designed as a distributed database?",
+          o: [
+            "To store every domain name on one central computer",
+            "To distribute responsibility and data across many name servers, improving scalability and reliability",
+            "To prevent users from accessing websites by name",
+            "To eliminate the need for IP addresses",
+          ],
+          a: 1,
+          e: "Spreading data across many servers avoids one huge, fragile central database.",
+          tip: "Why NOT centralize DNS? Single point of failure, traffic volume, distant database, maintenance. In one phrase: it doesn't scale.",
+        },
+        {
+          t: "Resolution",
+          q: "What are the two main methods of DNS name resolution?",
+          o: [
+            "Broadcast and unicast resolution",
+            "Recursive and iterative resolution",
+            "Local and remote resolution",
+            "Static and dynamic resolution",
+          ],
+          a: 1,
+          e: "Recursive: the contacted server finds the full answer. Iterative: servers return referrals and the requester follows them.",
+          tip: "Trap: broadcast is how ARP/DHCP discover things; static vs dynamic is IP assignment (DHCP) — not DNS.",
+        },
+        {
+          t: "DNS Servers",
+          q: "What is the role of a local DNS server (local DNS resolver)?",
+          o: [
+            "To forward Ethernet frames between switches",
+            "To host every website's content",
+            "To assign IP addresses to all devices on the Internet",
+            "To receive DNS queries from clients and help find the requested DNS information",
+          ],
+          a: 3,
+          e: "The local DNS server (default name server) is the first server your host asks. It acts as a proxy, queries the hierarchy for you, and caches results.",
+          tip: "Provided by your ISP/university/company; not strictly part of the hierarchy. Your PC usually learns its address from DHCP.",
+        },
+        {
+          t: "DNS Servers",
+          q: "What is the role of a DNS root name server?",
+          o: [
+            "To direct the resolver to the appropriate top-level domain (TLD) name servers",
+            "To provide the final IP address for every website",
+            "To assign domain names to individual users",
+            "To store all webpages on the Internet",
+          ],
+          a: 0,
+          e: "Root servers don't know host IPs — they point to the right TLD servers (.com, .sa, …).",
+          tip: "13 logical root servers, replicated worldwide. Contacted only when nothing useful is cached.",
+        },
+        {
+          t: "DNS Servers",
+          q: "What is the role of a top-level domain (TLD) name server, such as a .com or .org server?",
+          o: [
+            "To direct the resolver to the authoritative name server for the requested domain",
+            "To store the content of the requested webpage",
+            "To assign a private IP address to the client",
+            "To convert an IP address into a MAC address",
+          ],
+          a: 0,
+          e: "TLD servers return a referral (NS record) to the domain's authoritative server. Private IPs = DHCP; IP→MAC = ARP.",
+          tip: "Generic TLDs: .com .org .edu .net — Country-code TLDs: .sa .uk .jp",
+        },
+        {
+          t: "DNS Servers",
+          q: "What is the role of an authoritative DNS name server?",
+          o: [
+            "To forward application data to the destination",
+            "To provide the DNS records for the domain it is responsible for",
+            "To direct all Internet traffic to the root server",
+            "To assign domain names to all computers",
+          ],
+          a: 1,
+          e: "The authoritative server holds the official, original records for its domain and gives the final answer.",
+          tip: "Answers from a cache (e.g. the local resolver) are 'non-authoritative'.",
+        },
+        {
+          t: "Resolution",
+          q: "In recursive DNS resolution, what does the DNS server contacted by the client do?",
+          o: [
+            "It takes responsibility for obtaining the final answer and returns it to the client",
+            "It only gives the client the address of the root server",
+            "It asks the client to contact every DNS server itself",
+            "It returns a different random IP address each time",
+          ],
+          a: 0,
+          e: "Recursive = the server does all the work and returns the final answer.",
+          tip: "Recursive: “I'll find it for you.” Iterative: “I don't know — go ask them.”",
+        },
+        {
+          t: "Resolution",
+          q: "In iterative DNS resolution, what does a DNS server typically return when it does not know the final answer?",
+          o: [
+            "A referral to another DNS server that may know the answer",
+            "A new MAC address for the client",
+            "The webpage requested by the client",
+            "A guaranteed final IP address",
+          ],
+          a: 0,
+          e: "It returns a referral — usually an NS record naming the next server plus its IP.",
+          tip: "The local DNS resolver collects referrals step by step: root → TLD → authoritative.",
+        },
+        {
+          t: "Resolution",
+          q: "Which statement correctly describes the difference between recursive and iterative DNS resolution?",
+          o: [
+            "There is no difference between the two methods",
+            "Recursive resolution uses only root servers, while iterative resolution uses only local servers",
+            "In recursive resolution, the contacted resolver obtains the final answer; in iterative resolution, the requester follows referrals between servers",
+            "Recursive resolution translates IP addresses to MAC addresses, while iterative resolution translates names to IP addresses",
+          ],
+          a: 2,
+          e: "The key difference is WHO takes responsibility for chasing the answer — not which servers are used.",
+          tip: "Recursive puts heavy load on upper levels; iterative keeps root/TLD load light (that's why they use it).",
+        },
+        {
+          t: "DNS Servers",
+          q: "Why does a local DNS resolver cache DNS responses?",
+          o: [
+            "To answer repeated queries more quickly and reduce DNS traffic",
+            "To change the domain name requested by the user",
+            "To prevent authoritative servers from being used",
+            "To permanently store every webpage",
+          ],
+          a: 0,
+          e: "Caching speeds up repeat lookups and cuts traffic to the hierarchy.",
+          tip: "Cached entries expire after their TTL. Downside: entries can be out-of-date until TTL runs out.",
+        },
+        {
+          t: "DNS Servers",
+          q: "Which DNS server is responsible for providing the final DNS information about a specific domain?",
+          o: [
+            "Root name server",
+            "Local DNS server",
+            "Top-level domain (TLD) name server",
+            "Authoritative name server",
+          ],
+          a: 3,
+          e: "Root → refers to TLD; TLD → refers to authoritative; authoritative → the final answer.",
+          tip: "Keywords: “final / official / its domain's records” = authoritative. “First contacted / caches” = local.",
+        },
+        {
+          t: "Hierarchy",
+          q: "Which sequence correctly represents the DNS hierarchy from the highest level to a specific host?",
+          o: [
+            "Second-level domain → Root → Host → Top-level domain",
+            "Root → Top-level domain → Second-level domain → Subdomain/host",
+            "Top-level domain → Host → Root → Second-level domain",
+            "Host → Root → Top-level domain → Second-level domain",
+          ],
+          a: 1,
+          e: "Top to bottom: Root → TLD → Second-level → Host.",
+          tip: "Read a domain RIGHT → LEFT to go top → bottom: www.google.com. = www ← google ← com ← (root).",
+        },
+        {
+          t: "Hierarchy",
+          q: "For the domain name web1.cisco.com, which part is the top-level domain (TLD)?",
+          o: ["web1", ".com", "web1.cisco", "cisco"],
+          a: 1,
+          e: ".com is the rightmost label, so it's the TLD.",
+          tip: "Each level is ONE label between dots — “web1.cisco” mixes two levels.",
+        },
+        {
+          t: "Hierarchy",
+          q: "For the domain name web1.cisco.com, which part is the second-level domain?",
+          o: ["web1", "com", "cisco", "web1.cisco"],
+          a: 2,
+          e: "cisco sits directly under the TLD, so it's the second-level domain.",
+          tip: "The second-level domain is what an organization registers; it creates everything to its left (www, mail, web1).",
+        },
+        {
+          t: "Hierarchy",
+          q: "For the domain name web1.cisco.com, which part identifies the host or subdomain?",
+          o: ["cisco.com", "cisco", "web1", "com"],
+          a: 2,
+          e: "web1 is the leftmost label — the specific host.",
+          tip: "web1.cisco.com. written in full (to the root) is a FQDN — Fully Qualified Domain Name.",
+        },
+        {
+          t: "Lookup Flow",
+          q: "When Ali enters web1.cisco.com in a browser, what usually happens first if the hostname is not already in the browser or operating-system cache?",
+          o: [
+            "The client sends a DNS query to its configured local DNS resolver",
+            "The client broadcasts the domain name to all devices on the local network",
+            "The client sends the query directly to every authoritative DNS server",
+            "The client contacts the .com TLD server before contacting its local resolver",
+          ],
+          a: 0,
+          e: "The client always asks its local resolver first. DNS queries are unicast, not broadcast.",
+          tip: "Order: browser cache → OS cache/hosts file → local resolver → root → TLD → authoritative. Then TCP handshake → HTTP GET.",
+        },
+        {
+          t: "Lookup Flow",
+          q: "In a typical recursive lookup for web1.cisco.com, which server does the local DNS resolver query first if it has no cached answer?",
+          o: [
+            "The user's default gateway",
+            "A root name server",
+            "The web1 host",
+            "The cisco.com authoritative server",
+          ],
+          a: 1,
+          e: "With nothing cached, the resolver starts at the top: a root server.",
+          tip: "If the .com TLD address were cached, the resolver could skip the root — read “no cached answer” carefully.",
+        },
+        {
+          t: "Lookup Flow",
+          q: "During an iterative lookup for web1.cisco.com, what does the root server normally provide to the resolver?",
+          o: [
+            "The webpage stored on the Cisco web server",
+            "The final IPv4 address of web1.cisco.com",
+            "A referral to the .com TLD name servers",
+            "The MAC address of the Cisco web server",
+          ],
+          a: 2,
+          e: "Root servers never know a specific host's IP — they only refer you to the TLD servers.",
+          tip: "Root & TLD give REFERRALS. Authoritative gives the ANSWER. (Most common trap!)",
+        },
+        {
+          t: "Lookup Flow",
+          q: "After receiving a referral from the root server for web1.cisco.com, which server should the resolver query next?",
+          o: [
+            "A .com TLD name server",
+            "The local host's web browser",
+            "A .org TLD name server",
+            "The root server again, with no additional information",
+          ],
+          a: 0,
+          e: "The root referred it to .com — so it asks a .com TLD server next.",
+          tip: "The TLD always matches the rightmost label of the name.",
+        },
+        {
+          t: "Lookup Flow",
+          q: "After the .com TLD server refers the resolver to the authoritative name server for cisco.com, what does the resolver do next?",
+          o: [
+            "Asks the client to assign an IP address to web1.cisco.com",
+            "Queries the .org TLD server",
+            "Sends an HTTP request to the root server",
+            "Queries the authoritative name server for the DNS record of web1.cisco.com",
+          ],
+          a: 3,
+          e: "Next stop is the authoritative server, which returns the A record (IPv4) for web1.",
+          tip: "A record = IPv4, AAAA = IPv6, NS = name server, CNAME = alias, MX = mail server.",
+        },
+        {
+          t: "Hierarchy",
+          q: "Which path correctly represents the domain name edition.cnn.com from the DNS root toward the specific name?",
+          o: [
+            "Root → com → edition → cnn",
+            "Root → cnn → com → edition",
+            "Root → com → cnn → edition",
+            "Root → edition → cnn → com",
+          ],
+          a: 2,
+          e: "Reverse the name: com → cnn → edition.",
+          tip: "The correct path is always the domain name reversed. The name in normal order is the trap.",
+        },
+        {
+          t: "Hierarchy",
+          q: "Which path correctly represents the domain name dornsife.usc.edu from the DNS root toward the specific name?",
+          o: [
+            "Root → usc → edu → dornsife",
+            "Root → edu → dornsife → usc",
+            "Root → dornsife → usc → edu",
+            "Root → edu → usc → dornsife",
+          ],
+          a: 3,
+          e: "Reverse the name: edu → usc → dornsife.",
+          tip: "edu = TLD, usc = second-level, dornsife = subdomain.",
+        },
+        {
+          t: "Hierarchy",
+          q: "Which path correctly represents the domain name seowings.org from the DNS root toward the specific name?",
+          o: [
+            "Root → seowings → org",
+            "Root → com → seowings",
+            "Root → org → seowings",
+            "Root → org → www → seowings",
+          ],
+          a: 2,
+          e: "Only two labels: org (TLD) → seowings (second-level).",
+          tip: "Don't add labels that aren't there (no www!) and check the TLD (.org ≠ .com).",
+        },
+        {
+          t: "Lookup Flow",
+          q: "Which sequence correctly describes a typical DNS lookup when the local resolver has no cached answer for web1.cisco.com?",
+          o: [
+            "Client → local DNS resolver → root server → .com TLD server → cisco.com authoritative server → local DNS resolver → client",
+            "Client → .com TLD server → web server → root server → client",
+            "Client → authoritative server → root server → local DNS resolver → client",
+            "Client → local DNS resolver → web server → root server → client",
+          ],
+          a: 0,
+          e: "Client → local → root → TLD → authoritative → back through local → client.",
+          tip: "3 checks: starts & ends at the client via the local resolver · Root → TLD → Authoritative order · no web server inside the lookup.",
+        },
+      ];
+
+      const $ = (id) => document.getElementById(id);
+
+      /* ---------- Theme: follows the host site, falls back to OS, manual toggle allowed ---------- */
+      const root = document.documentElement;
+      function norm(v) {
+        if (!v) return null;
+        v = String(v).toLowerCase();
+        if (/slate|dark|night|black/.test(v)) return "dark";
+        if (/default|light|day|white/.test(v)) return "light";
+        return null;
+      }
+      function fromDoc(d) {
+        try {
+          for (const el of [d.documentElement, d.body]) {
+            if (!el) continue;
+            const t =
+              norm(el.getAttribute("data-theme")) ||
+              norm(el.getAttribute("data-md-color-scheme")) ||
+              norm(el.getAttribute("data-bs-theme")) ||
+              norm(el.getAttribute("data-color-mode"));
+            if (t) return t;
+            if (
+              el.classList.contains("dark") ||
+              el.classList.contains("dark-mode") ||
+              el.classList.contains("theme-dark")
+            )
+              return "dark";
+            if (
+              el.classList.contains("light") ||
+              el.classList.contains("light-mode") ||
+              el.classList.contains("theme-light")
+            )
+              return "light";
+          }
+        } catch (e) {}
+        return null;
+      }
+      function fromStorage() {
+        try {
+          const keys = Object.keys(localStorage);
+          for (const k of keys) {
+            if (/palette/i.test(k)) {
+              // MkDocs Material: {"color":{"scheme":"slate"}}
+              try {
+                const p = JSON.parse(localStorage.getItem(k));
+                const t = norm(p && p.color && p.color.scheme);
+                if (t) return t;
+              } catch (e) {}
+            }
+          }
+          for (const k of [
+            "theme",
+            "color-theme",
+            "site-theme",
+            "data-theme",
+            "color-scheme",
+            "mode",
+          ]) {
+            const t = norm(localStorage.getItem(k));
+            if (t) return t;
+          }
+        } catch (e) {}
+        return null;
+      }
+      function siteTheme() {
+        let t = null;
+        try {
+          if (window.parent && window.parent !== window)
+            t = fromDoc(window.parent.document);
+        } catch (e) {}
+        return (
+          t ||
+          fromStorage() ||
+          (matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark")
+        );
+      }
+      function applyTheme(t) {
+        root.setAttribute("data-theme", t);
+        $("themeBtn").textContent = t === "dark" ? "light" : "dark";
+      }
+      let last = null;
+      function sync() {
+        const t = siteTheme();
+        if (t !== last) {
+          last = t;
+          applyTheme(t);
+        }
+      }
+      sync();
+      setInterval(sync, 800); // catches same-tab changes in the host site
+      addEventListener("storage", sync);
+      matchMedia("(prefers-color-scheme: light)").addEventListener(
+        "change",
+        sync,
+      );
+      addEventListener("message", (e) => {
+        const t = norm(e.data && (e.data.theme || e.data.scheme));
+        if (t) {
+          last = t;
+          applyTheme(t);
+        }
+      });
+      try {
+        if (window.parent && window.parent !== window) {
+          const mo = new MutationObserver(sync),
+            o = {
+              attributes: true,
+              attributeFilter: [
+                "data-theme",
+                "data-md-color-scheme",
+                "data-bs-theme",
+                "class",
+              ],
+            };
+          mo.observe(window.parent.document.documentElement, o);
+          mo.observe(window.parent.document.body, o);
+        }
+      } catch (e) {}
+      $("themeBtn").onclick = () => {
+        last = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        applyTheme(last);
+      };
+
+      const L = "ABCD";
+      let qs = [],
+        idx = 0,
+        answers = [],
+        mode = "practice";
+
+      document.querySelectorAll(".mode").forEach((m) =>
+        m.addEventListener("click", () => {
+          document
+            .querySelectorAll(".mode")
+            .forEach((x) => x.classList.remove("sel"));
+          m.classList.add("sel");
+        }),
+      );
+
+      function shuffle(a) {
+        a = a.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function build(list) {
+        const sh = $("shuffle").checked;
+        let arr = list.map((q) => {
+          let order = [0, 1, 2, 3];
+          if (sh) order = shuffle(order);
+          return { ...q, o: order.map((i) => q.o[i]), a: order.indexOf(q.a) };
+        });
+        if (sh) arr = shuffle(arr);
+        return arr;
+      }
+
+      function start(list) {
+        mode = document.querySelector("input[name=mode]:checked").value;
+        qs = build(list);
+        idx = 0;
+        answers = new Array(qs.length).fill(null);
+        $("start").classList.add("hidden");
+        $("results").classList.add("hidden");
+        $("quiz").classList.remove("hidden");
+        $("pill").classList.toggle("hidden", mode !== "practice");
+        renderDots();
+        render();
+        window.scrollTo(0, 0);
+      }
+
+      function render() {
+        const q = qs[idx],
+          ans = answers[idx];
+        $("counter").textContent = `Question ${idx + 1} of ${qs.length}`;
+        $("topic").textContent = q.t;
+        $("bar").style.width =
+          (answers.filter((x) => x !== null).length / qs.length) * 100 + "%";
+        $("qtext").textContent = q.q;
+        const box = $("opts");
+        box.innerHTML = "";
+        const reveal = ans !== null && mode === "practice";
+        q.o.forEach((txt, i) => {
+          const b = document.createElement("button");
+          b.className = "opt";
+          b.innerHTML = `<span class="letter">${L[i]}</span><span></span>`;
+          b.lastChild.textContent = txt;
+          if (reveal) {
+            b.disabled = true;
+            if (i === q.a) b.classList.add("correct");
+            else if (i === ans) b.classList.add("wrong");
+            else b.classList.add("dim");
+          } else if (ans === i) {
+            b.style.borderColor = "var(--accent)";
+            b.style.background = "var(--accentbg)";
+          }
+          b.onclick = () => choose(i);
+          box.appendChild(b);
+        });
+        const fb = $("fb");
+        if (reveal) {
+          const ok = ans === q.a;
+          $("verdict").className = "verdict " + (ok ? "ok" : "bad");
+          $("verdict").textContent = ok
+            ? "✓ Correct!"
+            : `✗ Not quite — the answer is ${L[q.a]}.`;
+          $("explain").textContent = q.e;
+          $("tip").innerHTML = "<b>Exam tip:</b> ";
+          $("tip").append(q.tip);
+          fb.classList.add("show");
+        } else fb.classList.remove("show");
+        $("prevBtn").disabled = idx === 0;
+        const last = idx === qs.length - 1;
+        $("nextBtn").textContent = last ? "Finish ✓" : "Next →";
+        $("nextBtn").disabled = mode === "practice" && ans === null;
+        updatePill();
+        updateDots();
+      }
+
+      function choose(i) {
+        if (mode === "practice" && answers[idx] !== null) return;
+        answers[idx] = i;
+        render();
+      }
+
+      function updatePill() {
+        const done = answers
+          .map((a, i) => (a !== null ? i : -1))
+          .filter((i) => i >= 0);
+        $("pillScore").textContent = done.filter(
+          (i) => answers[i] === qs[i].a,
+        ).length;
+        $("pillTotal").textContent = done.length;
+      }
+
+      function renderDots() {
+        const d = $("dots");
+        d.innerHTML = "";
+        qs.forEach((_, i) => {
+          const b = document.createElement("button");
+          b.className = "dot";
+          b.textContent = i + 1;
+          b.onclick = () => {
+            idx = i;
+            render();
+          };
+          d.appendChild(b);
+        });
+      }
+      function updateDots() {
+        [...$("dots").children].forEach((b, i) => {
+          b.className = "dot";
+          if (answers[i] !== null) {
+            if (mode === "practice")
+              b.classList.add(answers[i] === qs[i].a ? "c" : "w");
+            else b.classList.add("a");
+          }
+          if (i === idx) b.classList.add("cur");
+        });
+      }
+
+      $("prevBtn").onclick = () => {
+        if (idx > 0) {
+          idx--;
+          render();
+        }
+      };
+      $("nextBtn").onclick = () => {
+        if (idx < qs.length - 1) {
+          idx++;
+          render();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else finish();
+      };
+
+      function finish() {
+        const unanswered = answers.filter((a) => a === null).length;
+        if (unanswered && !$("nextBtn").dataset.confirm) {
+          $("nextBtn").dataset.confirm = "1";
+          $("nextBtn").textContent =
+            `${unanswered} unanswered — tap again to submit`;
+          setTimeout(() => {
+            delete $("nextBtn").dataset.confirm;
+            if (idx === qs.length - 1) $("nextBtn").textContent = "Finish ✓";
+          }, 3500);
+          return;
+        }
+        delete $("nextBtn").dataset.confirm;
+        $("quiz").classList.add("hidden");
+        $("results").classList.remove("hidden");
+        $("pill").classList.add("hidden");
+        const n = qs.length,
+          c = qs.filter((q, i) => answers[i] === q.a).length,
+          p = Math.round((c / n) * 100);
+        $("pct").textContent = p + "%";
+        $("raw").textContent = `${c} / ${n}`;
+        setTimeout(
+          () => ($("ringArc").style.strokeDashoffset = 402 - (402 * c) / n),
+          50,
+        );
+        $("resMsg").textContent =
+          p === 100
+            ? "Perfect score — you own this chapter."
+            : p >= 85
+              ? "Excellent — just polish the few you missed."
+              : p >= 65
+                ? "Solid base. Review the explanations below and retry the wrong ones."
+                : "Worth another pass — go through the review, then retry.";
+        // breakdown by topic
+        const topics = {};
+        qs.forEach((q, i) => {
+          topics[q.t] = topics[q.t] || { c: 0, n: 0 };
+          topics[q.t].n++;
+          if (answers[i] === q.a) topics[q.t].c++;
+        });
+        $("breakdown").innerHTML = Object.entries(topics)
+          .map(
+            ([t, v]) =>
+              `<div class="brow"><span>${t}</span><div class="bar"><div style="width:${(v.c / v.n) * 100}%"></div></div><b>${v.c}/${v.n}</b></div>`,
+          )
+          .join("");
+        // review
+        const wrong = qs
+          .map((q, i) => ({ q, i }))
+          .filter((x) => answers[x.i] !== x.q.a);
+        const rv = $("review");
+        rv.innerHTML = "";
+        if (wrong.length) {
+          rv.innerHTML = "<h3>Review — questions to revisit</h3>";
+          wrong.forEach(({ q, i }) => {
+            const d = document.createElement("div");
+            d.className = "ritem";
+            const yours =
+              answers[i] === null
+                ? "— (skipped)"
+                : `${L[answers[i]]}. ${q.o[answers[i]]}`;
+            d.innerHTML = `<div class="rq"></div><div class="ry"></div><div class="ra"></div><div class="tipbox"><b>Why:</b> </div>`;
+            d.children[0].textContent = `Q${i + 1}. ${q.q}`;
+            d.children[1].textContent = `Your answer: ${yours}`;
+            d.children[2].textContent = `Correct: ${L[q.a]}. ${q.o[q.a]}`;
+            d.children[3].append(q.e + " " + q.tip);
+            rv.appendChild(d);
+          });
+        }
+        $("retryWrong").disabled = !wrong.length;
+        $("retryWrong").onclick = () => {
+          const orig = wrong.map(({ q }) => BANK.find((b) => b.q === q.q));
+          start(orig);
+        };
+        window.scrollTo(0, 0);
+      }
+
+      $("startBtn").onclick = () => start(BANK);
+      $("restart").onclick = () => {
+        $("results").classList.add("hidden");
+        $("start").classList.remove("hidden");
+        window.scrollTo(0, 0);
+      };
+    </script>
+  </body>
+</html>
