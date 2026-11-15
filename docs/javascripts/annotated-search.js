@@ -156,11 +156,17 @@
       panel.scrollTop = el.offsetTop + el.offsetHeight - panel.clientHeight;
   }
 
+  // Page zoom from styles/site-shell.css (large screens). getBoundingClientRect and
+  // pointer coordinates are zoomed; CSS px set on elements are not.
+  function pageZoom() {
+    return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  }
+
   // The bar can sit near the right edge of the header, so keep the panel on screen.
   function keepOnScreen() {
     panel.style.left = "0";
     var over = panel.getBoundingClientRect().right - (window.innerWidth - 12);
-    if (over > 0) panel.style.left = -over + "px";
+    if (over > 0) panel.style.left = -over / pageZoom() + "px";
   }
 
   function message(text) {

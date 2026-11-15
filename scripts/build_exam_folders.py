@@ -55,7 +55,8 @@ OVERRIDES: dict[str, str] = {
     "02-exam-2": "midterm-2",
 }
 
-TILE_RE = re.compile(r'<a\s+href="([^"]+)"\s+class="deck-preview"[^>]*>(.*?)</a\s*>', re.S)
+# Attributes in any order: tiles may carry a style="--strip-..." before href.
+TILE_RE = re.compile(r'<a\b(?=[^>]*\bclass="deck-preview")([^>]*)>(.*?)</a\s*>', re.S)
 # Older listings: one <a class="dir-row"> per exam, attributes in any order.
 ROW_RE = re.compile(r'<a\b(?=[^>]*\bclass="dir-row\b)[^>]*>.*?</a\s*>', re.S)
 FOLDER_ICON = ('<svg class="dir-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -101,12 +102,41 @@ def text_of(fragment):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", fragment))).strip()
 
 
+SECTION_RE = re.compile(r'<section\s+class="slide-gallery"([^>]*)>(.*?)</section\s*>', re.S)
+
+
+def with_strip(tile_html, section_attrs):
+    """Copy the section's --strip-* preview variables onto the tile, so its thumbnail
+    still points at the right strip once tiles from several sections share a grid."""
+    if "--strip-light" in tile_html[: tile_html.find(">")]:
+        return tile_html
+    style = re.search(r'style="([^"]*)"', section_attrs)
+    strips = "".join(re.findall(r"--strip-(?:dark|light):\s*url\([^)]*\);?", html.unescape(style.group(1)))) if style else ""
+    if not strips:
+        return tile_html
+    strips = html.escape(re.sub(r"\s+", " ", strips), quote=True)
+    return re.sub(r"^<a\b", '<a style="%s"' % strips, tile_html, count=1)
+
+
 def tiles_from(page_text):
     """(href, markup, title) for every exam on a listing, grid or row style."""
-    items = [(m.group(1), m.group(0), text_of(m.group(2))) for m in TILE_RE.finditer(page_text)]
-    if items:
+    items = []
+    sections = list(SECTION_RE.finditer(page_text))
+    for sec in sections or [None]:
+        body = sec.group(2) if sec else page_text
+        for m in TILE_RE.finditer(body):
+            if "data-exam-group" in m.group(1):
+                continue  # one of our group folders; real resource folders stay
+            href = re.search(r'href="([^"]+)"', m.group(1))
+            if not href:
+                continue
+            markup = with_strip(m.group(0), sec.group(1)) if sec else m.group(0)
+            items.append((href.group(1), markup, text_of(m.group(2))))
+    if items or sections:
         return items
     for m in ROW_RE.finditer(page_text):
+        if "directory-folder" in m.group(0)[: m.group(0).find(">")] or "data-exam-group" in m.group(0):
+            continue  # one of our folder rows, not an exam
         href = re.search(r'href="([^"]+)"', m.group(0)[: m.group(0).find(">")])
         title = re.search(r'class="dir-title"[^>]*>(.*?)</div', m.group(0), re.S)
         if href and title:
@@ -123,6 +153,9 @@ def layout(page_text):
 def list_bounds(text, kind):
     """Span to replace: the gallery grid, or the run of dir-row anchors."""
     if kind == "grid":
+        sections = list(SECTION_RE.finditer(text))
+        if sections:
+            return sections[0].start(), sections[-1].end()
         return grid_bounds(text)
     rows = list(ROW_RE.finditer(text))
     return rows[0].start(), rows[-1].end()
@@ -154,13 +187,39 @@ def course_exams(index_path, exams_url):
     text = read(index_path)
     if MARK not in text:
         return tiles_from(text)
-    # Already sorted: the index only holds folders, so read the group pages.
-    tiles = []
-    for gid in GROUP_IDS:
-        sub = os.path.join(os.path.dirname(index_path), gid, "index.html")
-        if os.path.isfile(sub):
-            tiles += tiles_from(read(sub))
-    return tiles
+    # Already sorted: exams live on the group pages (and, after an older run, possibly
+    # still in sections of the index). Merge them, one entry per exam.
+    tiles, seen = [], set()
+    pages = [text] + [read(p) for p in (os.path.join(os.path.dirname(index_path), gid, "index.html") for gid in GROUP_IDS)
+                      if os.path.isfile(p)]
+    for page in pages:
+        for tile in tiles_from(page):
+            if tile[0] not in seen and not re.search(r"/exams/(%s)/$" % "|".join(GROUP_IDS), tile[0]):
+                seen.add(tile[0])
+                tiles.append(tile)
+    number = lambda t: int(re.match(r"(\d+)", t[0].rstrip("/").split("/")[-1]).group(1)) if re.match(r"\d+", t[0].rstrip("/").split("/")[-1]) else 10**6
+    return sorted(tiles, key=number)
+
+
+# Tiles that carry their own strip need --strip resolved on the tile, since the
+# page resolves it on .slide-gallery from the section's variables.
+TILE_STRIP_STYLE = (
+    '<style id="exam-folder-style">'
+    ".slide-gallery .deck-preview[style*='--strip-dark']{--strip:var(--strip-dark)}"
+    "body.shoug-light-mode .slide-gallery .deck-preview[style*='--strip-light']{--strip:var(--strip-light)}"
+    "</style>"
+)
+
+
+def with_tile_strip_style(page):
+    if 'id="exam-folder-style"' in page:
+        return page
+    return re.sub(r"</head\s*>", TILE_STRIP_STYLE + "\n</head>", page, count=1)
+
+
+def gallery(tiles_html, intro=""):
+    head = f'<p class="slide-hub-intro exam-folder-intro">{html.escape(intro)}</p>' if intro else ""
+    return f'{head}<section class="slide-gallery"><div class="slide-gallery-grid">{tiles_html}</div></section>'
 
 
 def folder_row(gid, label, label_ar, count, n, exams_url):
@@ -175,10 +234,12 @@ def folder_row(gid, label, label_ar, count, n, exams_url):
     )
 
 
-def folder_tile(gid, label, label_ar, count, thumb_style, exams_url):
+def folder_tile(gid, label, label_ar, count, thumb_style, exams_url, strip=""):
     noun = "exam" if count == 1 else "exams"
+    # strip: the first exam's --strip-* variables, so the folder shows its preview (not a blank tile).
+    style = f' style="{strip}"' if strip else ""
     return (
-        f'<a href="{exams_url}{gid}/" class="deck-preview" data-kind="folder" data-exam-group="{gid}">'
+        f'<a href="{exams_url}{gid}/"{style} class="deck-preview" data-kind="folder" data-exam-group="{gid}">'
         f'<span class="deck-thumb"{thumb_style}></span>'
         f'<span class="deck-kind" data-en-text="Folder" data-ar-text="مجلد">Folder</span>'
         f'<div class="deck-name"><span class="dir-folder-icon" aria-hidden="true"></span><span data-en-text="{label}" data-ar-text="{label_ar}">{label}</span>'
@@ -191,19 +252,22 @@ def thumb_style(tile_html):
     return m.group(1) if m else ""
 
 
+def strip_vars(tile_html):
+    """The --strip-* preview variables on a tile's opening <a>, if any."""
+    m = re.match(r'<a\b[^>]*?\bstyle="([^"]*--strip-[^"]*)"', tile_html)
+    return m.group(1) if m else ""
+
+
 def group_page(index_text, kind, exams_url, gid, label, label_ar, about, tiles):
     start, end = list_bounds(index_text, kind)
     if kind == "grid":
-        body = '<div class="slide-gallery-grid">' + "".join(t[1] for t in tiles) + "</div>"
+        body = gallery("".join(t[1] for t in tiles), about)
     else:
         body = row_markup(tiles)
     page = index_text[:start] + body + index_text[end:]
     page = page.replace(" " + MARK, "").replace(MARK, "")
+    page = with_tile_strip_style(page)
     # Intro line and breadcrumb: Exams becomes a link, the group is the current page.
-    if kind == "grid":
-        page = re.sub(
-            r'(<section class="slide-gallery")',
-            f'<p class="slide-hub-intro exam-folder-intro">{html.escape(about)}</p>\\1', page, count=1)
     page = re.sub(
         r'<span class="current" data-en-text="Exams" data-ar-text="الاختبارات"\s*>Exams</span\s*>',
         f'<a class="breadcrumb-link" href="{exams_url}" data-en-text="Exams" data-ar-text="الاختبارات">Exams</a> / '
@@ -266,12 +330,12 @@ def sort_course(index_path, dry):
             continue
         write(sub_path, group_page(text, kind, exams_url, gid, label, label_ar, about, groups[gid]))
         if kind == "grid":
-            folders.append(folder_tile(gid, label, label_ar, len(groups[gid]), thumb_style(groups[gid][0][1]), exams_url))
+            folders.append(folder_tile(gid, label, label_ar, len(groups[gid]), thumb_style(groups[gid][0][1]), exams_url, strip_vars(groups[gid][0][1])))
         else:
             folders.append(folder_row(gid, label, label_ar, len(groups[gid]), len(folders) + 1, exams_url))
     start, end = list_bounds(text, kind)
     if kind == "grid":
-        text = text[:start] + '<div class="slide-gallery-grid">' + "".join(folders) + "</div>" + text[end:]
+        text = with_tile_strip_style(text[:start] + gallery("".join(folders)) + text[end:])
         if MARK not in text:
             text = text.replace("data-preview-grid", "data-preview-grid " + MARK, 1)
     else:

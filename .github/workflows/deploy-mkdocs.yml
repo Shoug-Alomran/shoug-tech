@@ -77,6 +77,12 @@ jobs:
           python3 scripts/build_academic_sidebar.py
           python3 scripts/sync_site_shell.py
 
+      # Builders emit short titles and boilerplate descriptions ("X study
+      # material from Shoug's Digital Garden.") that Bing flags as too short.
+      # Rewrite them on the final HTML so re-running a builder can't undo it.
+      - name: Lengthen short titles and meta descriptions
+        run: python3 scripts/improve_seo_snippets.py --apply
+
       # Bots and AI assistants read pages without opening the PDF viewer, so give
       # slide pages a text version and publish /llms.txt as a map of the site.
       - name: Add text versions for bots and AI assistants
@@ -139,12 +145,25 @@ jobs:
           path: .pdf-cache
           key: pdf-cache-v2-${{ github.run_id }}
 
+      # Search engines title PDF results from the PDF's Title metadata, which is
+      # mostly empty or "Slide 1". Set it from the viewer page after compression
+      # (an appended incremental update, so the compression cache stays valid).
+      - name: Set PDF document titles
+        run: |
+          python3 -m pip install --quiet pypdf==6.14.0
+          python3 scripts/set_pdf_titles.py --apply
+
       - name: Seal paid course content before publishing
         run: python3 scripts/secure_ethics_content.py --seal --check
 
       # Cloudflare Pages allows 20,000 files per deploy and the annotated-slide
       # figures are over half the site, so they are served from R2 instead
       # (assets.shoug-tech.com). Pages point at R2 before the figures are removed.
+      # site-shell.css zooms pages on PC monitors and TVs; browsers multiply
+      # vh/vw by that zoom, so divide every viewport length by --zoom-fix.
+      - name: Keep viewport units exact under the large-screen zoom
+        run: python3 scripts/scale_large_screens.py docs
+
       - name: Move annotated-slide figures out of the Pages build
         run: python3 scripts/offload_annotated_figures.py
 

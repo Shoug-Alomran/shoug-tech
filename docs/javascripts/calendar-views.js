@@ -492,6 +492,12 @@
     return Math.round(m / SNAP) * SNAP;
   }
   // The latest a session this long can start and still end before midnight.
+  // Page zoom from styles/site-shell.css (large screens). getBoundingClientRect and
+  // pointer coordinates are zoomed; CSS px set on elements are not.
+  function pageZoom() {
+    return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  }
+
   function latestStart(len) {
     return Math.floor((24 * 60 - 1 - len) / SNAP) * SNAP;
   }
@@ -534,7 +540,7 @@
       var r = col.getBoundingClientRect();
       return Math.max(
         0,
-        Math.min(24 * 60, startHour * 60 + ((y - r.top) / px) * 60),
+        Math.min(24 * 60, startHour * 60 + ((y - r.top) / pageZoom() / px) * 60),
       );
     }
 
@@ -606,8 +612,7 @@
         function move(e) {
           last = e;
           var dy =
-              e.clientY -
-              startY +
+              (e.clientY - startY) / pageZoom() +
               (scroller ? scroller.scrollTop - scroll0 : 0),
             dx = e.clientX - startX;
           if (!dragging && Math.abs(dy) < 4 && Math.abs(dx) < 4) return;
@@ -817,7 +822,7 @@
         }
         function draw(e) {
           var dm = snap(
-            ((e.clientY - y0 + root.scrollTop - scroll0) / px) * 60,
+            (((e.clientY - y0) / pageZoom() + root.scrollTop - scroll0) / px) * 60,
           );
           ns = Math.max(startHour * 60, Math.min(latestStart(len), s0 + dm));
           el.style.top = ((ns - startHour * 60) / 60) * px + "px";

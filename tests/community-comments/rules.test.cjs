@@ -155,3 +155,30 @@ test("only the recipient reads, marks read and deletes", async () => {
   await assertFails(inbox(as("sara"), "noor").doc(id).delete());
   await assertSucceeds(inbox(as("noor"), "noor").doc(id).delete());
 });
+
+// Planner, bookmark and degree-plan data is private: never on the public profile.
+test("study and bookmark data can't be put on the public profile", async () => {
+  const me = as("sara").collection("users").doc("sara");
+  for (const field of ["studyPlannerChat", "studyAvailability", "studyPlan",
+    "degreePlan", "academicPlanGrids", "bookmarkFolders"]) {
+    await assertFails(me.set({ [field]: { x: 1 } }, { merge: true }));
+  }
+  await assertSucceeds(
+    me.collection("private").doc("data").set(
+      { bookmarkFolders: [{ name: "Exams" }], studyPlannerChat: [{ q: "hi" }] },
+      { merge: true },
+    ),
+  );
+  await assertFails(as("noor").collection("users").doc("sara").collection("private").doc("data").get());
+});
+
+test("an old profile copy of private data can be removed", async () => {
+  await env.withSecurityRulesDisabled((ctx) =>
+    ctx.firestore().collection("users").doc("sara").set({ ...profile, bookmarkFolders: ["old"] }),
+  );
+  await assertSucceeds(
+    as("sara").collection("users").doc("sara").update({
+      bookmarkFolders: firebase.firestore.FieldValue.delete(),
+    }),
+  );
+});
