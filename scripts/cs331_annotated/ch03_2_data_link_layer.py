@@ -261,3 +261,15 @@ ANN = {
              notes=['FDMA = frequency slices. TDMA = time slices. CDMA = code slices (everyone uses all frequencies all the time).'],
              tips=[trick('F = Frequency, T = Time, C = Code.')]),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    12: [_past('m1_261', 'Q6b · “Explain why nonpersistent CSMA reduces the chance of that result”')],
+    13: [_past('m1_261', 'Q6a · A and B both waiting, 1-persistent: what does each do when idle? (both send → collision)')],
+    14: [_past('m1_261', 'Q6c · 0.2-persistent: probability of transmitting (0.2) and of waiting (0.8)')],
+    23: [_past('m1_261', 'Q6d · primary asks B if it has data: name the frame (poll) and B’s reply with no data (NAK)')],
+    30: [_past('m1_261', 'Q6e · “giving each station a recurring time slot” → TDMA')],
+})

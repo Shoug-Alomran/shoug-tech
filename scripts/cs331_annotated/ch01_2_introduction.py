@@ -282,3 +282,18 @@ ANN = {
     54: dict(fig=fig('tcpip-four-layers.png', 'OSI 7 layers beside the original 4-layer TCP/IP model: application, transport, internet, network access'),
              notes=['Original TCP/IP: application, transport, internet, network access (= data link + physical).']),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    26: [_past('m1_261', 'Q2 · “Data Rate (number of bits sent per second)” → which OSI layer? (Physical)')],
+    27: [_past('m1_261', 'Q4(3) · Ethernet cable PC → switch is terminated with an ___ connector (RJ-45)', related=True)],
+    28: [_past('m1_261', 'Q2 · “MAC Address” → which OSI layer? (Data Link)')],
+    33: [_past('m1_261', 'Q2 · “IP Address” → which OSI layer? (Network)')],
+    40: [_past('m1_261', 'Q2 · “Port Address” → which OSI layer? (Transport)')],
+    43: [_past('m1_261', 'Q2 · match IP, MAC and port addresses to their layers')],
+    45: [_past('m1_261', 'Q2 · “Synchronization checkpoints” → which OSI layer? (Session)')],
+    46: [_past('m1_261', 'Q2 · “Encryption/decryption” → which OSI layer? (Presentation)')],
+})

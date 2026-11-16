@@ -219,3 +219,15 @@ ANN = {
                          'Radio (< 300 MHz): omnidirectional, long range, multicast such as radio and TV. Microwave (300 MHz – 300 GHz): unidirectional line of sight, unicast such as cellular, satellite and wireless LANs. Infrared (300 GHz – 400 THz): line of sight, short range inside a room, such as remote controls.')],
              weight=2),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    12: [_past('m1_261', 'Q4(3) · PC → switch cable is terminated with an ___ connector (RJ-45, not RJ-11)')],
+    15: [_past('m1_261', 'Q4(2) · “To connect a standard PC to a switch, you must use a ___ cable” (straight-through)')],
+    19: [_past('m1_261', 'Q4(1) · 2 km between buildings, no repeaters, immune to EMI → fiber-optic')],
+    24: [_past('m1_261', 'Q4(4) · “radio waves below 300 MHz propagate omnidirectionally, you instead select…”', related=True)],
+    26: [_past('m1_261', 'Q4(4) · rooftop point-to-point, 300 MHz–300 GHz, line of sight → microwave')],
+})

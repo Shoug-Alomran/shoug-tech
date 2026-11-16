@@ -231,3 +231,25 @@ ANN = {
              exam=[short('Give three advantages of VLANs.', 'Lower cost and installation time, because moving a station is done in software; more security, since a group can be isolated and its broadcasts are not seen by other VLANs; and virtual workgroups, where people in different places (for example a cross-department project team) share one broadcast domain.')],
              weight=3),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    12: [_past('m2_261', 'Q5 Part 2 · “Using the switch’s source-address learning mechanism, indicate the new entry”')],
+    13: [_past('m2_261', 'Q5 Part 2 · empty table: PC10 → PC25, PC25 → PC10, PC20 → FF:FF…: entry + flood or forward?')],
+    14: [_past('m2_261', 'Q4 Part 1a · three switches cabled in a triangle form a ___ (loop)')],
+    15: [_past('m2_261', 'Q4 Part 1b · uncontrolled circulation and replication of broadcast frames = ___ (broadcast storm)')],
+    16: [_past('m2_261', 'Q4 Part 1 · the triangle-of-switches picture', related=True)],
+    17: [_past('m2_261', 'Q4 Part 1c · creates a loop-free logical topology by putting ports in a non-forwarding state (STP)')],
+    20: [_past('m2_261', 'Q4 Part 1d · if a link fails, STP activates a previously ___ path (blocked, not disabled)')],
+    22: [_past('m2_261', 'Q5 Part 1 · H1–S1–R1–S2–H2: total collision domains (6)')],
+    24: [_past('m2_261', 'Q5 Part 1 · count one collision domain per switch port; a hub and its PCs share one', related=True)],
+    27: [_past('m2_261', 'Q5 Part 1 · total broadcast domains = router interfaces in use (2)')],
+    30: [_past('m2_261', 'MCQ 1 · HR computer in the IT room, same broadcast domain, no new cables → VLANs')],
+    31: [_past('m2_261', 'Q2 · 8 PCs, VLAN 10/20/30 on one switch: broadcast domains (3), who gets A’s broadcast (B, C)'),
+         _past('m2_261', 'MCQ 6 · VLAN = logical LANs; the switch keeps a lookup table of VLAN membership')],
+    33: [_past('m2_261', 'Q2(3) · can A (VLAN 10) reach D (VLAN 20) with layer-2 switching only? (No)')],
+    34: [_past('m2_261', 'MCQ 3 · HR and Sales in separate VLANs: one benefit (separate broadcast traffic)')],
+})

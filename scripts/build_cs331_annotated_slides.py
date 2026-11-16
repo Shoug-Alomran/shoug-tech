@@ -33,9 +33,10 @@ COURSE = annotated_slides.Course(
     after=('slides-with-notes/', 'Slides with Notes'),
     page_name=lambda deck: item_label(annotated_slides.C.decks[deck['key']][3]),
     item_label=item_label,
+    # Tutorials use this wording; real exams (PAPERS entries marked 'exam') get "★ Past exam" instead.
     papers={'stamp': '★ Tutorial', 'direct': 'Asked in a course tutorial', 'related': 'Related tutorial questions',
-            'n_direct': 'asked in course tutorials', 'n_related': 'related to tutorial questions', 'folder': '',
-            'desc': 'tutorial'},
+            'n_direct': 'asked in an exam or tutorial', 'n_related': 'related to exam or tutorial questions', 'folder': '',
+            'desc': 'past-exam and tutorial'},
     prof_legend=False,
 )
 

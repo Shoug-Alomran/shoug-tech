@@ -257,3 +257,15 @@ ANN = {
              exam=[mcq('Which organization specializes in LAN/MAN standards?', ['IEEE', 'ITU-T', 'W3C', 'ANSI'], 0, '')],
              weight=2),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    11: [_past('m1_261', 'Q1b · count every cable link, the shared backbone included (13)', related=True)],
+    12: [_past('m1_261', 'Q1a · each lab = computers on one switch → a star')],
+    13: [_past('m1_261', 'Q1a · one shared backbone cable joins the switches → a bus')],
+    15: [_past('m1_261', 'Q1a · “determine the hybrid topology used” → star-bus')],
+    16: [_past('m1_261', 'Q1c · two labs on one campus: classify as LAN, MAN or WAN and justify (LAN)')],
+})

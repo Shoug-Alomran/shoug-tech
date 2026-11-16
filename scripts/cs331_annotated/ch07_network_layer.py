@@ -417,3 +417,21 @@ ANN = {
              exam=[short('Give three advantages of NAT.', 'It saves public IP addresses (one public address for the whole site); internal addresses can be changed without telling the outside world, and the ISP can be changed without renumbering inside; and it acts like a firewall, since outside hosts cannot open a connection to an internal host unless it started the contact.')],
              weight=3),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    28: [_past('m2_261', 'Q3 · identify the class of 25.18.7.9, 150.40.12.8, 200.16.5.70')],
+    29: [_past('m2_261', 'Q3 · write each class’s default subnet mask (/8, /16, /24)')],
+    35: [_past('m2_261', 'Q3 · classful network address: 25.0.0.0, 150.40.0.0, 200.16.5.0')],
+    38: [_past('m2_261', 'Q4 Part 2e · broadcast address of both subnets (.127 and .255)')],
+    57: [_past('m2_261', 'Q4 Part 2 · 195.11.22.0 into two subnets: mask (/25), subnet addresses, hosts (126)')],
+    61: [_past('m2_261', 'Q4 Part 2b · the two subnet addresses (195.11.22.0 and .128)', related=True)],
+    62: [_past('m2_261', 'MCQ 2 · IP + mask set by hand, only local access works: forgot the default gateway')],
+    64: [_past('m2_261', 'Q4 Part 2d · default gateway of subnet 1 and subnet 2 (.1 and .129)')],
+    66: [_past('m2_261', 'MCQ 4 · DHCP checks the static IP addresses database before the dynamic pool')],
+    86: [_past('m2_261', 'MCQ 5 · why NAT acts as a basic firewall: outsiders can’t start a session', related=True)],
+    88: [_past('m2_261', 'MCQ 5 · NAT gives basic firewall protection: external hosts can’t initiate connections')],
+})

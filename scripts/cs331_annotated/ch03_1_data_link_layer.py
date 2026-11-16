@@ -269,3 +269,17 @@ ANN = {
                         'Each original packet’s chunks were spread over several transmitted packets (sent column by column). Losing one transmitted packet removes just one small chunk from each original packet, a gap small enough for multimedia to hide, instead of losing an entire packet.')],
              weight=2),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    29: [_past('m1_261', 'Q5c · 5 × 5 block, even parity: did an error occur? find its row and column')],
+    30: [_past('m1_261', 'Q5c · two odd rows + two odd columns → detected but not correctable', related=True)],
+    31: [_past('m1_261', 'Q5b · dataword 1011011, generator x³ + x + 1: write the divisor and the codeword')],
+    34: [_past('m1_261', 'Q5b · “Show the steps of CRC” (remainder 101 → codeword 1011011101)')],
+    37: [_past('m1_261', 'Q5b · “remainder bits are one less than the number of bits of ___” (the divisor)')],
+    45: [_past('m1_261', 'Q5a · receiver adds 2 data blocks + checksum, complements: error or not, and WHY')],
+    48: [_past('m1_261', 'Q5a · complement 10110101 is not zero → error detected')],
+})
