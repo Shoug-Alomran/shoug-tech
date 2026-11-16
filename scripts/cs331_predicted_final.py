@@ -2,10 +2,14 @@
 
 Not a past paper: a prediction written in the format the instructors used in the
 Term 261 majors (sections per chapter group, scenario stems with lettered parts,
-0.25 and 0.5 mark pieces, word boxes, OSI matching tables, CRC/checksum/parity
+0.25 and 0.5 mark pieces, word boxes, OSI matching tables, parity and bit-stuffing
 working, VLAN tables, subnetting on a drawn network, domain counting and switch
 learning tables). Chapters 8, 9 and 10 have not been examined by a major yet, so
 they get their own parts. Every number was recomputed.
+
+Final scope: the Physical Layer (Chapter 2) and CRC/checksum calculations are not
+on the final, so the paper has no Chapter 2 questions and asks about CRC and the
+checksum as concepts only.
 
 The questions are not registered in ALL, so the questions-by-chapter page keeps
 listing real past questions only.
@@ -31,9 +35,9 @@ def build(h):
         (1, "A company connects its office in Riyadh to its office in Dammam (about 400 km away) so employees can share files and printers. What type of network is this?",
          ["LAN, because only one company owns it.", "MAN, because both offices are in Saudi Arabia.", "WAN, because it connects sites in different cities over a long distance.", "PAN, because only employees use it."], 2,
          "Size decides the type: LAN = a building or campus, MAN = one city, WAN = across cities or countries. Riyadh to Dammam spans two cities, so it is a WAN. Ownership doesn't decide it."),
-        (2, "A cable runs next to a large electric motor in a factory, and random spikes appear on the received signal. Which impairment is this?",
-         ["Attenuation", "Distortion", "Noise (induced noise)", "Propagation delay"], 2,
-         "Unwanted energy from an outside source added to the signal is noise; a motor or other electrical equipment causes induced noise. Attenuation weakens the signal; distortion changes its shape."),
+        (1, "Two branch offices use a link on which both sides can send and receive at the same moment, like a telephone call. What is this data flow mode?",
+         ["Simplex", "Half-duplex", "Full-duplex", "Multipoint"], 2,
+         "Full-duplex = both directions at the same time (telephone). Half-duplex = both directions but one at a time (walkie-talkie). Simplex = one direction only (keyboard). Multipoint describes how many devices share a link, not the direction."),
         (3, "In byte-oriented framing, the data contains a byte with the same pattern as the flag. What does the sender do?",
          ["Discards the frame and sends a NAK.", "Inserts an escape (ESC) byte before it (byte stuffing).", "Inserts a 0 after five consecutive 1s (bit stuffing).", "Changes the flag to a different pattern."], 1,
          "Byte stuffing: an ESC byte goes in front of any flag or ESC pattern in the data, and the receiver removes it. Inserting a 0 after five 1s is bit stuffing, used in bit-oriented framing."),
@@ -97,41 +101,48 @@ def build(h):
                    "PDUs: bits (physical), frame (data link), packet/datagram (network), segment (transport). Routing = network. Dialog control and synchronization points = session. "
                    "Translation, encryption and compression = presentation. Bit synchronization = physical.")
 
-    def p2_delay():
+    def p2_router():
+        macs = ["MAC A", "MAC R1", "MAC R2", "MAC B"]
+        ips = ["10.0.1.5 (Host A)", "10.0.1.1 (router R, LAN 1)", "10.0.2.1 (router R, LAN 2)", "10.0.2.9 (Server B)"]
         return (
-            '<p class="q-text">A university sends a <b>2.5 Mbyte</b> lecture video to a branch campus <b>4,800 km</b> away over a <b>10 Mbps</b> link. The signal travels at <b>2.4 × 10<sup>8</sup> m/s</b>. Ignore queuing and processing delay.</p>'
-            f'<p class="q-text sub">a) Propagation time (seconds): {num(0.02, 0.5, "Propagation time", show="0.02 s (20 ms)")}</p>'
-            f'<p class="q-text sub">b) Transmission time (seconds): {num(2, 0.5, "Transmission time", show="2 s")}</p>'
-            f'<p class="q-text sub">c) Which one dominates the latency? {sel(["Propagation time", "Transmission time"], "Transmission time", 0.25, "Dominant delay")}</p>'
-            f'<p class="q-text sub">d) Bandwidth-delay product, using the propagation time as the delay (bits): {num(200000, 0.75, "Bandwidth-delay product", show="200,000 bits")}</p>'
+            '<p class="q-text">Host A (<span class="mono">10.0.1.5</span>, MAC A) on LAN 1 sends a request to Server B (<span class="mono">10.0.2.9</span>, MAC B) on LAN 2. '
+            "Router R joins the two LANs: its LAN 1 interface has MAC R1 and its LAN 2 interface has MAC R2.</p>"
+            f'<p class="q-text sub">a) Destination MAC address of the frame on LAN 1: {sel(macs, "MAC R1", 0.5, "Destination MAC on LAN 1")}</p>'
+            f'<p class="q-text sub">b) Destination IP address of the packet on LAN 1: {sel(ips, ips[3], 0.5, "Destination IP on LAN 1")}</p>'
+            f'<p class="q-text sub">c) Source MAC address of the frame on LAN 2: {sel(macs, "MAC R2", 0.5, "Source MAC on LAN 2")}</p>'
+            f'<p class="q-text sub">d) Up to which OSI layer does the router decapsulate before forwarding? {sel(OSI, "Network", 0.5, "Router decapsulates up to")}</p>'
         )
 
-    q["p2-3"] = PQ(2, "Q4", 2, p2_delay,
-                   "Propagation = 4,800,000 ÷ 2.4 × 10<sup>8</sup> = <b>0.02 s</b>. Transmission = 2.5 × 10<sup>6</sup> × 8 = 2 × 10<sup>7</sup> bits ÷ 10<sup>7</sup> bps = <b>2 s</b> → transmission dominates. "
-                   "Bandwidth-delay product = 10 × 10<sup>6</sup> × 0.02 = <b>200,000 bits</b>: the number of bits that fill the link.")
+    q["p2-3"] = PQ(1, "Q4", 2, p2_router,
+                   "IP addresses stay the same end to end, so the packet is addressed to <b>10.0.2.9</b> on both LANs. MAC addresses change at every hop: on LAN 1 the frame goes to the router (<b>MAC R1</b>); "
+                   "on LAN 2 the router sends it from <b>MAC R2</b> to MAC B. A router opens the frame up to the <b>network</b> layer, reads the destination IP, then builds a new frame.")
 
     # ---------------------------------------------------------- Part 3: Ch 3-4
-    def p3_checksum():
+    def p3_methods():
+        methods = ["Parity", "Checksum", "CRC"]
+        rows = (("Divides the data by a generator using modulo-2 (XOR); accepts when the remainder is 0", "CRC"),
+                ("One's complement sum of the words, inverted; used in the IPv4, TCP and UDP headers", "Checksum"),
+                ("The error-detection field in the Ethernet frame trailer", "CRC"),
+                ("Detects any odd number of flipped bits but cannot locate them", "Parity"))
+        body = "".join(f"<tr><td>{t}</td><td>{sel(methods, a, 0.25, 'Method: ' + t)}</td></tr>" for t, a in rows)
+        return ('<p class="q-text">(a) Match each description to its error-detection method. (0.25 each)</p>'
+                '<table class="ptable"><thead><tr><th>Description</th><th>Method</th></tr></thead><tbody>' + body + "</tbody></table>")
+
+    q["p3-1"] = PQ(3, "Q5a", 1, p3_methods,
+                   "CRC = modulo-2 division by a generator, remainder 0 = accept; it is the 4-byte CRC-32 in the Ethernet trailer. "
+                   "Checksum = one's complement sum, inverted; the receiver accepts when the sum is all 1s; used in IPv4, TCP and UDP. "
+                   "Parity counts 1s, so it catches an odd number of errors but cannot say which bit flipped.")
+
+    def p3_stuffing():
         return (
-            '<p class="q-text">(a) A receiver gets two 8-bit data blocks and one 8-bit checksum: <span class="mono">11001010</span> &nbsp; <span class="mono">00110110</span> &nbsp; Checksum: <span class="mono">11111110</span>. Using the checksum technique (show the steps):</p>'
-            f'<p class="q-text sub">Final complement result: {txt("00000000", 0.5, "Final complement result")}</p>'
-            f'<p class="q-text sub">Is an error detected? {sel(["Error detected", "No error"], "No error", 0.5, "Error detected?")}</p>'
+            '<p class="q-text">(b) A bit-oriented protocol uses the flag <span class="mono">01111110</span>. The data to send is <span class="mono">0111111011111100</span>.</p>'
+            f'<p class="q-text sub">1. Data after bit stuffing: {txt("011111010111110100", 0.75, "Stuffed data", wide=True)}</p>'
+            f'<p class="q-text sub">2. How many 0s were inserted? {num(2, 0.25, "Zeros inserted")}</p>'
         )
 
-    q["p3-1"] = PQ(3, "Q5a", 1, p3_checksum,
-                   "<span class='mono'>11001010 + 00110110 = 1 00000000</span> → wrap the carry: <span class='mono'>00000001</span>. Add the checksum: <span class='mono'>00000001 + 11111110 = 11111111</span>. "
-                   "Complement = <b class='mono'>00000000</b> → all zeros → <b>no error</b>, the data is accepted.")
-
-    def p3_crc():
-        return (
-            '<p class="q-text">(b) A dataword is <span class="mono">1101011</span> and the generator is x<sup>4</sup> + x + 1.</p>'
-            f'<p class="q-text sub">1. Write the divisor: {txt("10011", 0.25, "Divisor")} &nbsp; 2. How many 0s are appended? {num(4, 0.25, "Zeros appended")}</p>'
-            f'<p class="q-text sub">3. Remainder: {txt("0011", 0.25, "Remainder")} &nbsp; 4. CRC codeword: {txt("11010110011", 0.25, "Codeword")}</p>'
-        )
-
-    q["p3-2"] = PQ(3, "Q5b", 1, p3_crc,
-                   "x<sup>4</sup> + x + 1 → <span class='mono'>10011</span> (degree 4 → append 4 zeros: <span class='mono'>11010110000</span>). XOR-divide by 10011 → remainder <b class='mono'>0011</b>. "
-                   "Codeword = <b class='mono'>1101011 0011</b>. Check: 11010110011 ÷ 10011 leaves 0000.")
+    q["p3-2"] = PQ(3, "Q5b", 1, p3_stuffing,
+                   "Insert a 0 after every five consecutive 1s: <span class='mono'>0 11111<b>0</b> 1 0 11111<b>0</b> 1 0 0</span> → <b class='mono'>011111010111110100</b>. "
+                   "Two 0s are inserted, so a flag pattern can never appear inside the data; the receiver removes any 0 that follows five 1s.")
 
     parity = [[1, 1, 0, 1, 1], [0, 1, 0, 0, 0], [1, 0, 0, 1, 0], [0, 1, 0, 0, 1], [0, 1, 1, 0, 0]]
 
@@ -169,17 +180,18 @@ def build(h):
     q["p3-5"] = PQ(4, "Q7", 1.5, p3_eth,
                    "Look at the last bit of the first byte: 47 = 0100 011<b>1</b> → multicast; A4 = 1010 010<b>0</b> → unicast; all Fs = broadcast. Frame = 64 to 1518 bytes; data 46 to 1500.")
 
-    media = ["fiber-optic", "coaxial", "Cross-over Copper Cable", "Straight Through Copper Cable", "Radio waves", "Infrared", "RJ-45", "Shielded twisted pair (STP)"]
+    access = ["ALOHA", "CSMA/CA", "Polling", "Reservation", "FDMA", "TDMA", "CDMA", "Token passing"]
 
-    def p3_media():
-        pick = lambda a, n: sel(media, a, 0.25, f"Blank {n}")
-        return ('<p class="q-text">Fill the blanks from these choices (0.25 each):</p>' + word_box(media)
-                + f'<p class="q-text sub">To connect two switches directly you use a (1) {pick("Cross-over Copper Cable", 1)}. A TV remote control uses (2) {pick("Infrared", 2)}, which cannot pass through walls. '
-                f'Omnidirectional signals below 1 GHz used for AM/FM radio are (3) {pick("Radio waves", 3)}. In a factory with heavy electrical interference, copper cable with a metal foil, called (4) {pick("Shielded twisted pair (STP)", 4)}, reduces noise.</p>')
+    def p3_access():
+        pick = lambda a, n: sel(access, a, 0.25, f"Blank {n}")
+        return ('<p class="q-text">Fill the blanks from these choices (0.25 each):</p>' + word_box(access)
+                + f'<p class="q-text sub">Wireless LANs cannot detect collisions while sending, so they avoid them with (1) {pick("CSMA/CA", 1)}. '
+                f'A primary station asks each secondary station in turn whether it has data to send: this is (2) {pick("Polling", 2)}. '
+                f'Each station gets its own repeating time slot in (3) {pick("TDMA", 3)}, while in (4) {pick("CDMA", 4)} all stations send at the same time using different codes.</p>')
 
-    q["p3-6"] = PQ(2, "Q8", 1, p3_media,
-                   "Like devices (switch to switch, PC to PC) = cross-over; unlike devices (PC to switch) = straight-through. Infrared: short range, line of sight, blocked by walls. "
-                   "Radio waves: 3 kHz to 1 GHz, omnidirectional. STP adds a metal shield against interference; fiber is immune but wasn't the copper option.")
+    q["p3-6"] = PQ(3, "Q8", 1, p3_access,
+                   "Random access: ALOHA, CSMA, CSMA/CD (wired Ethernet), CSMA/CA (wireless). Controlled access: reservation, polling (primary asks the secondaries), token passing. "
+                   "Channelization: FDMA (frequency bands), TDMA (time slots), CDMA (codes, everyone at once).")
 
     # ---------------------------------------------------------- Part 4: Ch 6
     def fig_domains2():
@@ -367,12 +379,12 @@ def build(h):
 
     # ---------------------------------------------------------- layout
     head = ('<div class="paper-title">CS331 - Data Communications &amp; Networking - Final Exam (Predicted) - Term 261</div>'
-            '<div class="paper-meta center"><b>Chapters 1, 2, 3, 4, 6, 7, 8, 9, 10</b><b>Marks = 40</b>'
+            '<div class="paper-meta center"><b>Chapters 1, 3, 4, 6, 7, 8, 9, 10</b><b>Marks = 40</b>'
             '<b class="marks">Score: <span class="got" data-q="all"></span>/40</b></div>')
     bar = lambda title, key, m: f'<div class="clo-bar"><span>{title}</span><span>Total ( <span class="got" data-q="{key}"></span> /{m})</span></div>'
     on = lambda keys, part, lab=True: "".join(q[k].on_paper(f"{q[k].no[1:]}." if lab else "", part) for k in keys)
     p1 = head + bar("Part 1: Multiple choice [0.5 each, 5 Marks]", "f1", 5) + "".join(q[f"mc{i}"].on_paper(f"{i}.", "f1") for i in range(1, 11))
-    p2 = bar("Part 2: Overview and Physical Layer [5 Marks]", "f2", 5) + on(["p2-1", "p2-2", "p2-3"], "f2")
+    p2 = bar("Part 2: Overview and Layering [5 Marks]", "f2", 5) + on(["p2-1", "p2-2", "p2-3"], "f2")
     p3 = bar("Part 3: Data Link Layer and Ethernet [7 Marks]", "f3", 7) + on(["p3-1", "p3-2", "p3-3"], "f3") + on(["p3-4", "p3-5", "p3-6"], "f3")
     p4 = bar("Part 4: Connecting Devices and VLANs [5 Marks]", "f4", 5) + on(["p4-1", "p4-2", "p4-3", "p4-4"], "f4")
     p5 = bar("Part 5: Network Layer: IPv4 [8 Marks]", "f5", 8) + on(["p5-1", "p5-2", "p5-3", "p5-4", "p5-5"], "f5")
