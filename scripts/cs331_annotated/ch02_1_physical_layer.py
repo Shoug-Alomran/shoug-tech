@@ -267,3 +267,16 @@ ANN = {
              exam=[mcq('A 1 MHz signal travels at 2 × 10⁸ m/s. Its wavelength is:', ['200 m', '2 m', '0.5 m', '20 km'], 0, '2 × 10⁸ / 10⁶ = 200 m.')],
              weight=2),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    20: [_past('m1_261', 'Q3b · signal arrives weaker AND changed shape: name the two impairments')],
+    21: [_past('m1_261', 'Q3b · “the received signal is weaker than the transmitted signal” → attenuation')],
+    22: [_past('m1_261', 'Q3b · “the shape of the signal has changed” → distortion')],
+    24: [_past('m1_261', 'Q3a · 12,000 km at 2.4 × 10⁸ m/s: propagation time (0.05 s)')],
+    26: [_past('m1_261', 'Q3a · 5 Mbyte image over 1 Mbps: transmission time (40 s)')],
+    30: [_past('m1_261', 'Q3a · “Which one is the dominant factor?” big file, slow link → transmission')],
+})

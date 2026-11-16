@@ -25,18 +25,28 @@ DECKS = {
              'Ch 10 · Application Layer'),
 }
 
-# CS331 has no past papers on the site; the instructor's tutorials stand in for them.
+# The instructor's tutorials, plus the real Term 261 majors. A third item 'exam' marks a real exam:
+# its links say "Asked in a real exam" and point into exams/ (see annotated_slides.paper_ref).
 PAPERS = {
     't1': ('Tutorial 1', 'extra-resources/tutorials/unsolved/tutorial-1'),
     't1s': ('Tutorial 1 solutions', 'extra-resources/tutorials/solved/tutorial-1-solutions.html'),
     't3': ('Tutorial 3 (solved)', 'extra-resources/tutorials/solved/physical-layer-activity'),
     't4': ('Tutorial 4', 'extra-resources/tutorials/unsolved/tutorial-4'),
+    'm1_261': ('Major I (Term 261)', '17-major-exam-1-term-261', 'exam'),
+    'm2_261': ('Major II (Term 261)', '18-major-exam-2-term-261', 'exam'),
 }
 
 
 def past(paper, label, related=False):
     assert paper in PAPERS, paper
     return {'paper': paper, 'label': label, 'related': related}
+
+
+def add_past(ann, links):
+    """Append real-exam links to slides: links = {slide number: [past(...), ...]}."""
+    for n, extra in links.items():
+        assert n in ann, n
+        ann[n]['past'] = list(ann[n].get('past', ())) + list(extra)
 
 
 def see(deck, n, label):

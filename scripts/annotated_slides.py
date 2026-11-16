@@ -75,6 +75,18 @@ PAPER_WORDS = {'stamp': '★ Past exam', 'direct': 'Asked in a real exam', 'rela
 
 C = None  # the course being built
 
+
+def paper_ref(key):
+    """(title, href, is_exam) for a PAPERS key. An entry is (title, folder), or (title, folder, 'exam') for a
+    real exam in a course whose papers wording is about something else (CS331 tutorials): exam entries
+    always take the real-exam wording and the exams/ folder."""
+    entry = C.paper_list[key]
+    title, folder = entry[0], entry[1]
+    is_exam = len(entry) > 2 and entry[2] == 'exam'
+    words = PAPER_WORDS if is_exam else C.papers
+    href = C.base + words['folder'] + folder + ('' if folder.endswith('.html') else '/')
+    return title, href, is_exam
+
 TYPE_LABEL = {'mcq': 'MCQ', 'tf': 'True / False', 'scenario': 'Scenario', 'short': 'Written'}
 WEIGHT = {1: ('Low', '●○○'), 2: ('Medium', '●●○'), 3: ('High', '●●●')}
 CIRCLED = '⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫'
@@ -548,7 +560,9 @@ def render_slide(deck, s, mod):
         body = '<h2>%s</h2>%s' % (e(s['title']), sub)
     foot = '<div class="slide-foot"><span class="bar"></span><span class="num">%d</span></div>' % n
     direct = [p for p in s['past'] if not p['related']]
-    stamp = '<div class="stamp">%s</div>' % C.papers['stamp'] if direct else ''
+    on_exam = any(paper_ref(p['paper'])[2] for p in direct)
+    words = PAPER_WORDS if on_exam else C.papers
+    stamp = '<div class="stamp">%s</div>' % words['stamp'] if direct else ''
     if kind == 'image':
         # The original slide shown as it is (AUTO_SLIDES): the picture is the whole slide.
         src = 'figures/' + s['fig'][0].rsplit('.', 1)[0] + FIG_EXT
@@ -575,11 +589,12 @@ def render_slide(deck, s, mod):
     if s['past']:
         links = []
         for p in s['past']:
-            title, folder = C.paper_list[p['paper']]
-            href = C.base + C.papers['folder'] + folder + ('' if folder.endswith('.html') else '/')
+            title, href, _ = paper_ref(p['paper'])
             links.append('<a class="%s" href="%s" target="_top">%s%s · %s</a>' % (
                 'rel' if p['related'] else 'dir', href, '' if p['related'] else '★ ', e(title), e(p['label'])))
-        label = C.papers['direct'] if direct else C.papers['related']
+        if not direct and any(paper_ref(p['paper'])[2] for p in s['past']):
+            words = PAPER_WORDS
+        label = words['direct'] if direct else words['related']
         extras.append('<div class="past"><p class="row-label">%s</p><div class="links">%s</div></div>' % (label, ''.join(links)))
     if s['seen']:
         links = []
@@ -764,10 +779,9 @@ def exam_items(s):
     """Past-paper pointers first, then the practice questions (a question whose explanation names a real paper is tagged past)."""
     out = []
     for p in s['past']:
-        title, folder = C.paper_list[p['paper']]
-        href = C.base + C.papers['folder'] + folder + ('' if folder.endswith('.html') else '/')
+        title, href, _ = paper_ref(p['paper'])
         out.append({'kind': 'past', 'ref': title, 'href': href, 'label': ('Related question: ' if p['related'] else '') + p['label']})
-    titles = [t for t, _ in C.paper_list.values()]
+    titles = [entry[0] for entry in C.paper_list.values()]
     for q in s['exam']:
         named = [t for t in titles if t in (q.get('why') or '')]
         item = {'kind': 'past' if named else 'predict', 'ref': ' · '.join(named), 'q': unmark(q['q']), 'why': unmark(q.get('why') or '')}

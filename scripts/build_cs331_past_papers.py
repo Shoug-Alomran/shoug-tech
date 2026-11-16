@@ -57,6 +57,8 @@ SOURCES = {
     "q2": "Quiz 2",
     "l1": "Online quiz, Ch 1",
     "l2": "Online quiz, Ch 3",
+    "a1": "Major I (261)",
+    "a2": "Major II (261)",
 }
 ALL: list["Q"] = []
 
@@ -806,6 +808,495 @@ m2["13b"] = Q(7, "m2", "Q13b", 2, lambda: '<p class="q-text">The same computer w
 m2["13c"] = Q(7, "m2", "Q13c", 2, lambda: '<p class="q-text">The network administrator of above LAN is tired of manually giving IPs to this LAN of 200 computers? Suggest a solution to make his job easy?</p>' + written(2, "<p><b>DHCP (Dynamic Host Configuration Protocol).</b> A DHCP server automatically leases each computer an IP address, along with the subnet mask, default gateway and DNS server, so nothing has to be configured by hand.</p>", lines=3), ctx=SCENARIO)
 
 
+# ---------------------------------------------------------------- Term 261 drawings
+ABCD = "A)|B)|C)|D)"
+
+
+def fig_labs():
+    s = S(640, 200, "Lab A: six computers on Switch 1. Lab B: six computers on Switch 2. One backbone cable joins the two switches")
+    for cx, lab, sw in ((165, "Lab A", "Switch 1"), (475, "Lab B", "Switch 2")):
+        s.rect(cx - 55, 40, 110, 26, 3)
+        s.text(cx, 58, sw, bold=True)
+        s.text(cx, 24, lab)
+        for i in range(6):
+            x = cx - 125 + i * 50
+            s.line(cx, 66, x, 140)
+            s.pc(x, 155, 30, 22)
+    s.line(220, 53, 420, 53, sw=3.4)
+    s.text(320, 44, "Shared backbone cable")
+    return s.out()
+
+
+def fig_eth_frame():
+    cells = ["Preamble", "SFD", "Destination address", "Source address", "Type", "Data and padding", "CRC"]
+    return '<div class="sg-table-scroll"><table class="ptable center"><tr>' + "".join(f"<td><b>{c}</b></td>" for c in cells) + "</tr></table></div>"
+
+
+def grid_table(rows, caption):
+    body = "".join("<tr>" + "".join(f"<td>{v}</td>" for v in r) + "</tr>" for r in rows)
+    return f'<div class="sg-table-scroll"><table class="ptable center narrow">{body}</table></div><p class="hint">{caption}</p>'
+
+
+def word_box(words):
+    cells = "".join(f"<td>{w}</td>" for w in words)
+    return f'<div class="sg-table-scroll"><table class="ptable terms center"><tr>{cells}</tr></table></div>'
+
+
+def fig_triangle():
+    s = S(520, 210, "Three switches, Switch0, Switch1 and Switch2, each cabled to the other two, forming a loop")
+    pts = {"Switch0": (110, 50), "Switch1": (410, 50), "Switch2": (260, 170)}
+    for a, b in (("Switch0", "Switch1"), ("Switch1", "Switch2"), ("Switch2", "Switch0")):
+        s.line(*pts[a], *pts[b], sw=1.8)
+    for name, (x, y) in pts.items():
+        s.rect(x - 46, y - 13, 92, 26, 3, solid=True)
+        s.text(x, y + (34 if y > 100 else -20), name, bold=True)
+    return s.out()
+
+
+def fig_subnet_tree():
+    s = S(640, 240, "Network 195.11.22.0: Router6 links to the cloud and to Switch2; Switch2 feeds Switch0 (PC0 to PC3) and Switch1 (PC4 to PC7)")
+    s.path("M470 28 C470 10 560 10 560 28 C560 46 470 46 470 28 Z", sw=1.4)
+    s.text(515, 32, "Cloud1")
+    s.router(330, 50, 18, 10)
+    s.text(300, 54, "Router6", "end")
+    s.line(348, 46, 470, 30, dash=True)
+    s.line(330, 60, 330, 92, dash=True)
+    s.rect(300, 92, 60, 18, 2, solid=True)
+    s.text(370, 106, "Switch2", "start")
+    s.rect(130, 28, 110, 22, 2)
+    s.text(185, 43, "195.11.22.0", bold=True)
+    for cx, name, pcs in ((170, "Switch0", range(4)), (470, "Switch1", range(4, 8))):
+        s.line(330, 110, cx, 130, dash=True)
+        s.rect(cx - 30, 130, 60, 16, 2, solid=True)
+        s.text(cx - 40, 128, name, "end") if cx < 330 else s.text(cx + 40, 128, name, "start")
+        for k, i in enumerate(pcs):
+            x = cx - 105 + k * 70
+            s.line(cx, 146, x, 196)
+            s.pc(x, 206, 26, 18)
+            s.text(x, 234, f"PC{i}")
+    return s.out()
+
+
+def fig_domains():
+    s = S(640, 170, "Hub H1 with PC1 and PC2, joined to switch S1 with PC3, joined to router R1 port A; R1 port B to switch S2 with PC6, joined to hub H2 with PC4 and PC5")
+    boxes = {"H1": 90, "S1": 210, "S2": 430, "H2": 550}
+    for name, x in boxes.items():
+        s.rect(x - 32, 46, 64, 18, 2, solid=name.startswith("S"))
+        s.text(x, 36, name, bold=True)
+    s.router(320, 55, 18, 14)
+    s.text(320, 30, "R1", bold=True)
+    s.text(292, 46, "A", "end")
+    s.text(348, 46, "B", "start")
+    for a, b in ((122, 178), (242, 302), (338, 398), (462, 518)):
+        s.line(a, 55, b, 55)
+    for x, label, hx in ((70, "PC1", 82), (115, "PC2", 98), (210, "PC3", 210), (430, "PC6", 430), (530, "PC4", 542), (575, "PC5", 558)):
+        s.line(hx, 64, x, 112)
+        s.pc(x, 122, 24, 16)
+        s.text(x, 150, label)
+    return s.out()
+
+
+def fig_learning():
+    s = S(600, 260, "Switch with ports 1 to 8. PC 10 on port 1, PC 20 on port 2, PC 30 on port 3, PC 15 on port 6, PC 25 on port 7, PC 35 on port 8; ports 4 and 5 are empty")
+    s.rect(170, 92, 290, 60, 3)
+    s.text(440, 146, "Switch", "end")
+    xs = {p: 200 + (p - 1) * 34 for p in range(1, 9)}
+    for p, x in xs.items():
+        s.rect(x - 7, 100, 14, 12, 1, solid=True)
+        s.text(x, 128 if p in (3, 7) else 96, str(p))
+    hosts = {1: (80, 120, "10"), 2: (234, 222, "20"), 3: (268, 40, "30"), 6: (370, 210, "15"), 7: (404, 30, "25"), 8: (520, 190, "35")}
+    for p, (x, y, mac) in hosts.items():
+        px = xs[p]
+        if p == 1:
+            s.line(px - 7, 106, x + 16, y)
+        elif p == 8:
+            s.path(f"M{px} 112 V{y} H{x - 16}", sw=1.4)
+        else:
+            s.line(px, 112 if y > 100 else 100, x, y - 12 if y > 100 else y + 12)
+        s.rect(x - 16, y - 12, 32, 24, 2)
+        s.text(x, y + (34 if y > 100 else -18), mac, bold=True)
+    return s.out()
+
+
+# ---------------------------------------------------------------- Major I (Term 261)
+a1 = {}
+
+
+def a1_topology():
+    return (
+        '<p class="q-text">Lab A has 6 computers connected to Switch 1, and Lab B has another 6 computers connected to Switch 2. '
+        "Switch 1 and Switch 2 are connected through a single shared backbone cable. Both labs are located within the same university campus.</p>"
+        + fig_labs()
+        + f'<p class="q-text sub">a) Based on the connection structure, determine the hybrid topology used. (0.5 mark) {txt("", 0.5, "Hybrid topology", pattern=r"star.{0,12}bus|bus.{0,12}star", show="Star-bus hybrid (two stars joined by a bus backbone)", wide=True)}</p>'
+        + f'<p class="q-text sub">b) Calculate the total number of cable links, including the shared backbone cable. (0.5 mark) {num(13, 0.5, "Number of cable links")}</p>'
+        + '<p class="q-text sub">c) Classify this network as LAN, MAN, or WAN, and briefly justify your answer. (0.5 mark) '
+        + sel(["LAN", "MAN", "WAN"], "LAN", 0.25, "Network type") + "</p>"
+        + written(0.25, "<p>Both labs are on <b>one campus</b>, a small area owned and run by one organization, so it is a <b>LAN</b>. A MAN spans a city; a WAN spans countries.</p>", lines=2, label="Justification")
+    )
+
+
+a1["1"] = Q(1, "a1", "Q1", 1.5, a1_topology,
+            "Each lab is a <b>star</b> (computers around one switch); the backbone between the switches is a <b>bus</b>, so the hybrid is star-bus. "
+            "Links: 6 + 6 computer-to-switch cables + 1 backbone = <b>13</b>. One campus = LAN.")
+
+
+def a1_layers():
+    rows = (
+        ("IP Address", "Network"),
+        ("MAC Address", "Data Link"),
+        ("Encryption/decryption", "Presentation"),
+        ("Port Address", "Transport"),
+        ("Synchronization checkpoints", "Session"),
+        ("Data Rate (number of bits sent per second)", "Physical"),
+    )
+    body = "".join(f"<tr><td>{t}</td><td>{sel(OSI, a, 0.25, 'OSI layer for ' + t)}</td></tr>" for t, a in rows)
+    return '<p class="q-text">Find the corresponding OSI layer for each networking term.</p><table class="ptable"><thead><tr><th>Networking Term</th><th>OSI Layer</th></tr></thead><tbody>' + body + "</tbody></table>"
+
+
+a1["2"] = Q(1, "a1", "Q2", 1.5, a1_layers,
+            "Logical (IP) address = network · physical (MAC) address = data link · encryption and compression = presentation · "
+            "port address = transport (process to process) · checkpoints (synchronization points) = session · data rate and bit synchronization = physical.")
+
+
+A1_Q3 = ("A company is setting up a communication link between two offices located <b>12,000 km</b> apart. The network administrator configures the link with a bandwidth of "
+         "<b>1 Mbps</b> and needs to send a <b>5 Mbyte</b> image file. The signal travels through the medium at a speed of <b>2.4 × 10<sup>8</sup> m/s</b>. The administrator notices that: "
+         "the image takes a noticeably long time to arrive; the received signal is weaker than the transmitted signal; the shape of the signal has changed during transmission.")
+
+
+def a1_delay():
+    return (
+        f'<p class="q-text">{A1_Q3}</p>'
+        '<p class="q-text sub">(a) Calculate the propagation time and transmission time for the 5 Mbyte image. Which one is the dominant factor in this scenario? (1 mark)</p>'
+        f'<p class="q-text sub">Propagation time (seconds): {num(0.05, 0.25, "Propagation time in seconds", show="0.05 s (50 ms)")}</p>'
+        f'<p class="q-text sub">Transmission time (seconds): {num(40, 0.25, "Transmission time in seconds", show="40 s")}</p>'
+        f'<p class="q-text sub">Dominant factor: {sel(["Propagation time", "Transmission time"], "Transmission time", 0.5, "Dominant factor")}</p>'
+    )
+
+
+a1["3a"] = Q(2, "a1", "Q3a", 1, a1_delay,
+             "Propagation = distance ÷ speed = 12,000,000 m ÷ 2.4 × 10<sup>8</sup> m/s = <b>0.05 s</b>. "
+             "Transmission = message ÷ bandwidth = (5 × 10<sup>6</sup> × 8) bits ÷ 10<sup>6</sup> bps = <b>40 s</b> (41.94 s if you take 1 MB = 2<sup>20</sup> bytes). "
+             "40 s is 800 times 0.05 s, so <b>transmission time dominates</b>: a big file on a slow link. Convert bytes to bits (× 8) first.",
+             ctx=A1_Q3)
+
+
+def a1_impair():
+    return (
+        '<p class="q-text">(b) Identify and briefly explain the two transmission impairments responsible for the weakened and distorted signal in this scenario. (1 mark)</p>'
+        f'<p class="q-text sub">Weaker signal: {txt("", 0.25, "Impairment that weakens", pattern="attenuat", show="Attenuation")} '
+        f'Changed shape: {txt("", 0.25, "Impairment that changes the shape", pattern="distort", show="Distortion")}</p>'
+        + written(0.5, "<p><b>Attenuation</b>: the signal loses energy as it travels through the medium, so it arrives weaker. Amplifiers or repeaters fix it.</p>"
+                  "<p><b>Distortion</b>: the signal changes shape because its frequency components travel at different speeds and arrive at different times (out of phase).</p>", lines=3)
+    )
+
+
+a1["3b"] = Q(2, "a1", "Q3b", 1, a1_impair,
+             "Weaker = attenuation (energy loss). Different shape = distortion (components arrive out of phase). The third impairment, noise, adds unwanted energy; the scenario does not describe it.",
+             ctx=A1_Q3)
+
+
+MEDIA = ["RJ-45", "Infra-red", "Cat-6 UTP", "Cross-over Copper Cable", "Microwave", "fiber-optic", "RJ-11", "Straight Through Copper Cable"]
+
+
+def a1_media():
+    pick = lambda a, n: sel(MEDIA, a, 0.5, f"Blank {n}")
+    return (
+        '<p class="q-text">Please fill the blanks from these choices (0.5 for each correct choice):</p>' + word_box(MEDIA)
+        + f'<p class="q-text sub">A. For the backbone connection between two separate office buildings located 2 kilometers apart, you need a high-bandwidth guided medium that can transfer data at extremely high speeds without needing repeaters over this distance and is completely immune to Electromagnetic Interference (EMI). You decide to install (1) {pick("fiber-optic", 1)} cables.</p>'
+        + f'<p class="q-text sub">B. Inside the office rooms, computers are connected directly to local Ethernet switches. To connect a standard PC to a switch, you must use a (2) {pick("Straight Through Copper Cable", 2)} Ethernet cable terminated with an (3) {pick("RJ-45", 3)} connector.</p>'
+        + f'<p class="q-text sub">C. Additionally, the company wants to set up a point-to-point wireless link between two rooftop antennas to connect local networks line-of-sight. Because radio waves below 300 MHz propagate omnidirectionally, you instead select (4) {pick("Microwave", 4)} signals, which operate between 300 MHz and 300 GHz and travel in a unidirectional line-of-sight path.</p>'
+    )
+
+
+a1["4"] = Q(2, "a1", "Q4", 2, a1_media,
+            "Fiber: light, so immune to EMI, high bandwidth, long runs without repeaters. PC to switch = <b>straight-through</b> (unlike devices); cross-over is for like devices (PC to PC, switch to switch). "
+            "Ethernet uses <b>RJ-45</b>; RJ-11 is the telephone plug. 300 MHz to 300 GHz, unidirectional line of sight = <b>microwave</b>; infrared is above 300 GHz and short range. Cat-6 UTP and infra-red are distractors.")
+
+
+def a1_checksum():
+    return (
+        '<p class="q-text">(a) A receiver receives two 8-bit data blocks and one 8-bit checksum: Data bits: <span class="mono">10110110</span> &nbsp; <span class="mono">01101101</span> &nbsp; Checksum: <span class="mono">00100110</span>. Using the CHECKSUM technique (show the steps):</p>'
+        f'<p class="q-text sub">Final complement result: {txt("10110101", 0.5, "Final complement result")}</p>'
+        f'<p class="q-text sub">Determine whether an error is detected and WHY: {sel(["Error detected", "No error"], "Error detected", 0.25, "Error detected?")}</p>'
+        + written(0.25, "<p>The complement is <b>not all 0s</b>, so the receiver detects an error and discards the data.</p>", lines=2, label="Why")
+    )
+
+
+a1["5a"] = Q(3, "a1", "Q5a", 1, a1_checksum,
+             "<span class='mono'>10110110 + 01101101 = 1 00100011</span> → wrap the carry: <span class='mono'>00100011 + 1 = 00100100</span>. "
+             "Add the checksum: <span class='mono'>00100100 + 00100110 = 01001010</span>. Complement: <b class='mono'>10110101</b>. "
+             "Not zero, so an <b>error is detected</b>. (The sender's checksum should have been <span class='mono'>11011011</span>.)")
+
+
+def a1_crc():
+    return (
+        '<p class="q-text">(b) A dataword is: <span class="mono">1011011</span> &nbsp; The generator is: x<sup>3</sup> + x + 1. The sender transmits the resulting CRC codeword.</p>'
+        f'<p class="q-text sub">1. Write the Divisor: {txt("1011", 0.25, "Divisor")}</p>'
+        f'<p class="q-text sub">2. The resultant remainder bits are one less than the number of bits of {txt("", 0.25, "Remainder is one bit shorter than", pattern="divisor|generator", show="the divisor (generator)")}</p>'
+        f'<p class="q-text sub">3. Write the CRC codeword: {txt("1011011101", 0.5, "CRC codeword")}</p>'
+    )
+
+
+a1["5b"] = Q(3, "a1", "Q5b", 1, a1_crc,
+             "x<sup>3</sup> + x + 1 = 1·x<sup>3</sup> + 0·x<sup>2</sup> + 1·x + 1 → divisor <b class='mono'>1011</b> (4 bits), so the remainder has 3 bits and you append 3 zeros: "
+             "<span class='mono'>1011011000</span>. XOR-divide: <span class='mono'>1011 ⊕ 1011 = 0000</span>, bring down bits until the leading bit is 1: "
+             "<span class='mono'>1100 ⊕ 1011 = 0111</span>, <span class='mono'>1110 ⊕ 1011 = 0101</span> → remainder <b class='mono'>101</b>. "
+             "Codeword = dataword + remainder = <b class='mono'>1011011101</b> (dividing it by 1011 leaves 000).")
+
+
+PARITY_261 = [[1, 0, 1, 0, 1], [1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 1, 1]]
+
+
+def a1_parity():
+    return (
+        '<p class="q-text">(c) The receiver gets the following block. The last column and last row contain the parity bits.</p>'
+        + grid_table(PARITY_261, "Last column and last row are parity bits.")
+        + '<p class="q-text sub">Using even parity:</p>'
+        + f'<p class="q-text sub">1. Determine whether an error occurred. {sel(["Yes, an error occurred", "No error"], "Yes, an error occurred", 0.25, "Error occurred?")}</p>'
+        + '<p class="q-text sub">2. If there is exactly one bit error, identify its row and column and give the corrected bit.</p>'
+        + written(0.75, "<p>Count the 1s in every row and column. <b>Row 1</b> (3 ones) and <b>row 4</b> (1 one) are odd; <b>column 1</b> (3 ones) and <b>column 4</b> (1 one) are odd.</p>"
+                  "<p>Two rows and two columns fail, so this is <b>not a single-bit error</b>. At least two bits are wrong: either (row 1, col 1) and (row 4, col 4), or (row 1, col 4) and (row 4, col 1). "
+                  "Two-dimensional parity <b>detects</b> this but <b>cannot locate or correct</b> it, so the block is discarded and resent.</p>"
+                  "<p>For a single-bit error, exactly one row and one column fail; the bit where they cross is flipped.</p>", lines=4)
+    )
+
+
+a1["5c"] = Q(3, "a1", "Q5c", 1, a1_parity,
+             "As printed, rows 1 and 4 and columns 1 and 4 all have odd parity. That pattern can't come from one flipped bit, so state that an error is detected, that it involves at least two bits, and that 2D parity can't correct it. "
+             "If your instructor's key names a single bit, the block on the paper probably has a typo; the method (find the one odd row and the one odd column, flip the bit where they cross) is what the marks are for.")
+
+
+A1_Q6 = "Stations A and B both have a frame ready while the channel is busy."
+
+
+def a1_csma():
+    return (
+        f'<p class="q-text">{A1_Q6}</p>'
+        '<p class="q-text sub">a. If they use 1-persistent CSMA, what will each station do when the channel becomes idle, and what is the likely result? [0.5 mark, 0.25 each]</p>'
+        + written(0.5, "<p>Each station keeps sensing and <b>transmits immediately</b> (probability 1) the moment the channel goes idle. Both send at the same time, so the likely result is a <b>collision</b>.</p>", lines=2)
+        + '<p class="q-text sub">b. Explain why nonpersistent CSMA reduces the chance of that result (found in question a). [0.5 mark]</p>'
+        + written(0.5, "<p>In nonpersistent CSMA a station that finds the line busy <b>waits a random amount of time</b> before sensing again, instead of sensing continuously. A and B pick different random times, so they are unlikely to find the line idle and transmit at the same instant.</p>", lines=2)
+        + '<p class="q-text sub">c. Suppose they instead use 0.2-persistent CSMA. At the start of an idle time slot, what is each station\'s probability of transmitting and of waiting? [0.5 mark, 0.25 each]</p>'
+        + f'<p class="q-text sub">Transmit: {num(0.2, 0.25, "Probability of transmitting")} &nbsp; Wait: {num(0.8, 0.25, "Probability of waiting")}</p>'
+        + '<p class="q-text sub">d. The network changes to centralized polling. The primary (A) asks station B whether it has data to send. Name the frame the primary sends and B\'s response if it has no data. [0.5 mark, 0.25 each]</p>'
+        + f'<p class="q-text sub">Primary sends: {txt("", 0.25, "Frame the primary sends", pattern=r"\bpoll", show="Poll frame")} &nbsp; B replies: {txt("", 0.25, "Response with no data", pattern=r"\bnak\b|negative\s*ack", show="NAK (negative acknowledgment)")}</p>'
+        + '<p class="q-text sub">e. An engineer proposes giving each station a recurring time slot. Name this channelization method. [0.5 mark]</p>'
+        + f'<p class="q-text sub">{txt("", 0.5, "Channelization method", pattern=r"tdma|time.?division", show="TDMA (Time-Division Multiple Access)")}</p>'
+    )
+
+
+a1["6"] = Q(3, "a1", "Q6", 2.5, a1_csma,
+            "1-persistent = send as soon as idle, so both collide. Nonpersistent = random wait before re-sensing. p-persistent with p = 0.2: send with 0.2, wait one slot with 1 − 0.2 = 0.8. "
+            "Polling: the primary sends a <b>poll</b>; a secondary with nothing to send answers <b>NAK</b> (with data it sends a data frame, and the primary ACKs). "
+            "Recurring time slot per station = <b>TDMA</b> (FDMA gives each a frequency band, CDMA a code).", ctx=A1_Q6)
+
+
+A1_Q7 = "A network engineer is troubleshooting an Ethernet connection between a computer and a switch. The following diagram shows the Ethernet frame format."
+ETH_FIELDS = ["Preamble", "SFD", "Destination address", "Source address", "Type", "Data and padding", "CRC"]
+
+
+def a1_ethernet():
+    return (
+        f'<p class="q-text">{A1_Q7}</p>' + fig_eth_frame()
+        + '<p class="q-text sub">a. Before transmission of the actual frame information, the receiver must synchronize with the incoming signal. Which field provides this function? [0.5 pts] '
+        + sel(ETH_FIELDS, "Preamble", 0.5, "Synchronization field") + "</p>"
+        + '<p class="q-text sub">b. The network engineer wants to determine the maximum amount of information that can be transmitted in one Ethernet frame. What is the maximum frame length? [0.5 pts] '
+        + txt("", 0.5, "Maximum frame length", pattern=r"1\s*,?\s*518", show="1518 bytes (data up to 1500 bytes)") + "</p>"
+        + '<p class="q-text sub">c. The network engineer suspects that interference may have corrupted some bits during transmission. Which frame field allows the receiver to detect errors? Explain its purpose. [0.5 pts] '
+        + sel(ETH_FIELDS, "CRC", 0.25, "Error-detection field") + "</p>"
+        + written(0.25, "<p>The <b>CRC</b> (CRC-32) is computed over the addresses, type and data. The receiver recomputes it; if the values differ, the frame is corrupted and is discarded.</p>", lines=2, label="Purpose")
+        + '<p class="q-text sub">d. If the network engineer wants the connection to operate in full-duplex mode, what four conditions must be satisfied for reliable full-duplex Ethernet communication? [1.0 mark, 0.25 each]</p>'
+        + written(1, "<ol><li>The computer is connected to a <b>switch</b> (a dedicated point-to-point link), not a hub or a shared bus.</li>"
+                  "<li>The cable gives <b>separate paths to send and to receive</b> (separate wire pairs or fibers).</li>"
+                  "<li>Both the <b>NIC and the switch port support and are set to full duplex</b> (auto-negotiation agrees on duplex and speed).</li>"
+                  "<li><b>CSMA/CD is turned off</b>: with no collisions possible, there is no carrier sensing or collision detection.</li></ol>", lines=4)
+    )
+
+
+a1["7"] = Q(4, "a1", "Q7", 2.5, a1_ethernet,
+            "Preamble: 7 bytes of alternating 1s and 0s that let the receiver lock its clock; the SFD (10101011) then marks where the frame starts. "
+            "Maximum frame = 6 + 6 + 2 + 1500 + 4 = <b>1518 bytes</b> (minimum 64), not counting preamble and SFD. CRC = error detection. "
+            "Full duplex needs a switched point-to-point link with separate transmit and receive paths, both ends set to full duplex, and no CSMA/CD.", ctx=A1_Q7)
+
+
+# ---------------------------------------------------------------- Major II (Term 261)
+a2 = {}
+a2["mc1"] = mcq(6, "a2", "Q1-1", "A company has a computer belonging to the \"HR Department\" located in a room full of \"IT Department\" computers. The HR computer needs to be on the same broadcast domain as other HR computers in a different building, but the company does not want to run new physical cables to separate the departments. What is the technology that can solve this issue?",
+              ["VLANs physically move the HR computer to the IT room by changing the switch port wiring.",
+               "VLANs divide the physical LAN into logical LANs using software, allowing the HR computer to be grouped with other HR devices regardless of physical location.",
+               "VLANs require the HR computer to have two Network Interface Cards (NICs) to connect to both broadcast domains.",
+               "VLANs increase the collision domain size to include the entire building, allowing the HR computer to communicate with everyone."], 1,
+              "A VLAN groups stations by software configuration, not by where they are plugged in, so no recabling is needed. VLANs create broadcast domains; they don't move wiring, need two NICs or enlarge collision domains.", marks=0.5, labels=ABCD)
+a2["mc2"] = mcq(7, "a2", "Q1-2", "A network administrator is manually configuring a new desktop computer to connect to the corporate network. The administrator inputs the IP Address 172.16.5.20 and the Subnet Mask 255.255.0.0. However, the computer cannot access the internet, only local network resources. Which crucial piece of information did the administrator likely forget to configure?",
+              ["The MAC address of the switch port.", "The Default Gateway IP address.", "The VLAN ID for the department.", "The Spanning Tree Protocol priority."], 1,
+              "Local traffic works with an IP and mask alone. Anything outside the network must go to the router, the <b>default gateway</b>. Without it the host has nowhere to send off-network packets.", marks=0.5, labels=ABCD)
+a2["mc3"] = mcq(6, "a2", "Q1-3", "A company places its HR and Sales departments in separate VLANs. What is one benefit?",
+              ["Separating their broadcast traffic", "Automatically encrypting their files", "Eliminating the need for IP addresses", "Increasing the physical speed of their cables"], 0,
+              "Each VLAN is its own broadcast domain, so HR broadcasts never reach Sales (less traffic, more security). VLANs don't encrypt, remove IP addressing or change cable speed.", marks=0.5, labels=ABCD)
+a2["mc4"] = mcq(7, "a2", "Q1-4", "When a client requests an IP configuration from a DHCP server, which database does the server check first before selecting an address from the dynamic pool?",
+              ["DNS host resolution table", "Static IP addresses database", "Default gateway forwarding table", "Dynamic temporary address pool"], 1,
+              "A DHCP server has a static database (fixed physical-to-IP bindings) and a dynamic pool. It checks the <b>static</b> database first; only if the client isn't there does it lease a temporary address from the pool.", marks=0.5, labels=ABCD)
+a2["mc5"] = mcq(7, "a2", "Q1-5", "Why does a NAT-enabled border router inherently provide basic firewall protection for devices on an internal network?",
+              ["NAT automatically strips and drops all incoming UDP protocol packets at the interface.",
+               "Internal private IP addresses are fully encrypted before leaving the local subnet.",
+               "External hosts cannot initiate connections to an internal machine unless an internal machine initiates the communication session first.",
+               "NAT converts all incoming external packets into local ARP broadcast messages."], 2,
+              "The translation table only gets an entry when an inside host sends first. An unsolicited packet from outside matches no entry, so the router can't tell which private host it is for and drops it. NAT doesn't encrypt or drop UDP.", marks=0.5, labels=ABCD)
+a2["mc6"] = mcq(6, "a2", "Q1-6", "What is the primary function of Virtual LAN (VLAN) technology, and how does a switch manage device membership?",
+              ["It groups computers physically, and switches use routing tables to map device locations.",
+               "It divides a physical LAN into logical LANs, and switches maintain a lookup table to determine which VLAN a machine belongs to.",
+               "It replaces physical switches with software routers that rely on dynamic IP allocation.",
+               "It combines multiple physical networks into a single physical segment without using lookup tables."], 1,
+              "VLAN = logical LANs on one physical LAN. The switch keeps a table mapping each port (or MAC) to its VLAN. Switches don't use routing tables.", marks=0.5, labels=ABCD)
+
+VLANS_261 = '<table class="ptable center narrow"><thead><tr><th>VLAN</th><th>Connected computers</th></tr></thead><tbody><tr><td>VLAN 10</td><td>A, B, C</td></tr><tr><td>VLAN 20</td><td>D, E, F</td></tr><tr><td>VLAN 30</td><td>G, H</td></tr></tbody></table>'
+A2_Q2 = "Eight computers connect to one switch: VLAN 10 (A, B, C), VLAN 20 (D, E, F), VLAN 30 (G, H)."
+a2["2-1"] = mcq(6, "a2", "Q2-1", "Given eight computers connected to a single switch configured with VLAN 10 (A, B, C), VLAN 20 (D, E, F), and VLAN 30 (G, H), how many broadcast domains exist?",
+                ["1 broadcast domain, because all computers are connected to the same physical switch.", "3 broadcast domains, corresponding to VLAN 10, VLAN 20, and VLAN 30.",
+                 "8 broadcast domains, because each computer operates in its own isolated domain.", "4 broadcast domains, including a native management VLAN."], 1,
+                "One broadcast domain per VLAN: 3. Without VLANs the switch would be 1 broadcast domain. (8 would be the number of collision domains, one per port.)", marks=0.5, labels=ABCD, ctx=A2_Q2)
+a2["2-2"] = mcq(6, "a2", "Q2-2", "If computer A (belonging to VLAN 10) sends an Ethernet broadcast across the switch, which other computers will receive the broadcast?",
+                ["All seven other computers (B, C, D, E, F, G, and H) connected to the switch.", "Only computers D, E, and F, because they share the same physical port group.",
+                 "Only computers B and C, since A's incoming port is excluded from flooding within VLAN 10.", "No other computers, because Layer 2 switches drop all broadcast traffic by default."], 2,
+                "A broadcast is flooded only to ports in the same VLAN, and never back out the port it arrived on: B and C.", marks=0.5, labels=ABCD, ctx=A2_Q2)
+a2["2-3"] = mcq(6, "a2", "Q2-3", "Can computer A communicate directly with computer D using only Layer 2 switching?",
+                ["Yes, because both computers are plugged into the exact same physical switch.", "Yes, provided that the switch ports are configured in trunking mode.",
+                 "No, because A belongs to VLAN 10 while D belongs to VLAN 20, and Layer 2 switching keeps these VLANs separate.", "No, unless both computers share the exact same MAC address table entry."], 2,
+                "Different VLANs = different broadcast domains. Traffic between them needs a router (layer 3). A trunk only carries several VLANs between switches; it doesn't join them.", marks=0.5, labels=ABCD, ctx=A2_Q2)
+
+
+def a2_classes():
+    rows = (
+        ("25.18.7.9", "A", None, "25.0.0.0"),
+        ("150.40.12.8", "B", ("255.255.0.0", "/16"), "150.40.0.0"),
+        ("200.16.5.70", "C", ("255.255.255.0", "/24"), "200.16.5.0"),
+    )
+    body = ""
+    for addr, cls, mask, net in rows:
+        mcell = "255.0.0.0/8 (given as example)" if mask is None else txt("", 0.25, f"Default mask for {addr}", pattern=r"^\s*(" + re.escape(mask[0]) + r"(\s*/\s*" + mask[1][1:] + r")?|/?\s*" + mask[1][1:] + r")\s*$", show=f"{mask[0]} {mask[1]}")
+        body += (f"<tr><td>{addr}</td><td>{sel(['A', 'B', 'C', 'D', 'E'], cls, 0.25, 'Class of ' + addr, cls='blank short')}</td>"
+                 f"<td>{mcell}</td><td>{txt('', 0.25, 'Classful network of ' + addr, pattern=ip(net), show=net)}</td></tr>")
+    return ('<p class="q-text">For each address below, identify its class. For each class write the default subnet mask and classful network address. [0.25 each, total 2.0 marks]</p>'
+            '<table class="ptable"><thead><tr><th>IP address</th><th>Class</th><th>Default mask</th><th>Classful network address</th></tr></thead><tbody>' + body + "</tbody></table>")
+
+
+a2["3"] = Q(7, "a2", "Q3", 2, a2_classes,
+            "First byte: 0–127 = A (/8), 128–191 = B (/16), 192–223 = C (/24). Classful network = keep the network bytes, zero the host bytes: "
+            "25.18.7.9 → 25.0.0.0 · 150.40.12.8 → 150.40.0.0 · 200.16.5.70 → 200.16.5.0.")
+
+STP_WORDS = ["loop", "Virtual Local Area Network (VLAN)", "packet fragmentation overflow", "blocked", "disabled", "broadcast storm", "Spanning Tree Protocol", "collision domain"]
+
+
+def a2_stp():
+    pick = lambda a, n: sel(STP_WORDS, a, 0.5, f"Blank {n}")
+    return (
+        '<p class="q-text">A network has been designed but there seems to be some design problems. Three switches are connected as shown in the diagram below. [0.5 each, total 2 marks]</p>'
+        + fig_triangle() + '<p class="q-text sub">Choose the correct answers from the box below (only 04 keywords should be used)</p>' + word_box(STP_WORDS)
+        + f'<p class="q-text sub">a) When a computer sends a broadcast frame, the first switch floods it through its other forwarding ports. The other switches receive and re-flood it. Because the switches form a {pick("loop", "a")}, copies can return to switches that have already forwarded them and continue circulating.</p>'
+        + f'<p class="q-text sub">b) A {pick("broadcast storm", "b")} is defined as the uncontrolled circulation and replication of broadcast frames, consuming bandwidth and device resources.</p>'
+        + f'<p class="q-text sub">c) {pick("Spanning Tree Protocol", "c")} creates a loop-free logical topology by placing selected redundant ports into a non-forwarding state while ensuring all switches remain reachable through the remaining active paths.</p>'
+        + f'<p class="q-text sub">d) Redundant links provide alternative paths if an active link fails, allowing STP to recalculate the topology and activate an appropriate previously {pick("blocked", "d")} path.</p>'
+    )
+
+
+a2["4-1"] = Q(6, "a2", "Q4 Part 1", 2, a2_stp,
+              "Redundant switches form a loop → broadcasts circulate forever → broadcast storm. Spanning Tree puts some ports in the <b>blocking</b> state so the active topology is a tree; if a link fails, a blocked port is brought back to forwarding. "
+              "\"Disabled\" is the trap for (d): STP blocks ports, it doesn't disable them.")
+
+
+def a2_subnet():
+    a = lambda pat, m, label, show: txt("", m, label, pattern=pat, show=show)
+    return (
+        '<p class="q-text">For the given network address <b>195.11.22.0</b> for below network, find the following: [total 2 marks]</p>' + fig_subnet_tree()
+        + '<p class="q-text sub">The network administrator of the network (shown in Part 1) wants to create two subnets to improve the performance and management of the network. To complete his job network administrator needs to find the following:</p>'
+        + f'<p class="q-text sub">a. Write the subnet mask(s) for both the LANs in Decimal? (0.25 marks) {a(r"^\s*(255\.255\.255\.128(\s*\(?\s*/\s*25\s*\)?)?|/\s*25)\s*$", 0.25, "Subnet mask", "255.255.255.128 (/25)")}</p>'
+        + f'<p class="q-text sub">b. Write the two subnet addresses? (0.25+0.25 marks) Subnet 1: {a(ip("195.11.22.0"), 0.25, "Subnet 1 address", "195.11.22.0/25")} Subnet 2: {a(ip("195.11.22.128"), 0.25, "Subnet 2 address", "195.11.22.128/25")}</p>'
+        + f'<p class="q-text sub">c. How many hosts addresses each subnet can have? (0.25 marks) {num(126, 0.25, "Hosts per subnet")}</p>'
+        + f'<p class="q-text sub">d. What is the default gateway of subnet 1 and subnet 2? (0.25+0.25 marks) Subnet 1: {a(r"^\s*195\.11\.22\.(1|126)\s*$", 0.25, "Gateway of subnet 1", "195.11.22.1")} Subnet 2: {a(r"^\s*195\.11\.22\.(129|254)\s*$", 0.25, "Gateway of subnet 2", "195.11.22.129")}</p>'
+        + f'<p class="q-text sub">e. Write the broadcast address for both the subnets? (0.25+0.25 marks) Subnet 1: {a(ip("195.11.22.127"), 0.25, "Broadcast of subnet 1", "195.11.22.127")} Subnet 2: {a(ip("195.11.22.255"), 0.25, "Broadcast of subnet 2", "195.11.22.255")}</p>'
+    )
+
+
+a2["4-2"] = Q(7, "a2", "Q4 Part 2", 2, a2_subnet,
+              "195.11.22.0 is Class C (/24). Two subnets → borrow 1 bit (2<sup>1</sup> = 2) → <b>/25 = 255.255.255.128</b>, block size 256 − 128 = 128. "
+              "Subnets: <b>195.11.22.0</b> (.1–.126, broadcast .127) and <b>195.11.22.128</b> (.129–.254, broadcast .255). Hosts = 2<sup>7</sup> − 2 = <b>126</b>. "
+              "Gateway = the router interface, normally the first usable address: .1 and .129 (the last usable, .126 and .254, is also accepted).")
+
+
+def a2_domains():
+    return (
+        '<p class="q-text">Consider the network shown below. It contains router R1, two switches S1, S2, and two hubs H1, H2, and several computers. [0.5 each, total 1 mark]</p>' + fig_domains()
+        + f'<p class="q-text sub">1. Calculate the total number of collision domains. {num(6, 0.5, "Collision domains")}</p>'
+        + f'<p class="q-text sub">2. Calculate the total number of broadcast domains. {num(2, 0.5, "Broadcast domains")}</p>'
+    )
+
+
+a2["5-1"] = Q(6, "a2", "Q5 Part 1", 1, a2_domains,
+              "Every <b>switch port</b> is its own collision domain; a hub and everything on it is one. S1: H1 side (H1 + PC1 + PC2), PC3, link to R1-A = 3. S2: link to R1-B, PC6, H2 side (H2 + PC4 + PC5) = 3. Total <b>6</b>. "
+              "Only the router splits broadcasts: one per router interface = <b>2</b>.")
+
+
+def a2_learning():
+    act = ["Send to specific destination port", "Send to all ports (flooding)"]
+    return (
+        '<p class="q-text">The switch is just switched on and is in the learning mode (starts with an empty switching table). The figure shows the PC with physical addresses (MAC) as 10 to 35. [0.5 each, total 3.5 marks]</p>'
+        + fig_learning()
+        + '<p class="q-text sub">a) Using the switch\'s source-address learning mechanism, indicate the new entry added to the switching table as a result of each sequential transmission below: '
+        "I. Case 1: PC (10) sends a frame to PC (25) · II. Case 2: PC (25) sends a frame to PC (10) · III. Case 3: PC (20) sends a frame to FF:FF:FF:FF:FF:FF</p>"
+        '<table class="ptable center"><thead><tr><th></th><th>Physical Address (Source - MAC)</th><th>Source Port #</th></tr></thead><tbody>'
+        f'<tr><td>i)</td><td>10 (Example)</td><td>{num(1, 0.5, "Port for MAC 10")}</td></tr>'
+        f'<tr><td>ii)</td><td>{num(25, 0.5, "MAC learned in case 2")}</td><td>7 (Example)</td></tr>'
+        f'<tr><td>iii)</td><td>{num(20, 0.5, "MAC learned in case 3")}</td><td>{num(2, 0.5, "Port for MAC 20")}</td></tr></tbody></table>'
+        '<p class="q-text sub">b) Also explain how the switch will forward the received frame to destination in each case.</p>'
+        + f'<p class="q-text sub">I. Case 1 Forwarding: {sel(act, act[1], 0.5, "Case 1 forwarding")}</p>'
+        + f'<p class="q-text sub">II. Case 2 Forwarding: {sel(act, act[0], 0.5, "Case 2 forwarding")}</p>'
+        + f'<p class="q-text sub">III. Case 3 Forwarding: {sel(act, act[1], 0.5, "Case 3 forwarding")}</p>'
+    )
+
+
+a2["5-2"] = Q(6, "a2", "Q5 Part 2", 3.5, a2_learning,
+              "The switch learns from the <b>source</b> and decides from the <b>destination</b>. Case 1: learns 10 → port 1; 25 is unknown → <b>flood</b>. "
+              "Case 2: learns 25 → port 7; 10 is known (port 1) → <b>forward to port 1 only</b>. Case 3: learns 20 → port 2; FF:FF:FF:FF:FF:FF is broadcast → <b>flood</b> (every port except 2).")
+
+
+def build_major1_261():
+    head = (
+        '<div class="paper-title">CS331 - Data Communications &amp; Networking - Major Exam I - Term 261</div>'
+        '<div class="paper-meta center"><b>Chapters 1 to 4</b><b>Marks = 15</b>'
+        '<b class="marks">Score: <span class="got" data-q="all"></span>/15</b></div>'
+    )
+    bar = lambda title, q, m: f'<div class="clo-bar"><span>{title}</span><span>Total ( <span class="got" data-q="{q}"></span> /{m})</span></div>'
+    p1 = (head + bar("Section 1: Overview of Data Communications and Networking [3 Marks]", "s1", 3)
+          + '<p class="part">Question 1 [1.5 Marks]</p>' + a1["1"].on_paper("1.", "s1")
+          + '<p class="part">Question 2 [1.5 Marks]</p>' + a1["2"].on_paper("2.", "s1"))
+    p2 = (bar("Part 2: Physical Layer [4 Marks]", "s2", 4) + '<p class="part">Question 3 [2 Marks]</p>'
+          + a1["3a"].on_paper("3.", "s2") + a1["3b"].on_paper("", "s2")
+          + '<p class="part">Question 4 [2 Marks]</p>' + a1["4"].on_paper("4.", "s2"))
+    p3 = (bar("Part 3: Data Link Layer [8 Marks]", "s3", 8) + '<p class="part">Question 5 [3 Marks]</p>'
+          + a1["5a"].on_paper("5.", "s3") + a1["5b"].on_paper("", "s3") + a1["5c"].on_paper("", "s3"))
+    p4 = '<p class="part">Question 6 [2.5 Marks]</p>' + a1["6"].on_paper("6.", "s3") + '<p class="part">Question 7 [2.5 Marks]</p>' + a1["7"].on_paper("7.", "s3")
+    return "".join(sheet(i + 1, 4, b) for i, b in enumerate((p1, p2, p3, p4)))
+
+
+def build_major2_261():
+    head = (
+        '<div class="paper-title">CS331 - Major Exam II - Term 261</div>'
+        '<div class="paper-meta center"><b>Chapters 6 and 7</b><b>Total: 15</b>'
+        '<b class="marks">Score: <span class="got" data-q="all"></span>/15</b></div>'
+    )
+    box = lambda q, m: f'<div class="part-box">Total <span class="got" data-q="{q}"></span> /{m}</div>'
+    p1 = (head + box("q1", 3) + '<p class="part">Question #1 MCQs [0.5 each, total 3.0 marks]</p>'
+          + '<p class="q-text">Please read each scenario and question carefully. Select the best answer from the choices provided (A, B, C, or D).</p>'
+          + "".join(a2["mc" + k].on_paper(f"{k}.", "q1") for k in "123456"))
+    p2 = (box("q2", 1.5) + '<p class="part">Question #2 [0.5 each, total 1.5 marks]</p>' + '<p class="q-text">Eight computers connect to one switch:</p>' + VLANS_261
+          + "".join(a2[k].on_paper(f"{k[-1]})", "q2") for k in ("2-1", "2-2", "2-3"))
+          + box("q3", 2) + '<p class="part">Question #3</p>' + a2["3"].on_paper("", "q3"))
+    p3 = box("q4", 4) + '<p class="part">Question #4: Part 1</p>' + a2["4-1"].on_paper("", "q4") + '<p class="part">Question #4: Part 2</p>' + a2["4-2"].on_paper("", "q4")
+    p4 = (box("q5", 4.5) + '<p class="part">Question #5: Part 1</p>' + a2["5-1"].on_paper("", "q5")
+          + '<p class="part">Question #5: Part 2</p>' + a2["5-2"].on_paper("", "q5"))
+    return "".join(sheet(i + 1, 4, b) for i, b in enumerate((p1, p2, p3, p4)))
+
+
 # ---------------------------------------------------------------- LMS quizzes
 L1 = [
     ("A company has 10 computers that need to be connected in a fully connected mesh topology. How many dedicated links are required?", ["20", "45", "90", "10"], 1, "A fully connected mesh with 10 computers requires 10×9÷2 = 45 dedicated links."),
@@ -1033,6 +1524,25 @@ PAPERS = [
     dict(slug="06-online-quiz-chapter-3", file="online-quiz-chapter-3", label="Online Quiz - Chapter 3 (partial)", ar="اختبار إلكتروني - الفصل 3 (جزئي)", chip="LMS, 4 questions", name="CS331 Online Quiz",
          desc="CS331 online quiz on CRC, forward error correction and CSMA, four questions from the LMS review.", h1="CS331 Online Quiz: Data Link Layer (partial)", notes=["Four questions from this online quiz. The correct answers are from the LMS review; the explanations were added here.", CHIP_NOTE], build=lambda: build_lms(l2, ["CRC encoding", "Question 4", "p-persistent CSMA", "CSMA/CD"]), group=1),
 ]
+# Term 261 papers and the predicted final. Rendered and listed after the chapter quizzes,
+# so every older page keeps its input order (saved answers are restored by position).
+TERM_261 = [
+    dict(slug="17-major-exam-1-term-261", file="major-exam-1-term-261", label="Major Exam I (Term 261) - Chapters 1, 2, 3 and 4", ar="الاختبار الفصلي الأول (261) - الفصول 1 و2 و3 و4", chip="Term 261", name="CS331 Major I · 261",
+         desc="CS331 Major Exam I, Term 261, interactive: hybrid topology, OSI terms, propagation vs transmission time, media, checksum, CRC, 2D parity, CSMA, polling, TDMA, Ethernet frame.",
+         h1="CS331 Major Exam I, Term 261", notes=["Transcribed from the Term 261 paper. Answers are worked out here and checked against the course slides; each one explains the working.", CHIP_NOTE, "Written parts are self-marked: open the model answer, then choose your mark.", "Q5c: the block as printed has two odd rows and two odd columns, so it is not a single-bit error. The model answer explains how to handle it."], build=build_major1_261, group=0),
+    dict(slug="18-major-exam-2-term-261", file="major-exam-2-term-261", label="Major Exam II (Term 261) - Chapters 6 and 7", ar="الاختبار الفصلي الثاني (261) - الفصلان 6 و7", chip="Term 261", name="CS331 Major II · 261",
+         desc="CS331 Major Exam II, Term 261, interactive: VLANs, default gateway, DHCP, NAT, IP classes, STP and broadcast storms, subnetting into two subnets, collision and broadcast domains, switch learning.",
+         h1="CS331 Major Exam II, Term 261", notes=["Transcribed from the Term 261 blank copy. Answers are worked out here and checked against the course slides; each one explains the working.", CHIP_NOTE], build=build_major2_261, group=0),
+    dict(slug="19-predicted-final-exam-term-261", file="predicted-final-exam-term-261", label="Final Exam (Predicted) - Term 261 - All Chapters", ar="الاختبار النهائي (متوقع) - 261 - جميع الفصول", chip="Prediction · 40 marks", name="CS331 Predicted Final",
+         desc="CS331 predicted final exam for Term 261, written in the instructors' Major I and II format: 40 marks over Chapters 1 to 10, with routing, transport and DNS parts and model answers.",
+         h1="CS331 Final Exam, Term 261 (predicted)", notes=["Not a real paper. It copies how the Term 261 majors were built: one part per chapter group, scenario stems with lettered parts, 0.25 and 0.5 mark pieces, word boxes, OSI matching, CRC, checksum and parity working, VLAN tables, subnetting on a drawn network, domain counting and switch learning.", "Weighting assumes a 40-mark paper. Chapters 8, 9 and 10 have not been in a major yet, so each gets its own part.", "Every number was recomputed; each question has a model answer."], build=lambda: _predicted(), group=4),
+]
+
+
+def _predicted():
+    import cs331_predicted_final as pf
+
+    return pf.build(sys.modules[__name__])
 BY_CHAPTER = dict(slug="07-questions-by-chapter", file="questions-by-chapter", label="All Questions by Chapter", ar="جميع الأسئلة حسب الفصل", chip="All sources", name="CS331 by Chapter",
                   desc="Every CS331 past-exam question grouped by course chapter, interactive, with its source paper.", group=2)
 
@@ -1074,8 +1584,8 @@ def quiz_pages():
 
 
 # ---------------------------------------------------------------- wrappers, listing, sidebar
-GROUPS = ["Past papers", "Online quizzes", "Practice by chapter", "Chapter quizzes (every concept)"]
-GROUPS_AR = ["الاختبارات السابقة", "الاختبارات الإلكترونية", "تدريب حسب الفصل", "اختبارات الفصول (كل المفاهيم)"]
+GROUPS = ["Past papers", "Online quizzes", "Practice by chapter", "Chapter quizzes (every concept)", "Predicted exams"]
+GROUPS_AR = ["الاختبارات السابقة", "الاختبارات الإلكترونية", "تدريب حسب الفصل", "اختبارات الفصول (كل المفاهيم)", "اختبارات متوقعة"]
 ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>'
 
 
@@ -1205,7 +1715,12 @@ def main():
         folder.mkdir(parents=True, exist_ok=True)
         page = shell(p["slug"], p["name"], "CS331 | " + p["label"], p["desc"], p["chip"], intro(p["h1"], p["notes"], p["nav"]), p["sheets"])
         (folder / f"{p['file']}.html").write_text(page, encoding="utf-8")
-    ordered = PAPERS + [BY_CHAPTER] + quizzes
+    for p in TERM_261:
+        folder = EXAMS / p["slug"]
+        folder.mkdir(parents=True, exist_ok=True)
+        page = shell(p["slug"], p["name"], "CS331 | " + p["label"], p["desc"], p["chip"], intro(p["h1"], p["notes"]), p["build"]())
+        (folder / f"{p['file']}.html").write_text(page, encoding="utf-8")
+    ordered = PAPERS + [BY_CHAPTER] + quizzes + TERM_261
 
     for i, p in enumerate(ordered):
         (EXAMS / p["slug"] / "index.html").write_text(wrapper(p, i, ordered), encoding="utf-8")

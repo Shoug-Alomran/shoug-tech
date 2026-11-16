@@ -174,3 +174,16 @@ ANN = {
                         'Before: 1, since a hub repeats every frame to all ports so all 24 stations share one collision domain. After: 24, one per switch port.')],
              weight=3),
 }
+
+
+# ---- Asked in the Term 261 majors (how the question was phrased)
+from .common import add_past as _add_past, past as _past  # noqa: E402
+
+_add_past(ANN, {
+    5: [_past('m1_261', 'Q7 · Ethernet frame diagram: Preamble, SFD, addresses, Type, Data, CRC')],
+    8: [_past('m1_261', 'Q7a · “the receiver must synchronize with the incoming signal” → Preamble')],
+    15: [_past('m1_261', 'Q7c · interference corrupted bits: which field detects errors? (CRC) explain its purpose')],
+    16: [_past('m1_261', 'Q7b · “maximum frame length” (1518 bytes)')],
+    23: [_past('m1_261', 'Q7d · four conditions for reliable full-duplex Ethernet')],
+    24: [_past('m1_261', 'Q7d · separate transmit and receive paths', related=True)],
+})
