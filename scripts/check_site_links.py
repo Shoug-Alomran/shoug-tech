@@ -10,6 +10,7 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit
+from offline_placeholder import is_offline_placeholder
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -63,7 +64,7 @@ def html_files() -> list[Path]:
     files = []
     for path in SITE.rglob("*.html"):
         stat = path.stat()
-        if stat.st_size > 0 and stat.st_blocks == 0:
+        if stat.st_size > 0 and is_offline_placeholder(stat):
             continue
         files.append(path)
     return sorted(files)

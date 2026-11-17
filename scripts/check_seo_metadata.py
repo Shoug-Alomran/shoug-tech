@@ -7,6 +7,7 @@ import re
 import sys
 from html import unescape
 from pathlib import Path
+from offline_placeholder import is_offline_placeholder
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -51,7 +52,7 @@ def main() -> int:
 
     for path in sorted(SITE.rglob("index.html")):
         stat = path.stat()
-        if stat.st_size == 0 or stat.st_blocks == 0:
+        if stat.st_size == 0 or is_offline_placeholder(stat):
             continue
         html = path.read_text(encoding="utf-8", errors="ignore")
         if is_redirect(html):
@@ -111,7 +112,7 @@ def main() -> int:
                 continue
 
             stat = path.stat()
-            if stat.st_size == 0 or stat.st_blocks == 0:
+            if stat.st_size == 0 or is_offline_placeholder(stat):
                 continue
             html = path.read_text(encoding="utf-8", errors="ignore")
             if is_redirect(html):
