@@ -22,6 +22,7 @@ from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import optimize_site_html as o  # noqa: E402
+from offline_placeholder import is_offline_placeholder  # noqa: E402
 
 LINK_TAG = re.compile(r"<link\b[^>]*>", re.IGNORECASE)
 REL_CANONICAL = re.compile(r'rel=["\']canonical["\']', re.IGNORECASE)
@@ -51,7 +52,7 @@ def build() -> tuple[list[Path], list[Path], dict[Path, str]]:
     standalone, all_pages, canonicals = [], [], {}
     for path in sorted(o.SITE.rglob("*.html")):
         stat = path.stat()
-        if stat.st_size == 0 or stat.st_blocks == 0:
+        if stat.st_size == 0 or is_offline_placeholder(stat):
             continue  # offline filesystem placeholder
         html = path.read_text(encoding="utf-8")
         # Same in-memory transforms the deploy build applies; nothing is written back.

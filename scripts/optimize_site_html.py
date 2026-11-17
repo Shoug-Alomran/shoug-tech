@@ -8,6 +8,7 @@ import re
 import sys
 from pathlib import Path
 from urllib.parse import quote
+from offline_placeholder import is_offline_placeholder
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -427,7 +428,7 @@ def main() -> int:
     offline_placeholders = 0
     for path in SITE.rglob("*.html"):
         stat = path.stat()
-        if stat.st_size == 0 or stat.st_blocks == 0:
+        if stat.st_size == 0 or is_offline_placeholder(stat):
             offline_placeholders += 1
             continue
         original = path.read_text(encoding="utf-8")
