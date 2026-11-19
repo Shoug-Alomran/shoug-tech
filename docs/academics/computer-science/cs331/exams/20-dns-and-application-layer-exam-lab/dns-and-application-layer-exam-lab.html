@@ -1,0 +1,2444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png" />
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CS331 | DNS &amp; Application Layer Exam Lab - Final Practice</title>
+    <meta name="description" content="CS331 final exam practice lab: draw recursive, iterative, mixed and cached DNS resolution arrows on four domain maps, plus application layer concept and calculation questions with instant feedback." />
+    <link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs331/exams/20-dns-and-application-layer-exam-lab/" />
+    <meta property="og:title" content="CS331 | DNS &amp; Application Layer Exam Lab - Final Practice" />
+    <meta property="og:description" content="CS331 final exam practice lab: draw recursive, iterative, mixed and cached DNS resolution arrows on four domain maps, plus application layer concept and calculation questions with instant feedback." />
+    <meta property="og:url" content="https://shoug-tech.com/academics/computer-science/cs331/exams/20-dns-and-application-layer-exam-lab/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      :root {
+        --bg: #17241b;
+        --panel: #1f3125;
+        --card: #243a2b;
+        --line: #3d5a45;
+        --node: #2c4433;
+        --nodeB: #6c8d74;
+        --text: #eef3e9;
+        --mute: #a9bba9;
+        --cream: #f3eedd;
+        --gold: #e4b545;
+        --ring: #e3876a;
+        --ok: #5fd38d;
+        --bad: #ff7a7a;
+        --sel: #ffd166;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      header {
+        padding: 18px 20px 10px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.2px;
+      }
+      .sub {
+        color: var(--mute);
+        font-size: 13.5px;
+        margin-top: 2px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--text);
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+      .chip.on {
+        background: #35563f;
+        border-color: #86b090;
+      }
+      .chip .n {
+        color: var(--mute);
+        margin-left: 4px;
+        font-size: 12px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .score {
+        font-weight: 600;
+        font-size: 14px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        border-radius: 8px;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px 20px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .qhead {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--line);
+        background: #284030;
+      }
+      .qhead .t {
+        font-weight: 700;
+        font-size: 17px;
+      }
+      .tag {
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        background: #3b5a44;
+        color: #d9ecd9;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .marks {
+        margin-left: auto;
+        color: var(--mute);
+        font-size: 13px;
+      }
+      .qbody {
+        padding: 16px 18px;
+      }
+      .prompt {
+        font-size: 15.5px;
+        margin-bottom: 10px;
+      }
+      .prompt b {
+        color: var(--cream);
+      }
+      .note {
+        color: var(--mute);
+        font-size: 13px;
+        margin: -4px 0 10px;
+      }
+      .cache {
+        display: inline-block;
+        background: #3d3418;
+        border: 1px solid #7a6526;
+        color: #f4dc95;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        margin: 2px 0 10px;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .btn {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--text);
+        padding: 7px 13px;
+        border-radius: 9px;
+        font-size: 13.5px;
+      }
+      .btn:hover {
+        border-color: #86b090;
+      }
+      .btn.primary {
+        background: #e9e2c8;
+        color: #1d2a20;
+        border-color: #e9e2c8;
+        font-weight: 700;
+      }
+      .btn.primary:hover {
+        background: #fff6dc;
+      }
+      .hint {
+        color: var(--mute);
+        font-size: 12.5px;
+        margin-right: auto;
+      }
+      .canvasWrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 250px;
+        gap: 14px;
+      }
+      @media (max-width: 820px) {
+        .canvasWrap {
+          grid-template-columns: 1fr;
+        }
+      }
+      svg.cv {
+        width: 100%;
+        height: auto;
+        background: #1c2d21;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .node rect {
+        fill: var(--node);
+        stroke: var(--nodeB);
+        stroke-width: 1.3;
+        rx: 8;
+      }
+      .node text {
+        fill: var(--text);
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+      .node {
+        cursor: pointer;
+      }
+      .node:hover rect {
+        stroke: #cfe6cf;
+      }
+      .node.sel rect {
+        stroke: var(--sel);
+        stroke-width: 2.6;
+        fill: #3e5638;
+      }
+      .badge rect {
+        fill: var(--gold);
+        stroke: none;
+      }
+      .badge text {
+        fill: #2a2105;
+        font-size: 9.5px;
+        font-weight: 800;
+      }
+      .edge {
+        stroke: #44624d;
+        stroke-width: 1.4;
+      }
+      .arr {
+        fill: none;
+        stroke: var(--cream);
+        stroke-width: 2;
+      }
+      .arr.rev {
+        stroke: var(--ok);
+        stroke-dasharray: 6 5;
+        stroke-width: 2.2;
+      }
+      .lbl circle {
+        fill: #1d2a20;
+        stroke: var(--ring);
+        stroke-width: 1.6;
+      }
+      .lbl text {
+        fill: var(--cream);
+        font-size: 10.5px;
+        font-weight: 800;
+      }
+      .lbl {
+        cursor: pointer;
+      }
+      .lbl:hover circle {
+        fill: #5a2a24;
+      }
+      .lbl.rev circle {
+        stroke: var(--ok);
+      }
+      .lbl.rev text {
+        fill: var(--ok);
+      }
+      .side {
+        background: #1c2d21;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        max-height: 520px;
+        overflow: auto;
+      }
+      .side h4 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--mute);
+      }
+      .side ol {
+        margin: 0;
+        padding-left: 22px;
+      }
+      .side li {
+        padding: 1px 0;
+      }
+      .empty {
+        color: var(--mute);
+        font-style: italic;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      table.res {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 13.5px;
+      }
+      table.res th,
+      table.res td {
+        border: 1px solid var(--line);
+        padding: 6px 9px;
+        text-align: left;
+      }
+      table.res th {
+        background: #2b4533;
+        color: #d8e8d8;
+        font-weight: 600;
+      }
+      td.ok {
+        color: var(--ok);
+      }
+      td.bad {
+        color: var(--bad);
+      }
+      .fb {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 14.5px;
+      }
+      .fb.ok {
+        background: #1f4430;
+        border: 1px solid #3f8b5d;
+      }
+      .fb.bad {
+        background: #46251f;
+        border: 1px solid #9a4b3f;
+      }
+      .fb .why {
+        margin-top: 8px;
+        color: #efe4dc;
+      }
+      .fb .why b {
+        color: #fff;
+      }
+      .opts {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        text-align: left;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--text);
+        padding: 10px 13px;
+        border-radius: 10px;
+      }
+      .opt:hover {
+        border-color: #86b090;
+      }
+      .opt.right {
+        border-color: var(--ok);
+        background: #1f4430;
+      }
+      .opt.wrong {
+        border-color: var(--bad);
+        background: #46251f;
+      }
+      .opt .k {
+        display: inline-block;
+        width: 22px;
+        color: var(--mute);
+        font-weight: 700;
+      }
+      input.num {
+        background: #1c2d21;
+        border: 1px solid var(--line);
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: 9px;
+        font: inherit;
+        width: 160px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-top: 1px solid var(--line);
+        background: #213428;
+      }
+      .dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 14px;
+      }
+      .dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        font-size: 9.5px;
+        color: var(--mute);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+      .dot.cur {
+        outline: 2px solid var(--sel);
+      }
+      .dot.ok {
+        background: #2f7a4f;
+        color: #fff;
+        border-color: #2f7a4f;
+      }
+      .dot.bad {
+        background: #93453a;
+        color: #fff;
+        border-color: #93453a;
+      }
+      .legend {
+        color: var(--mute);
+        font-size: 12.5px;
+        margin-top: 8px;
+      }
+      .rules {
+        margin-top: 14px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 13.5px;
+        color: #d9e5d6;
+      }
+      .rules summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .rules li {
+        margin: 3px 0;
+      }
+      footer {
+        text-align: center;
+        color: var(--mute);
+        font-size: 13px;
+        padding: 18px 10px 26px;
+        border-top: 1px solid var(--line);
+        margin-top: 10px;
+      }
+      footer b {
+        color: var(--cream);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>CS 331 — DNS Resolution & Application Layer Exam Lab</h1>
+      <div class="sub">
+        Draw recursive / iterative DNS arrows by clicking boxes, plus concept
+        and calculation questions. One question at a time.
+      </div>
+      <div class="bar" id="filters"></div>
+    </header>
+    <main>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+      <div class="legend">
+        Green = correct · Red = wrong · Keyboard: ← → to move, Ctrl/⌘+Z to undo
+        an arrow, Esc to deselect.
+      </div>
+      <details class="rules">
+        <summary>
+          Rules this lab uses for the DNS drawings (Qimah / Forouzan style)
+        </summary>
+        <ul>
+          <li>
+            Only boxes with the <b style="color: var(--gold)">DNS</b> tag are
+            name servers. Untagged boxes (SA, EDU, CS…) are domain labels and
+            get skipped.
+          </li>
+          <li>
+            The host's <b>local DNS server</b> is the closest DNS-tagged box
+            above it.
+          </li>
+          <li>
+            If the local server is above the target too, it's authoritative and
+            answers directly.
+          </li>
+          <li>
+            Otherwise the lookup starts at <b>Root</b>, then goes down through
+            each DNS-tagged server toward the target.
+          </li>
+          <li>
+            <b>Recursive:</b> host → local → root → … → authoritative, then the
+            answer comes back the same way.
+          </li>
+          <li>
+            <b>Iterative:</b> the host asks each server itself (host → server,
+            server → host), in chain order.
+          </li>
+          <li>
+            <b>Mixed:</b> host → local is recursive; the local server queries
+            the others iteratively (the textbook "in practice" version).
+          </li>
+          <li>
+            <b>Cached:</b> a cached server address lets the local server skip
+            the root. A cached answer means the local server replies at once.
+          </li>
+        </ul>
+      </details>
+    </main>
+    <footer>
+      <b>Shoug Alomran</b> · CS 331 Data Communications &amp; Networks · Final
+      exam practice
+    </footer>
+
+    <script>
+      /* ---------------- Topologies ---------------- */
+      const W = 600;
+      const TOPO_SRC = {
+        T1: {
+          name: "Map A",
+          s: "Root*(SA(EDU(UNI*(CS(lab1! lab2!) EE(PC_EE!)))) COM*(SHOP*(PC_Shop!)))",
+        },
+        T2: {
+          name: "Map B",
+          s: "Root*(SA*(EDU*(PSU*(CCIS(PC1! PC2!) COE(PC3!))) GOV(MOH*(PC_MOH!))) COM*(GOOGLE*(MAIL(PC_Mail!))))",
+        },
+        T3: {
+          name: "Map C",
+          s: "Root*(SA*(COM(STC*(PC_STC!)) EDU(KSU*(CS(labA! labB!) IS(PC_IS!)))) UK*(AC(OX*(PC_OX!))))",
+        },
+        T4: {
+          name: "Map D",
+          s: "Root*(ORG*(ACM*(CHAPTER(PC_ACM!)) IEEE(PC_IEEE!)) NET*(ISP*(HOME(Laptop! Phone!))))",
+        },
+      };
+      function parseTree(s) {
+        let i = 0;
+        const ws = () => {
+          while (s[i] === " ") i++;
+        };
+        function name() {
+          const st = i;
+          while (i < s.length && /[A-Za-z0-9_.]/.test(s[i])) i++;
+          return s.slice(st, i);
+        }
+        function node(parent) {
+          ws();
+          const id = name();
+          let dns = false,
+            host = false;
+          if (s[i] === "*") {
+            dns = true;
+            i++;
+          } else if (s[i] === "!") {
+            host = true;
+            i++;
+          }
+          const nd = {
+            id,
+            label: id,
+            dns,
+            host,
+            kind: host ? "host" : dns ? "dns" : "plain",
+            parent,
+            children: [],
+          };
+          ws();
+          if (s[i] === "(") {
+            i++;
+            ws();
+            while (s[i] !== ")") {
+              nd.children.push(node(nd));
+              ws();
+            }
+            i++;
+          }
+          return nd;
+        }
+        return node(null);
+      }
+      function nodeW(n) {
+        return (
+          Math.max(54, n.label.length * 7.6 + 22) +
+          (n.kind === "dns" ? 36 : 0) +
+          (n.kind === "host" ? 20 : 0) +
+          (n.kind === "server" ? 16 : 0)
+        );
+      }
+      function buildTreeTopo(key) {
+        const root = parseTree(TOPO_SRC[key].s);
+        const all = [];
+        let leaves = 0,
+          maxD = 0;
+        (function walk(n, d) {
+          n.depth = d;
+          maxD = Math.max(maxD, d);
+          all.push(n);
+          if (!n.children.length) n.leaf = leaves++;
+          n.children.forEach((c) => walk(c, d + 1));
+        })(root, 0);
+        const pad = 20,
+          colW = (W - 2 * pad) / leaves,
+          rowH = 68;
+        (function pos(n) {
+          if (!n.children.length) n.x = pad + (n.leaf + 0.5) * colW;
+          else {
+            n.children.forEach(pos);
+            n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2;
+          }
+          n.y = 34 + n.depth * rowH;
+        })(root);
+        const map = {};
+        all.forEach((n) => {
+          n.w = nodeW(n);
+          n.h = 30;
+          map[n.id] = n;
+        });
+        const edges = all
+          .filter((n) => n.parent)
+          .map((n) => [n.parent.id, n.id]);
+        return {
+          key,
+          name: TOPO_SRC[key].name,
+          nodes: all,
+          map,
+          edges,
+          H: 34 + maxD * rowH + 40,
+          root,
+        };
+      }
+      function buildFreeTopo(def) {
+        const map = {};
+        def.nodes.forEach((n) => {
+          n.label = n.label || n.id;
+          n.w = nodeW(n);
+          n.h = 30;
+          map[n.id] = n;
+        });
+        return {
+          key: def.key,
+          nodes: def.nodes,
+          map,
+          edges: def.edges || [],
+          H: def.H,
+        };
+      }
+      const TOPOS = {};
+      Object.keys(TOPO_SRC).forEach((k) => (TOPOS[k] = buildTreeTopo(k)));
+
+      /* ---------------- DNS logic ---------------- */
+      const anc = (n) => {
+        const a = [];
+        let p = n.parent;
+        while (p) {
+          a.push(p);
+          p = p.parent;
+        }
+        return a;
+      };
+      function chainFor(t, src, dst, cache) {
+        const H = t.map[src],
+          T = t.map[dst];
+        const L = anc(H).find((x) => x.dns);
+        const path = anc(T)
+          .reverse()
+          .filter((x) => x.dns);
+        let chain,
+          auth = false;
+        if (cache && cache.type === "answer") chain = [L];
+        else if (anc(T).includes(L)) {
+          auth = true;
+          chain = path.slice(path.indexOf(L));
+        } else {
+          let st = 0;
+          if (cache && cache.type === "server")
+            st = path.indexOf(t.map[cache.node]);
+          chain = [L, ...path.slice(st)];
+        }
+        return {
+          L,
+          chain: chain.map((x) => x.id),
+          auth,
+          skipped: anc(T)
+            .reverse()
+            .filter((x) => !x.dns && x.parent)
+            .map((x) => x.id),
+        };
+      }
+      function arrowsFor(mode, src, chain) {
+        const a = [];
+        if (mode === "rec") {
+          const seq = [src, ...chain];
+          for (let i = 0; i < seq.length - 1; i++) a.push([seq[i], seq[i + 1]]);
+          for (let i = seq.length - 1; i > 0; i--) a.push([seq[i], seq[i - 1]]);
+        } else if (mode === "it") {
+          chain.forEach((c) => {
+            a.push([src, c]);
+            a.push([c, src]);
+          });
+        } else {
+          const L = chain[0];
+          a.push([src, L]);
+          chain.slice(1).forEach((c) => {
+            a.push([L, c]);
+            a.push([c, L]);
+          });
+          a.push([L, src]);
+        }
+        return a;
+      }
+      const MODE_NAME = {
+        rec: "Recursive",
+        it: "Iterative",
+        mix: "Mixed (recursive to local, then iterative)",
+      };
+      const MODE_HINT = {
+        rec: "Each server asks the next one on the host's behalf; the answer travels back along the same path.",
+        it: "The host itself asks every server in turn; each server replies with a referral (or the final answer).",
+        mix: "Host → local server is recursive; the local server then asks each server iteratively.",
+      };
+
+      /* ---------------- Question bank ---------------- */
+      const Q = [];
+      const DNS_PAIRS = {
+        T1: [
+          ["lab1", "PC_Shop"],
+          ["lab2", "PC_Shop"],
+          ["PC_EE", "PC_Shop"],
+          ["PC_Shop", "lab1"],
+          ["PC_Shop", "PC_EE"],
+          ["lab1", "PC_EE"],
+          ["lab1", "lab2"],
+        ],
+        T2: [
+          ["PC1", "PC_Mail"],
+          ["PC1", "PC_MOH"],
+          ["PC_MOH", "PC3"],
+          ["PC_Mail", "PC2"],
+          ["PC_MOH", "PC_Mail"],
+          ["PC1", "PC3"],
+        ],
+        T3: [
+          ["labA", "PC_OX"],
+          ["labA", "PC_STC"],
+          ["PC_OX", "PC_IS"],
+          ["PC_STC", "labB"],
+          ["labA", "PC_IS"],
+        ],
+        T4: [
+          ["Laptop", "PC_ACM"],
+          ["PC_IEEE", "Phone"],
+          ["PC_ACM", "PC_IEEE"],
+          ["Phone", "Laptop"],
+        ],
+      };
+      const CACHE_SPECS = [
+        [
+          "T1",
+          "lab1",
+          "PC_Shop",
+          { type: "server", node: "COM" },
+          ["rec", "it", "mix"],
+        ],
+        ["T1", "lab1", "PC_Shop", { type: "answer" }, ["rec", "it"]],
+        [
+          "T1",
+          "PC_Shop",
+          "lab2",
+          { type: "server", node: "UNI" },
+          ["rec", "it"],
+        ],
+        [
+          "T2",
+          "PC1",
+          "PC_Mail",
+          { type: "server", node: "COM" },
+          ["rec", "it"],
+        ],
+        [
+          "T2",
+          "PC_Mail",
+          "PC1",
+          { type: "server", node: "EDU" },
+          ["rec", "it", "mix"],
+        ],
+        ["T2", "PC_MOH", "PC3", { type: "server", node: "SA" }, ["rec"]],
+        ["T3", "labA", "PC_OX", { type: "server", node: "UK" }, ["rec", "it"]],
+        ["T3", "PC_OX", "labB", { type: "answer" }, ["it"]],
+        [
+          "T4",
+          "Laptop",
+          "PC_ACM",
+          { type: "server", node: "ORG" },
+          ["rec", "it"],
+        ],
+      ];
+      function explainDNS(t, src, dst, mode, info, cache) {
+        const parts = [];
+        parts.push(
+          `Local DNS server of <b>${src}</b> = <b>${info.L.id}</b> (closest DNS-tagged box above it).`,
+        );
+        if (cache && cache.type === "answer")
+          parts.push(
+            `${info.L.id} already has ${dst}'s address cached, so it answers right away. No other server is contacted.`,
+          );
+        else if (info.auth)
+          parts.push(
+            `${info.L.id} is also above <b>${dst}</b>, so it's authoritative for that name. ${info.chain.length > 1 ? "It goes straight down to " + info.chain.slice(1).join(" → ") + "." : "It answers directly. The root is never contacted."}`,
+          );
+        else if (cache && cache.type === "server")
+          parts.push(
+            `${info.L.id} has <b>${cache.node}</b>'s address cached, so it skips the root and starts at ${cache.node}.`,
+          );
+        else
+          parts.push(
+            `${info.L.id} doesn't know <b>${dst}</b>, so the lookup starts at <b>Root</b> (not at ${info.L.id}'s parent).`,
+          );
+        if (info.skipped.length && !(cache && cache.type === "answer"))
+          parts.push(`Skipped (not DNS servers): ${info.skipped.join(", ")}.`);
+        parts.push(`Server chain: <b>${info.chain.join(" → ")}</b>.`);
+        parts.push(MODE_HINT[mode]);
+        return parts.join(" ");
+      }
+      function cacheText(t, src, dst, cache, L) {
+        if (!cache) return "";
+        if (cache.type === "answer")
+          return `Cache: ${L} already resolved ${dst} a few minutes ago (TTL not expired).`;
+        return `Cache: ${L} has ${cache.node}'s address cached.`;
+      }
+      function addDNS(tk, src, dst, mode, cache) {
+        const t = TOPOS[tk];
+        const info = chainFor(t, src, dst, cache);
+        Q.push({
+          id: `dns-${tk}-${src}-${dst}-${mode}-${cache ? cache.type + (cache.node || "") : "n"}`,
+          type: "arrow",
+          cat: cache ? "Cached" : MODE_NAME[mode].split(" ")[0],
+          topo: t,
+          title: `${MODE_NAME[mode].split(" (")[0]}${cache ? " + cache" : ""}: ${src} → ${dst}`,
+          marks: 1,
+          prompt: `<b>${src}</b> wants the IP address of <b>${dst}</b>. Draw the <b>${MODE_NAME[mode]}</b> DNS resolution arrows, in order.`,
+          cache: cacheText(t, src, dst, cache, info.L.id),
+          note: t.name + " · Only boxes with the DNS tag are name servers.",
+          answer: arrowsFor(mode, src, info.chain),
+          explain: explainDNS(t, src, dst, mode, info, cache),
+        });
+      }
+      Object.entries(DNS_PAIRS).forEach(([tk, pairs]) => {
+        ["rec", "it", "mix"].forEach((m) =>
+          pairs.forEach(([s, d]) => addDNS(tk, s, d, m, null)),
+        );
+      });
+      CACHE_SPECS.forEach(([tk, s, d, c, modes]) =>
+        modes.forEach((m) => addDNS(tk, s, d, m, c)),
+      );
+      // interleave so Recursive/Iterative/Mixed of the same pair sit apart but categories stay grouped by filter
+
+      /* ---- Application-layer flow drawings ---- */
+      const EMAIL = buildFreeTopo({
+        key: "email",
+        H: 270,
+        nodes: [
+          { id: "Alice", kind: "host", x: 80, y: 210 },
+          {
+            id: "A_MS",
+            label: "Alice's mail srv",
+            kind: "server",
+            x: 215,
+            y: 70,
+          },
+          {
+            id: "B_MS",
+            label: "Bob's mail srv",
+            kind: "server",
+            x: 395,
+            y: 70,
+          },
+          { id: "Bob", kind: "host", x: 520, y: 210 },
+        ],
+        edges: [
+          ["Alice", "A_MS"],
+          ["A_MS", "B_MS"],
+          ["B_MS", "Bob"],
+        ],
+      });
+      const EMAILDNS = buildFreeTopo({
+        key: "emaildns",
+        H: 300,
+        nodes: [
+          { id: "Alice", kind: "host", x: 75, y: 240 },
+          {
+            id: "A_MS",
+            label: "Alice's mail srv",
+            kind: "server",
+            x: 185,
+            y: 70,
+          },
+          { id: "LocalDNS", label: "Local DNS", kind: "dns", x: 300, y: 250 },
+          {
+            id: "B_MS",
+            label: "Bob's mail srv",
+            kind: "server",
+            x: 415,
+            y: 70,
+          },
+          { id: "Bob", kind: "host", x: 525, y: 240 },
+        ],
+        edges: [
+          ["Alice", "A_MS"],
+          ["A_MS", "B_MS"],
+          ["B_MS", "Bob"],
+          ["A_MS", "LocalDNS"],
+        ],
+      });
+      const PROXY = buildFreeTopo({
+        key: "proxy",
+        H: 280,
+        nodes: [
+          { id: "ClientA", label: "Client A", kind: "host", x: 85, y: 80 },
+          { id: "ClientB", label: "Client B", kind: "host", x: 85, y: 220 },
+          {
+            id: "Proxy",
+            label: "Proxy (web cache)",
+            kind: "server",
+            x: 290,
+            y: 150,
+          },
+          {
+            id: "Origin",
+            label: "Origin server",
+            kind: "server",
+            x: 500,
+            y: 150,
+          },
+        ],
+        edges: [
+          ["ClientA", "Proxy"],
+          ["ClientB", "Proxy"],
+          ["Proxy", "Origin"],
+        ],
+      });
+      const WEB = buildFreeTopo({
+        key: "web",
+        H: 310,
+        nodes: [
+          { id: "PC", kind: "host", x: 70, y: 260 },
+          { id: "Local", label: "Local DNS", kind: "dns", x: 200, y: 150 },
+          { id: "Root", kind: "dns", x: 320, y: 40 },
+          { id: "TLD", label: ".com TLD", kind: "dns", x: 500, y: 100 },
+          { id: "Auth", label: "site.com auth", kind: "dns", x: 490, y: 205 },
+          { id: "Web", label: "www.site.com", kind: "server", x: 320, y: 270 },
+        ],
+        edges: [
+          ["PC", "Local"],
+          ["Local", "Root"],
+          ["Root", "TLD"],
+          ["TLD", "Auth"],
+          ["PC", "Web"],
+        ],
+      });
+      const DHCP = buildFreeTopo({
+        key: "dhcp",
+        H: 220,
+        nodes: [
+          { id: "Client", label: "New laptop", kind: "host", x: 120, y: 110 },
+          {
+            id: "DHCPsrv",
+            label: "DHCP server",
+            kind: "server",
+            x: 470,
+            y: 110,
+          },
+        ],
+        edges: [["Client", "DHCPsrv"]],
+      });
+
+      function addFlow(id, topo, title, prompt, answer, explain, note) {
+        Q.push({
+          id: "flow-" + id,
+          type: "arrow",
+          cat: "App flows",
+          topo,
+          title,
+          marks: 1,
+          prompt,
+          answer,
+          explain,
+          note: note || "",
+          cache: "",
+        });
+      }
+      addFlow(
+        "email-pop",
+        EMAIL,
+        "Email: Alice → Bob (SMTP + POP3)",
+        "Alice sends an email to Bob. Later Bob opens his mail client and downloads it using <b>POP3</b>. Draw every message in order, including Bob's retrieval request.",
+        [
+          ["Alice", "A_MS"],
+          ["A_MS", "B_MS"],
+          ["Bob", "B_MS"],
+          ["B_MS", "Bob"],
+        ],
+        "SMTP <b>pushes</b> the mail twice: Alice's user agent → her mail server, then her server → Bob's server. SMTP never delivers to Bob's PC. POP3/IMAP is a <b>pull</b> protocol: Bob asks his server first, then the server sends the message.",
+      );
+      addFlow(
+        "email-imap",
+        EMAIL,
+        "Email: Bob → Alice (SMTP + IMAP)",
+        "Now Bob replies to Alice. Alice reads the reply with <b>IMAP</b>. Draw every message in order.",
+        [
+          ["Bob", "B_MS"],
+          ["B_MS", "A_MS"],
+          ["Alice", "A_MS"],
+          ["A_MS", "Alice"],
+        ],
+        "Same pattern, reversed: Bob → Bob's server (SMTP), Bob's server → Alice's server (SMTP), then Alice pulls from her own server (IMAP request, then reply).",
+      );
+      addFlow(
+        "email-mx",
+        EMAILDNS,
+        "Email with MX lookup",
+        "Alice emails bob@bobmail.com. Alice's mail server doesn't know where bobmail.com's mail server is, so it asks its local DNS (MX record; assume the DNS answer is cached). Then Bob downloads the mail. Draw all messages in order.",
+        [
+          ["Alice", "A_MS"],
+          ["A_MS", "LocalDNS"],
+          ["LocalDNS", "A_MS"],
+          ["A_MS", "B_MS"],
+          ["Bob", "B_MS"],
+          ["B_MS", "Bob"],
+        ],
+        "Alice's server needs the <b>MX</b> record before it can open the SMTP connection. So: Alice → her server (SMTP), her server → DNS (MX query), DNS → her server (reply), her server → Bob's server (SMTP), Bob → his server, his server → Bob (POP3/IMAP).",
+      );
+      addFlow(
+        "proxy-miss",
+        PROXY,
+        "Web cache: miss",
+        "Client A requests an object for the first time. The proxy doesn't have it. Draw the HTTP messages in order.",
+        [
+          ["ClientA", "Proxy"],
+          ["Proxy", "Origin"],
+          ["Origin", "Proxy"],
+          ["Proxy", "ClientA"],
+        ],
+        "The browser sends every request to the proxy. On a miss the proxy acts as a <b>client</b> to the origin server, stores the object, then acts as a <b>server</b> to Client A.",
+      );
+      addFlow(
+        "proxy-hit",
+        PROXY,
+        "Web cache: hit",
+        "A moment later, Client B requests the same object. The proxy's copy is fresh. Draw the HTTP messages.",
+        [
+          ["ClientB", "Proxy"],
+          ["Proxy", "ClientB"],
+        ],
+        "Cache hit: the proxy returns its stored copy. The origin server isn't contacted at all, which is why caches cut response time and access-link traffic.",
+      );
+      addFlow(
+        "proxy-cond",
+        PROXY,
+        "Web cache: conditional GET",
+        "Next day, Client B requests the object again. The proxy sends a <b>conditional GET</b> (If-Modified-Since) and the origin replies <b>304 Not Modified</b>. Draw the messages.",
+        [
+          ["ClientB", "Proxy"],
+          ["Proxy", "Origin"],
+          ["Origin", "Proxy"],
+          ["Proxy", "ClientB"],
+        ],
+        "Same four arrows as a miss, but the origin's reply (304) carries <b>no object body</b>. The proxy then serves its own copy to Client B.",
+      );
+      addFlow(
+        "web-mix",
+        WEB,
+        "Open www.site.com (nothing cached)",
+        "The PC types www.site.com. Nothing is cached anywhere. The PC → Local DNS query is recursive; the local DNS server queries the others <b>iteratively</b>. Then the browser fetches the page. Draw all messages in order.",
+        [
+          ["PC", "Local"],
+          ["Local", "Root"],
+          ["Root", "Local"],
+          ["Local", "TLD"],
+          ["TLD", "Local"],
+          ["Local", "Auth"],
+          ["Auth", "Local"],
+          ["Local", "PC"],
+          ["PC", "Web"],
+          ["Web", "PC"],
+        ],
+        "DNS first: PC → Local, then Local asks Root (referral to .com), .com TLD (referral to site.com), and the authoritative server (gives the IP), then replies to the PC. Only then does HTTP start: PC → web server, web server → PC.",
+      );
+      addFlow(
+        "web-rec",
+        WEB,
+        "Open www.site.com (fully recursive)",
+        "Same as before, but every DNS query is <b>recursive</b>. Then the browser fetches the page. Draw all messages in order.",
+        [
+          ["PC", "Local"],
+          ["Local", "Root"],
+          ["Root", "TLD"],
+          ["TLD", "Auth"],
+          ["Auth", "TLD"],
+          ["TLD", "Root"],
+          ["Root", "Local"],
+          ["Local", "PC"],
+          ["PC", "Web"],
+          ["Web", "PC"],
+        ],
+        "Recursive: each server passes the query down (Local → Root → TLD → Auth), and the answer travels back up the same path to the PC. Then HTTP request and response.",
+      );
+      addFlow(
+        "web-tld",
+        WEB,
+        "Open www.site.com (TLD cached)",
+        "The local DNS server has the <b>.com TLD</b> server's address cached (mixed mode, as in the first one). Draw all messages in order.",
+        [
+          ["PC", "Local"],
+          ["Local", "TLD"],
+          ["TLD", "Local"],
+          ["Local", "Auth"],
+          ["Auth", "Local"],
+          ["Local", "PC"],
+          ["PC", "Web"],
+          ["Web", "PC"],
+        ],
+        "Because the TLD address is cached, the <b>root is skipped</b>. This is why root servers are rarely visited in practice.",
+      );
+      addFlow(
+        "web-ans",
+        WEB,
+        "Open www.site.com (answer cached)",
+        "The local DNS server already has www.site.com's IP cached. Draw all messages in order.",
+        [
+          ["PC", "Local"],
+          ["Local", "PC"],
+          ["PC", "Web"],
+          ["Web", "PC"],
+        ],
+        "Cache hit at the local server: one DNS query and one reply, then the HTTP request and response.",
+      );
+      addFlow(
+        "web-hostcache",
+        WEB,
+        "Open www.site.com (host cache)",
+        "The PC itself still has www.site.com's IP in its own DNS cache. Draw all messages in order.",
+        [
+          ["PC", "Web"],
+          ["Web", "PC"],
+        ],
+        "No DNS message is needed at all. The browser goes straight to the HTTP request and response.",
+      );
+      addFlow(
+        "dhcp",
+        DHCP,
+        "DHCP: DORA (bonus)",
+        "A new laptop joins the network and gets an IP address using DHCP. Draw the 4 messages in order (Discover, Offer, Request, ACK).",
+        [
+          ["Client", "DHCPsrv"],
+          ["DHCPsrv", "Client"],
+          ["Client", "DHCPsrv"],
+          ["DHCPsrv", "Client"],
+        ],
+        "D-O-R-A: Discover (client, broadcast) → Offer (server) → Request (client) → ACK (server). Runs over UDP, ports 67 (server) and 68 (client).",
+        "Bonus: DHCP may sit in the network-layer chapter in your slides.",
+      );
+
+      /* ---- MCQs ---- */
+      const MCQ = [
+        [
+          "Ports & transport",
+          "DNS queries normally travel over…",
+          ["TCP port 80", "UDP port 53", "UDP port 67", "TCP port 25"],
+          1,
+          "DNS uses <b>UDP port 53</b> (TCP 53 is used for large replies and zone transfers). 67 is DHCP, 25 is SMTP, 80 is HTTP.",
+        ],
+        [
+          "Ports & transport",
+          "HTTP runs on…",
+          ["UDP, port 80", "TCP, port 80", "TCP, port 21", "UDP, port 53"],
+          1,
+          "HTTP needs reliable delivery, so it uses <b>TCP</b>, default <b>port 80</b> (HTTPS: 443).",
+        ],
+        [
+          "Ports & transport",
+          "SMTP uses which port?",
+          ["25", "110", "143", "21"],
+          0,
+          "SMTP = <b>25</b>, POP3 = 110, IMAP = 143, FTP control = 21.",
+        ],
+        [
+          "Ports & transport",
+          "POP3 uses which port?",
+          ["143", "25", "110", "23"],
+          2,
+          "POP3 = <b>110</b>. IMAP = 143.",
+        ],
+        [
+          "Ports & transport",
+          "IMAP uses which port?",
+          ["143", "110", "443", "20"],
+          0,
+          "IMAP = <b>143</b>.",
+        ],
+        [
+          "Ports & transport",
+          "FTP opens its control connection on port __ and its data connection on port __.",
+          ["20 / 21", "21 / 20", "25 / 110", "80 / 443"],
+          1,
+          "Control = <b>21</b>, data = <b>20</b>. Two separate TCP connections.",
+        ],
+        [
+          "Ports & transport",
+          'FTP is called "out-of-band" because…',
+          [
+            "it uses UDP",
+            "control information travels on a separate connection from the file data",
+            "it encrypts the control channel",
+            "it only works outside the LAN",
+          ],
+          1,
+          'Commands and replies go over the control connection (21). File data goes over a separate data connection (20). HTTP is "in-band".',
+        ],
+        [
+          "Ports & transport",
+          "Which pair is correct?",
+          [
+            "Telnet 22, SSH 23",
+            "SSH 22, Telnet 23",
+            "SSH 80, Telnet 21",
+            "Telnet 25, SSH 110",
+          ],
+          1,
+          "SSH = <b>22</b>, Telnet = <b>23</b>.",
+        ],
+        [
+          "Ports & transport",
+          "An application that can't lose any data but tolerates delay (e.g., file transfer, email) should use…",
+          ["UDP", "TCP", "IP only", "ARP"],
+          1,
+          "Reliability matters more than timing, so <b>TCP</b>.",
+        ],
+        [
+          "Ports & transport",
+          "Which is a typical reason to choose UDP for an application?",
+          [
+            "It guarantees in-order delivery",
+            "It has congestion control",
+            "No connection setup, so lower delay; good for real-time apps and DNS",
+            "It retransmits lost segments",
+          ],
+          2,
+          "UDP has no handshake, no congestion control, and small headers. That suits real-time media and short query/response exchanges like DNS.",
+        ],
+        [
+          "Ports & transport",
+          "A process on a host is identified by…",
+          [
+            "MAC address only",
+            "IP address only",
+            "IP address + port number",
+            "Hostname only",
+          ],
+          2,
+          "IP address identifies the host; <b>port number</b> identifies the process on it.",
+        ],
+        [
+          "Ports & transport",
+          "A socket is…",
+          [
+            "A physical port on the router",
+            "The interface (door) between the application process and the transport layer",
+            "A DNS record type",
+            "A type of cable",
+          ],
+          1,
+          "The app sends/receives messages through its socket; the transport layer is on the other side of the door.",
+        ],
+        [
+          "Architectures",
+          "Which architecture has an always-on host with a permanent IP address?",
+          ["Peer-to-peer", "Client–server", "Hybrid mesh", "Ad hoc"],
+          1,
+          "In client–server, the <b>server</b> is always on with a fixed address. Clients may come and go.",
+        ],
+        [
+          "Architectures",
+          '"Self-scalability" is a property of P2P because…',
+          [
+            "peers never leave",
+            "each new peer brings new service capacity as well as new demand",
+            "it uses a central server",
+            "it only uses UDP",
+          ],
+          1,
+          "Peers are clients and servers at once, so capacity grows with the number of users.",
+        ],
+        [
+          "Architectures",
+          "In BitTorrent, the tracker…",
+          [
+            "stores the whole file",
+            "keeps track of the peers participating in a torrent",
+            "encrypts chunks",
+            "is the DNS server for the torrent",
+          ],
+          1,
+          "The tracker lists peers in the torrent; chunks are exchanged between the peers.",
+        ],
+        [
+          "Architectures",
+          "Why isn't the application layer processed by a router or switch?",
+          [
+            "Routers are too slow",
+            "Routers/switches only implement up to the network/data-link layers; application processing happens at the end hosts",
+            "Applications use UDP",
+            "Routers don't have IP addresses",
+          ],
+          1,
+          "Routers process layers 1–3 and switches layers 1–2. Applications live only on end systems.",
+        ],
+        [
+          "HTTP",
+          'HTTP is "stateless". This means…',
+          [
+            "it doesn't use TCP",
+            "the server keeps no information about past client requests",
+            "it can't send images",
+            "each page is encrypted",
+          ],
+          1,
+          "The server doesn't remember earlier requests. Cookies are how sites add state on top.",
+        ],
+        [
+          "HTTP",
+          "Non-persistent HTTP means…",
+          [
+            "at most one object is sent over a TCP connection",
+            "multiple objects share one TCP connection",
+            "HTTP runs over UDP",
+            "the server keeps state",
+          ],
+          0,
+          "Each object needs its own TCP connection, so 2 RTT per object.",
+        ],
+        [
+          "HTTP",
+          "Persistent HTTP means…",
+          [
+            "the server remembers the user",
+            "multiple objects can be sent over a single TCP connection",
+            "the connection is encrypted",
+            "the page never expires",
+          ],
+          1,
+          "The server leaves the connection open after responding (default in HTTP/1.1).",
+        ],
+        [
+          "HTTP",
+          "Which HTTP version uses persistent connections by default?",
+          ["HTTP/1.0", "HTTP/1.1", "HTTP/0.9", "None"],
+          1,
+          "<b>HTTP/1.1</b>. HTTP/1.0 is non-persistent by default.",
+        ],
+        [
+          "HTTP",
+          "RTT (round-trip time) is…",
+          [
+            "the time to transmit the whole file",
+            "the time for a small packet to travel from client to server and back",
+            "the propagation time one way",
+            "the TCP timeout",
+          ],
+          1,
+          "One RTT is used to set up TCP and one more for the request and the start of the response.",
+        ],
+        [
+          "HTTP",
+          "Response time for one object with non-persistent HTTP is…",
+          [
+            "1 RTT",
+            "2 RTT + file transmission time",
+            "RTT + 2 × transmission time",
+            "3 RTT",
+          ],
+          1,
+          "1 RTT for the TCP handshake, 1 RTT for request + first bytes back, plus the time to transmit the file.",
+        ],
+        [
+          "HTTP",
+          "Which method sends form input in the entity body of the request?",
+          ["GET", "POST", "HEAD", "DELETE"],
+          1,
+          "<b>POST</b> puts input in the body. GET puts it in the URL.",
+        ],
+        [
+          "HTTP",
+          "The HEAD method…",
+          [
+            "uploads a file",
+            "asks the server to leave the requested object out of the response (headers only)",
+            "deletes the object",
+            "is only used by proxies",
+          ],
+          1,
+          "Same as GET but no body. Useful for debugging and cache checks.",
+        ],
+        [
+          "HTTP",
+          "Status code 404 means…",
+          ["OK", "Moved Permanently", "Not Found", "Bad Request"],
+          2,
+          "200 OK, 301 Moved Permanently, 400 Bad Request, <b>404 Not Found</b>, 505 HTTP Version Not Supported.",
+        ],
+        [
+          "HTTP",
+          "Status code 301 means…",
+          [
+            "Not Modified",
+            "Moved Permanently (new URL in Location:)",
+            "Server error",
+            "OK",
+          ],
+          1,
+          "301 = <b>Moved Permanently</b>. 304 = Not Modified.",
+        ],
+        [
+          "HTTP",
+          "Status code 505 means…",
+          [
+            "HTTP Version Not Supported",
+            "Bad Request",
+            "Not Found",
+            "Forbidden",
+          ],
+          0,
+          "505 = <b>HTTP Version Not Supported</b>.",
+        ],
+        [
+          "HTTP",
+          "Cookies are used to…",
+          [
+            "speed up TCP",
+            "keep user state across HTTP's stateless requests (identify a user, a cart, a session)",
+            "resolve hostnames",
+            "encrypt HTTP",
+          ],
+          1,
+          "The server sets an ID and the browser sends it back on every request.",
+        ],
+        [
+          "HTTP",
+          "Which is NOT one of the four cookie components?",
+          [
+            "Set-cookie header in the HTTP response",
+            "Cookie header in the HTTP request",
+            "Cookie file on the user's host, managed by the browser",
+            "A cookie table stored in the router",
+          ],
+          3,
+          "The four components: Set-cookie in the response, Cookie in the request, the cookie file on the host, and a back-end database at the site. Routers aren't involved.",
+        ],
+        [
+          "HTTP",
+          "A web cache (proxy server) acts as…",
+          [
+            "only a client",
+            "only a server",
+            "both a client (to the origin) and a server (to the browser)",
+            "a DNS server",
+          ],
+          2,
+          "It serves browsers and fetches from origin servers.",
+        ],
+        [
+          "HTTP",
+          "Main benefits of a web cache:",
+          [
+            "Encrypts traffic",
+            "Reduces response time and reduces traffic on the institution's access link",
+            "Assigns IPs",
+            "Removes the need for DNS",
+          ],
+          1,
+          "Hits are served locally: faster, and the access link carries less traffic.",
+        ],
+        [
+          "HTTP",
+          "In a conditional GET, the cache sends ___ and if the object is unchanged the server replies ___.",
+          [
+            "If-modified-since / 304 Not Modified",
+            "Cookie / 200 OK",
+            "Set-cookie / 301",
+            "Host / 404",
+          ],
+          0,
+          "If unchanged, the server sends <b>304 Not Modified</b> with no body.",
+        ],
+        [
+          "Email",
+          "The three major components of Internet email are…",
+          [
+            "DNS, DHCP, ARP",
+            "User agents, mail servers, SMTP",
+            "Browser, proxy, cookie",
+            "POP3, IMAP, HTTP",
+          ],
+          1,
+          "User agents (Outlook…), mail servers (mailbox + message queue), and SMTP between servers.",
+        ],
+        [
+          "Email",
+          "SMTP is a ___ protocol; HTTP is a ___ protocol.",
+          ["pull / push", "push / pull", "stateless / stateful", "UDP / TCP"],
+          1,
+          "SMTP <b>pushes</b> mail to the receiving server. HTTP clients <b>pull</b> objects.",
+        ],
+        [
+          "Email",
+          "SMTP requires message header and body to be…",
+          ["binary", "7-bit ASCII", "encrypted", "compressed"],
+          1,
+          "7-bit ASCII. Binary attachments are encoded (MIME).",
+        ],
+        [
+          "Email",
+          "Which is NOT a mail access protocol?",
+          ["POP3", "IMAP", "HTTP (webmail)", "SMTP"],
+          3,
+          "SMTP delivers <b>to</b> the receiver's server. POP3, IMAP and HTTP are used to retrieve from it.",
+        ],
+        [
+          "Email",
+          "Which protocol keeps messages on the server and lets the user organize them into folders?",
+          ["POP3", "IMAP", "SMTP", "FTP"],
+          1,
+          "IMAP keeps user state (folders) across sessions. POP3 is download-and-delete (or download-and-keep) and is stateless across sessions.",
+        ],
+        [
+          "Email",
+          "Does SMTP send mail directly from the sender's PC to the receiver's PC?",
+          [
+            "Yes, always",
+            "No. It goes sender UA → sender's mail server → receiver's mail server; the receiver pulls it later",
+            "Only on the same LAN",
+            "Only with IMAP",
+          ],
+          1,
+          "There's no intermediate relay between the two mail servers, but there are always two SMTP hops starting from the user agent.",
+        ],
+        [
+          "Email",
+          "Does SMTP use persistent connections?",
+          [
+            "No",
+            "Yes, several messages can go over one TCP connection",
+            "Only with UDP",
+            "Only for attachments",
+          ],
+          1,
+          "SMTP uses persistent TCP connections.",
+        ],
+        [
+          "DNS",
+          "Why is DNS a distributed database rather than centralized?",
+          [
+            "To hide IP addresses",
+            "A centralized design has a single point of failure, huge traffic volume, distant users and hard maintenance. It doesn't scale.",
+            "Because UDP requires it",
+            "To avoid caching",
+          ],
+          1,
+          "Spreading the data across many servers makes DNS scalable and reliable.",
+        ],
+        [
+          "DNS",
+          "Which is NOT a DNS service?",
+          [
+            "Hostname-to-IP translation",
+            "Host aliasing",
+            "Mail server aliasing",
+            "Assigning IP addresses to hosts",
+          ],
+          3,
+          "DNS also does load distribution. Assigning addresses is <b>DHCP</b>.",
+        ],
+        [
+          "DNS",
+          "Root name servers…",
+          [
+            "give the final IP of every host",
+            "point the resolver to the right TLD servers",
+            "assign domain names",
+            "store web pages",
+          ],
+          1,
+          "There are 13 logical root servers, each replicated many times.",
+        ],
+        [
+          "DNS",
+          "A TLD server (.com, .sa, .edu)…",
+          [
+            "returns the authoritative server for the requested domain",
+            "stores webpages",
+            "assigns private IPs",
+            "converts IP → MAC",
+          ],
+          0,
+          "TLD servers give a referral (NS record) to the domain's authoritative server.",
+        ],
+        [
+          "DNS",
+          "Which server gives the official, final mapping for hosts in its domain?",
+          ["Root", "Local", "TLD", "Authoritative"],
+          3,
+          'The <b>authoritative</b> server. Answers from a cache are "non-authoritative".',
+        ],
+        [
+          "DNS",
+          "The local DNS server…",
+          [
+            "is the top of the hierarchy",
+            "is not strictly part of the hierarchy; it acts as a proxy for the host and caches answers",
+            "only serves .com",
+            "assigns IPs",
+          ],
+          1,
+          'Each ISP, university or company has one (the "default name server"). The host learns its address via DHCP.',
+        ],
+        [
+          "DNS",
+          "Which resolution style puts heavy load on the upper levels of the hierarchy?",
+          ["Iterative", "Recursive", "Both equally", "Neither"],
+          1,
+          "In recursive resolution, root and TLD servers have to keep state and finish every lookup themselves.",
+        ],
+        [
+          "DNS",
+          "In iterative resolution, a server that doesn't know the answer replies with…",
+          [
+            "an error",
+            "a referral to the next server to ask",
+            "the webpage",
+            "a MAC address",
+          ],
+          1,
+          '"I don\'t know, but ask this server."',
+        ],
+        [
+          "DNS",
+          "Cached DNS entries…",
+          [
+            "are permanent",
+            "disappear after their TTL (time to live) expires",
+            "are stored only at root servers",
+            "are never used",
+          ],
+          1,
+          "Caching speeds up lookups, but an entry can be stale until its TTL runs out.",
+        ],
+        [
+          "DNS",
+          "Resource record type A maps…",
+          [
+            "hostname → IPv4 address",
+            "domain → authoritative name server",
+            "alias → canonical name",
+            "domain → mail server",
+          ],
+          0,
+          "<b>A</b>: name → IPv4. AAAA: name → IPv6.",
+        ],
+        [
+          "DNS",
+          "Resource record type NS maps…",
+          [
+            "hostname → IP",
+            "domain → hostname of its authoritative name server",
+            "alias → canonical name",
+            "IP → hostname",
+          ],
+          1,
+          "NS records are how referrals work.",
+        ],
+        [
+          "DNS",
+          "Resource record type CNAME gives…",
+          [
+            "the canonical (real) name for an alias",
+            "the mail server",
+            "the IPv4 address",
+            "the TTL",
+          ],
+          0,
+          "e.g. www.ibm.com is an alias for servereast.backup2.ibm.com.",
+        ],
+        [
+          "DNS",
+          "Resource record type MX gives…",
+          [
+            "the name of the mail server for a domain",
+            "the IPv6 address",
+            "the root server",
+            "the web server",
+          ],
+          0,
+          "Mail servers look up the receiver's domain MX before opening SMTP.",
+        ],
+        [
+          "DNS",
+          "DNS query and reply messages…",
+          [
+            "have different formats",
+            "have the same message format",
+            "use different ports",
+            "are always sent over TCP",
+          ],
+          1,
+          "Same format, with a 16-bit ID so the reply can be matched to the query.",
+        ],
+        [
+          "DNS",
+          "In practice, the host → local DNS query is ___, and local → root/TLD/auth queries are ___.",
+          [
+            "iterative / recursive",
+            "recursive / iterative",
+            "recursive / recursive",
+            "iterative / iterative",
+          ],
+          1,
+          "The host asks once and waits (recursive); the local server chases the referrals itself (iterative).",
+        ],
+        [
+          "DHCP (bonus)",
+          "The correct order of DHCP messages is…",
+          [
+            "Offer, Discover, ACK, Request",
+            "Discover, Offer, Request, ACK",
+            "Request, Offer, Discover, ACK",
+            "Discover, Request, Offer, ACK",
+          ],
+          1,
+          "<b>DORA</b>: Discover, Offer, Request, ACK.",
+        ],
+        [
+          "DHCP (bonus)",
+          "DHCP runs over…",
+          ["TCP 67/68", "UDP 67 (server) / 68 (client)", "UDP 53", "TCP 80"],
+          1,
+          "<b>UDP</b>: server 67, client 68.",
+        ],
+      ];
+      MCQ.forEach((m, i) =>
+        Q.push({
+          id: "mcq-" + i,
+          type: "mcq",
+          cat: "Concepts",
+          sub: m[0],
+          title: m[0],
+          marks: 1,
+          prompt: m[1],
+          o: m[2],
+          a: m[3],
+          explain: m[4],
+        }),
+      );
+
+      /* ---- Numeric ---- */
+      const NUM = [
+        [
+          "HTTP timing",
+          "A page = 1 base HTML file + 10 referenced images (all small, ignore transmission time). <b>Non-persistent HTTP, no parallel connections.</b> Total time in RTTs?",
+          22,
+          "RTT",
+          "Each object needs 2 RTT (TCP setup + request/response). 11 objects × 2 = <b>22 RTT</b>.",
+        ],
+        [
+          "HTTP timing",
+          "Same page (base + 10 images). <b>Non-persistent HTTP with 5 parallel connections.</b> Total RTTs?",
+          6,
+          "RTT",
+          "Base: 2 RTT. Then 10 images in 2 batches of 5, each batch 2 RTT, so 4. Total = <b>6 RTT</b>.",
+        ],
+        [
+          "HTTP timing",
+          "Same page. <b>Persistent HTTP without pipelining.</b> Total RTTs?",
+          12,
+          "RTT",
+          "Base: 2 RTT (setup + request). Each image then needs 1 RTT on the open connection: 10. Total = <b>12 RTT</b>.",
+        ],
+        [
+          "HTTP timing",
+          "Same page. <b>Persistent HTTP with pipelining.</b> Total RTTs?",
+          3,
+          "RTT",
+          "Base: 2 RTT. All 10 requests are sent back to back, so 1 more RTT. Total = <b>3 RTT</b>.",
+        ],
+        [
+          "HTTP + DNS",
+          "To find a web server's IP, the client visits 3 DNS servers with RTTs of 3 ms, 20 ms and 26 ms. RTT to the web server = 10 ms. The page is a single small HTML file. Total time (ms) from click to receiving the page?",
+          69,
+          "ms",
+          "DNS: 3 + 20 + 26 = 49 ms. HTTP: 2 × 10 = 20 ms. Total = <b>69 ms</b>.",
+        ],
+        [
+          "HTTP + DNS",
+          "Same DNS lookup (49 ms), RTT₀ = 10 ms, but the HTML references <b>8 more small objects</b> on the same server. <b>Non-persistent, no parallel connections.</b> Total ms?",
+          229,
+          "ms",
+          "49 + 2(10) + 8 × 2(10) = 49 + 20 + 160 = <b>229 ms</b>.",
+        ],
+        [
+          "HTTP + DNS",
+          "Same (49 ms DNS, RTT₀ = 10 ms, base + 8 objects). <b>Non-persistent with 5 parallel connections.</b> Total ms?",
+          109,
+          "ms",
+          "49 + 20 (base) + 2 batches × 20 = 49 + 20 + 40 = <b>109 ms</b>.",
+        ],
+        [
+          "HTTP + DNS",
+          "Same (49 ms DNS, RTT₀ = 10 ms, base + 8 objects). <b>Persistent, no pipelining.</b> Total ms?",
+          149,
+          "ms",
+          "49 + 20 + 8 × 10 = <b>149 ms</b>.",
+        ],
+        [
+          "HTTP + DNS",
+          "Same (49 ms DNS, RTT₀ = 10 ms, base + 8 objects). <b>Persistent with pipelining.</b> Total ms?",
+          79,
+          "ms",
+          "49 + 20 + 10 = <b>79 ms</b>.",
+        ],
+        [
+          "HTTP timing",
+          "Non-persistent HTTP, one object of 1,000,000 bits, link rate 10 Mbps, RTT = 50 ms. Response time (ms)?",
+          200,
+          "ms",
+          "2 × RTT + L/R = 100 ms + (10⁶ / 10⁷ s = 100 ms) = <b>200 ms</b>.",
+        ],
+        [
+          "DNS counting",
+          "In Map A, lab1 resolves PC_Shop <b>recursively</b> (no caching). How many DNS messages in total?",
+          8,
+          "msgs",
+          "Chain UNI → Root → COM → SHOP: 4 queries down and 4 replies back = <b>8</b>.",
+        ],
+        [
+          "DNS counting",
+          "In Map B, PC1 resolves PC_MOH <b>iteratively</b> (no caching). How many DNS messages?",
+          8,
+          "msgs",
+          "",
+        ],
+        [
+          "Web cache",
+          "An institution's access link carries 15 Mbps of web traffic. A web cache is installed with a hit rate of 0.4. How much traffic (Mbps) still crosses the access link?",
+          9,
+          "Mbps",
+          "Only misses (60%) go to the Internet: 0.6 × 15 = <b>9 Mbps</b>.",
+        ],
+        [
+          "DNS counting",
+          "A host resolves a name with the <b>mixed</b> method (recursive to local, iterative after). The local server contacts root, TLD and authoritative servers (nothing cached). How many DNS messages in total?",
+          8,
+          "msgs",
+          "Host ↔ local: 2. Local ↔ root, TLD, auth: 3 × 2 = 6. Total = <b>8</b>.",
+        ],
+      ];
+      // fix the Map B iterative count programmatically so it can't drift from the drawing logic
+      (function () {
+        const info = chainFor(TOPOS.T2, "PC1", "PC_MOH", null);
+        NUM[11][2] = info.chain.length * 2;
+        NUM[11][4] = `Chain: ${info.chain.join(", ")} (GOV is skipped because it isn't a DNS server). Iterative = 2 messages per server: ${info.chain.length} × 2 = <b>${info.chain.length * 2}</b>.`;
+      })();
+      NUM.forEach((n, i) =>
+        Q.push({
+          id: "num-" + i,
+          type: "num",
+          cat: "Calculations",
+          title: n[0],
+          marks: 1,
+          prompt: n[1],
+          a: n[2],
+          unit: n[3],
+          explain: n[4],
+        }),
+      );
+
+      /* ---------------- State ---------------- */
+      const CATS = [
+        "Recursive",
+        "Iterative",
+        "Mixed",
+        "Cached",
+        "App flows",
+        "Concepts",
+        "Calculations",
+      ];
+      let S = {
+        draw: {},
+        res: {},
+        pick: {},
+        cats: CATS.slice(),
+        cur: 0,
+        shuffle: false,
+        seed: 1,
+      };
+      try {
+        const raw = localStorage.getItem("cs331-dns-lab");
+        if (raw) S = Object.assign(S, JSON.parse(raw));
+      } catch (e) {}
+      const save = () => {
+        try {
+          localStorage.setItem("cs331-dns-lab", JSON.stringify(S));
+        } catch (e) {}
+      };
+      let ORDER = [],
+        sel = null,
+        showRev = false;
+      function rng(seed) {
+        return () => {
+          seed = (seed * 16807) % 2147483647;
+          return seed / 2147483647;
+        };
+      }
+      function buildOrder() {
+        ORDER = Q.map((q, i) => i).filter((i) => S.cats.includes(Q[i].cat));
+        if (S.shuffle) {
+          const r = rng(S.seed);
+          for (let i = ORDER.length - 1; i > 0; i--) {
+            const j = Math.floor(r() * (i + 1));
+            [ORDER[i], ORDER[j]] = [ORDER[j], ORDER[i]];
+          }
+        }
+        if (S.cur >= ORDER.length) S.cur = 0;
+      }
+
+      /* ---------------- Rendering ---------------- */
+      const $ = (s) => document.querySelector(s);
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+        );
+      function renderFilters() {
+        const f = $("#filters");
+        const counts = {};
+        Q.forEach((q) => (counts[q.cat] = (counts[q.cat] || 0) + 1));
+        const done = Object.values(S.res).length,
+          ok = Object.values(S.res).filter(Boolean).length;
+        f.innerHTML =
+          `<button class="chip ${S.cats.length === CATS.length ? "on" : ""}" data-all>All<span class="n">${Q.length}</span></button>` +
+          CATS.map(
+            (c) =>
+              `<button class="chip ${S.cats.includes(c) ? "on" : ""}" data-c="${c}">${c}<span class="n">${counts[c] || 0}</span></button>`,
+          ).join("") +
+          `<span class="spacer"></span><button class="chip ${S.shuffle ? "on" : ""}" data-sh>Shuffle</button><button class="chip" data-reset>Reset progress</button>
+   <span class="score">Score: ${ok} / ${done} answered · ${Q.length} total</span>`;
+        f.querySelectorAll("[data-c]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const c = b.dataset.c;
+              if (S.cats.length === CATS.length) S.cats = [c];
+              else if (S.cats.includes(c)) {
+                S.cats = S.cats.filter((x) => x !== c);
+                if (!S.cats.length) S.cats = CATS.slice();
+              } else S.cats.push(c);
+              S.cur = 0;
+              buildOrder();
+              save();
+              renderAll();
+            }),
+        );
+        f.querySelector("[data-all]").onclick = () => {
+          S.cats = CATS.slice();
+          S.cur = 0;
+          buildOrder();
+          save();
+          renderAll();
+        };
+        f.querySelector("[data-sh]").onclick = () => {
+          S.shuffle = !S.shuffle;
+          S.seed = Math.floor(Math.random() * 1e9) + 1;
+          S.cur = 0;
+          buildOrder();
+          save();
+          renderAll();
+        };
+        const rb = f.querySelector("[data-reset]");
+        rb.onclick = () => {
+          if (rb.dataset.arm) {
+            S.draw = {};
+            S.res = {};
+            S.pick = {};
+            S.cur = 0;
+            save();
+            renderAll();
+          } else {
+            rb.dataset.arm = 1;
+            rb.textContent = "Click again to confirm";
+            setTimeout(() => {
+              rb.textContent = "Reset progress";
+              delete rb.dataset.arm;
+            }, 2500);
+          }
+        };
+      }
+      function renderDots() {
+        $("#dots").innerHTML = ORDER.map((qi, k) => {
+          const q = Q[qi];
+          const r = S.res[q.id];
+          return `<button class="dot ${k === S.cur ? "cur" : ""} ${r === true ? "ok" : r === false ? "bad" : ""}" data-k="${k}" title="${esc(q.title)}">${k + 1}</button>`;
+        }).join("");
+        $("#dots")
+          .querySelectorAll(".dot")
+          .forEach(
+            (d) =>
+              (d.onclick = () => {
+                S.cur = +d.dataset.k;
+                sel = null;
+                showRev = false;
+                save();
+                renderAll();
+              }),
+          );
+      }
+      function renderAll() {
+        renderFilters();
+        renderQ();
+        renderDots();
+      }
+
+      function renderQ() {
+        const card = $("#card");
+        if (!ORDER.length) {
+          card.innerHTML =
+            '<div class="qbody">No questions in this filter.</div>';
+          return;
+        }
+        const q = Q[ORDER[S.cur]];
+        let body = "";
+        if (q.type === "arrow") {
+          body = `<div class="prompt">${q.prompt}</div>${q.cache ? `<div class="cache">${q.cache}</div>` : ""}${q.note ? `<div class="note">${q.note}</div>` : ""}
+    <div class="toolbar"><span class="hint">Click a box, then another box → arrow. Click an arrow's number to delete it.</span>
+      <button class="btn" id="undo">↶ Undo</button><button class="btn" id="clear">Clear</button></div>
+    <div class="canvasWrap"><svg class="cv" id="cv" viewBox="0 0 ${W} ${q.topo.H}"></svg>
+      <div class="side"><h4>Your arrows</h4><div id="list"></div></div></div>
+    <div class="actions"><button class="btn primary" id="check">Check answer</button><button class="btn" id="rev">Show answer</button></div>
+    <div id="fb"></div>`;
+        } else if (q.type === "mcq") {
+          body = `<div class="prompt">${q.prompt}</div><div class="opts">${q.o.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${"abcd"[i]}.</span>${o}</button>`).join("")}</div><div id="fb"></div>`;
+        } else {
+          body = `<div class="prompt">${q.prompt}</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input class="num" id="num" inputmode="decimal" placeholder="Your answer"> <span style="color:var(--mute)">${q.unit}</span><button class="btn primary" id="check">Check</button></div><div id="fb"></div>`;
+        }
+        card.innerHTML = `<div class="qhead"><span class="tag">${q.cat}</span><span class="t">${esc(q.title)}</span><span class="marks">Q ${S.cur + 1} / ${ORDER.length} · ${q.marks} mark</span></div>
+   <div class="qbody">${body}</div>
+   <div class="nav"><button class="btn" id="prev">← Previous</button><span class="spacer" style="flex:1"></span><button class="btn" id="next">Next →</button></div>`;
+        $("#prev").onclick = () => go(-1);
+        $("#next").onclick = () => go(1);
+        if (q.type === "arrow") setupArrow(q);
+        else if (q.type === "mcq") setupMCQ(q);
+        else setupNum(q);
+      }
+      function go(d) {
+        S.cur = (S.cur + d + ORDER.length) % ORDER.length;
+        sel = null;
+        showRev = false;
+        save();
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      /* ---- arrow canvas ---- */
+      const NS = "http://www.w3.org/2000/svg";
+      function el(tag, attrs, parent) {
+        const e = document.createElementNS(NS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        if (parent) parent.appendChild(e);
+        return e;
+      }
+      function edgePt(n, tx, ty, m) {
+        const dx = tx - n.x,
+          dy = ty - n.y;
+        if (!dx && !dy) return { x: n.x, y: n.y };
+        const hw = n.w / 2 + m,
+          hh = n.h / 2 + m;
+        const s = Math.min(
+          hw / Math.abs(dx || 1e-9),
+          hh / Math.abs(dy || 1e-9),
+        );
+        return { x: n.x + dx * s, y: n.y + dy * s };
+      }
+      function drawArrow(g, t, a, b, idx, k, cls, onDel) {
+        const A = t.map[a],
+          B = t.map[b];
+        const dx = B.x - A.x,
+          dy = B.y - A.y,
+          len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len,
+          ny = dx / len,
+          off = 18 + k * 24;
+        const cx = (A.x + B.x) / 2 + nx * off,
+          cy = (A.y + B.y) / 2 + ny * off;
+        const p0 = edgePt(A, cx, cy, 2),
+          p2 = edgePt(B, cx, cy, 5);
+        el(
+          "path",
+          {
+            d: `M${p0.x},${p0.y} Q${cx},${cy} ${p2.x},${p2.y}`,
+            class: "arr" + (cls ? " " + cls : ""),
+            "marker-end": `url(#${cls === "rev" ? "mhG" : "mh"})`,
+            "pointer-events": "none",
+          },
+          g,
+        );
+        const mx = 0.25 * p0.x + 0.5 * cx + 0.25 * p2.x,
+          my = 0.25 * p0.y + 0.5 * cy + 0.25 * p2.y;
+        const lg = el("g", { class: "lbl" + (cls ? " " + cls : "") }, g);
+        el("circle", { cx: mx, cy: my, r: 9 }, lg);
+        const tx = el(
+          "text",
+          { x: mx, y: my + 3.6, "text-anchor": "middle" },
+          lg,
+        );
+        tx.textContent = idx + 1;
+        if (onDel) {
+          lg.onclick = (e) => {
+            e.stopPropagation();
+            onDel();
+          };
+          const ti = el("title", {}, lg);
+          ti.textContent = "Delete arrow " + (idx + 1);
+        } else lg.style.pointerEvents = "none";
+      }
+      function setupArrow(q) {
+        const t = q.topo;
+        const svg = $("#cv");
+        if (!S.draw[q.id]) S.draw[q.id] = [];
+        const arrows = S.draw[q.id];
+        const defs = el("defs", {}, svg);
+        [
+          ["mh", "#f3eedd"],
+          ["mhG", "#5fd38d"],
+        ].forEach(([id, c]) => {
+          const m = el(
+            "marker",
+            {
+              id,
+              viewBox: "0 0 10 10",
+              refX: "8.5",
+              refY: "5",
+              markerWidth: "7",
+              markerHeight: "7",
+              orient: "auto-start-reverse",
+            },
+            defs,
+          );
+          el("path", { d: "M0,0 L10,5 L0,10 z", fill: c }, m);
+        });
+        const gE = el("g", {}, svg),
+          gN = el("g", {}, svg),
+          gA = el("g", {}, svg),
+          gR = el("g", {}, svg);
+        t.edges.forEach(([a, b]) => {
+          const A = t.map[a],
+            B = t.map[b];
+          el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: "edge" }, gE);
+        });
+        t.nodes.forEach((n) => {
+          const g = el(
+            "g",
+            { class: "node" + (sel === n.id ? " sel" : ""), "data-id": n.id },
+            gN,
+          );
+          el(
+            "rect",
+            {
+              x: n.x - n.w / 2,
+              y: n.y - n.h / 2,
+              width: n.w,
+              height: n.h,
+              rx: 8,
+            },
+            g,
+          );
+          let x0 = n.x - n.w / 2 + 11;
+          if (n.kind === "host") {
+            // monitor icon
+            el(
+              "rect",
+              {
+                x: x0,
+                y: n.y - 7,
+                width: 13,
+                height: 9,
+                rx: 1.5,
+                fill: "none",
+                stroke: "#dfe8dc",
+                "stroke-width": 1.4,
+              },
+              g,
+            );
+            el(
+              "line",
+              {
+                x1: x0 + 6.5,
+                y1: n.y + 2,
+                x2: x0 + 6.5,
+                y2: n.y + 5.5,
+                stroke: "#dfe8dc",
+                "stroke-width": 1.4,
+              },
+              g,
+            );
+            el(
+              "line",
+              {
+                x1: x0 + 3,
+                y1: n.y + 6,
+                x2: x0 + 10,
+                y2: n.y + 6,
+                stroke: "#dfe8dc",
+                "stroke-width": 1.4,
+              },
+              g,
+            );
+            x0 += 20;
+          }
+          const txt = el("text", { x: x0, y: n.y + 4.3 }, g);
+          txt.textContent = n.label;
+          if (n.kind === "dns") {
+            const bx = n.x + n.w / 2 - 38;
+            const b = el("g", { class: "badge" }, g);
+            el("rect", { x: bx, y: n.y - 8, width: 28, height: 16, rx: 4 }, b);
+            const bt = el(
+              "text",
+              { x: bx + 14, y: n.y + 3.4, "text-anchor": "middle" },
+              b,
+            );
+            bt.textContent = "DNS";
+          }
+          if (n.kind === "server") {
+            el(
+              "rect",
+              {
+                x: n.x + n.w / 2 - 14,
+                y: n.y - 7,
+                width: 7,
+                height: 14,
+                rx: 1.5,
+                fill: "none",
+                stroke: "#9fc0a6",
+                "stroke-width": 1.2,
+              },
+              g,
+            );
+          }
+          const ti = el("title", {}, g);
+          ti.textContent = n.label;
+          g.onclick = () => {
+            if (!sel) {
+              sel = n.id;
+            } else if (sel === n.id) {
+              sel = null;
+            } else {
+              arrows.push([sel, n.id]);
+              sel = null;
+              clearFb();
+            }
+            save();
+            redraw();
+          };
+        });
+        function redraw() {
+          gN.querySelectorAll(".node").forEach((g) =>
+            g.classList.toggle("sel", g.dataset.id === sel),
+          );
+          gA.innerHTML = "";
+          arrows.forEach((ar, i) => {
+            const k = arrows
+              .slice(0, i)
+              .filter((x) => x[0] === ar[0] && x[1] === ar[1]).length;
+            drawArrow(gA, t, ar[0], ar[1], i, k, "", () => {
+              arrows.splice(i, 1);
+              save();
+              clearFb();
+              redraw();
+            });
+          });
+          gR.innerHTML = "";
+          if (showRev)
+            q.answer.forEach((ar, i) => {
+              const k = q.answer
+                .slice(0, i)
+                .filter((x) => x[0] === ar[0] && x[1] === ar[1]).length;
+              drawArrow(gR, t, ar[0], ar[1], i, k, "rev", null);
+            });
+          $("#list").innerHTML = arrows.length
+            ? `<ol>${arrows.map((a) => `<li>${esc(t.map[a[0]].label)} → ${esc(t.map[a[1]].label)}</li>`).join("")}</ol>`
+            : '<div class="empty">No arrows yet.</div>';
+          $("#rev").textContent = showRev ? "Hide answer" : "Show answer";
+        }
+        function clearFb() {
+          const f = $("#fb");
+          if (f) f.innerHTML = "";
+        }
+        $("#undo").onclick = () => {
+          arrows.pop();
+          save();
+          clearFb();
+          redraw();
+        };
+        $("#clear").onclick = () => {
+          arrows.length = 0;
+          sel = null;
+          save();
+          clearFb();
+          redraw();
+        };
+        $("#rev").onclick = () => {
+          showRev = !showRev;
+          redraw();
+        };
+        $("#check").onclick = () => {
+          const ans = q.answer;
+          const n = Math.max(ans.length, arrows.length);
+          const ok =
+            arrows.length === ans.length &&
+            ans.every((a, i) => arrows[i][0] === a[0] && arrows[i][1] === a[1]);
+          S.res[q.id] = ok;
+          save();
+          renderFilters();
+          renderDots();
+          const L = (id) => esc(t.map[id].label);
+          if (ok) {
+            $("#fb").innerHTML =
+              `<div class="fb ok">✓ Correct: ${q.marks} mark.</div>`;
+            return;
+          }
+          let rows = "";
+          for (let i = 0; i < n; i++) {
+            const u = arrows[i],
+              a = ans[i];
+            const m = u && a && u[0] === a[0] && u[1] === a[1];
+            rows += `<tr><td>${i + 1}</td><td>${u ? L(u[0]) + " → " + L(u[1]) : '<span class="empty">—</span>'}</td><td>${a ? L(a[0]) + " → " + L(a[1]) : '<span class="empty">(extra)</span>'}</td><td class="${m ? "ok" : "bad"}">${m ? "✓" : "✕"}</td></tr>`;
+          }
+          $("#fb").innerHTML =
+            `<div class="fb bad">✕ Not quite: 0 / ${q.marks}. The order matters.<div class="why">${q.explain}</div></div>
+      <table class="res"><tr><th>#</th><th>Your arrow</th><th>Should be</th><th></th></tr>${rows}</table>`;
+        };
+        redraw();
+        if (S.res[q.id] !== undefined && arrows.length) $("#check").click();
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+        if (e.key === "ArrowRight") go(1);
+        else if (e.key === "ArrowLeft") go(-1);
+        else if (e.key === "Escape") {
+          sel = null;
+          const q = Q[ORDER[S.cur]];
+          if (q.type === "arrow") renderQ();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+          const b = $("#undo");
+          if (b) {
+            e.preventDefault();
+            b.click();
+          }
+        }
+      });
+
+      /* ---- MCQ ---- */
+      function setupMCQ(q) {
+        const btns = [...document.querySelectorAll(".opt")];
+        function show(i) {
+          btns.forEach((b, j) => {
+            b.classList.remove("right", "wrong");
+            if (j === q.a) b.classList.add("right");
+            else if (j === i) b.classList.add("wrong");
+          });
+          const ok = i === q.a;
+          $("#fb").innerHTML = ok
+            ? `<div class="fb ok">✓ Correct.</div>`
+            : `<div class="fb bad">✕ The answer is <b>${"abcd"[q.a]}</b>.<div class="why">${q.explain}</div></div>`;
+        }
+        btns.forEach(
+          (b) =>
+            (b.onclick = () => {
+              const i = +b.dataset.i;
+              S.pick[q.id] = i;
+              S.res[q.id] = i === q.a;
+              save();
+              show(i);
+              renderFilters();
+              renderDots();
+            }),
+        );
+        if (S.pick[q.id] !== undefined) show(S.pick[q.id]);
+      }
+      /* ---- Numeric ---- */
+      function setupNum(q) {
+        const inp = $("#num");
+        function check() {
+          const v = parseFloat(inp.value.replace(/,/g, ""));
+          if (isNaN(v)) return;
+          const ok = Math.abs(v - q.a) <= Math.max(0.01, Math.abs(q.a) * 0.005);
+          S.pick[q.id] = inp.value;
+          S.res[q.id] = ok;
+          save();
+          renderFilters();
+          renderDots();
+          $("#fb").innerHTML = ok
+            ? `<div class="fb ok">✓ Correct: ${q.a} ${q.unit}.</div>`
+            : `<div class="fb bad">✕ The answer is <b>${q.a} ${q.unit}</b>.<div class="why">${q.explain}</div></div>`;
+        }
+        $("#check").onclick = check;
+        inp.onkeydown = (e) => {
+          if (e.key === "Enter") check();
+        };
+        if (S.pick[q.id] !== undefined) {
+          inp.value = S.pick[q.id];
+          check();
+        }
+      }
+
+      buildOrder();
+      renderAll();
+    </script>
+  </body>
+</html>
