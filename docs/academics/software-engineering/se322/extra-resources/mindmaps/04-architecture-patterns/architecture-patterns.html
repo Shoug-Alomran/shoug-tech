@@ -1064,20 +1064,59 @@
             children: [
               {
                 id: "branch-1-detail-1",
-                label: "Data-centered styles include repository and blackboard",
-                desc: '<span class="panel-tag">Key Detail</span><p>Data-centered styles include repository and blackboard.</p>',
+                label: "Data-centered styles",
+                desc: '<span class="panel-tag">Key Detail</span><p>Data-centered styles organize components around shared data rather than around direct data flow.</p>',
+                children: [
+                  {
+                    id: "branch-1-detail-1-repository",
+                    label: "Repository",
+                    desc: '<span class="panel-tag">Repository</span><p>A repository gives components shared access to a central passive data store. Clients or services drive control, read and update the stored data, and coordinate independently of the data store.</p>',
+                  },
+                  {
+                    id: "branch-1-detail-1-blackboard",
+                    label: "Blackboard",
+                    desc: '<span class="panel-tag">Blackboard</span><p>A blackboard centrally holds shared state and partial solutions. Specialist knowledge-source components react to changes on the blackboard, while a controller decides which component should act next.</p>',
+                  },
+                ],
               },
               {
                 id: "branch-1-detail-2",
-                label:
-                  "Data-flow styles include pipes and filters; distributed…",
-                desc: '<span class="panel-tag">Key Detail</span><p>Data-flow styles include pipes and filters; distributed styles include client-server and broker.</p>',
+                label: "Data-flow and distributed styles",
+                desc: '<span class="panel-tag">Key Detail</span><p>Architecture families differ by how data or control moves between components.</p>',
+                children: [
+                  {
+                    id: "branch-1-detail-2-pipes",
+                    label: "Pipes and filters",
+                    desc: '<span class="panel-tag">Data-flow</span><p>Pipes transport data between independent filter components. Each filter transforms or processes the stream and passes it onward.</p>',
+                  },
+                  {
+                    id: "branch-1-detail-2-client-server",
+                    label: "Client-server",
+                    desc: '<span class="panel-tag">Distributed</span><p>A client-server architecture separates request-making clients from a service that owns resources or shared server-side functions.</p>',
+                  },
+                  {
+                    id: "branch-1-detail-2-broker",
+                    label: "Broker",
+                    desc: '<span class="panel-tag">Distributed</span><p>A broker mediates discovery, location, registration, request routing, and communication among distributed components.</p>',
+                  },
+                ],
               },
               {
                 id: "branch-1-detail-3",
-                label:
-                  "Interactive styles include MVC, while hierarchical styles…",
-                desc: '<span class="panel-tag">Key Detail</span><p>Interactive styles include MVC, while hierarchical styles include layered architecture.</p>',
+                label: "Interactive and hierarchical styles",
+                desc: '<span class="panel-tag">Key Detail</span><p>Some styles organize interaction between components; others organize components into levels.</p>',
+                children: [
+                  {
+                    id: "branch-1-detail-3-mvc",
+                    label: "MVC",
+                    desc: '<span class="panel-tag">Interactive</span><p>MVC separates model state, presentation logic in the view, and request or interaction coordination in the controller.</p>',
+                  },
+                  {
+                    id: "branch-1-detail-3-layered",
+                    label: "Layered architecture",
+                    desc: '<span class="panel-tag">Hierarchical</span><p>Layered architecture assigns responsibilities to levels and controls dependencies between those levels, often through interfaces or allowed call directions.</p>',
+                  },
+                ],
               },
               {
                 id: "branch-1-detail-4",
@@ -1350,8 +1389,20 @@
               },
               {
                 id: "branch-6-detail-5",
-                label: "In the repository style the data is…",
-                desc: '<span class="panel-tag">Key Detail</span><p>In the repository style the data is passive and the clients drive control; in the blackboard style changes to the data drive which agent runs next.</p>',
+                label: "Control versus data-driven coordination",
+                desc: '<span class="panel-tag">Comparison</span><p>Repository and blackboard styles differ in who initiates component activity.</p>',
+                children: [
+                  {
+                    id: "branch-6-detail-5-repository",
+                    label: "Repository coordination",
+                    desc: '<span class="panel-tag">Repository</span><p>The repository data is passive. Clients or application components drive control and decide when to read or update the shared store.</p>',
+                  },
+                  {
+                    id: "branch-6-detail-5-blackboard",
+                    label: "Blackboard coordination",
+                    desc: '<span class="panel-tag">Blackboard</span><p>Changes to shared blackboard data drive coordination. A knowledge source notices relevant changes and may contribute, while the controller chooses the next action.</p>',
+                  },
+                ],
               },
               {
                 id: "branch-6-examples",
@@ -1429,6 +1480,27 @@
       // ─────────────────────────────────────────────
       // STATE
       // ─────────────────────────────────────────────
+      function normalizeMindmapLeaves(root) {
+        let leafIndex = 0;
+        function walk(node) {
+          const plainDesc = (node.desc || "").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/\s+/g, " ").trim();
+          if (!node.children || !node.children.length) {
+            if (node.label && /(?:…|\.\.\.)$/.test(node.label) && plainDesc) {
+              node.label = plainDesc.replace(/^\s*(?:Core Concept|Key Detail|Example|Comparison|Trade-off)\s*/, "").slice(0, 180);
+              if (!/[.!?]$/.test(node.label)) node.label += ".";
+            }
+            let parts = null;
+            if (plainDesc.includes(";")) parts = plainDesc.split(";").map((part) => part.trim()).filter(Boolean);
+            else if (/\s+while\s+/i.test(plainDesc)) parts = plainDesc.split(/\s+while\s+/i).map((part) => part.trim()).filter(Boolean);
+            else if (/\s+vs\.?\s+/i.test(plainDesc)) parts = plainDesc.split(/\s+vs\.?\s+/i).map((part) => part.trim()).filter(Boolean);
+            else if (/^(.{1,100}?)\s+and\s+(.{1,100})$/i.test(plainDesc) && /include|consist|comprise/i.test(plainDesc)) parts = plainDesc.split(/\s+and\s+/i).map((part) => part.trim()).filter(Boolean);
+            if (parts && parts.length > 1) node.children = parts.map((part) => ({ id: `${node.id}-leaf-${++leafIndex}`, label: part.replace(/\.$/, "").slice(0, 120), desc: `<span class="panel-tag">Key Detail</span><p>${part}</p>` }));
+          }
+          (node.children || []).forEach(walk);
+        }
+        walk(root);
+      }
+      normalizeMindmapLeaves(DATA);
       const state = {
         expanded: new Set(["root"]),
         selected: null,
