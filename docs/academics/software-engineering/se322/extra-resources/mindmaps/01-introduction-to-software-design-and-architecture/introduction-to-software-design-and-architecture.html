@@ -1463,6 +1463,59 @@
         walk(root);
       }
       normalizeMindmapLeaves(DATA);
+      function polishMindmapLeaves(root) {
+        const terms = {
+          MVC:"MVC (Model-View-Controller)", MVP:"MVP (Model-View-Presenter)", MVVM:"MVVM (Model-View-ViewModel)",
+          DIP:"DIP (Dependency Inversion Principle)", OCP:"OCP (Open/Closed Principle)", LSP:"LSP (Liskov Substitution Principle)",
+          ISP:"ISP (Interface Segregation Principle)", SRP:"SRP (Single Responsibility Principle)", UML:"UML (Unified Modeling Language)",
+          COTS:"COTS (Commercial-Off-The-Shelf)", MTBF:"MTBF (Mean Time Between Failures)", MTTR:"MTTR (Mean Time To Repair)",
+          SAAM:"SAAM (Software Architecture Analysis Method)", ATAM:"ATAM (Architecture Tradeoff Analysis Method)",
+          ARID:"ARID (Active Reviews for Intermediate Designs)", ADR:"ADR (Architecture Decision Record)",
+          ADRs:"ADRs (Architecture Decision Records)", NFR:"NFR (Non-Functional Requirement)", NFRs:"NFRs (Non-Functional Requirements)",
+          API:"API (Application Programming Interface)", UI:"UI (User Interface)", "CI/CD":"CI/CD (Continuous Integration/Continuous Delivery)",
+          HL7:"HL7 (Health Level Seven)", FHIR:"FHIR (Fast Healthcare Interoperability Resources)"
+        };
+        function expandText(value) {
+          let text = String(value || "");
+          Object.keys(terms).sort((a,b)=>b.length-a.length).forEach((short)=>{
+            if (text.includes(short + " (")) return;
+            text = text.replace(new RegExp("\\b" + short.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + "\\b","g"), terms[short]);
+          });
+          return text;
+        }
+        function splitList(text) {
+          let body = text;
+          const match = body.match(/(benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles)\b/i);
+          if (match) body = body.slice(body.toLowerCase().indexOf(match[0].toLowerCase()) + match[0].length).replace(/^\s*(?:include[s]?|consist[s]? of|comprise[s]?|are|:)?\s*/i,"");
+          else {
+            const includeMatch = body.match(/includes?|consists?\s+of|comprises?|is made of/i);
+            if (includeMatch) body = body.slice(includeMatch.index + includeMatch[0].length).trim();
+            else return null;
+          }
+          return body.split(/\s*[,;]\s*|\s+\band\b\s+|\s+\bor\b\s+/i).map((part)=>part.replace(/^(the\s+)?following\s+/i,"").replace(/\.$/,"").trim()).filter((part)=>part.length>2);
+        }
+        function walk(node) {
+          node.label = expandText(node.label);
+          node.desc = expandText(node.desc);
+          const plainDesc = String(node.desc || "").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/\s+/g," ").trim();
+          const titleMatch = plainDesc.match(/(Benefits|Costs|Advantages|Disadvantages|Tactics|Roles|Purposes|Types|Parts|Elements|Principles)\b/i);
+          const hasListPhrase = /(?:include[s]?|consists?\s+of|comprises?|is made of)/i.test(plainDesc) || !!titleMatch;
+          if (!node.children || !node.children.length) {
+            const parts = hasListPhrase ? splitList(plainDesc) : null;
+            if (parts && parts.length > 1) {
+              if (titleMatch) node.label = titleMatch[0].replace(/\b\w/g,(letter)=>letter.toUpper());
+              node.children = parts.map((part,index)=>({
+                id:`${node.id}-separate-${index+1}`,
+                label:part.charAt(0).toUpperCase()+part.slice(1),
+                desc:`<span class="panel-tag">Key Detail</span><p>${part}.</p>`
+              }));
+            }
+          }
+          (node.children || []).forEach(walk);
+        }
+        walk(root);
+      }
+      polishMindmapLeaves(DATA);
       const state = {
         expanded: new Set(["root"]),
         selected: null,
