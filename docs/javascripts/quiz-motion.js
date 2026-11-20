@@ -14,31 +14,71 @@
   window.__quizMotion = true;
 
   var root = document.documentElement;
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var CARD = ".q, .question, .q-card, .question-card, .question-block, .quiz-q, .ex-part";
-  var OPTION = "label, .opt, .opt-label, .option, .option-btn, .choice, .quiz-opt";
+  var CARD =
+    ".q, .question, .q-card, .question-card, .question-block, .quiz-q, .ex-part";
+  var OPTION =
+    "label, .opt, .opt-label, .option, .option-btn, .choice, .quiz-opt";
   var FEEDBACK = ".feedback, .fb, .explanation";
-  var SCORE = ".score, .scorebar, .scorebox, .score-box, .progress-pill, #scoreBar, #score";
-  var BAR = ".progress-fill, .progress > i, .progress > span, .progress-bar > *, .bar-fill";
+  var SCORE =
+    ".score, .scorebar, .scorebox, .score-box, .progress-pill, #scoreBar, #score";
+  var BAR =
+    ".progress-fill, .progress > i, .progress > span, .progress-bar > *, .bar-fill";
   var HEAD = ".hero, .exam-head, .exam-header, .topbar, header.top, .top";
   var BUTTON = "button, .btn";
   // Each question card takes the next accent; --cqm-c2 is the one after it.
-  var PALETTE = ["#ff3d8b", "#8b5cf6", "#22d3ee", "#f59e0b", "#10b981", "#3b82f6"];
+  var PALETTE = [
+    "#ff3d8b",
+    "#8b5cf6",
+    "#22d3ee",
+    "#f59e0b",
+    "#10b981",
+    "#3b82f6",
+  ];
   var CTA = /check|submit|grade|finish|reveal|show (all|model)|answers/i;
-  var OK = ["correct", "is-correct", "c-correct", "selected-correct", "correct-ans", "is-right", "correct-answer", "answered-correct"];
-  var BAD = ["wrong", "is-wrong", "c-wrong", "selected-wrong", "wrong-ans", "picked-wrong", "incorrect", "incorrect-answer", "answered-wrong"];
+  var OK = [
+    "correct",
+    "is-correct",
+    "c-correct",
+    "selected-correct",
+    "correct-ans",
+    "is-right",
+    "correct-answer",
+    "answered-correct",
+  ];
+  var BAD = [
+    "wrong",
+    "is-wrong",
+    "c-wrong",
+    "selected-wrong",
+    "wrong-ans",
+    "picked-wrong",
+    "incorrect",
+    "incorrect-answer",
+    "answered-wrong",
+  ];
 
   root.classList.add("cqm");
-  if (!reduce && "IntersectionObserver" in window) root.classList.add("cqm-motion");
+  if (!reduce && "IntersectionObserver" in window)
+    root.classList.add("cqm-motion");
 
   function isLight() {
     var t = root.getAttribute("data-theme");
     if (t) return t === "light";
     var b = document.body;
-    if (b && (b.classList.contains("light") || b.classList.contains("shoug-light-mode"))) return true;
+    if (
+      b &&
+      (b.classList.contains("light") ||
+        b.classList.contains("shoug-light-mode"))
+    )
+      return true;
     var m = getComputedStyle(b || root).backgroundColor.match(/[\d.]+/g);
-    return !!m && (+m[3] !== 0) && 0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2] > 150;
+    return (
+      !!m && +m[3] !== 0 && 0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2] > 150
+    );
   }
 
   function syncLight() {
@@ -53,7 +93,6 @@
     layer.innerHTML = "<i></i><i></i><i></i><i></i>";
     document.body.insertBefore(layer, document.body.firstChild);
   }
-
 
   var order = 0;
   var revealer =
@@ -84,7 +123,8 @@
     card.style.setProperty("--cqm-c2", PALETTE[(hue + 1) % PALETTE.length]);
     if (!revealer) order++;
     // Cards without side padding would put the accent bar over the text.
-    if (parseFloat(getComputedStyle(card).paddingLeft) < 10) card.classList.add("cqm-flush");
+    if (parseFloat(getComputedStyle(card).paddingLeft) < 10)
+      card.classList.add("cqm-flush");
     if (revealer) {
       card.style.setProperty("--cqm-delay", (order++ % 5) * 70 + "ms");
       revealer.observe(card);
@@ -100,26 +140,38 @@
   }
 
   function prepButton(button) {
-    if (button.__cqm || button.closest(".cqm-opt") || button.closest(OPTION)) return;
-    if (button.closest(".cqm-card") && !/check|submit|reveal|show|next|finish|grade/i.test(button.textContent)) return;
+    if (button.__cqm || button.closest(".cqm-opt") || button.closest(OPTION))
+      return;
+    if (
+      button.closest(".cqm-card") &&
+      !/check|submit|reveal|show|next|finish|grade/i.test(button.textContent)
+    )
+      return;
     button.__cqm = true;
     button.classList.add("cqm-btn");
-    if (CTA.test(button.textContent) && button.offsetWidth < 360) button.classList.add("cqm-cta");
+    if (CTA.test(button.textContent) && button.offsetWidth < 360)
+      button.classList.add("cqm-cta");
   }
 
   function scan(node) {
     each(node, CARD, prepCard);
     each(node, OPTION, prepOption);
     each(node, BUTTON, prepButton);
-    each(node, SCORE, function (el) { el.classList.add("cqm-score"); });
-    each(node, BAR, function (el) { el.classList.add("cqm-bar"); });
+    each(node, SCORE, function (el) {
+      el.classList.add("cqm-score");
+    });
+    each(node, BAR, function (el) {
+      el.classList.add("cqm-bar");
+    });
   }
 
   function replay(el, cls, ms) {
     el.classList.remove(cls);
     void el.offsetWidth;
     el.classList.add(cls);
-    setTimeout(function () { el.classList.remove(cls); }, ms);
+    setTimeout(function () {
+      el.classList.remove(cls);
+    }, ms);
   }
 
   function gained(el, oldValue, list) {
@@ -152,14 +204,20 @@
   var bumpTimer = new WeakMap();
   function bump(el) {
     clearTimeout(bumpTimer.get(el));
-    bumpTimer.set(el, setTimeout(function () { replay(el, "cqm-bump", 550); }, 30));
+    bumpTimer.set(
+      el,
+      setTimeout(function () {
+        replay(el, "cqm-bump", 550);
+      }, 30),
+    );
   }
 
   function onMutations(mutations) {
     mutations.forEach(function (m) {
       if (m.type === "childList") {
         m.addedNodes.forEach(scan);
-        var holder = m.target.nodeType === 1 ? m.target : m.target.parentElement;
+        var holder =
+          m.target.nodeType === 1 ? m.target : m.target.parentElement;
         if (!holder) return;
         var fb = holder.closest(FEEDBACK);
         if (fb && m.addedNodes.length) showFeedback(fb);
@@ -174,10 +232,19 @@
         return;
       }
       var el = m.target;
-      if (m.attributeName !== "class" || el.classList.contains("cqm-ok") || el.classList.contains("cqm-bad")) return;
+      if (
+        m.attributeName !== "class" ||
+        el.classList.contains("cqm-ok") ||
+        el.classList.contains("cqm-bad")
+      )
+        return;
       if (gained(el, m.oldValue, OK)) answered(el, true);
       else if (gained(el, m.oldValue, BAD)) answered(el, false);
-      if (el.matches(FEEDBACK) && el.classList.contains("show") && (" " + (m.oldValue || "") + " ").indexOf(" show ") === -1) {
+      if (
+        el.matches(FEEDBACK) &&
+        el.classList.contains("show") &&
+        (" " + (m.oldValue || "") + " ").indexOf(" show ") === -1
+      ) {
         showFeedback(el);
       }
     });
@@ -199,7 +266,9 @@
     dot.style.left = (event.clientX - rect.left) / z + "px";
     dot.style.top = (event.clientY - rect.top) / z + "px";
     option.appendChild(dot);
-    setTimeout(function () { dot.remove(); }, 650);
+    setTimeout(function () {
+      dot.remove();
+    }, 650);
   }
 
   function start() {
@@ -216,11 +285,18 @@
       attributeFilter: ["class"],
       attributeOldValue: true,
     });
-    new MutationObserver(syncLight).observe(root, { attributes: true, attributeFilter: ["data-theme", "class"] });
-    new MutationObserver(syncLight).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    new MutationObserver(syncLight).observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme", "class"],
+    });
+    new MutationObserver(syncLight).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
     document.addEventListener("pointerdown", ripple, true);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

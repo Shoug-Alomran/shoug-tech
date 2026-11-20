@@ -163,7 +163,10 @@ function allowedOrigin(request, env) {
   if (SITE_HOSTS.has(host)) return origin;
   // Only this site's own Pages project. Anyone can create other *.pages.dev
   // sites, so a suffix match would let any of them call these endpoints.
-  if (host === "shoug-tech-site.pages.dev" || host.endsWith(".shoug-tech-site.pages.dev"))
+  if (
+    host === "shoug-tech-site.pages.dev" ||
+    host.endsWith(".shoug-tech-site.pages.dev")
+  )
     return origin;
   return "";
 }

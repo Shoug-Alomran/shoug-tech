@@ -155,5 +155,7 @@ test("final roadmap statuses are owner-only and stay off the public profile", as
     as("someone").doc("users/shoug/private/data").set(roadmap, { merge: true }),
   );
   await assertFails(as("someone").doc("users/shoug/private/data").get());
-  await assertFails(as("shoug").doc("users/shoug").set(roadmap, { merge: true }));
+  await assertFails(
+    as("shoug").doc("users/shoug").set(roadmap, { merge: true }),
+  );
 });

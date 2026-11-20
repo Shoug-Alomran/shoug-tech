@@ -638,7 +638,8 @@
       document.getElementById("shoug-app-nav") ||
       document.querySelector(".shoug-header-actions");
     if (!host) {
-      if (builtControl.parentNode) builtControl.parentNode.removeChild(builtControl);
+      if (builtControl.parentNode)
+        builtControl.parentNode.removeChild(builtControl);
       return;
     }
     if (builtControl.parentNode === host) return;
