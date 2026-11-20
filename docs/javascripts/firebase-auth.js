@@ -809,7 +809,8 @@
 
   function markBrowserSession() {
     document.cookie =
-      SESSION_COOKIE + "=1; path=/; SameSite=Lax" +
+      SESSION_COOKIE +
+      "=1; path=/; SameSite=Lax" +
       (location.protocol === "https:" ? "; Secure" : "");
   }
 
@@ -1341,8 +1342,12 @@
           // Sorted here: ordering by createdAt in the query would need a
           // composite index that the project doesn't have.
           var docs = snap.docs.slice().sort(function (a, b) {
-            var ta = a.data().createdAt, tb = b.data().createdAt;
-            return (tb ? tb.toMillis() : Date.now()) - (ta ? ta.toMillis() : Date.now());
+            var ta = a.data().createdAt,
+              tb = b.data().createdAt;
+            return (
+              (tb ? tb.toMillis() : Date.now()) -
+              (ta ? ta.toMillis() : Date.now())
+            );
           });
           var badge = document.getElementById("shoug-notif-badge");
           if (badge) {
@@ -1732,7 +1737,8 @@
     if (rect.left < pad) shift = pad - rect.left;
     if (rect.right > window.innerWidth - pad)
       shift = window.innerWidth - pad - rect.right;
-    if (shift) dropdown.style.transform = "translateX(" + shift / pageZoom() + "px)";
+    if (shift)
+      dropdown.style.transform = "translateX(" + shift / pageZoom() + "px)";
   }
 
   function setHeaderButton(user) {
@@ -2080,7 +2086,11 @@
     var slug = pageSlug();
     var p = _cmtProfile;
     var hasProfile = p && p.username;
-    var c = hasProfile ? (/^#[0-9a-fA-F]{3,8}$/.test(p.avatarColor) ? p.avatarColor : "#b829ea") : "#b829ea";
+    var c = hasProfile
+      ? /^#[0-9a-fA-F]{3,8}$/.test(p.avatarColor)
+        ? p.avatarColor
+        : "#b829ea"
+      : "#b829ea";
     var init = hasProfile
       ? escHtml((p.displayName || p.username || "?")[0].toUpperCase())
       : "?";
@@ -2225,7 +2235,9 @@
         year: "numeric",
       });
       var isMe = cm.uid === user.uid;
-      var cc = (/^#[0-9a-fA-F]{3,8}$/.test(cm.avatarColor) ? cm.avatarColor : "#b829ea");
+      var cc = /^#[0-9a-fA-F]{3,8}$/.test(cm.avatarColor)
+        ? cm.avatarColor
+        : "#b829ea";
       var ci = escHtml((cm.displayName || cm.username || "?")[0].toUpperCase());
       return (
         '<div class="scmt-item' +
@@ -2363,7 +2375,9 @@
               uid: user.uid,
               username: _cmtProfile.username || "",
               displayName: _cmtProfile.displayName || "",
-              avatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
+              avatarColor: /^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor)
+                ? _cmtProfile.avatarColor
+                : "#b829ea",
               avatarPreset:
                 _cmtProfile.avatarPreset != null
                   ? _cmtProfile.avatarPreset
@@ -2384,7 +2398,11 @@
                   fromUid: user.uid,
                   fromUsername: _cmtProfile.username || "",
                   fromDisplayName: _cmtProfile.displayName || "",
-                  fromAvatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
+                  fromAvatarColor: /^#[0-9a-fA-F]{3,8}$/.test(
+                    _cmtProfile.avatarColor,
+                  )
+                    ? _cmtProfile.avatarColor
+                    : "#b829ea",
                   pageUrl: window.location.pathname,
                   commentPreview: text.slice(0, 120),
                 });
@@ -2419,7 +2437,9 @@
         uid: user.uid,
         username: _cmtProfile.username || "",
         displayName: _cmtProfile.displayName || "",
-        avatarColor: (/^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor) ? _cmtProfile.avatarColor : "#b829ea"),
+        avatarColor: /^#[0-9a-fA-F]{3,8}$/.test(_cmtProfile.avatarColor)
+          ? _cmtProfile.avatarColor
+          : "#b829ea",
         avatarPreset:
           _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
         text: text,
@@ -3659,7 +3679,12 @@
         var vw2 = window.innerWidth / Z;
         var vh2 = window.innerHeight / Z;
         var b = card.getBoundingClientRect();
-        var r = { left: b.left / Z, top: b.top / Z, width: b.width / Z, height: b.height / Z };
+        var r = {
+          left: b.left / Z,
+          top: b.top / Z,
+          width: b.width / Z,
+          height: b.height / Z,
+        };
         var newLeft = Math.min(Math.max(r.left, 8), vw2 - r.width - 8);
         var newTop = Math.min(Math.max(r.top, 8), vh2 - r.height - 8);
         if (Math.abs(newLeft - r.left) > 0.5) card.style.left = newLeft + "px";

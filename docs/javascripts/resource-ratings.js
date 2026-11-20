@@ -352,10 +352,7 @@
 
     function paint() {
       var total = state.up + state.down;
-      box.setAttribute(
-        "aria-label",
-        L("Rate this resource", "قيّم هذا المصدر"),
-      );
+      box.setAttribute("aria-label", L("Rate this resource", "قيّم هذا المصدر"));
       box.setAttribute("role", "group");
       box.querySelector(".rrt-question").textContent = L(
         "Was this helpful?",

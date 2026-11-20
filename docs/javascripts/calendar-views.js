@@ -540,7 +540,10 @@
       var r = col.getBoundingClientRect();
       return Math.max(
         0,
-        Math.min(24 * 60, startHour * 60 + ((y - r.top) / pageZoom() / px) * 60),
+        Math.min(
+          24 * 60,
+          startHour * 60 + ((y - r.top) / pageZoom() / px) * 60,
+        ),
       );
     }
 
@@ -822,7 +825,8 @@
         }
         function draw(e) {
           var dm = snap(
-            (((e.clientY - y0) / pageZoom() + root.scrollTop - scroll0) / px) * 60,
+            (((e.clientY - y0) / pageZoom() + root.scrollTop - scroll0) / px) *
+              60,
           );
           ns = Math.max(startHour * 60, Math.min(latestStart(len), s0 + dm));
           el.style.top = ((ns - startHour * 60) / 60) * px + "px";

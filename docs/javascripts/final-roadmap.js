@@ -38,7 +38,9 @@
     } catch (e) {}
   }
 
-  var topics = Array.prototype.slice.call(document.querySelectorAll(".rm-topic"));
+  var topics = Array.prototype.slice.call(
+    document.querySelectorAll(".rm-topic"),
+  );
   function val(li) {
     var e = state[li.getAttribute("data-id")];
     return e ? e.v : 0;
@@ -72,7 +74,8 @@
         return val(li) === 3;
       }).length;
       g.querySelector(".rm-gbar i").style.width = score(list) * 100 + "%";
-      g.querySelector(".rm-gn").textContent = tested + " / " + list.length + " tested";
+      g.querySelector(".rm-gn").textContent =
+        tested + " / " + list.length + " tested";
       g.classList.toggle("done", list.length > 0 && tested === list.length);
     });
     var total = Math.round(score(topics) * 100);
@@ -132,7 +135,8 @@
   // The course wrapper loads firebase-auth.js; the roadmap is its same-origin iframe.
   var host = null;
   try {
-    if (window.parent !== window && window.parent.__shougLoadFirebaseAuth) host = window.parent;
+    if (window.parent !== window && window.parent.__shougLoadFirebaseAuth)
+      host = window.parent;
   } catch (e) {
     host = null;
   }
@@ -159,7 +163,9 @@
       })
       .catch(function (err) {
         console.error("Roadmap sync failed", err);
-        setSync("Saved in this browser; account sync failed, will retry on your next change.");
+        setSync(
+          "Saved in this browser; account sync failed, will retry on your next change.",
+        );
       });
   }
   // Merge remote topics into local ones; returns true if local has newer marks.
@@ -220,7 +226,8 @@
     setSync("Saved in this browser.", {
       label: "Sign in to sync",
       run: function () {
-        if (typeof host.__shougOpenAuthModal === "function") host.__shougOpenAuthModal();
+        if (typeof host.__shougOpenAuthModal === "function")
+          host.__shougOpenAuthModal();
         else host.__shougLoadFirebaseAuth(true);
       },
     });
@@ -233,7 +240,9 @@
     });
   }
   if (!host) {
-    setSync("Saved in this browser. Open the roadmap from the course page to sync it to your account.");
+    setSync(
+      "Saved in this browser. Open the roadmap from the course page to sync it to your account.",
+    );
   } else if (host.__shoug_fb) {
     watch(host.__shoug_fb);
   } else {
@@ -266,7 +275,13 @@
   var reset = document.querySelector(".rm-reset");
   if (reset)
     reset.addEventListener("click", function () {
-      if (!confirm("Clear every status on this roadmap" + (sync.ref ? " (on all your devices)?" : "?"))) return;
+      if (
+        !confirm(
+          "Clear every status on this roadmap" +
+            (sync.ref ? " (on all your devices)?" : "?"),
+        )
+      )
+        return;
       var t = now();
       topics.forEach(function (li) {
         state[li.getAttribute("data-id")] = { v: 0, t: t };
@@ -289,14 +304,19 @@
       expand.textContent = open ? "Collapse all" : "Expand all";
     });
 
-  var links = Array.prototype.slice.call(document.querySelectorAll(".rm-nav a"));
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll(".rm-nav a"),
+  );
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           links.forEach(function (a) {
-            a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id);
+            a.classList.toggle(
+              "active",
+              a.getAttribute("href") === "#" + e.target.id,
+            );
           });
         });
       },

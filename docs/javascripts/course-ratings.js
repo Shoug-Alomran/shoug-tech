@@ -744,10 +744,7 @@
         return (
           '<p class="crt-note">' +
           esc(
-            L(
-              "Posts are unavailable right now.",
-              "المشاركات غير متاحة حاليًا.",
-            ),
+            L("Posts are unavailable right now.", "المشاركات غير متاحة حاليًا."),
           ) +
           "</p>"
         );
