@@ -1383,6 +1383,14 @@
         walk(root);
       }
       normalizeMindmapLeaves(DATA);
+      function polishMindmapLeaves(root){
+        const terms={MVC:"MVC (Model-View-Controller)",MVP:"MVP (Model-View-Presenter)",MVVM:"MVVM (Model-View-ViewModel)",DIP:"DIP (Dependency Inversion Principle)",OCP:"OCP (Open/Closed Principle)",LSP:"LSP (Liskov Substitution Principle)",ISP:"ISP (Interface Segregation Principle)",SRP:"SRP (Single Responsibility Principle)",UML:"UML (Unified Modeling Language)",COTS:"COTS (Commercial-Off-The-Shelf)",MTBF:"MTBF (Mean Time Between Failures)",MTTR:"MTTR (Mean Time To Repair)",SAAM:"SAAM (Software Architecture Analysis Method)",ATAM:"ATAM (Architecture Tradeoff Analysis Method)",ARID:"ARID (Active Reviews for Intermediate Designs)",ADR:"ADR (Architecture Decision Record)",ADRs:"ADRs (Architecture Decision Records)",NFR:"NFR (Non-Functional Requirement)",NFRs:"NFRs (Non-Functional Requirements)",API:"API (Application Programming Interface)",UI:"UI (User Interface)","CI/CD":"CI/CD (Continuous Integration/Continuous Delivery)",HL7:"HL7 (Health Level Seven)",FHIR:"FHIR (Fast Healthcare Interoperability Resources)"};
+        function expandText(v){let t=String(v||"");Object.keys(terms).sort((a,b)=>b.length-a.length).forEach(s=>{if(t.includes(s+" ("))return;t=t.replace(new RegExp("\\b"+s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","g"),terms[s]);});return t;}
+        function splitList(t){const m=t.match(/includes?|consists?\s+of|comprises?|is made of|benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles/i);let b=m?t.slice(m.index+m[0].length):t;b=b.replace(/^\s*(?:include[s]?|consist[s]? of|comprise[s]?|are|of|:)?\s*/i,"");const p=b.split(/\s*[,;]\s*|\s+\band\b\s+|\s+\bor\b\s+/i).map(x=>x.replace(/^(the\s+)?following\s+/i,"").replace(/\.$/,"").trim()).filter(x=>x.length>2);return p.length>1?p:null;}
+        function walk(n){n.label=expandText(n.label);n.desc=expandText(n.desc);const p=String(n.desc||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ").trim(),title=p.match(/(Benefits|Costs|Advantages|Disadvantages|Tactics|Roles|Purposes|Types|Parts|Elements|Principles)\b/i),phrase=/include[s]?|consists?\s+of|comprises?|is made of|benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles/i.test(p);if(!n.children||!n.children.length){const parts=phrase?splitList(p):null;if(parts&&parts.length>1){if(title)n.label=title[0];n.children=parts.map((part,i)=>({id:`${n.id}-separate-${i+1}`,label:part.charAt(0).toUpperCase()+part.slice(1),desc:`<span class="panel-tag">Key Detail</span><p>${part}.</p>`}));}}(n.children||[]).forEach(walk);}
+        walk(root);
+      }
+      polishMindmapLeaves(DATA);
       const state = {
         expanded: new Set(["root"]),
         selected: null,
