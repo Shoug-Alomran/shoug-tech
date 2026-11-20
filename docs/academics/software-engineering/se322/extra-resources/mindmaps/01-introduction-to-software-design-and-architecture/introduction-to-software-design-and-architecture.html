@@ -1443,20 +1443,7 @@
               node.label = plainDesc.replace(/^\s*(?:Core Concept|Key Detail|Example|Comparison|Trade-off)\s*/, "").slice(0, 180);
               if (!/[.!?]$/.test(node.label)) node.label += ".";
             }
-            let parts = null;
-            if (plainDesc.includes(";")) parts = plainDesc.split(";").map((part) => part.trim()).filter(Boolean);
-            else if (/\s+while\s+/i.test(plainDesc)) parts = plainDesc.split(/\s+while\s+/i).map((part) => part.trim()).filter(Boolean);
-            else if (/\s+vs\.?\s+/i.test(plainDesc)) parts = plainDesc.split(/\s+vs\.?\s+/i).map((part) => part.trim()).filter(Boolean);
-            else if (/^(.{1,100}?)\s+and\s+(.{1,100})$/i.test(plainDesc) && /include|consist|comprise/i.test(plainDesc)) {
-              parts = plainDesc.split(/\s+and\s+/i).map((part) => part.trim()).filter(Boolean);
-            }
-            if (parts && parts.length > 1) {
-              node.children = parts.map((part) => ({
-                id: `${node.id}-leaf-${++leafIndex}`,
-                label: part.replace(/\.$/, "").slice(0, 120),
-                desc: `<span class="panel-tag">Key Detail</span><p>${part}</p>`
-              }));
-            }
+            // List expansion is handled after abbreviation expansion below.
           }
           (node.children || []).forEach(walk);
         }
@@ -1484,37 +1471,34 @@
           return text;
         }
         function splitList(text) {
-          let body = text;
-          const match = body.match(/(benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles)\b/i);
-          if (match) body = body.slice(body.toLowerCase().indexOf(match[0].toLowerCase()) + match[0].length).replace(/^\s*(?:include[s]?|consist[s]? of|comprise[s]?|are|:)?\s*/i,"");
-          else {
-            const includeMatch = body.match(/includes?|consists?\s+of|comprises?|is made of/i);
-            if (includeMatch) body = body.slice(includeMatch.index + includeMatch[0].length).trim();
-            else return null;
-          }
-          return body.split(/\s*[,;]\s*|\s+\band\b\s+|\s+\bor\b\s+/i).map((part)=>part.replace(/^(the\s+)?following\s+/i,"").replace(/\.$/,"").trim()).filter((part)=>part.length>2);
+          const match = text.match(/includes?|consists?\s+of|comprises?|is made of|can be|is composed of|is divided into|benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles/i);
+          let body = match ? text.slice(match.index + match[0].length) : text;
+          body = body.replace(/^\s*(?:include[s]?|consist[s]? of|comprise[s]?|are|of|can be|is composed of|is divided into|:)?\s*/i, "");
+          const parts = body.split(/\s*[,;]\s*|\s+\band\s+|\s+\bor\s+/i)
+            .map((part) => part.replace(/^(the\s+)?following\s+/i, "").replace(/\.$/, "").trim())
+            .filter((part) => part.length > 2);
+          return parts.length > 1 ? parts : null;
         }
         function walk(node) {
           node.label = expandText(node.label);
           node.desc = expandText(node.desc);
-          const plainDesc = String(node.desc || "").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/\s+/g," ").trim();
-          const titleMatch = plainDesc.match(/(Benefits|Costs|Advantages|Disadvantages|Tactics|Roles|Purposes|Types|Parts|Elements|Principles)\b/i);
-          const hasListPhrase = /(?:include[s]?|consists?\s+of|comprises?|is made of)/i.test(plainDesc) || !!titleMatch;
+          const plain = String(node.desc || "").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/\s+/g, " ").trim();
+          const title = plain.match(/(Benefits|Costs|Advantages|Disadvantages|Tactics|Roles|Purposes|Types|Parts|Elements|Principles|Filters\s+can)\b/i);
+          const listPhrase = /(?:include[s]?|consists?\s+of|comprises?|is made of|can be|is composed of|is divided into|benefits|costs|advantages|disadvantages|tactics|roles|purposes|types|parts|elements|principles)/i.test(plain);
           if (!node.children || !node.children.length) {
-            const parts = hasListPhrase ? splitList(plainDesc) : null;
+            const parts = listPhrase ? splitList(plain) : null;
             if (parts && parts.length > 1) {
-              if (titleMatch) node.label = titleMatch[0].replace(/\b\w/g,(letter)=>letter.toUpper());
-              node.children = parts.map((part,index)=>({
-                id:`${node.id}-separate-${index+1}`,
-                label:part.charAt(0).toUpperCase()+part.slice(1),
-                desc:`<span class="panel-tag">Key Detail</span><p>${part}.</p>`
+              if (title) node.label = title[0].replace(/\b\w/g, (letter) => letter.toUpperCase());
+              node.children = parts.map((part, index) => ({
+                id: `${node.id}-separate-${index + 1}`,
+                label: part.charAt(0).toUpperCase() + part.slice(1),
+                desc: `<span class="panel-tag">Key Detail</span><p>${part}.</p>`,
               }));
             }
           }
           (node.children || []).forEach(walk);
         }
-        walk(root);
-      }
+        walk(root);      }
       polishMindmapLeaves(DATA);
       const state = {
         expanded: new Set(["root"]),
