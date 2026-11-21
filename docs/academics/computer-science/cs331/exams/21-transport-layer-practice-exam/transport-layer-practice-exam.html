@@ -1,481 +1,2217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CS331 | Transport Layer Practice Exam</title>
-<meta name="description" content="Interactive CS331 transport layer practice exam covering UDP, TCP, ports, flow control, congestion control, handshakes, ARQ, and TCP calculations.">
-<link rel="canonical" href="https://shoug-tech.com/academics/computer-science/cs331/exams/21-transport-layer-practice-exam/">
-<meta property="og:title" content="CS331 | Transport Layer Practice Exam">
-<meta property="og:description" content="Practice UDP, TCP, port addressing, flow and congestion control, TCP handshakes, timers, ARQ, and transport-layer calculations for CS331.">
-<meta property="og:url" content="https://shoug-tech.com/academics/computer-science/cs331/exams/21-transport-layer-practice-exam/">
-<meta property="og:type" content="article">
-<meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f5f6f8; --card:#fff; --ink:#18202b; --mute:#5d6878; --line:#e2e6ec;
-  --accent:#1f6f6a; --accent-soft:#e3f1ef; --ok:#1e8a4c; --ok-soft:#e5f5ec;
-  --bad:#c0392b; --bad-soft:#fbeaea; --warn:#b7791f; --hl:#d9480f;
-}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#11151b;--card:#1a2028;--ink:#e8ecf1;--mute:#9aa5b4;--line:#2b333e;
-  --accent:#4fb3aa;--accent-soft:#1d3533;--ok:#4cc27e;--ok-soft:#173226;--bad:#f07167;--bad-soft:#3a1f1f;--hl:#ff8c4a}
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
-main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:18px 14px 30px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-h1{font-size:19px;margin:0}
-.sub{color:var(--mute);font-size:13px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
-.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.chip small{opacity:.75}
-button.btn{font:inherit;font-weight:600;border:none;border-radius:10px;padding:11px 18px;background:var(--accent);color:#fff;cursor:pointer}
-button.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-button.btn:disabled{opacity:.45;cursor:not-allowed}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.progress{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 14px}
-.progress>div{height:100%;background:var(--accent);transition:width .25s}
-.meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute)}
-.tag{display:inline-block;background:var(--accent-soft);color:var(--accent);font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;margin-bottom:8px}
-.q{font-size:16px;font-weight:500;margin:4px 0 14px;white-space:pre-line}
-.q code,.exp code,.model code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--accent-soft);padding:1px 5px;border-radius:5px}
-.opts{display:flex;flex-direction:column;gap:8px}
-.opt{text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;cursor:pointer;display:flex;gap:10px}
-.opt .k{font-weight:700;color:var(--mute);min-width:16px}
-.opt:hover:not(:disabled){border-color:var(--accent)}
-.opt.right{border-color:var(--ok);background:var(--ok-soft)}
-.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
-.opt:disabled{cursor:default}
-.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.field label{display:block;font-size:12.5px;color:var(--mute);margin-bottom:3px}
-.field label b{color:var(--hl)}
-.field input{width:100%;font:500 15px 'JetBrains Mono',monospace;padding:9px 10px;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
-.field input:focus{outline:none;border-color:var(--accent)}
-.field input.right{border-color:var(--ok);background:var(--ok-soft)}
-.field input.wrong{border-color:var(--bad);background:var(--bad-soft)}
-.field .fix{font-size:12.5px;color:var(--ok);margin-top:3px;font-weight:600}
-textarea{width:100%;min-height:110px;font:inherit;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);resize:vertical}
-.fb{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14.5px}
-.fb.ok{background:var(--ok-soft);color:var(--ok);font-weight:600}
-.fb.bad{background:var(--bad-soft)}
-.fb.bad .h{color:var(--bad);font-weight:700;margin-bottom:4px}
-.exp{color:var(--ink);white-space:pre-line}
-.model{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin-top:12px;white-space:pre-line}
-.model .h{font-weight:700;color:var(--accent);margin-bottom:4px}
-.diagram{margin:4px 0 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:6px}
-.diagram svg{width:100%;height:auto;display:block}
-.nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
-.score-big{font-size:42px;font-weight:700;color:var(--accent);margin:4px 0}
-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
-td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
-td.n{text-align:right;font-variant-numeric:tabular-nums}
-.tip{font-size:13px;color:var(--mute);margin-top:10px}
-footer{border-top:1px solid var(--line);text-align:center;padding:14px;font-size:13px;color:var(--mute)}
-footer b{color:var(--ink)}
-.hidden{display:none}
-</style>
-</head>
-<body>
-<main>
-  <header class="top">
-    <div>
-      <h1>Transport Layer — Practice Exam</h1>
-      <div class="sub">CS331 · Chapter 6 · UDP, TCP, flow, error &amp; congestion control</div>
-    </div>
-  </header>
-  <div id="app"></div>
-</main>
-<footer>CS331 Data Communication &amp; Computer Networks · <b>Shoug Alomran</b></footer>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CS331 Transport Layer Practice Exam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --card: #fff;
+        --ink: #18202b;
+        --mute: #5d6878;
+        --line: #e2e6ec;
+        --accent: #1f6f6a;
+        --accent-soft: #e3f1ef;
+        --ok: #1e8a4c;
+        --ok-soft: #e5f5ec;
+        --bad: #c0392b;
+        --bad-soft: #fbeaea;
+        --warn: #b7791f;
+        --hl: #d9480f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #11151b;
+          --card: #1a2028;
+          --ink: #e8ecf1;
+          --mute: #9aa5b4;
+          --line: #2b333e;
+          --accent: #4fb3aa;
+          --accent-soft: #1d3533;
+          --ok: #4cc27e;
+          --ok-soft: #173226;
+          --bad: #f07167;
+          --bad-soft: #3a1f1f;
+          --hl: #ff8c4a;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          15px/1.55 Inter,
+          system-ui,
+          sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 18px 14px 30px;
+      }
+      header.top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-size: 19px;
+        margin: 0;
+      }
+      .sub {
+        color: var(--mute);
+        font-size: 13px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .chip.on {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .chip small {
+        opacity: 0.75;
+      }
+      button.btn {
+        font: inherit;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 18px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.btn.ghost {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+      }
+      button.btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .progress {
+        height: 6px;
+        background: var(--line);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 6px 0 14px;
+      }
+      .progress > div {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.25s;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12.5px;
+        color: var(--mute);
+      }
+      .tag {
+        display: inline-block;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+      .q {
+        font-size: 16px;
+        font-weight: 500;
+        margin: 4px 0 14px;
+        white-space: pre-line;
+      }
+      .q code,
+      .exp code,
+      .model code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        background: var(--accent-soft);
+        padding: 1px 5px;
+        border-radius: 5px;
+      }
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .opt {
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+        background: var(--card);
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 11px 13px;
+        cursor: pointer;
+        display: flex;
+        gap: 10px;
+      }
+      .opt .k {
+        font-weight: 700;
+        color: var(--mute);
+        min-width: 16px;
+      }
+      .opt:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      .opt.right {
+        border-color: var(--ok);
+        background: var(--ok-soft);
+      }
+      .opt.wrong {
+        border-color: var(--bad);
+        background: var(--bad-soft);
+      }
+      .opt:disabled {
+        cursor: default;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .field label {
+        display: block;
+        font-size: 12.5px;
+        color: var(--mute);
+        margin-bottom: 3px;
+      }
+      .field label b {
+        color: var(--hl);
+      }
+      .field input {
+        width: 100%;
+        font:
+          500 15px "JetBrains Mono",
+          monospace;
+        padding: 9px 10px;
+        border: 1.5px solid var(--line);
+        border-radius: 9px;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .field input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .field input.right {
+        border-color: var(--ok);
+        background: var(--ok-soft);
+      }
+      .field input.wrong {
+        border-color: var(--bad);
+        background: var(--bad-soft);
+      }
+      .field .fix {
+        font-size: 12.5px;
+        color: var(--ok);
+        margin-top: 3px;
+        font-weight: 600;
+      }
+      textarea {
+        width: 100%;
+        min-height: 110px;
+        font: inherit;
+        padding: 10px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--ink);
+        resize: vertical;
+      }
+      .fb {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 14.5px;
+      }
+      .fb.ok {
+        background: var(--ok-soft);
+        color: var(--ok);
+        font-weight: 600;
+      }
+      .fb.bad {
+        background: var(--bad-soft);
+      }
+      .fb.bad .h {
+        color: var(--bad);
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .exp {
+        color: var(--ink);
+        white-space: pre-line;
+      }
+      .model {
+        background: var(--accent-soft);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-top: 12px;
+        white-space: pre-line;
+      }
+      .model .h {
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      /* ---- interactive sequence diagram ---- */
+      .sd {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--bg);
+        padding: 10px 0 4px;
+        margin: 4px 0 16px;
+      }
+      .sd-head {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 12.5px;
+      }
+      .sd-head span {
+        width: 76px;
+        text-align: center;
+      }
+      .sd-body {
+        position: relative;
+        padding: 2px 0 8px;
+      }
+      .sd-body::before,
+      .sd-body::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--mute);
+        left: 43px;
+      }
+      .sd-body::after {
+        left: auto;
+        right: 43px;
+      }
+      .seg {
+        position: relative;
+        padding: 18px 46px;
+        display: flex;
+        justify-content: center;
+      }
+      .seg svg {
+        position: absolute;
+        left: 44px;
+        top: 0;
+        width: calc(100% - 88px);
+        height: 100%;
+        overflow: visible;
+      }
+      .seg svg line {
+        stroke: var(--accent);
+        stroke-width: 2;
+      }
+      .seg .head {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        top: 88%;
+        transform: translateY(-50%);
+      }
+      .seg.r .head {
+        right: 44px;
+        border-left: 11px solid var(--accent);
+      }
+      .seg.l .head {
+        left: 44px;
+        border-right: 11px solid var(--accent);
+      }
+      .seg.lost .head {
+        display: none;
+      }
+      .seg .to {
+        position: absolute;
+        top: 2px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--warn);
+      }
+      .seg.r .to {
+        left: 2px;
+      }
+      .seg.l .to {
+        right: 2px;
+      }
+      .box {
+        position: relative;
+        z-index: 1;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 7px 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        max-width: 100%;
+      }
+      .seg.giv .box > * {
+        opacity: 0.6;
+      }
+      .seg.giv .lbl::after {
+        content: "given";
+        margin-left: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--mute);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 6px;
+      }
+      .lbl {
+        font-weight: 700;
+        font-size: 12.5px;
+        color: var(--accent);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .losttag {
+        color: var(--bad);
+        font-size: 11.5px;
+      }
+      .flds {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+      }
+      .fl {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11.5px;
+        flex-wrap: wrap;
+      }
+      .fk {
+        color: var(--mute);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .bx {
+        font:
+          600 12.5px "JetBrains Mono",
+          monospace;
+        width: 62px;
+        padding: 5px 2px;
+        border-radius: 7px;
+        color: var(--ink);
+        text-align: center;
+      }
+      input.bx {
+        border: 1.5px dashed var(--hl);
+        background: var(--bg);
+      }
+      input.bx:focus {
+        outline: none;
+        border-style: solid;
+        border-color: var(--accent);
+        background: var(--card);
+      }
+      input.bx::placeholder {
+        color: var(--hl);
+        opacity: 0.8;
+        font-weight: 700;
+      }
+      span.bx {
+        display: inline-block;
+        border: 1px solid var(--line);
+      }
+      input.right {
+        border: 1.5px solid var(--ok) !important;
+        background: var(--ok-soft) !important;
+      }
+      input.wrong {
+        border: 1.5px solid var(--bad) !important;
+        background: var(--bad-soft) !important;
+      }
+      .corr {
+        font:
+          700 11.5px "JetBrains Mono",
+          monospace;
+        color: var(--ok);
+      }
+      .corr:empty {
+        display: none;
+      }
+      .corr::before {
+        content: "→ ";
+      }
+      .nav .btn:disabled {
+        opacity: 0.35;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        gap: 10px;
+      }
+      .score-big {
+        font-size: 42px;
+        font-weight: 700;
+        color: var(--accent);
+        margin: 4px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-top: 12px;
+      }
+      td,
+      th {
+        padding: 7px 6px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+      }
+      td.n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .tip {
+        font-size: 13px;
+        color: var(--mute);
+        margin-top: 10px;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        text-align: center;
+        padding: 14px;
+        font-size: 13px;
+        color: var(--mute);
+      }
+      footer b {
+        color: var(--ink);
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="top">
+        <div>
+          <h1>Transport Layer — Practice Exam</h1>
+          <div class="sub">
+            CS331 · Chapter 6 · UDP, TCP, flow, error &amp; congestion control
+          </div>
+        </div>
+      </header>
+      <div id="app"></div>
+    </main>
+    <footer>
+      CS331 Data Communication &amp; Computer Networks · <b>Shoug Alomran</b>
+    </footer>
 
-<script>
-/* ---------- Sequence-diagram renderer ----------
-   segs: {d:'r'|'l', t:'label', f:['seq: 4000','ack: {a}'], lost:bool, timeout:'text'}
-   {x} = blank to fill (highlighted)                                            */
-function diagram(segs, L='Client', R='Server'){
-  const W=380, xL=48, xR=332, top=36, step=74;
-  const H = top + segs.length*step + 18;
-  let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
-  <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
-  <g fill="var(--ink)" font-size="12.5" font-weight="700" text-anchor="middle">
-   <text x="${xL}" y="18">${L}</text><text x="${xR}" y="18">${R}</text></g>
-  <line x1="${xL}" y1="26" x2="${xL}" y2="${H-6}" stroke="var(--mute)" stroke-width="2"/>
-  <line x1="${xR}" y1="26" x2="${xR}" y2="${H-6}" stroke="var(--mute)" stroke-width="2"/>`;
-  segs.forEach((g,i)=>{
-    const y1 = top + i*step + 14, y2 = y1 + 34;
-    let x1 = g.d==='r'?xL:xR, x2 = g.d==='r'?xR:xL;
-    let ex = x2, ey = y2;
-    if(g.lost){ ex = (x1+x2)/2 + (g.d==='r'?20:-20); ey = (y1+y2)/2 + 6; }
-    s += `<g style="color:var(--accent)"><line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="currentColor" stroke-width="1.8" ${g.lost?'':'marker-end="url(#ah)"'}/></g>`;
-    if(g.lost){ s += `<text x="${ex}" y="${ey+5}" text-anchor="middle" font-size="16" font-weight="700" fill="var(--bad)">✕</text>
-      <text x="${ex}" y="${ey+20}" text-anchor="middle" font-size="10" fill="var(--bad)">lost</text>`; }
-    if(g.timeout){ s += `<text x="${(g.d==='r'?xL:xR)+(g.d==='r'?-4:4)}" y="${y1-8}" text-anchor="${g.d==='r'?'end':'start'}" font-size="9.5" fill="var(--warn)" font-weight="600">${g.timeout}</text>`; }
-    const cx = W/2, ty = y1 + (g.lost?-4:2);
-    s += `<text x="${cx}" y="${ty-12}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--accent)" stroke="var(--bg)" stroke-width="5" paint-order="stroke">${g.t||''}</text>`;
-    const parts = (g.f||[]).join('   ·   ').split(/(\{\w+\})/);
-    s += `<text x="${cx}" y="${ty+2}" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" fill="var(--ink)" stroke="var(--bg)" stroke-width="5" paint-order="stroke">`;
-    parts.forEach(p=>{ const m=p.match(/^\{(\w+)\}$/);
-      s += m ? `<tspan fill="var(--hl)" font-weight="700">(${m[1]})</tspan>` : `<tspan>${p.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</tspan>`; });
-    s += `</text>`;
-  });
-  return s + `</svg>`;
-}
+    <script>
+      /* ---------- Interactive sequence diagram ----------
+   seg: {d:'r'|'l', t:'label', f:['seq: 4000','ack: {a}'], lost, timeout, given}
+   {x} = a blank, rendered as an input box right inside the segment          */
+      const blank = (k) =>
+        `<input class="bx" data-k="${k}" placeholder="(${k})" inputmode="numeric" autocomplete="off" aria-label="blank ${k}"><span class="corr"></span>`;
+      const fmt = (t) =>
+        (t || "")
+          .split(/(\{\w+\})/)
+          .map((p) => {
+            const m = p.match(/^\{(\w+)\}$/);
+            return m ? blank(m[1]) : p;
+          })
+          .join("");
+      function diagram(segs, L = "Client", R = "Server") {
+        const rows = segs
+          .map((g) => {
+            const flds = (g.f || [])
+              .map((x) => {
+                const m = x.match(/^([^:=]+[:=])\s*(.*)$/);
+                if (!m) return `<span class="fl">${fmt(x)}</span>`;
+                const b = m[2].match(/^\{(\w+)\}$/);
+                return `<span class="fl"><span class="fk">${m[1]}</span>${b ? blank(b[1]) : `<span class="bx">${m[2]}</span>`}</span>`;
+              })
+              .join("");
+            const [x1, x2] = g.d === "r" ? ["0%", "100%"] : ["100%", "0%"];
+            const end = g.lost ? `x2="50%" y2="55%"` : `x2="${x2}" y2="88%"`;
+            return `<div class="seg ${g.d}${g.lost ? " lost" : ""}${g.given ? " giv" : ""}">
+      <svg><line x1="${x1}" y1="12%" ${end}/></svg><i class="head"></i>
+      ${g.timeout ? `<span class="to">⏱ ${g.timeout}</span>` : ""}
+      <div class="box"><div class="lbl">${fmt(g.t)}${g.lost ? '<span class="losttag">✕ lost</span>' : ""}</div><div class="flds">${flds}</div></div>
+    </div>`;
+          })
+          .join("");
+        return `<div class="sd"><div class="sd-head"><span>${L}</span><span>${R}</span></div><div class="sd-body">${rows}</div></div>`;
+      }
 
-/* ---------- Question bank ---------- */
-const S = {
-  basics:'Transport basics & ports', udp:'UDP', tcp:'TCP features & header',
-  hs:'Handshake & data transfer', term:'Termination & states', flow:'Flow & error control',
-  cong:'Congestion control & timers', arq:'Stop-and-Wait / GBN / SR', short:'Written answers'
-};
-const Q = [
-/* ===== BASICS ===== */
-{s:'basics',type:'mcq',q:'The transport layer is responsible for ___ delivery.',o:['Node-to-node','Host-to-host','Process-to-process','Network-to-network'],a:2,
- e:'Data link = node-to-node (hop), network = host-to-host, transport = process-to-process (uses port numbers to reach the right application).'},
-{s:'basics',type:'mcq',q:'A socket address is the combination of:',o:['MAC address + IP address','IP address + port number','Port number + sequence number','IP address + protocol field'],a:1,
- e:'Socket address = IP address (finds the host) + port number (finds the process on that host).'},
-{s:'basics',type:'mcq',q:'How many bits is a port number?',o:['8','16','32','48'],a:1,e:'Port numbers are 16 bits → 0 to 65,535.'},
-{s:'basics',type:'mcq',q:'Port number 53 falls in which range?',o:['Well-known (0–1023)','Registered (1024–49,151)','Dynamic / private (49,152–65,535)','Reserved, cannot be used'],a:0,
- e:'0–1023 well-known (assigned by ICANN), 1024–49,151 registered, 49,152–65,535 dynamic (ephemeral). 53 = DNS.'},
-{s:'basics',type:'mcq',q:'Port number 8080 falls in which range?',o:['Well-known','Registered','Dynamic / private','Invalid'],a:1,e:'8080 is between 1024 and 49,151 → registered.'},
-{s:'basics',type:'mcq',q:'Port number 52,100 falls in which range?',o:['Well-known','Registered','Dynamic / private (ephemeral)','Invalid'],a:2,e:'Anything from 49,152 to 65,535 is dynamic/ephemeral — typically picked by the client.'},
-{s:'basics',type:'mcq',q:'Which statement about client/server port numbers is correct?',o:['Both use well-known ports','Server uses an ephemeral port, client a well-known port','Client uses an ephemeral port, server a well-known port','Both use ephemeral ports'],a:2,
- e:'The server listens on a well-known port so clients can find it; the client picks a temporary (ephemeral) port.'},
-{s:'basics',type:'mcq',q:'Multiplexing and demultiplexing happen at:',o:['Sender multiplexes, receiver demultiplexes','Sender demultiplexes, receiver multiplexes','Both happen only at routers','Only at the receiver'],a:0,
- e:'Sender: many processes → one transport layer (many-to-one = multiplexing). Receiver: one transport layer → the correct process by port (one-to-many = demultiplexing).'},
-{s:'basics',type:'mcq',q:'Which service–port pair is correct?',o:['TELNET → 22','DNS → 67','SMTP → 25','HTTP → 443'],a:2,
- e:'SMTP 25, TELNET 23, SSH 22, DNS 53, DHCP 67/68, HTTP 80, HTTPS 443, FTP 20/21, TFTP 69, SNMP 161/162, POP3 110.'},
-{s:'basics',type:'mcq',q:'Which of these is NOT a transport-layer duty?',o:['Flow control','Error control','Congestion control','Routing packets between networks'],a:3,e:'Routing is the network layer’s job.'},
-{s:'basics',type:'mcq',q:'Why are port addresses only 16 bits while IP addresses are 32 bits?',o:['Ports must be unique worldwide','Ports only need to identify processes within one host','Ports are encrypted','Ports include the MAC address'],a:1,
- e:'A port only has to be unique inside one host (per protocol), so a much smaller space is enough. IP addresses must be unique across the whole Internet.'},
+      /* ---------- Question bank ---------- */
+      const S = {
+        basics: "Transport basics & ports",
+        udp: "UDP",
+        tcp: "TCP features & header",
+        hs: "Handshake & data transfer",
+        term: "Termination & states",
+        flow: "Flow & error control",
+        cong: "Congestion control & timers",
+        arq: "Stop-and-Wait / GBN / SR",
+        short: "Written answers",
+      };
+      const Q = [
+        /* ===== BASICS ===== */
+        {
+          s: "basics",
+          type: "mcq",
+          q: "The transport layer is responsible for ___ delivery.",
+          o: [
+            "Node-to-node",
+            "Host-to-host",
+            "Process-to-process",
+            "Network-to-network",
+          ],
+          a: 2,
+          e: "Data link = node-to-node (hop), network = host-to-host, transport = process-to-process (uses port numbers to reach the right application).",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "A socket address is the combination of:",
+          o: [
+            "MAC address + IP address",
+            "IP address + port number",
+            "Port number + sequence number",
+            "IP address + protocol field",
+          ],
+          a: 1,
+          e: "Socket address = IP address (finds the host) + port number (finds the process on that host).",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "How many bits is a port number?",
+          o: ["8", "16", "32", "48"],
+          a: 1,
+          e: "Port numbers are 16 bits → 0 to 65,535.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Port number 53 falls in which range?",
+          o: [
+            "Well-known (0–1023)",
+            "Registered (1024–49,151)",
+            "Dynamic / private (49,152–65,535)",
+            "Reserved, cannot be used",
+          ],
+          a: 0,
+          e: "0–1023 well-known (assigned by ICANN), 1024–49,151 registered, 49,152–65,535 dynamic (ephemeral). 53 = DNS.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Port number 8080 falls in which range?",
+          o: ["Well-known", "Registered", "Dynamic / private", "Invalid"],
+          a: 1,
+          e: "8080 is between 1024 and 49,151 → registered.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Port number 52,100 falls in which range?",
+          o: [
+            "Well-known",
+            "Registered",
+            "Dynamic / private (ephemeral)",
+            "Invalid",
+          ],
+          a: 2,
+          e: "Anything from 49,152 to 65,535 is dynamic/ephemeral — typically picked by the client.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Which statement about client/server port numbers is correct?",
+          o: [
+            "Both use well-known ports",
+            "Server uses an ephemeral port, client a well-known port",
+            "Client uses an ephemeral port, server a well-known port",
+            "Both use ephemeral ports",
+          ],
+          a: 2,
+          e: "The server listens on a well-known port so clients can find it; the client picks a temporary (ephemeral) port.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Multiplexing and demultiplexing happen at:",
+          o: [
+            "Sender multiplexes, receiver demultiplexes",
+            "Sender demultiplexes, receiver multiplexes",
+            "Both happen only at routers",
+            "Only at the receiver",
+          ],
+          a: 0,
+          e: "Sender: many processes → one transport layer (many-to-one = multiplexing). Receiver: one transport layer → the correct process by port (one-to-many = demultiplexing).",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Which service–port pair is correct?",
+          o: ["TELNET → 22", "DNS → 67", "SMTP → 25", "HTTP → 443"],
+          a: 2,
+          e: "SMTP 25, TELNET 23, SSH 22, DNS 53, DHCP 67/68, HTTP 80, HTTPS 443, FTP 20/21, TFTP 69, SNMP 161/162, POP3 110.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Which of these is NOT a transport-layer duty?",
+          o: [
+            "Flow control",
+            "Error control",
+            "Congestion control",
+            "Routing packets between networks",
+          ],
+          a: 3,
+          e: "Routing is the network layer’s job.",
+        },
+        {
+          s: "basics",
+          type: "mcq",
+          q: "Why are port addresses only 16 bits while IP addresses are 32 bits?",
+          o: [
+            "Ports must be unique worldwide",
+            "Ports only need to identify processes within one host",
+            "Ports are encrypted",
+            "Ports include the MAC address",
+          ],
+          a: 1,
+          e: "A port only has to be unique inside one host (per protocol), so a much smaller space is enough. IP addresses must be unique across the whole Internet.",
+        },
 
-/* ===== UDP ===== */
-{s:'udp',type:'mcq',q:'The UDP header is:',o:['Fixed 8 bytes','Fixed 20 bytes','20–60 bytes','Variable, up to 40 bytes'],a:0,e:'UDP header = 4 fields × 2 bytes = 8 bytes, fixed.'},
-{s:'udp',type:'mcq',q:'Which set lists the UDP header fields?',o:['Source port, destination port, sequence number, checksum','Source port, destination port, total length, checksum','Source port, destination port, HLEN, window','Source IP, destination IP, length, checksum'],a:1,
- e:'UDP: source port (16) · destination port (16) · total length (16) · checksum (16).'},
-{s:'udp',type:'fill',q:'Give the minimum and maximum size (in bytes) of a UDP user datagram (header + data).',fields:[{l:'Minimum size',a:8},{l:'Maximum size',a:65535}],
- e:'Minimum = header only = 8 bytes. Maximum = largest value of the 16-bit length field = 65,535 bytes.'},
-{s:'udp',type:'fill',q:'A UDP datagram is carried in an IPv4 datagram with a 20-byte header. What is the maximum number of application data bytes UDP can carry?',fields:[{l:'Max data (bytes)',a:65507}],
- e:'65,535 (max IP datagram) − 20 (IP header) − 8 (UDP header) = 65,507 bytes.'},
-{s:'udp',type:'fill',q:'The total-length field of a UDP header is 100. How many bytes of data does it carry?',fields:[{l:'Data (bytes)',a:92}],e:'Data = total length − 8 = 100 − 8 = 92 bytes.'},
-{s:'udp',type:'fill',q:'A UDP header in hex is:\n<code>CB84 000D 001C 001C</code>\nFind each value (in decimal).',fields:[{l:'Source port',a:52100},{l:'Destination port',a:13},{l:'Total length (bytes)',a:28},{l:'Data length (bytes)',a:20}],
- e:'CB84₁₆ = 52,100 · 000D₁₆ = 13 · 001C₁₆ = 28 → data = 28 − 8 = 20 bytes. The last 001C is the checksum.'},
-{s:'udp',type:'mcq',q:'For the header <code>CB84 000D 001C 001C</code>, the packet is travelling:',o:['From server to client','From client to server','Between two servers','Cannot be determined'],a:1,
- e:'Destination port 13 is well-known (Daytime) and source port 52,100 is ephemeral → client → server.'},
-{s:'udp',type:'mcq',q:'In IPv4, the UDP checksum is:',o:['Mandatory','Optional (all 0s means it was not computed)','Not part of the header','Calculated by the router'],a:1,e:'UDP checksum is optional in IPv4 (field = all 0s if not used). TCP checksum is mandatory.'},
-{s:'udp',type:'mcq',q:'The UDP/TCP checksum pseudoheader includes:',o:['MAC addresses and type','Source IP, destination IP, protocol and UDP length','Only the port numbers','TTL and identification'],a:1,
- e:'Pseudoheader = source IP, destination IP, zeros, protocol (17 for UDP), UDP total length. It protects against delivery to the wrong host.'},
-{s:'udp',type:'mcq',q:'What is the value of the protocol field in the IP header when it carries UDP?',o:['6','17','1','89'],a:1,e:'UDP = 17, TCP = 6, ICMP = 1, OSPF = 89.'},
-{s:'udp',type:'mcq',q:'Which application is the best fit for UDP?',o:['Downloading a software update','Sending an email with an attachment','A DNS query','Submitting an online form'],a:2,
- e:'DNS: a small request and reply, speed matters, the app can just ask again. Also: SNMP, TFTP, RIP, DHCP, real-time audio/video.'},
-{s:'udp',type:'mcq',q:'UDP is best described as:',o:['Connection-oriented, reliable, byte-stream','Connectionless, unreliable, message-oriented','Connectionless, reliable, byte-stream','Connection-oriented, unreliable, message-oriented'],a:1,
- e:'UDP keeps message boundaries (one message = one datagram), has no connection setup, and does no retransmission.'},
-{s:'udp',type:'mcq',q:'Which of these does UDP provide?',o:['Flow control','Retransmission of lost datagrams','Error detection through the checksum','Ordering of datagrams'],a:2,e:'UDP gives only error detection (checksum). A corrupted datagram is silently discarded, not retransmitted.'},
+        /* ===== UDP ===== */
+        {
+          s: "udp",
+          type: "mcq",
+          q: "The UDP header is:",
+          o: [
+            "Fixed 8 bytes",
+            "Fixed 20 bytes",
+            "20–60 bytes",
+            "Variable, up to 40 bytes",
+          ],
+          a: 0,
+          e: "UDP header = 4 fields × 2 bytes = 8 bytes, fixed.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "Which set lists the UDP header fields?",
+          o: [
+            "Source port, destination port, sequence number, checksum",
+            "Source port, destination port, total length, checksum",
+            "Source port, destination port, HLEN, window",
+            "Source IP, destination IP, length, checksum",
+          ],
+          a: 1,
+          e: "UDP: source port (16) · destination port (16) · total length (16) · checksum (16).",
+        },
+        {
+          s: "udp",
+          type: "fill",
+          q: "Give the minimum and maximum size (in bytes) of a UDP user datagram (header + data).",
+          fields: [
+            { l: "Minimum size", a: 8 },
+            { l: "Maximum size", a: 65535 },
+          ],
+          e: "Minimum = header only = 8 bytes. Maximum = largest value of the 16-bit length field = 65,535 bytes.",
+        },
+        {
+          s: "udp",
+          type: "fill",
+          q: "A UDP datagram is carried in an IPv4 datagram with a 20-byte header. What is the maximum number of application data bytes UDP can carry?",
+          fields: [{ l: "Max data (bytes)", a: 65507 }],
+          e: "65,535 (max IP datagram) − 20 (IP header) − 8 (UDP header) = 65,507 bytes.",
+        },
+        {
+          s: "udp",
+          type: "fill",
+          q: "The total-length field of a UDP header is 100. How many bytes of data does it carry?",
+          fields: [{ l: "Data (bytes)", a: 92 }],
+          e: "Data = total length − 8 = 100 − 8 = 92 bytes.",
+        },
+        {
+          s: "udp",
+          type: "fill",
+          q: "A UDP header in hex is:\n<code>CB84 000D 001C 001C</code>\nFind each value (in decimal).",
+          fields: [
+            { l: "Source port", a: 52100 },
+            { l: "Destination port", a: 13 },
+            { l: "Total length (bytes)", a: 28 },
+            { l: "Data length (bytes)", a: 20 },
+          ],
+          e: "CB84₁₆ = 52,100 · 000D₁₆ = 13 · 001C₁₆ = 28 → data = 28 − 8 = 20 bytes. The last 001C is the checksum.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "A UDP header in hex is <code>CB84 000D 001C 001C</code>. The packet is travelling:",
+          o: [
+            "From server to client",
+            "From client to server",
+            "Between two servers",
+            "Cannot be determined",
+          ],
+          a: 1,
+          e: "Destination port 13 is well-known (Daytime) and source port 52,100 is ephemeral → client → server.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "In IPv4, the UDP checksum is:",
+          o: [
+            "Mandatory",
+            "Optional (all 0s means it was not computed)",
+            "Not part of the header",
+            "Calculated by the router",
+          ],
+          a: 1,
+          e: "UDP checksum is optional in IPv4 (field = all 0s if not used). TCP checksum is mandatory.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "The UDP/TCP checksum pseudoheader includes:",
+          o: [
+            "MAC addresses and type",
+            "Source IP, destination IP, protocol and UDP length",
+            "Only the port numbers",
+            "TTL and identification",
+          ],
+          a: 1,
+          e: "Pseudoheader = source IP, destination IP, zeros, protocol (17 for UDP), UDP total length. It protects against delivery to the wrong host.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "What is the value of the protocol field in the IP header when it carries UDP?",
+          o: ["6", "17", "1", "89"],
+          a: 1,
+          e: "UDP = 17, TCP = 6, ICMP = 1, OSPF = 89.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "Which application is the best fit for UDP?",
+          o: [
+            "Downloading a software update",
+            "Sending an email with an attachment",
+            "A DNS query",
+            "Submitting an online form",
+          ],
+          a: 2,
+          e: "DNS: a small request and reply, speed matters, the app can just ask again. Also: SNMP, TFTP, RIP, DHCP, real-time audio/video.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "UDP is best described as:",
+          o: [
+            "Connection-oriented, reliable, byte-stream",
+            "Connectionless, unreliable, message-oriented",
+            "Connectionless, reliable, byte-stream",
+            "Connection-oriented, unreliable, message-oriented",
+          ],
+          a: 1,
+          e: "UDP keeps message boundaries (one message = one datagram), has no connection setup, and does no retransmission.",
+        },
+        {
+          s: "udp",
+          type: "mcq",
+          q: "Which of these does UDP provide?",
+          o: [
+            "Flow control",
+            "Retransmission of lost datagrams",
+            "Error detection through the checksum",
+            "Ordering of datagrams",
+          ],
+          a: 2,
+          e: "UDP gives only error detection (checksum). A corrupted datagram is silently discarded, not retransmitted.",
+        },
 
-/* ===== TCP features & header ===== */
-{s:'tcp',type:'mcq',q:'TCP is:',o:['Connectionless and message-oriented','Connection-oriented, reliable, byte-stream and full-duplex','Connection-oriented but simplex','Unreliable but ordered'],a:1,e:'TCP sets up a connection, numbers bytes, retransmits, and data flows both ways at the same time.'},
-{s:'tcp',type:'mcq',q:'The size of the TCP header is:',o:['Fixed 8 bytes','Fixed 20 bytes','20–60 bytes','8–60 bytes'],a:2,e:'20 bytes without options, up to 60 with 40 bytes of options.'},
-{s:'tcp',type:'fill',q:'The HLEN field of a TCP header is 8 (decimal). Find:',fields:[{l:'Header length (bytes)',a:32},{l:'Options (bytes)',a:12}],
- e:'HLEN counts 4-byte words: 8 × 4 = 32 bytes. Options = 32 − 20 = 12 bytes.'},
-{s:'tcp',type:'fill',q:'The HLEN field of a TCP header is <code>0111</code> (binary). What is the header length in bytes?',fields:[{l:'Header length (bytes)',a:28}],e:'0111₂ = 7 → 7 × 4 = 28 bytes (8 bytes of options).'},
-{s:'tcp',type:'mcq',q:'Which HLEN value can never appear in a valid TCP header?',o:['0101','0110','0100','1111'],a:2,e:'0100 = 4 × 4 = 16 bytes, but the minimum header is 20 bytes (HLEN = 5). 1111 = 60 bytes (maximum).'},
-{s:'tcp',type:'fill',q:'A TCP header dump in hex:\n<code>05320017 00000001 00000000 500207FF 00000000</code>\nFind (in decimal):',fields:[{l:'Source port',a:1330},{l:'Destination port',a:23},{l:'Sequence number',a:1},{l:'Acknowledgment number',a:0},{l:'Header length (bytes)',a:20},{l:'Window size',a:2047}],
- e:'0532₁₆ = 1330 · 0017₁₆ = 23 · seq = 1 · ack = 0 · HLEN nibble 5 → 20 bytes · 07FF₁₆ = 2047.'},
-{s:'tcp',type:'mcq',q:'In the dump above (…<code>5002</code>…), which control flag is set, and what does that mean?',o:['ACK — a pure acknowledgment','SYN — a connection request','FIN — closing the connection','RST — resetting the connection'],a:1,
- e:'0x5002 → HLEN 0101 | reserved 000000 | flags 000010. Flag order URG ACK PSH RST SYN FIN → SYN. Destination port 23 = TELNET, so a client is asking a TELNET server to connect.'},
-{s:'tcp',type:'mcq',q:'Which flag aborts (resets) a connection?',o:['FIN','URG','RST','PSH'],a:2,e:'RST resets / refuses a connection. FIN closes it normally.'},
-{s:'tcp',type:'mcq',q:'Which flag asks the receiver to deliver data to the application right away instead of waiting for the buffer to fill?',o:['URG','PSH','ACK','SYN'],a:1,e:'PSH = push. URG marks urgent data, using the urgent pointer.'},
-{s:'tcp',type:'mcq',q:'The urgent pointer field is valid only if:',o:['The SYN flag is set','The URG flag is set','The window is zero','HLEN > 5'],a:1,e:'The urgent pointer is used only when URG = 1. It gives the end of the urgent data.'},
-{s:'tcp',type:'mcq',q:'The sequence-number field of a TCP segment holds:',o:['The segment number (1, 2, 3 …)','The number of the first data byte in that segment','The number of the last byte received','The number of the next byte expected'],a:1,
- e:'TCP numbers bytes, not segments. Seq = the number of the first byte in the segment. (The next byte expected is the ACK number.)'},
-{s:'tcp',type:'mcq',q:'The acknowledgment number in TCP is:',o:['The number of the last byte received','The number of the next byte expected (cumulative)','The number of segments received','Always ISN + 1'],a:1,e:'TCP ACKs are cumulative: ack = number of the next byte the receiver expects.'},
-{s:'tcp',type:'fill',q:'TCP is sending a 6000-byte file. The first byte is numbered 10,010. Segments 1–4 carry 1000 bytes each; segment 5 carries 2000 bytes. Find:',
- fields:[{l:'Seq of segment 3',a:12010},{l:'Seq of segment 5',a:14010},{l:'Last byte number in segment 5',a:16009}],
- e:'Seg1 10,010 · Seg2 11,010 · Seg3 12,010 · Seg4 13,010 · Seg5 14,010. Seg 5 covers 14,010 → 14,010 + 2000 − 1 = 16,009.'},
-{s:'tcp',type:'mcq',q:'The initial sequence number (ISN) is:',o:['Always 0','Always 1','A random number between 0 and 2³² − 1','The port number'],a:2,e:'The ISN is random, so old duplicate segments and attackers can’t easily guess sequence numbers. The seq field is 32 bits.'},
-{s:'tcp',type:'mcq',q:'The window-size field is 16 bits, so the maximum window is:',o:['1,024 bytes','65,535 bytes','4,294,967,295 bytes','Unlimited'],a:1,e:'2¹⁶ − 1 = 65,535 bytes (without the window-scale option).'},
-{s:'tcp',type:'mcq',q:'Unlike UDP, the TCP checksum is:',o:['Optional','Mandatory','Calculated only over the header','Not used'],a:1,e:'TCP checksum is mandatory and covers pseudoheader + header + data.'},
+        /* ===== TCP features & header ===== */
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "TCP is:",
+          o: [
+            "Connectionless and message-oriented",
+            "Connection-oriented, reliable, byte-stream and full-duplex",
+            "Connection-oriented but simplex",
+            "Unreliable but ordered",
+          ],
+          a: 1,
+          e: "TCP sets up a connection, numbers bytes, retransmits, and data flows both ways at the same time.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The size of the TCP header is:",
+          o: ["Fixed 8 bytes", "Fixed 20 bytes", "20–60 bytes", "8–60 bytes"],
+          a: 2,
+          e: "20 bytes without options, up to 60 with 40 bytes of options.",
+        },
+        {
+          s: "tcp",
+          type: "fill",
+          q: "The HLEN field of a TCP header is 8 (decimal). Find:",
+          fields: [
+            { l: "Header length (bytes)", a: 32 },
+            { l: "Options (bytes)", a: 12 },
+          ],
+          e: "HLEN counts 4-byte words: 8 × 4 = 32 bytes. Options = 32 − 20 = 12 bytes.",
+        },
+        {
+          s: "tcp",
+          type: "fill",
+          q: "The HLEN field of a TCP header is <code>0111</code> (binary). What is the header length in bytes?",
+          fields: [{ l: "Header length (bytes)", a: 28 }],
+          e: "0111₂ = 7 → 7 × 4 = 28 bytes (8 bytes of options).",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "Which HLEN value can never appear in a valid TCP header?",
+          o: ["0101", "0110", "0100", "1111"],
+          a: 2,
+          e: "0100 = 4 × 4 = 16 bytes, but the minimum header is 20 bytes (HLEN = 5). 1111 = 60 bytes (maximum).",
+        },
+        {
+          s: "tcp",
+          type: "fill",
+          q: "A TCP header dump in hex:\n<code>05320017 00000001 00000000 500207FF 00000000</code>\nFind (in decimal):",
+          fields: [
+            { l: "Source port", a: 1330 },
+            { l: "Destination port", a: 23 },
+            { l: "Sequence number", a: 1 },
+            { l: "Acknowledgment number", a: 0 },
+            { l: "Header length (bytes)", a: 20 },
+            { l: "Window size", a: 2047 },
+          ],
+          e: "0532₁₆ = 1330 · 0017₁₆ = 23 · seq = 1 · ack = 0 · HLEN nibble 5 → 20 bytes · 07FF₁₆ = 2047.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "A TCP header dump in hex:\n<code>05320017 00000001 00000000 500207FF 00000000</code>\nWhich control flag is set, and what does that mean?",
+          o: [
+            "ACK — a pure acknowledgment",
+            "SYN — a connection request",
+            "FIN — closing the connection",
+            "RST — resetting the connection",
+          ],
+          a: 1,
+          e: "0x5002 → HLEN 0101 | reserved 000000 | flags 000010. Flag order URG ACK PSH RST SYN FIN → SYN. Destination port 23 = TELNET, so a client is asking a TELNET server to connect.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "Which flag aborts (resets) a connection?",
+          o: ["FIN", "URG", "RST", "PSH"],
+          a: 2,
+          e: "RST resets / refuses a connection. FIN closes it normally.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "Which flag asks the receiver to deliver data to the application right away instead of waiting for the buffer to fill?",
+          o: ["URG", "PSH", "ACK", "SYN"],
+          a: 1,
+          e: "PSH = push. URG marks urgent data, using the urgent pointer.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The urgent pointer field is valid only if:",
+          o: [
+            "The SYN flag is set",
+            "The URG flag is set",
+            "The window is zero",
+            "HLEN > 5",
+          ],
+          a: 1,
+          e: "The urgent pointer is used only when URG = 1. It gives the end of the urgent data.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The sequence-number field of a TCP segment holds:",
+          o: [
+            "The segment number (1, 2, 3 …)",
+            "The number of the first data byte in that segment",
+            "The number of the last byte received",
+            "The number of the next byte expected",
+          ],
+          a: 1,
+          e: "TCP numbers bytes, not segments. Seq = the number of the first byte in the segment. (The next byte expected is the ACK number.)",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The acknowledgment number in TCP is:",
+          o: [
+            "The number of the last byte received",
+            "The number of the next byte expected (cumulative)",
+            "The number of segments received",
+            "Always ISN + 1",
+          ],
+          a: 1,
+          e: "TCP ACKs are cumulative: ack = number of the next byte the receiver expects.",
+        },
+        {
+          s: "tcp",
+          type: "fill",
+          q: "TCP is sending a 6000-byte file. The first byte is numbered 10,010. Segments 1–4 carry 1000 bytes each; segment 5 carries 2000 bytes. Find:",
+          fields: [
+            { l: "Seq of segment 3", a: 12010 },
+            { l: "Seq of segment 5", a: 14010 },
+            { l: "Last byte number in segment 5", a: 16009 },
+          ],
+          e: "Seg1 10,010 · Seg2 11,010 · Seg3 12,010 · Seg4 13,010 · Seg5 14,010. Seg 5 covers 14,010 → 14,010 + 2000 − 1 = 16,009.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The initial sequence number (ISN) is:",
+          o: [
+            "Always 0",
+            "Always 1",
+            "A random number between 0 and 2³² − 1",
+            "The port number",
+          ],
+          a: 2,
+          e: "The ISN is random, so old duplicate segments and attackers can’t easily guess sequence numbers. The seq field is 32 bits.",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "The window-size field is 16 bits, so the maximum window is:",
+          o: [
+            "1,024 bytes",
+            "65,535 bytes",
+            "4,294,967,295 bytes",
+            "Unlimited",
+          ],
+          a: 1,
+          e: "2¹⁶ − 1 = 65,535 bytes (without the window-scale option).",
+        },
+        {
+          s: "tcp",
+          type: "mcq",
+          q: "Unlike UDP, the TCP checksum is:",
+          o: [
+            "Optional",
+            "Mandatory",
+            "Calculated only over the header",
+            "Not used",
+          ],
+          a: 1,
+          e: "TCP checksum is mandatory and covers pseudoheader + header + data.",
+        },
 
-/* ===== HANDSHAKE & DATA ===== */
-{s:'hs',type:'mcq',q:'Which segment carries no data but still consumes ONE sequence number?',o:['A pure ACK','A SYN segment','A window-update ACK','A duplicate ACK'],a:1,e:'SYN and FIN each consume one sequence number. A pure ACK consumes none.'},
-{s:'hs',type:'mcq',q:'A pure ACK segment (no data):',o:['Consumes 1 sequence number','Consumes no sequence numbers','Consumes 2 sequence numbers','Has no sequence number field'],a:1,
- e:'It still carries a seq number in the header, but doesn’t consume one, so the next data segment reuses the same seq.'},
-{s:'hs',type:'mcq',q:'In the 3-way handshake, the flags of the 3 segments are, in order:',o:['SYN → ACK → ACK','SYN → SYN + ACK → ACK','SYN + ACK → SYN → ACK','SYN → FIN → ACK'],a:1,e:'Client SYN → server SYN + ACK → client ACK.'},
-{s:'hs',type:'fill',q:'Exercise 1a. Client ISN = 4000, client rwnd = 6000. Server ISN = 9000, server rwnd = 3000. Fill in the blanks.',
- dg:[{d:'r',t:'SYN',f:['seq: 4000']},{d:'l',t:'SYN + ACK',f:['seq: {a}','ack: {b}','rwnd: {c}']},{d:'r',t:'ACK',f:['seq: {d}','ack: {e}','rwnd: {f}']}],
- fields:[{l:'(a) seq',a:9000},{l:'(b) ack',a:4001},{l:'(c) rwnd',a:3000},{l:'(d) seq',a:4001},{l:'(e) ack',a:9001},{l:'(f) rwnd',a:6000}],
- e:'SYN+ACK: seq = server ISN 9000, ack = 4000 + 1 (the SYN used a number), rwnd = the SERVER’s window 3000.\nACK: seq = 4001, ack = 9001, rwnd = the CLIENT’s window 6000.\nRule: each side advertises its own rwnd.'},
-{s:'hs',type:'fill',q:'Exercise 1b. Same connection. The client sends 3000 bytes in 2 segments of 1500. The server replies with 2000 bytes in one segment; the client ACKs.',
- dg:[{d:'r',t:'Data: 1500',f:['seq: {a}','ack: 9001']},{d:'r',t:'Data: 1500',f:['seq: {b}','ack: 9001']},{d:'l',t:'Data: 2000',f:['seq: {c}','ack: {d}','rwnd: 3000']},{d:'r',t:'ACK',f:['seq: {e}','ack: {f}','rwnd: 6000']}],
- fields:[{l:'(a) seq',a:4001},{l:'(b) seq',a:5501},{l:'(c) seq',a:9001},{l:'(d) ack',a:7001},{l:'(e) seq',a:7001},{l:'(f) ack',a:11001}],
- e:'Client bytes 4001–5500 then 5501–7000. Server bytes 9001–11000, ack = 7001. Final ACK: seq 7001 (pure ACK uses no number), ack = 9001 + 2000 = 11001.'},
-{s:'hs',type:'fill',q:'Exercise 2 (handshake). Client ISN 2500, client rwnd 4000. Server ISN 7200, server rwnd 1500.',
- dg:[{d:'r',t:'SYN',f:['seq: 2500']},{d:'l',t:'SYN + ACK',f:['seq: 7200','ack: {a}','rwnd: {b}']},{d:'r',t:'ACK',f:['seq: {c}','ack: {d}','rwnd: {e}']}],
- fields:[{l:'(a) ack',a:2501},{l:'(b) rwnd',a:1500},{l:'(c) seq',a:2501},{l:'(d) ack',a:7201},{l:'(e) rwnd',a:4000}],
- e:'SYN+ACK: ack 2501, server rwnd 1500. ACK: seq 2501, ack 7201, client rwnd 4000.'},
-{s:'hs',type:'fill',q:'Exercise 2 (data). The client sends 3000 bytes and the server sends 2400 bytes in 2 equal segments. They take turns C, S, C, S. Each segment must fit the receiver’s rwnd (server rwnd 1500, client rwnd 4000).',
- dg:[{d:'r',t:'Data: {a}',f:['seq: {b}','ack: 7201']},{d:'l',t:'Data: 1200',f:['seq: {c}','ack: {d}']},{d:'r',t:'Data: {a}',f:['seq: {e}','ack: {f}']},{d:'l',t:'Data: 1200',f:['seq: {g}','ack: {h}']}],
- fields:[{l:'(a) client segment size',a:1500},{l:'(b) seq',a:2501},{l:'(c) seq',a:7201},{l:'(d) ack',a:4001},{l:'(e) seq',a:4001},{l:'(f) ack',a:8401},{l:'(g) seq',a:8401},{l:'(h) ack',a:5501}],
- e:'Server rwnd 1500 → client sends 2 × 1500. C1: 2501–4000. S1: 7201–8400, ack 4001. C2: 4001–5500, ack 8401. S2: 8401–9600, ack 5501.'},
-{s:'hs',type:'fill',q:'Exercise 3 (handshake). Server ISN = 15000 and the server’s SYN + ACK carries ack: 6201. Client rwnd 2000, server rwnd 2500.',
- dg:[{d:'r',t:'SYN',f:['seq: {a}']},{d:'l',t:'SYN + ACK',f:['seq: 15000','ack: 6201','rwnd: {b}']},{d:'r',t:'ACK',f:['seq: {c}','ack: {d}','rwnd: {e}']}],
- fields:[{l:'(a) client ISN',a:6200},{l:'(b) rwnd',a:2500},{l:'(c) seq',a:6201},{l:'(d) ack',a:15001},{l:'(e) rwnd',a:2000}],
- e:'ack 6201 = client ISN + 1 → ISN = 6200. Then: server rwnd 2500 · ACK seq 6201, ack 15001, client rwnd 2000.'},
-{s:'hs',type:'fill',q:'Exercise 3 (data). The client sends 5000 bytes using the fewest segments the server’s rwnd (2500) allows. The server then replies with 3000 bytes using the fewest segments the client’s rwnd (2000) allows, largest first. The client ACKs.',
- dg:[{d:'r',t:'Data: 2500',f:['seq: 6201','ack: 15001']},{d:'r',t:'Data: 2500',f:['seq: {a}','ack: 15001']},{d:'l',t:'Data: {b}',f:['seq: 15001','ack: {c}']},{d:'l',t:'Data: {d}',f:['seq: {e}','ack: 11201']},{d:'r',t:'ACK',f:['seq: 11201','ack: {f}']}],
- fields:[{l:'(a) seq',a:8701},{l:'(b) size',a:2000},{l:'(c) ack',a:11201},{l:'(d) size',a:1000},{l:'(e) seq',a:17001},{l:'(f) ack',a:18001},{l:'Last byte sent by client',a:11200},{l:'Last byte sent by server',a:18000}],
- e:'Client: 6201–8700, 8701–11200 → last byte 11200. Server: 2000 bytes (15001–17000) then 1000 bytes (17001–18000) → last byte 18000. Final ack = 18001.'},
-{s:'hs',type:'fill',q:'Past-exam style. Fill in the blanks for a), b) and c).',
- dg:[{d:'r',t:'Data Length: 3000',f:['Seq#: 1300','Rwnd: 5000']},{d:'l',t:'Data Length: 1500',f:['Seq#: 1000','Ack#: {a}','Rwnd: 8000']},{d:'r',t:'pure ACK',f:['Seq#: {b}','Ack#: {c}','Rwnd: 3000']}],
- L:'Web Client', R:'Web Server',
- fields:[{l:'(a) Ack#',a:4300},{l:'(b) Seq#',a:4300},{l:'(c) Ack#',a:2500},{l:'Max bytes the client can now send without waiting (server’s rwnd)',a:8000}],
- e:'(a) Ack = 1300 + 3000 = 4300.\n(b) Client’s next byte = 4300 (its last byte was 4299). Ack = 1000 + 1500 = 2500.\nThe server last advertised rwnd = 8000, so the client may have up to 8000 unacknowledged bytes outstanding.'},
-{s:'hs',type:'fill',q:'Assignment scenario. A sends 8 bytes; B replies with 10 bytes, but that segment (which carries the ACK) is lost. A’s timer expires.',
- L:'Host A', R:'Host B',
- dg:[{d:'r',t:'8 bytes data',f:['Seq=100','Ack=20']},{d:'l',t:'10 bytes data',f:['Seq=20','ACK={a}'],lost:true},{d:'r',t:'8 bytes data',f:['Seq={b}','ACK={c}'],timeout:'timeout'},{d:'l',t:'10 bytes data',f:['Seq={d}','ACK={e}']}],
- fields:[{l:'(a) ACK',a:108},{l:'(b) Seq',a:100},{l:'(c) ACK',a:20},{l:'(d) Seq',a:20},{l:'(e) ACK',a:108}],
- e:'B’s ACK = 100 + 8 = 108 (lost). A never got an ACK, so it retransmits the same segment: Seq 100, ACK 20. B gets a duplicate, throws it away, and sends again: Seq 20, ACK 108.'},
-{s:'hs',type:'fill',q:'Host A sends a segment with Seq = 50, Ack = 400 and 120 bytes of data. B replies with Seq = 400 and 550 bytes of data.',
- L:'Host A', R:'Host B',
- dg:[{d:'r',t:'120 bytes',f:['Seq=50','Ack=400']},{d:'l',t:'550 bytes',f:['Seq=400','Ack={a}']},{d:'r',t:'next segment',f:['Seq={b}','Ack={c}']}],
- fields:[{l:'(a) Ack',a:170},{l:'(b) Seq',a:170},{l:'(c) Ack',a:950}],
- e:'B acks 50 + 120 = 170. A’s next seq = 170, and A acks 400 + 550 = 950.'},
-{s:'hs',type:'fill',q:'The client ISN is 8000. The handshake completes and the client then sends its first data segment. What is the seq of that segment?',fields:[{l:'Seq',a:8001}],
- e:'SYN used 8000. The third (ACK) segment has seq 8001 but no data, so it uses nothing. The first data byte is 8001.'},
-{s:'hs',type:'mcq',q:'A SYN-flooding attack:',o:['Sends many FIN segments to close connections','Sends many SYNs with fake source IPs so the server reserves resources for half-open connections','Floods the server with data segments','Changes the window size to 0'],a:1,
- e:'It’s a denial-of-service attack. Defences: SYN cookies, limiting half-open connections, filtering fake addresses.'},
-{s:'hs',type:'mcq',q:'The server does a ___ open and the client does an ___ open.',o:['active, passive','passive, active','active, active','passive, passive'],a:1,e:'The server does a passive open (LISTEN); the client does an active open by sending the SYN.'},
-{s:'hs',type:'fill',q:'The server advertised rwnd = 3000. The sender has already sent 1000 bytes that are not yet acknowledged. How many more bytes can it send right now?',fields:[{l:'Bytes',a:2000}],
- e:'Usable window = rwnd − bytes sent but not yet acknowledged = 3000 − 1000 = 2000.'},
+        /* ===== HANDSHAKE & DATA ===== */
+        {
+          s: "hs",
+          type: "mcq",
+          q: "Which segment carries no data but still consumes ONE sequence number?",
+          o: [
+            "A pure ACK",
+            "A SYN segment",
+            "A window-update ACK",
+            "A duplicate ACK",
+          ],
+          a: 1,
+          e: "SYN and FIN each consume one sequence number. A pure ACK consumes none.",
+        },
+        {
+          s: "hs",
+          type: "mcq",
+          q: "A pure ACK segment (no data):",
+          o: [
+            "Consumes 1 sequence number",
+            "Consumes no sequence numbers",
+            "Consumes 2 sequence numbers",
+            "Has no sequence number field",
+          ],
+          a: 1,
+          e: "It still carries a seq number in the header, but doesn’t consume one, so the next data segment reuses the same seq.",
+        },
+        {
+          s: "hs",
+          type: "mcq",
+          q: "In the 3-way handshake, the flags of the 3 segments are, in order:",
+          o: [
+            "SYN → ACK → ACK",
+            "SYN → SYN + ACK → ACK",
+            "SYN + ACK → SYN → ACK",
+            "SYN → FIN → ACK",
+          ],
+          a: 1,
+          e: "Client SYN → server SYN + ACK → client ACK.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 1a. Client ISN = 4000, client rwnd = 6000. Server ISN = 9000, server rwnd = 3000. Fill in the blanks.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: 4000"] },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: {a}", "ack: {b}", "rwnd: {c}"],
+            },
+            { d: "r", t: "ACK", f: ["seq: {d}", "ack: {e}", "rwnd: {f}"] },
+          ],
+          fields: [
+            { l: "(a) seq", a: 9000 },
+            { l: "(b) ack", a: 4001 },
+            { l: "(c) rwnd", a: 3000 },
+            { l: "(d) seq", a: 4001 },
+            { l: "(e) ack", a: 9001 },
+            { l: "(f) rwnd", a: 6000 },
+          ],
+          e: "SYN+ACK: seq = server ISN 9000, ack = 4000 + 1 (the SYN used a number), rwnd = the SERVER’s window 3000.\nACK: seq = 4001, ack = 9001, rwnd = the CLIENT’s window 6000.\nRule: each side advertises its own rwnd.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 1b. Client ISN = 4000, client rwnd = 6000. Server ISN = 9000, server rwnd = 3000. The handshake is done (given rows below). The client then sends 3000 bytes in 2 segments of 1500. The server replies with 2000 bytes in one segment, and the client ACKs it.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: 4000"], given: 1 },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: 9000", "ack: 4001", "rwnd: 3000"],
+              given: 1,
+            },
+            {
+              d: "r",
+              t: "ACK",
+              f: ["seq: 4001", "ack: 9001", "rwnd: 6000"],
+              given: 1,
+            },
+            { d: "r", t: "Data: 1500", f: ["seq: {a}", "ack: 9001"] },
+            { d: "r", t: "Data: 1500", f: ["seq: {b}", "ack: 9001"] },
+            {
+              d: "l",
+              t: "Data: 2000",
+              f: ["seq: {c}", "ack: {d}", "rwnd: 3000"],
+            },
+            { d: "r", t: "ACK", f: ["seq: {e}", "ack: {f}", "rwnd: 6000"] },
+          ],
+          fields: [
+            { l: "(a) seq", a: 4001 },
+            { l: "(b) seq", a: 5501 },
+            { l: "(c) seq", a: 9001 },
+            { l: "(d) ack", a: 7001 },
+            { l: "(e) seq", a: 7001 },
+            { l: "(f) ack", a: 11001 },
+          ],
+          e: "Client bytes 4001–5500 then 5501–7000. Server bytes 9001–11000, ack = 7001. Final ACK: seq 7001 (pure ACK uses no number), ack = 9001 + 2000 = 11001.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 2 (handshake). Client ISN 2500, client rwnd 4000. Server ISN 7200, server rwnd 1500.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: 2500"] },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: 7200", "ack: {a}", "rwnd: {b}"],
+            },
+            { d: "r", t: "ACK", f: ["seq: {c}", "ack: {d}", "rwnd: {e}"] },
+          ],
+          fields: [
+            { l: "(a) ack", a: 2501 },
+            { l: "(b) rwnd", a: 1500 },
+            { l: "(c) seq", a: 2501 },
+            { l: "(d) ack", a: 7201 },
+            { l: "(e) rwnd", a: 4000 },
+          ],
+          e: "SYN+ACK: ack 2501, server rwnd 1500. ACK: seq 2501, ack 7201, client rwnd 4000.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 2 (data). Client ISN 2500, client rwnd 4000. Server ISN 7200, server rwnd 1500. The handshake is done (given rows). The client sends 3000 bytes and the server sends 2400 bytes in 2 equal segments. They take turns C, S, C, S, and each segment must fit the receiver’s rwnd.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: 2500"], given: 1 },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: 7200", "ack: 2501", "rwnd: 1500"],
+              given: 1,
+            },
+            {
+              d: "r",
+              t: "ACK",
+              f: ["seq: 2501", "ack: 7201", "rwnd: 4000"],
+              given: 1,
+            },
+            { d: "r", t: "Data: {a}", f: ["seq: {b}", "ack: 7201"] },
+            { d: "l", t: "Data: 1200", f: ["seq: {c}", "ack: {d}"] },
+            { d: "r", t: "Data: {a}", f: ["seq: {e}", "ack: {f}"] },
+            { d: "l", t: "Data: 1200", f: ["seq: {g}", "ack: {h}"] },
+          ],
+          fields: [
+            { l: "(a) client segment size", a: 1500 },
+            { l: "(b) seq", a: 2501 },
+            { l: "(c) seq", a: 7201 },
+            { l: "(d) ack", a: 4001 },
+            { l: "(e) seq", a: 4001 },
+            { l: "(f) ack", a: 8401 },
+            { l: "(g) seq", a: 8401 },
+            { l: "(h) ack", a: 5501 },
+          ],
+          e: "Server rwnd 1500 → client sends 2 × 1500. C1: 2501–4000. S1: 7201–8400, ack 4001. C2: 4001–5500, ack 8401. S2: 8401–9600, ack 5501.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 3 (handshake). Server ISN = 15000 and the server’s SYN + ACK carries ack: 6201. Client rwnd 2000, server rwnd 2500.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: {a}"] },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: 15000", "ack: 6201", "rwnd: {b}"],
+            },
+            { d: "r", t: "ACK", f: ["seq: {c}", "ack: {d}", "rwnd: {e}"] },
+          ],
+          fields: [
+            { l: "(a) client ISN", a: 6200 },
+            { l: "(b) rwnd", a: 2500 },
+            { l: "(c) seq", a: 6201 },
+            { l: "(d) ack", a: 15001 },
+            { l: "(e) rwnd", a: 2000 },
+          ],
+          e: "ack 6201 = client ISN + 1 → ISN = 6200. Then: server rwnd 2500 · ACK seq 6201, ack 15001, client rwnd 2000.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Exercise 3 (data). Client ISN 6200, client rwnd 2000. Server ISN 15000, server rwnd 2500. The handshake is done (given rows). The client sends 5000 bytes using the fewest segments the server’s rwnd (2500) allows. The server then replies with 3000 bytes using the fewest segments the client’s rwnd (2000) allows, largest first. The client ACKs.",
+          dg: [
+            { d: "r", t: "SYN", f: ["seq: 6200"], given: 1 },
+            {
+              d: "l",
+              t: "SYN + ACK",
+              f: ["seq: 15000", "ack: 6201", "rwnd: 2500"],
+              given: 1,
+            },
+            {
+              d: "r",
+              t: "ACK",
+              f: ["seq: 6201", "ack: 15001", "rwnd: 2000"],
+              given: 1,
+            },
+            { d: "r", t: "Data: 2500", f: ["seq: 6201", "ack: 15001"] },
+            { d: "r", t: "Data: 2500", f: ["seq: {a}", "ack: 15001"] },
+            { d: "l", t: "Data: {b}", f: ["seq: 15001", "ack: {c}"] },
+            { d: "l", t: "Data: {d}", f: ["seq: {e}", "ack: 11201"] },
+            { d: "r", t: "ACK", f: ["seq: 11201", "ack: {f}"] },
+          ],
+          fields: [
+            { l: "(a) seq", a: 8701 },
+            { l: "(b) size", a: 2000 },
+            { l: "(c) ack", a: 11201 },
+            { l: "(d) size", a: 1000 },
+            { l: "(e) seq", a: 17001 },
+            { l: "(f) ack", a: 18001 },
+            { l: "Last byte sent by client", a: 11200 },
+            { l: "Last byte sent by server", a: 18000 },
+          ],
+          e: "Client: 6201–8700, 8701–11200 → last byte 11200. Server: 2000 bytes (15001–17000) then 1000 bytes (17001–18000) → last byte 18000. Final ack = 18001.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Past-exam style. Fill in the blanks for a), b) and c).",
+          dg: [
+            { d: "r", t: "Data Length: 3000", f: ["Seq#: 1300", "Rwnd: 5000"] },
+            {
+              d: "l",
+              t: "Data Length: 1500",
+              f: ["Seq#: 1000", "Ack#: {a}", "Rwnd: 8000"],
+            },
+            {
+              d: "r",
+              t: "pure ACK",
+              f: ["Seq#: {b}", "Ack#: {c}", "Rwnd: 3000"],
+            },
+          ],
+          L: "Web Client",
+          R: "Web Server",
+          fields: [
+            { l: "(a) Ack#", a: 4300 },
+            { l: "(b) Seq#", a: 4300 },
+            { l: "(c) Ack#", a: 2500 },
+            {
+              l: "Max bytes the client can now send without waiting (server’s rwnd)",
+              a: 8000,
+            },
+          ],
+          e: "(a) Ack = 1300 + 3000 = 4300.\n(b) Client’s next byte = 4300 (its last byte was 4299). Ack = 1000 + 1500 = 2500.\nThe server last advertised rwnd = 8000, so the client may have up to 8000 unacknowledged bytes outstanding.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Assignment scenario. A sends 8 bytes; B replies with 10 bytes, but that segment (which carries the ACK) is lost. A’s timer expires.",
+          L: "Host A",
+          R: "Host B",
+          dg: [
+            { d: "r", t: "8 bytes data", f: ["Seq=100", "Ack=20"] },
+            {
+              d: "l",
+              t: "10 bytes data",
+              f: ["Seq=20", "ACK={a}"],
+              lost: true,
+            },
+            {
+              d: "r",
+              t: "8 bytes data",
+              f: ["Seq={b}", "ACK={c}"],
+              timeout: "timeout",
+            },
+            { d: "l", t: "10 bytes data", f: ["Seq={d}", "ACK={e}"] },
+          ],
+          fields: [
+            { l: "(a) ACK", a: 108 },
+            { l: "(b) Seq", a: 100 },
+            { l: "(c) ACK", a: 20 },
+            { l: "(d) Seq", a: 20 },
+            { l: "(e) ACK", a: 108 },
+          ],
+          e: "B’s ACK = 100 + 8 = 108 (lost). A never got an ACK, so it retransmits the same segment: Seq 100, ACK 20. B gets a duplicate, throws it away, and sends again: Seq 20, ACK 108.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "Host A sends a segment with Seq = 50, Ack = 400 and 120 bytes of data. B replies with Seq = 400 and 550 bytes of data.",
+          L: "Host A",
+          R: "Host B",
+          dg: [
+            { d: "r", t: "120 bytes", f: ["Seq=50", "Ack=400"] },
+            { d: "l", t: "550 bytes", f: ["Seq=400", "Ack={a}"] },
+            { d: "r", t: "next segment", f: ["Seq={b}", "Ack={c}"] },
+          ],
+          fields: [
+            { l: "(a) Ack", a: 170 },
+            { l: "(b) Seq", a: 170 },
+            { l: "(c) Ack", a: 950 },
+          ],
+          e: "B acks 50 + 120 = 170. A’s next seq = 170, and A acks 400 + 550 = 950.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "The client ISN is 8000. The handshake completes and the client then sends its first data segment. What is the seq of that segment?",
+          fields: [{ l: "Seq", a: 8001 }],
+          e: "SYN used 8000. The third (ACK) segment has seq 8001 but no data, so it uses nothing. The first data byte is 8001.",
+        },
+        {
+          s: "hs",
+          type: "mcq",
+          q: "A SYN-flooding attack:",
+          o: [
+            "Sends many FIN segments to close connections",
+            "Sends many SYNs with fake source IPs so the server reserves resources for half-open connections",
+            "Floods the server with data segments",
+            "Changes the window size to 0",
+          ],
+          a: 1,
+          e: "It’s a denial-of-service attack. Defences: SYN cookies, limiting half-open connections, filtering fake addresses.",
+        },
+        {
+          s: "hs",
+          type: "mcq",
+          q: "The server does a ___ open and the client does an ___ open.",
+          o: [
+            "active, passive",
+            "passive, active",
+            "active, active",
+            "passive, passive",
+          ],
+          a: 1,
+          e: "The server does a passive open (LISTEN); the client does an active open by sending the SYN.",
+        },
+        {
+          s: "hs",
+          type: "fill",
+          q: "The server advertised rwnd = 3000. The sender has already sent 1000 bytes that are not yet acknowledged. How many more bytes can it send right now?",
+          fields: [{ l: "Bytes", a: 2000 }],
+          e: "Usable window = rwnd − bytes sent but not yet acknowledged = 3000 − 1000 = 2000.",
+        },
 
-/* ===== TERMINATION ===== */
-{s:'term',type:'fill',q:'Three-way termination. The last data byte sent by the client was 5000 and by the server was 9000. No data is carried with the FINs.',
- dg:[{d:'r',t:'FIN',f:['seq: {a}','ack: 9001']},{d:'l',t:'FIN + ACK',f:['seq: {b}','ack: {c}']},{d:'r',t:'ACK',f:['seq: {d}','ack: {e}']}],
- fields:[{l:'(a) seq',a:5001},{l:'(b) seq',a:9001},{l:'(c) ack',a:5002},{l:'(d) seq',a:5002},{l:'(e) ack',a:9002}],
- e:'FIN uses one number: client FIN = 5001 → server acks 5002. Server FIN = 9001 → client acks 9002. The last ACK has seq 5002.'},
-{s:'term',type:'mcq',q:'Half-close means:',o:['Both sides stop at the same time','One side stops sending data but can still receive','The connection is reset','The window is halved'],a:1,e:'E.g. the client sends FIN after uploading but keeps receiving the server’s data. This is 4-way termination: FIN, ACK, (data…), FIN, ACK.'},
-{s:'term',type:'mcq',q:'How long does a TCP endpoint stay in the TIME-WAIT state?',o:['1 RTT','2 MSL (Maximum Segment Lifetime)','Until the next SYN','500 ms'],a:1,
- e:'2 MSL: it can resend the last ACK if it is lost, and old duplicates die out before a new connection reuses the same socket pair.'},
-{s:'term',type:'mcq',q:'A server that is waiting for connection requests is in state:',o:['SYN-SENT','LISTEN','ESTABLISHED','CLOSE-WAIT'],a:1,e:'Passive open → LISTEN. Client after sending SYN → SYN-SENT.'},
-{s:'term',type:'mcq',q:'The client has sent FIN and received its ACK, but hasn’t yet received the server’s FIN. Its state is:',o:['FIN-WAIT-1','FIN-WAIT-2','TIME-WAIT','LAST-ACK'],a:1,
- e:'FIN-WAIT-1 (FIN sent) → ACK received → FIN-WAIT-2 → server FIN received & ACKed → TIME-WAIT.'},
-{s:'term',type:'mcq',q:'The server has received the client’s FIN and acknowledged it, but hasn’t sent its own FIN yet. Its state is:',o:['CLOSE-WAIT','LAST-ACK','FIN-WAIT-2','CLOSED'],a:0,e:'Server: CLOSE-WAIT → sends FIN → LAST-ACK → gets ACK → CLOSED.'},
-{s:'term',type:'mcq',q:'Which segment consumes a sequence number when it carries no data?',o:['ACK only','FIN','Window update','Keepalive'],a:1,e:'FIN (like SYN) consumes one sequence number.'},
+        /* ===== TERMINATION ===== */
+        {
+          s: "term",
+          type: "fill",
+          q: "Three-way termination. The last data byte sent by the client was 5000 and by the server was 9000. No data is carried with the FINs.",
+          dg: [
+            { d: "r", t: "FIN", f: ["seq: {a}", "ack: 9001"] },
+            { d: "l", t: "FIN + ACK", f: ["seq: {b}", "ack: {c}"] },
+            { d: "r", t: "ACK", f: ["seq: {d}", "ack: {e}"] },
+          ],
+          fields: [
+            { l: "(a) seq", a: 5001 },
+            { l: "(b) seq", a: 9001 },
+            { l: "(c) ack", a: 5002 },
+            { l: "(d) seq", a: 5002 },
+            { l: "(e) ack", a: 9002 },
+          ],
+          e: "FIN uses one number: client FIN = 5001 → server acks 5002. Server FIN = 9001 → client acks 9002. The last ACK has seq 5002.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "Half-close means:",
+          o: [
+            "Both sides stop at the same time",
+            "One side stops sending data but can still receive",
+            "The connection is reset",
+            "The window is halved",
+          ],
+          a: 1,
+          e: "E.g. the client sends FIN after uploading but keeps receiving the server’s data. This is 4-way termination: FIN, ACK, (data…), FIN, ACK.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "How long does a TCP endpoint stay in the TIME-WAIT state?",
+          o: [
+            "1 RTT",
+            "2 MSL (Maximum Segment Lifetime)",
+            "Until the next SYN",
+            "500 ms",
+          ],
+          a: 1,
+          e: "2 MSL: it can resend the last ACK if it is lost, and old duplicates die out before a new connection reuses the same socket pair.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "A server that is waiting for connection requests is in state:",
+          o: ["SYN-SENT", "LISTEN", "ESTABLISHED", "CLOSE-WAIT"],
+          a: 1,
+          e: "Passive open → LISTEN. Client after sending SYN → SYN-SENT.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "The client has sent FIN and received its ACK, but hasn’t yet received the server’s FIN. Its state is:",
+          o: ["FIN-WAIT-1", "FIN-WAIT-2", "TIME-WAIT", "LAST-ACK"],
+          a: 1,
+          e: "FIN-WAIT-1 (FIN sent) → ACK received → FIN-WAIT-2 → server FIN received & ACKed → TIME-WAIT.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "The server has received the client’s FIN and acknowledged it, but hasn’t sent its own FIN yet. Its state is:",
+          o: ["CLOSE-WAIT", "LAST-ACK", "FIN-WAIT-2", "CLOSED"],
+          a: 0,
+          e: "Server: CLOSE-WAIT → sends FIN → LAST-ACK → gets ACK → CLOSED.",
+        },
+        {
+          s: "term",
+          type: "mcq",
+          q: "Which segment consumes a sequence number when it carries no data?",
+          o: ["ACK only", "FIN", "Window update", "Keepalive"],
+          a: 1,
+          e: "FIN (like SYN) consumes one sequence number.",
+        },
 
-/* ===== FLOW & ERROR CONTROL ===== */
-{s:'flow',type:'fill',q:'The receiver’s buffer is 5000 bytes. It has received 1000 bytes that the application hasn’t read yet. What rwnd does it advertise?',fields:[{l:'rwnd (bytes)',a:4000}],
- e:'rwnd = buffer size − bytes waiting to be pulled = 5000 − 1000 = 4000.'},
-{s:'flow',type:'fill',q:'rwnd = 5000 bytes and cwnd = 3000 bytes. What is the sender’s window size?',fields:[{l:'Window (bytes)',a:3000}],e:'Sender window = min(rwnd, cwnd) = 3000.'},
-{s:'flow',type:'mcq',q:'Flow control in TCP is mainly done using:',o:['The checksum','The receiver window (rwnd)','The urgent pointer','The congestion window only'],a:1,e:'The receiver advertises rwnd so the sender can’t overflow the receiver’s buffer.'},
-{s:'flow',type:'mcq',q:'Silly window syndrome caused by the SENDER is solved by:',o:['Clark’s solution','Nagle’s algorithm','Karn’s algorithm','Slow start'],a:1,e:'Nagle: send the first piece, then gather data until an ACK arrives or a full segment is ready.'},
-{s:'flow',type:'mcq',q:'Silly window syndrome caused by the RECEIVER is solved by:',o:['Nagle’s algorithm','Clark’s solution or delayed acknowledgment','Fast retransmit','SYN cookies'],a:1,
- e:'Clark: advertise a zero window until there’s room for a full segment or half the buffer is free. Or delay the ACK.'},
-{s:'flow',type:'mcq',q:'The three tools TCP uses for error control are:',o:['Checksum, acknowledgment, time-out & retransmission','Ports, sockets, flags','rwnd, cwnd, ssthresh','SYN, FIN, RST'],a:0,e:'A corrupted segment is detected by the checksum and dropped. A missing ACK leads to a time-out (or 3 duplicate ACKs) and a retransmission.'},
-{s:'flow',type:'mcq',q:'Fast retransmission is triggered when the sender receives:',o:['1 duplicate ACK','2 duplicate ACKs','3 duplicate ACKs','A RST'],a:2,e:'3 duplicate ACKs (4 identical ACKs in total) → resend the missing segment without waiting for the RTO.'},
-{s:'flow',type:'mcq',q:'A receiver gets an out-of-order segment (a gap is detected). It:',o:['Discards it silently','Stores it and immediately sends an ACK with the next expected byte (a duplicate ACK)','Waits 500 ms and then ACKs','Sends RST'],a:1,
- e:'Modern TCP stores out-of-order segments, but the ACK still names the first missing byte, which creates the duplicate ACKs that trigger fast retransmit.'},
-{s:'flow',type:'mcq',q:'A receiver with no data to send gets an in-order segment and the previous one was already ACKed. It:',o:['ACKs immediately','Delays the ACK until another segment arrives or about 500 ms pass','Never ACKs','Sends a FIN'],a:1,e:'The delayed-ACK rule cuts down on ACK traffic.'},
-{s:'flow',type:'mcq',q:'The ACK for segment 1 is lost, but the ACK for segment 2 arrives before the timer for segment 1 expires. What happens?',o:['Segment 1 is retransmitted','Nothing — the cumulative ACK covers both segments','Both are retransmitted','The connection resets'],a:1,e:'Cumulative ACKs mean a lost ACK is often harmless.'},
-{s:'flow',type:'mcq',q:'Can a TCP receiver shrink its window (move the right edge to the left)?',o:['Yes, any time','No — shrinking is strongly discouraged / not allowed','Only during slow start','Only when URG is set'],a:1,e:'The right wall shouldn’t move left, because the sender may already have sent bytes into that space. The receiver can close the window (rwnd = 0) instead.'},
+        /* ===== FLOW & ERROR CONTROL ===== */
+        {
+          s: "flow",
+          type: "fill",
+          q: "The receiver’s buffer is 5000 bytes. It has received 1000 bytes that the application hasn’t read yet. What rwnd does it advertise?",
+          fields: [{ l: "rwnd (bytes)", a: 4000 }],
+          e: "rwnd = buffer size − bytes waiting to be pulled = 5000 − 1000 = 4000.",
+        },
+        {
+          s: "flow",
+          type: "fill",
+          q: "rwnd = 5000 bytes and cwnd = 3000 bytes. What is the sender’s window size?",
+          fields: [{ l: "Window (bytes)", a: 3000 }],
+          e: "Sender window = min(rwnd, cwnd) = 3000.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "Flow control in TCP is mainly done using:",
+          o: [
+            "The checksum",
+            "The receiver window (rwnd)",
+            "The urgent pointer",
+            "The congestion window only",
+          ],
+          a: 1,
+          e: "The receiver advertises rwnd so the sender can’t overflow the receiver’s buffer.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "Silly window syndrome caused by the SENDER is solved by:",
+          o: [
+            "Clark’s solution",
+            "Nagle’s algorithm",
+            "Karn’s algorithm",
+            "Slow start",
+          ],
+          a: 1,
+          e: "Nagle: send the first piece, then gather data until an ACK arrives or a full segment is ready.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "Silly window syndrome caused by the RECEIVER is solved by:",
+          o: [
+            "Nagle’s algorithm",
+            "Clark’s solution or delayed acknowledgment",
+            "Fast retransmit",
+            "SYN cookies",
+          ],
+          a: 1,
+          e: "Clark: advertise a zero window until there’s room for a full segment or half the buffer is free. Or delay the ACK.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "The three tools TCP uses for error control are:",
+          o: [
+            "Checksum, acknowledgment, time-out & retransmission",
+            "Ports, sockets, flags",
+            "rwnd, cwnd, ssthresh",
+            "SYN, FIN, RST",
+          ],
+          a: 0,
+          e: "A corrupted segment is detected by the checksum and dropped. A missing ACK leads to a time-out (or 3 duplicate ACKs) and a retransmission.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "Fast retransmission is triggered when the sender receives:",
+          o: [
+            "1 duplicate ACK",
+            "2 duplicate ACKs",
+            "3 duplicate ACKs",
+            "A RST",
+          ],
+          a: 2,
+          e: "3 duplicate ACKs (4 identical ACKs in total) → resend the missing segment without waiting for the RTO.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "A receiver gets an out-of-order segment (a gap is detected). It:",
+          o: [
+            "Discards it silently",
+            "Stores it and immediately sends an ACK with the next expected byte (a duplicate ACK)",
+            "Waits 500 ms and then ACKs",
+            "Sends RST",
+          ],
+          a: 1,
+          e: "Modern TCP stores out-of-order segments, but the ACK still names the first missing byte, which creates the duplicate ACKs that trigger fast retransmit.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "A receiver with no data to send gets an in-order segment and the previous one was already ACKed. It:",
+          o: [
+            "ACKs immediately",
+            "Delays the ACK until another segment arrives or about 500 ms pass",
+            "Never ACKs",
+            "Sends a FIN",
+          ],
+          a: 1,
+          e: "The delayed-ACK rule cuts down on ACK traffic.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "The ACK for segment 1 is lost, but the ACK for segment 2 arrives before the timer for segment 1 expires. What happens?",
+          o: [
+            "Segment 1 is retransmitted",
+            "Nothing — the cumulative ACK covers both segments",
+            "Both are retransmitted",
+            "The connection resets",
+          ],
+          a: 1,
+          e: "Cumulative ACKs mean a lost ACK is often harmless.",
+        },
+        {
+          s: "flow",
+          type: "mcq",
+          q: "Can a TCP receiver shrink its window (move the right edge to the left)?",
+          o: [
+            "Yes, any time",
+            "No — shrinking is strongly discouraged / not allowed",
+            "Only during slow start",
+            "Only when URG is set",
+          ],
+          a: 1,
+          e: "The right wall shouldn’t move left, because the sender may already have sent bytes into that space. The receiver can close the window (rwnd = 0) instead.",
+        },
 
-/* ===== CONGESTION & TIMERS ===== */
-{s:'cong',type:'mcq',q:'In slow start, cwnd grows:',o:['Linearly (+1 MSS per RTT)','Exponentially (doubles every RTT)','Stays constant','Halves every RTT'],a:1,e:'+1 MSS per ACK → doubles each RTT, until it reaches ssthresh.'},
-{s:'cong',type:'mcq',q:'In congestion avoidance, cwnd grows:',o:['Exponentially','Additively, about +1 MSS per RTT','By 3 MSS per ACK','Not at all'],a:1,e:'Additive increase. Together with halving on loss (multiplicative decrease) this is AIMD.'},
-{s:'cong',type:'fill',q:'Slow start begins with cwnd = 1 MSS and ssthresh = 16 MSS. There is no loss. Find cwnd after:',fields:[{l:'4 RTTs',a:16},{l:'6 RTTs',a:18}],
- e:'1 → 2 → 4 → 8 → 16 (4 RTTs, ssthresh reached). Then congestion avoidance: 17 → 18 after 6 RTTs.'},
-{s:'cong',type:'fill',q:'TCP Tahoe: a time-out happens when cwnd = 20 MSS. Find the new values.',fields:[{l:'New ssthresh',a:10},{l:'New cwnd',a:1}],
- e:'ssthresh = cwnd / 2 = 10. cwnd goes back to 1 MSS and slow start starts again.'},
-{s:'cong',type:'mcq',q:'In TCP Reno, 3 duplicate ACKs arrive. TCP:',o:['Sets cwnd = 1 and starts slow start','Sets ssthresh = cwnd/2 and enters fast recovery (doesn’t drop to 1)','Ignores them','Closes the connection'],a:1,
- e:'3 duplicate ACKs mean light congestion (later segments are still getting through) → fast recovery. A time-out means heavy congestion → cwnd = 1.'},
-{s:'cong',type:'mcq',q:'Which event is treated as the stronger sign of congestion?',o:['3 duplicate ACKs','A time-out','A window update','Receiving a SYN'],a:1,e:'A time-out means nothing is getting through, so TCP reacts most strongly (cwnd = 1).'},
-{s:'cong',type:'fill',q:'RTT estimation (α = 1/8, β = 1/4). Currently RTTs = 1.5 s and RTTd = 0.75 s. A new RTTm = 2.5 s is measured. Find (round to 2 decimals):',
- fields:[{l:'New RTTs',a:1.625,t:0.01},{l:'New RTTd',a:0.78,t:0.01},{l:'RTO',a:4.75,t:0.02}],
- e:'RTTs = 7/8(1.5) + 1/8(2.5) = 1.625\nRTTd = 3/4(0.75) + 1/4|1.625 − 2.5| = 0.5625 + 0.21875 ≈ 0.78\nRTO = RTTs + 4·RTTd = 1.625 + 3.125 ≈ 4.75 s'},
-{s:'cong',type:'fill',q:'This is the FIRST RTT measurement for a connection: RTTm = 2 s. Find:',fields:[{l:'RTTs',a:2},{l:'RTTd',a:1},{l:'RTO',a:6}],
- e:'First measurement: RTTs = RTTm = 2, RTTd = RTTm/2 = 1, RTO = 2 + 4(1) = 6 s. (Before any measurement, RTO starts at 6 s.)'},
-{s:'cong',type:'mcq',q:'Karn’s algorithm says:',o:['Double cwnd every RTT','Don’t use the RTT of a retransmitted segment when updating RTTs','Send 3 duplicate ACKs','Use a fixed RTO of 1 s'],a:1,
- e:'When a segment was retransmitted, you can’t tell which copy the ACK is for. Ignore that sample and use exponential backoff for the RTO.'},
-{s:'cong',type:'mcq',q:'The persistence timer is used to:',o:['Measure RTT','Prevent deadlock after the receiver advertises a zero window (send probes)','Close idle connections','Wait 2 MSL'],a:1,
- e:'If the ACK that reopens the window is lost, both sides would wait forever. Probes avoid that.'},
-{s:'cong',type:'mcq',q:'Which timer stops a long-idle connection from staying open forever (e.g. after the client crashes)?',o:['Retransmission','Persistence','Keepalive','TIME-WAIT'],a:2,e:'Keepalive: after a long idle time (often 2 hours) send probes; if there’s no response, close the connection.'},
-{s:'cong',type:'mcq',q:'Which are TCP’s four timers?',o:['Retransmission, persistence, keepalive, TIME-WAIT','Slow start, RTT, FIN, SYN','RTO, ACK, PSH, URG','Nagle, Clark, Karn, Jacobson'],a:0,e:'Retransmission (RTO) · persistence · keepalive · TIME-WAIT (2 MSL).'},
+        /* ===== CONGESTION & TIMERS ===== */
+        {
+          s: "cong",
+          type: "mcq",
+          q: "In slow start, cwnd grows:",
+          o: [
+            "Linearly (+1 MSS per RTT)",
+            "Exponentially (doubles every RTT)",
+            "Stays constant",
+            "Halves every RTT",
+          ],
+          a: 1,
+          e: "+1 MSS per ACK → doubles each RTT, until it reaches ssthresh.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "In congestion avoidance, cwnd grows:",
+          o: [
+            "Exponentially",
+            "Additively, about +1 MSS per RTT",
+            "By 3 MSS per ACK",
+            "Not at all",
+          ],
+          a: 1,
+          e: "Additive increase. Together with halving on loss (multiplicative decrease) this is AIMD.",
+        },
+        {
+          s: "cong",
+          type: "fill",
+          q: "Slow start begins with cwnd = 1 MSS and ssthresh = 16 MSS. There is no loss. Find cwnd after:",
+          fields: [
+            { l: "4 RTTs", a: 16 },
+            { l: "6 RTTs", a: 18 },
+          ],
+          e: "1 → 2 → 4 → 8 → 16 (4 RTTs, ssthresh reached). Then congestion avoidance: 17 → 18 after 6 RTTs.",
+        },
+        {
+          s: "cong",
+          type: "fill",
+          q: "TCP Tahoe: a time-out happens when cwnd = 20 MSS. Find the new values.",
+          fields: [
+            { l: "New ssthresh", a: 10 },
+            { l: "New cwnd", a: 1 },
+          ],
+          e: "ssthresh = cwnd / 2 = 10. cwnd goes back to 1 MSS and slow start starts again.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "In TCP Reno, 3 duplicate ACKs arrive. TCP:",
+          o: [
+            "Sets cwnd = 1 and starts slow start",
+            "Sets ssthresh = cwnd/2 and enters fast recovery (doesn’t drop to 1)",
+            "Ignores them",
+            "Closes the connection",
+          ],
+          a: 1,
+          e: "3 duplicate ACKs mean light congestion (later segments are still getting through) → fast recovery. A time-out means heavy congestion → cwnd = 1.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "Which event is treated as the stronger sign of congestion?",
+          o: [
+            "3 duplicate ACKs",
+            "A time-out",
+            "A window update",
+            "Receiving a SYN",
+          ],
+          a: 1,
+          e: "A time-out means nothing is getting through, so TCP reacts most strongly (cwnd = 1).",
+        },
+        {
+          s: "cong",
+          type: "fill",
+          q: "RTT estimation (α = 1/8, β = 1/4). Currently RTTs = 1.5 s and RTTd = 0.75 s. A new RTTm = 2.5 s is measured. Find (round to 2 decimals):",
+          fields: [
+            { l: "New RTTs", a: 1.625, t: 0.01 },
+            { l: "New RTTd", a: 0.78, t: 0.01 },
+            { l: "RTO", a: 4.75, t: 0.02 },
+          ],
+          e: "RTTs = 7/8(1.5) + 1/8(2.5) = 1.625\nRTTd = 3/4(0.75) + 1/4|1.625 − 2.5| = 0.5625 + 0.21875 ≈ 0.78\nRTO = RTTs + 4·RTTd = 1.625 + 3.125 ≈ 4.75 s",
+        },
+        {
+          s: "cong",
+          type: "fill",
+          q: "This is the FIRST RTT measurement for a connection: RTTm = 2 s. Find:",
+          fields: [
+            { l: "RTTs", a: 2 },
+            { l: "RTTd", a: 1 },
+            { l: "RTO", a: 6 },
+          ],
+          e: "First measurement: RTTs = RTTm = 2, RTTd = RTTm/2 = 1, RTO = 2 + 4(1) = 6 s. (Before any measurement, RTO starts at 6 s.)",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "Karn’s algorithm says:",
+          o: [
+            "Double cwnd every RTT",
+            "Don’t use the RTT of a retransmitted segment when updating RTTs",
+            "Send 3 duplicate ACKs",
+            "Use a fixed RTO of 1 s",
+          ],
+          a: 1,
+          e: "When a segment was retransmitted, you can’t tell which copy the ACK is for. Ignore that sample and use exponential backoff for the RTO.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "The persistence timer is used to:",
+          o: [
+            "Measure RTT",
+            "Prevent deadlock after the receiver advertises a zero window (send probes)",
+            "Close idle connections",
+            "Wait 2 MSL",
+          ],
+          a: 1,
+          e: "If the ACK that reopens the window is lost, both sides would wait forever. Probes avoid that.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "Which timer stops a long-idle connection from staying open forever (e.g. after the client crashes)?",
+          o: ["Retransmission", "Persistence", "Keepalive", "TIME-WAIT"],
+          a: 2,
+          e: "Keepalive: after a long idle time (often 2 hours) send probes; if there’s no response, close the connection.",
+        },
+        {
+          s: "cong",
+          type: "mcq",
+          q: "Which are TCP’s four timers?",
+          o: [
+            "Retransmission, persistence, keepalive, TIME-WAIT",
+            "Slow start, RTT, FIN, SYN",
+            "RTO, ACK, PSH, URG",
+            "Nagle, Clark, Karn, Jacobson",
+          ],
+          a: 0,
+          e: "Retransmission (RTO) · persistence · keepalive · TIME-WAIT (2 MSL).",
+        },
 
-/* ===== ARQ ===== */
-{s:'arq',type:'mcq',q:'Stop-and-Wait uses sequence numbers:',o:['0 to 7','0 and 1 (modulo 2)','Only 1','0 to 2ᵐ − 1 with m = 4'],a:1,e:'With one outstanding packet, you only need to tell “new” from “duplicate” → modulo 2.'},
-{s:'arq',type:'fill',q:'The sequence number field is m = 4 bits. Find:',fields:[{l:'Largest sequence number',a:15},{l:'Max send window — Go-Back-N',a:15},{l:'Max send window — Selective Repeat',a:8}],
- e:'Sequence numbers 0 to 2⁴ − 1 = 15. GBN send window ≤ 2ᵐ − 1 = 15. SR window ≤ 2ᵐ⁻¹ = 8.'},
-{s:'arq',type:'mcq',q:'The receive-window size in Go-Back-N is:',o:['1','2ᵐ − 1','2ᵐ⁻¹','Same as the send window'],a:0,e:'GBN receiver accepts only the next expected packet. In SR the receive window = send window = 2ᵐ⁻¹.'},
-{s:'arq',type:'mcq',q:'Go-Back-N: packets 0–6 are sent and packet 3 is lost. When packet 3’s timer expires, the sender resends:',o:['Only 3','3, 4, 5, 6','0 to 6','Nothing'],a:1,e:'GBN resends every outstanding packet from the lost one on. (The receiver threw away 4–6.)'},
-{s:'arq',type:'mcq',q:'Same situation but with Selective Repeat. The sender resends:',o:['Only 3','3, 4, 5, 6','0 to 6','4, 5, 6'],a:0,e:'SR buffers out-of-order packets and resends only the lost one.'},
-{s:'arq',type:'mcq',q:'In Go-Back-N, the sender receives an ACK with ackNo = 5. This means:',o:['Packet 5 arrived','Packets up to 4 arrived; packet 5 is expected next','Packet 5 was lost','Resend everything'],a:1,e:'GBN ACKs are cumulative and give the next expected packet.'},
-{s:'arq',type:'mcq',q:'Stop-and-Wait: the ACK is lost, the sender times out and resends. The receiver:',o:['Delivers the duplicate to the application','Spots the duplicate by its sequence number, discards it, and resends the ACK','Sends RST','Waits forever'],a:1,e:'That’s why sequence numbers are needed even in Stop-and-Wait.'},
-{s:'arq',type:'mcq',q:'Why must the SR window be at most 2ᵐ⁻¹?',o:['To save bandwidth','So that new and retransmitted packets with the same seq number can’t be confused when all ACKs are lost','To make the header smaller','Because of the checksum'],a:1,e:'A bigger window lets the receiver’s window wrap around and accept an old duplicate as new data.'},
+        /* ===== ARQ ===== */
+        {
+          s: "arq",
+          type: "mcq",
+          q: "Stop-and-Wait uses sequence numbers:",
+          o: [
+            "0 to 7",
+            "0 and 1 (modulo 2)",
+            "Only 1",
+            "0 to 2ᵐ − 1 with m = 4",
+          ],
+          a: 1,
+          e: "With one outstanding packet, you only need to tell “new” from “duplicate” → modulo 2.",
+        },
+        {
+          s: "arq",
+          type: "fill",
+          q: "The sequence number field is m = 4 bits. Find:",
+          fields: [
+            { l: "Largest sequence number", a: 15 },
+            { l: "Max send window — Go-Back-N", a: 15 },
+            { l: "Max send window — Selective Repeat", a: 8 },
+          ],
+          e: "Sequence numbers 0 to 2⁴ − 1 = 15. GBN send window ≤ 2ᵐ − 1 = 15. SR window ≤ 2ᵐ⁻¹ = 8.",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "The receive-window size in Go-Back-N is:",
+          o: ["1", "2ᵐ − 1", "2ᵐ⁻¹", "Same as the send window"],
+          a: 0,
+          e: "GBN receiver accepts only the next expected packet. In SR the receive window = send window = 2ᵐ⁻¹.",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "Go-Back-N: packets 0–6 are sent and packet 3 is lost. When packet 3’s timer expires, the sender resends:",
+          o: ["Only 3", "3, 4, 5, 6", "0 to 6", "Nothing"],
+          a: 1,
+          e: "GBN resends every outstanding packet from the lost one on. (The receiver threw away 4–6.)",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "Selective Repeat: packets 0–6 are sent and packet 3 is lost. When packet 3’s timer expires, the sender resends:",
+          o: ["Only 3", "3, 4, 5, 6", "0 to 6", "4, 5, 6"],
+          a: 0,
+          e: "SR buffers out-of-order packets and resends only the lost one.",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "In Go-Back-N, the sender receives an ACK with ackNo = 5. This means:",
+          o: [
+            "Packet 5 arrived",
+            "Packets up to 4 arrived; packet 5 is expected next",
+            "Packet 5 was lost",
+            "Resend everything",
+          ],
+          a: 1,
+          e: "GBN ACKs are cumulative and give the next expected packet.",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "Stop-and-Wait: the ACK is lost, the sender times out and resends. The receiver:",
+          o: [
+            "Delivers the duplicate to the application",
+            "Spots the duplicate by its sequence number, discards it, and resends the ACK",
+            "Sends RST",
+            "Waits forever",
+          ],
+          a: 1,
+          e: "That’s why sequence numbers are needed even in Stop-and-Wait.",
+        },
+        {
+          s: "arq",
+          type: "mcq",
+          q: "Why must the SR window be at most 2ᵐ⁻¹?",
+          o: [
+            "To save bandwidth",
+            "So that new and retransmitted packets with the same seq number can’t be confused when all ACKs are lost",
+            "To make the header smaller",
+            "Because of the checksum",
+          ],
+          a: 1,
+          e: "A bigger window lets the receiver’s window wrap around and accept an old duplicate as new data.",
+        },
 
-/* ===== WRITTEN ===== */
-{s:'short',type:'short',q:'(Past exam) An email with a large attachment is to be sent in 10 transport segments. Give one problem that can happen if UDP is used instead of TCP.',
- m:'Any one of these:\n• A lost segment is never retransmitted → the attachment arrives incomplete/corrupted.\n• Segments can arrive out of order and UDP has no sequence numbers to reorder them → the file is scrambled.\n• Duplicates can’t be detected.\n• No flow/congestion control → the sender can overflow the receiver or the network, causing more loss.'},
-{s:'short',type:'short',q:'Are both UDP and IP unreliable to the same degree? Why or why not?',
- m:'No. Neither does retransmission, flow control or ordering. But the UDP checksum (optional) covers the pseudoheader + header + DATA, while the IPv4 checksum covers only the IP header. So UDP can detect corrupted data and IP can’t → UDP is slightly more reliable.'},
-{s:'short',type:'short',q:'Do port addresses need to be unique? Why or why not? Why are they shorter than IP addresses?',
- m:'They must be unique only within one host (per transport protocol), not worldwide. The IP address picks the host; the port just picks the process on that host. Since a host runs a limited number of processes, 16 bits is enough, while IP addresses must identify every host on the Internet (32 bits).'},
-{s:'short',type:'short',q:'List the fields in the TCP header that are missing from the UDP header, and explain why.',
- m:'Missing: sequence number, acknowledgment number, HLEN, control flags (URG, ACK, PSH, RST, SYN, FIN), window size, urgent pointer, options.\nReason: UDP is connectionless and unreliable, so it has no connection setup/teardown (flags), no reliability (seq/ack), no flow control (window), no urgent data, and a fixed 8-byte header (no HLEN or options).'},
-{s:'short',type:'short',q:'Give three differences between TCP and UDP.',
- m:'• Connection-oriented (TCP) vs connectionless (UDP)\n• Reliable — seq/ack, retransmission (TCP) vs unreliable (UDP)\n• Byte-stream (TCP) vs message-oriented (UDP)\n• Flow & congestion control (TCP) vs none (UDP)\n• Header 20–60 B (TCP) vs fixed 8 B (UDP)\n• Checksum mandatory (TCP) vs optional in IPv4 (UDP)'},
-{s:'short',type:'short',q:'Why does TCP use a three-way handshake instead of a two-way one?',
- m:'Both sides must agree on and confirm each other’s ISN (and rwnd). With 2 messages the server can’t know the client got its ISN. The third ACK also protects against an old, delayed duplicate SYN opening an unwanted connection.'},
-{s:'short',type:'short',q:'Why does the side that closes first stay in TIME-WAIT for 2 MSL?',
- m:'1) If the final ACK is lost, the other side resends its FIN. The waiting side must still be there to ACK it again.\n2) It lets old duplicate segments from this connection die out, so they can’t be mistaken for a new connection using the same socket pair.'},
-{s:'short',type:'short',q:'Explain the difference between flow control and congestion control in TCP.',
- m:'Flow control protects the RECEIVER: the sender is limited by rwnd, which the receiver advertises from its free buffer space.\nCongestion control protects the NETWORK: the sender limits itself with cwnd (slow start, congestion avoidance, reaction to time-outs and duplicate ACKs).\nActual window = min(rwnd, cwnd).'},
-{s:'short',type:'short',q:'Why does TCP need sequence numbers if IP already delivers packets?',
- m:'IP may lose, duplicate or reorder packets. Sequence numbers let the receiver put bytes back in order, detect duplicates and gaps, and send cumulative ACKs so lost data can be retransmitted.'},
-];
+        /* ===== WRITTEN ===== */
+        {
+          s: "short",
+          type: "short",
+          q: "(Past exam) An email with a large attachment is to be sent in 10 transport segments. Give one problem that can happen if UDP is used instead of TCP.",
+          m: "Any one of these:\n• A lost segment is never retransmitted → the attachment arrives incomplete/corrupted.\n• Segments can arrive out of order and UDP has no sequence numbers to reorder them → the file is scrambled.\n• Duplicates can’t be detected.\n• No flow/congestion control → the sender can overflow the receiver or the network, causing more loss.",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Are both UDP and IP unreliable to the same degree? Why or why not?",
+          m: "No. Neither does retransmission, flow control or ordering. But the UDP checksum (optional) covers the pseudoheader + header + DATA, while the IPv4 checksum covers only the IP header. So UDP can detect corrupted data and IP can’t → UDP is slightly more reliable.",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Do port addresses need to be unique? Why or why not? Why are they shorter than IP addresses?",
+          m: "They must be unique only within one host (per transport protocol), not worldwide. The IP address picks the host; the port just picks the process on that host. Since a host runs a limited number of processes, 16 bits is enough, while IP addresses must identify every host on the Internet (32 bits).",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "List the fields in the TCP header that are missing from the UDP header, and explain why.",
+          m: "Missing: sequence number, acknowledgment number, HLEN, control flags (URG, ACK, PSH, RST, SYN, FIN), window size, urgent pointer, options.\nReason: UDP is connectionless and unreliable, so it has no connection setup/teardown (flags), no reliability (seq/ack), no flow control (window), no urgent data, and a fixed 8-byte header (no HLEN or options).",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Give three differences between TCP and UDP.",
+          m: "• Connection-oriented (TCP) vs connectionless (UDP)\n• Reliable — seq/ack, retransmission (TCP) vs unreliable (UDP)\n• Byte-stream (TCP) vs message-oriented (UDP)\n• Flow & congestion control (TCP) vs none (UDP)\n• Header 20–60 B (TCP) vs fixed 8 B (UDP)\n• Checksum mandatory (TCP) vs optional in IPv4 (UDP)",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Why does TCP use a three-way handshake instead of a two-way one?",
+          m: "Both sides must agree on and confirm each other’s ISN (and rwnd). With 2 messages the server can’t know the client got its ISN. The third ACK also protects against an old, delayed duplicate SYN opening an unwanted connection.",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Why does the side that closes first stay in TIME-WAIT for 2 MSL?",
+          m: "1) If the final ACK is lost, the other side resends its FIN. The waiting side must still be there to ACK it again.\n2) It lets old duplicate segments from this connection die out, so they can’t be mistaken for a new connection using the same socket pair.",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Explain the difference between flow control and congestion control in TCP.",
+          m: "Flow control protects the RECEIVER: the sender is limited by rwnd, which the receiver advertises from its free buffer space.\nCongestion control protects the NETWORK: the sender limits itself with cwnd (slow start, congestion avoidance, reaction to time-outs and duplicate ACKs).\nActual window = min(rwnd, cwnd).",
+        },
+        {
+          s: "short",
+          type: "short",
+          q: "Why does TCP need sequence numbers if IP already delivers packets?",
+          m: "IP may lose, duplicate or reorder packets. Sequence numbers let the receiver put bytes back in order, detect duplicates and gaps, and send cumulative ACKs so lost data can be retransmitted.",
+        },
+      ];
 
-/* ---------- State & UI ---------- */
-const app = document.getElementById('app');
-let chosen = new Set(Object.keys(S)), shuffle = true;
-let deck = [], idx = 0, results = [];
+      /* ---------- State & UI ---------- */
+      const app = document.getElementById("app");
+      const $ = (id) => document.getElementById(id);
+      let chosen = new Set(Object.keys(S)),
+        shuffle = true;
+      let deck = [],
+        idx = 0,
+        st = []; // st[i] = {ok, choice, vals, txt}
 
-const $=id=>document.getElementById(id);
-function counts(){const c={};Q.forEach(q=>c[q.s]=(c[q.s]||0)+1);return c}
+      function counts() {
+        const c = {};
+        Q.forEach((q) => (c[q.s] = (c[q.s] || 0) + 1));
+        return c;
+      }
+      const keyOf = (f, i) => {
+        const m = f.l.match(/^\((\w+)\)/);
+        return m ? m[1] : "x" + i;
+      };
 
-function startScreen(){
-  const c = counts();
-  app.innerHTML = `<div class="card">
-    <p style="margin-top:0">${Q.length} questions covering the whole transport chapter: MCQ, fill-the-diagram (seq / ack / rwnd), header decoding, calculations, and written answers. Questions come one at a time, with instant feedback.</p>
+      function startScreen() {
+        deck = [];
+        const c = counts();
+        app.innerHTML = `<div class="card">
+    <p style="margin-top:0">${Q.length} questions covering the whole transport chapter: MCQ, fill-the-diagram (seq / ack / rwnd), header decoding, calculations, and written answers. One question at a time, with instant feedback. You can go back at any time.</p>
     <b style="font-size:13px">Sections</b>
-    <div class="chips">${Object.entries(S).map(([k,v])=>`<button class="chip ${chosen.has(k)?'on':''}" data-k="${k}">${v} <small>${c[k]}</small></button>`).join('')}</div>
+    <div class="chips">${Object.entries(S)
+      .map(
+        ([k, v]) =>
+          `<button class="chip ${chosen.has(k) ? "on" : ""}" data-k="${k}">${v} <small>${c[k]}</small></button>`,
+      )
+      .join("")}</div>
     <div class="row" style="margin:6px 0 16px">
-      <button class="chip ${shuffle?'on':''}" id="shuf">Shuffle questions</button>
+      <button class="chip ${shuffle ? "on" : ""}" id="shuf">Shuffle questions</button>
       <button class="chip" id="all">Select all</button>
       <button class="chip" id="none">Clear</button>
     </div>
-    <button class="btn" id="go" ${chosen.size?'':'disabled'}>Start (${Q.filter(q=>chosen.has(q.s)).length} questions)</button>
-    <p class="tip">Tips: press 1–4 to pick an option and Enter to check / go next. In diagrams, the orange <b style="color:var(--hl)">(letters)</b> are the blanks.</p>
+    <button class="btn" id="go" ${chosen.size ? "" : "disabled"}>Start (${Q.filter((q) => chosen.has(q.s)).length} questions)</button>
+    <p class="tip">In diagrams, tap the dashed orange boxes <b style="color:var(--hl)">(a)</b>, <b style="color:var(--hl)">(b)</b>… and type the value right in the segment. Faded rows marked “given” are already filled in for you. Keys: 1–4 to pick an option, Enter to check or go next.</p>
   </div>`;
-  app.querySelectorAll('.chip[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;chosen.has(k)?chosen.delete(k):chosen.add(k);startScreen()});
-  $('shuf').onclick=()=>{shuffle=!shuffle;startScreen()};
-  $('all').onclick=()=>{chosen=new Set(Object.keys(S));startScreen()};
-  $('none').onclick=()=>{chosen.clear();startScreen()};
-  $('go').onclick=()=>begin(Q.filter(q=>chosen.has(q.s)));
-}
+        app.querySelectorAll(".chip[data-k]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const k = b.dataset.k;
+              chosen.has(k) ? chosen.delete(k) : chosen.add(k);
+              startScreen();
+            }),
+        );
+        $("shuf").onclick = () => {
+          shuffle = !shuffle;
+          startScreen();
+        };
+        $("all").onclick = () => {
+          chosen = new Set(Object.keys(S));
+          startScreen();
+        };
+        $("none").onclick = () => {
+          chosen.clear();
+          startScreen();
+        };
+        $("go").onclick = () => begin(Q.filter((q) => chosen.has(q.s)));
+      }
 
-function begin(list){
-  deck = list.slice();
-  if(shuffle) for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}
-  idx=0; results=new Array(deck.length).fill(null); render();
-}
+      function begin(list) {
+        deck = list.slice();
+        if (shuffle)
+          for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+          }
+        idx = 0;
+        st = new Array(deck.length).fill(null);
+        render();
+      }
 
-let answered=false;
-function render(){
-  answered=false;
-  const q = deck[idx], done = results.filter(r=>r!==null).length, right = results.filter(r=>r===true).length;
-  let body = '';
-  if(q.dg) body += `<div class="diagram">${diagram(q.dg,q.L,q.R)}</div>`;
-  if(q.type==='mcq') body += `<div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${o}</span></button>`).join('')}</div>`;
-  if(q.type==='fill') body += `<div class="fields">${q.fields.map((f,i)=>`<div class="field"><label>${f.l.replace(/^\((\w+)\)/,'<b>($1)</b>')}</label><input inputmode="decimal" autocomplete="off" data-i="${i}"><div class="fix"></div></div>`).join('')}</div>`;
-  if(q.type==='short') body += `<textarea placeholder="Write your answer the way you would in the exam…"></textarea>`;
-  app.innerHTML = `
-    <div class="meta"><span>Question ${idx+1} / ${deck.length}</span><span>Score ${right} / ${done}</span></div>
-    <div class="progress"><div style="width:${(idx/deck.length)*100}%"></div></div>
+      let answered = false;
+      function render() {
+        answered = false;
+        const q = deck[idx],
+          done = st.filter((r) => r && r.ok !== undefined).length,
+          right = st.filter((r) => r && r.ok === true).length;
+        let body = "";
+        if (q.dg) body += diagram(q.dg, q.L, q.R);
+        if (q.type === "mcq")
+          body += `<div class="opts">${q.o.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${i + 1}</span><span>${o}</span></button>`).join("")}</div>`;
+        if (q.type === "fill") {
+          const inDg = new Set(
+            (body.match(/data-k="(\w+)"/g) || []).map((x) => x.slice(8, -1)),
+          );
+          const extra = q.fields
+            .map((f, i) => [f, keyOf(f, i)])
+            .filter(([f, k]) => !inDg.has(k));
+          if (extra.length)
+            body += `<div class="fields">${extra.map(([f, k]) => `<div class="field"><label>${f.l.replace(/^\((\w+)\)/, "<b>($1)</b>")}</label><input data-k="${k}" inputmode="decimal" autocomplete="off"><div class="fix corr"></div></div>`).join("")}</div>`;
+        }
+        if (q.type === "short")
+          body += `<textarea placeholder="Write your answer the way you would in the exam…"></textarea>`;
+        app.innerHTML = `
+    <div class="meta"><span>Question ${idx + 1} / ${deck.length}</span><span>Score ${right} / ${done}</span></div>
+    <div class="progress"><div style="width:${(idx / deck.length) * 100}%"></div></div>
     <div class="card">
       <span class="tag">${S[q.s]}</span>
       <div class="q">${q.q}</div>
       ${body}
       <div id="fb"></div>
       <div class="nav">
-        <button class="btn ghost" id="quit">End exam</button>
+        <button class="btn ghost" id="prev" ${idx === 0 ? "disabled" : ""}>← Back</button>
         <div class="row">
           <button class="btn ghost" id="skip">Skip</button>
-          ${q.type!=='mcq'?`<button class="btn" id="check">${q.type==='short'?'Show model answer':'Check'}</button>`:''}
-          <button class="btn hidden" id="next">${idx===deck.length-1?'Finish':'Next →'}</button>
+          ${q.type !== "mcq" ? `<button class="btn" id="check">${q.type === "short" ? "Show model answer" : "Check"}</button>` : ""}
+          <button class="btn hidden" id="next">${idx === deck.length - 1 ? "Finish" : "Next →"}</button>
         </div>
       </div>
+      <div style="text-align:center;margin-top:12px"><button class="chip" id="quit">End exam &amp; see score</button></div>
     </div>`;
-  $('quit').onclick=finish; $('skip').onclick=nextQ; $('next').onclick=nextQ;
-  if(q.type==='mcq') app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>gradeMcq(+b.dataset.i));
-  if(q.type==='fill'){ $('check').onclick=gradeFill; const f=app.querySelector('.field input'); f&&f.focus(); }
-  if(q.type==='short') $('check').onclick=showModel;
-}
+        $("quit").onclick = finish;
+        $("skip").onclick = nextQ;
+        $("next").onclick = nextQ;
+        $("prev").onclick = prevQ;
+        // keep duplicate blanks (same letter twice) in sync
+        app.querySelectorAll("input[data-k]").forEach((inp) =>
+          inp.addEventListener("input", () => {
+            app
+              .querySelectorAll(`input[data-k="${inp.dataset.k}"]`)
+              .forEach((o) => {
+                if (o !== inp) o.value = inp.value;
+              });
+          }),
+        );
+        if (q.type === "mcq")
+          app
+            .querySelectorAll(".opt")
+            .forEach((b) => (b.onclick = () => gradeMcq(+b.dataset.i)));
+        if (q.type === "fill") $("check").onclick = () => gradeFill();
+        if (q.type === "short") $("check").onclick = () => showModel();
 
-function reveal(){ answered=true; $('skip').classList.add('hidden'); $('next').classList.remove('hidden'); const c=document.getElementById('check'); c&&c.classList.add('hidden'); $('next').focus(); }
-function okBox(){ return `<div class="fb ok">✓ Correct</div>`; }
-function badBox(head,exp){ return `<div class="fb bad"><div class="h">${head}</div><div class="exp">${exp}</div></div>`; }
+        // restore a previously answered question
+        const prev = st[idx];
+        if (prev) {
+          if (q.type === "mcq" && prev.choice !== undefined)
+            gradeMcq(prev.choice, true);
+          else if (q.type === "fill" && prev.vals) {
+            app
+              .querySelectorAll("input[data-k]")
+              .forEach((i) => (i.value = prev.vals[i.dataset.k] || ""));
+            gradeFill(true);
+          } else if (q.type === "short" && prev.txt !== undefined) {
+            app.querySelector("textarea").value = prev.txt;
+            showModel(true);
+          }
+        } else {
+          const f = app.querySelector("input[data-k]");
+          if (f && window.innerWidth > 700) f.focus();
+        }
+      }
 
-function gradeMcq(i){
-  if(answered) return;
-  const q=deck[idx], btns=app.querySelectorAll('.opt');
-  btns.forEach(b=>b.disabled=true);
-  btns[q.a].classList.add('right');
-  const ok = i===q.a; if(!ok) btns[i].classList.add('wrong');
-  results[idx]=ok;
-  $('fb').innerHTML = ok ? okBox() : badBox(`✗ Answer: ${q.o[q.a]}`, q.e);
-  reveal();
-}
-function gradeFill(){
-  if(answered) return;
-  const q=deck[idx]; let all=true;
-  app.querySelectorAll('.field input').forEach(inp=>{
-    const f=q.fields[+inp.dataset.i]; const v=parseFloat(inp.value.replace(/,/g,'').trim());
-    const ok = !isNaN(v) && Math.abs(v-f.a) <= (f.t||0);
-    inp.classList.add(ok?'right':'wrong'); inp.readOnly=true;
-    if(!ok){ all=false; inp.nextElementSibling.textContent='→ '+f.a.toLocaleString('en-US'); }
-  });
-  results[idx]=all;
-  $('fb').innerHTML = all ? okBox() : badBox('✗ Not quite — the correct values are shown under each box', q.e);
-  reveal();
-}
-function showModel(){
-  if(answered) return;
-  const q=deck[idx]; answered=true;
-  app.querySelector('textarea').readOnly=true;
-  $('check').classList.add('hidden');
-  $('fb').innerHTML = `<div class="model"><div class="h">Model answer</div>${q.m}</div>
+      function reveal() {
+        answered = true;
+        $("skip").classList.add("hidden");
+        $("next").classList.remove("hidden");
+        const c = $("check");
+        c && c.classList.add("hidden");
+      }
+      const okBox = () => `<div class="fb ok">✓ Correct</div>`;
+      const badBox = (h, e) =>
+        `<div class="fb bad"><div class="h">${h}</div><div class="exp">${e}</div></div>`;
+
+      function gradeMcq(i, restoring) {
+        if (answered) return;
+        const q = deck[idx],
+          btns = app.querySelectorAll(".opt");
+        btns.forEach((b) => (b.disabled = true));
+        btns[q.a].classList.add("right");
+        const ok = i === q.a;
+        if (!ok) btns[i].classList.add("wrong");
+        st[idx] = { ok, choice: i };
+        $("fb").innerHTML = ok ? okBox() : badBox(`✗ Answer: ${q.o[q.a]}`, q.e);
+        reveal();
+        if (!restoring) $("next").focus();
+      }
+      function gradeFill(restoring) {
+        if (answered) return;
+        const q = deck[idx];
+        let all = true;
+        const vals = {};
+        q.fields.forEach((f, i) => {
+          const k = keyOf(f, i);
+          app.querySelectorAll(`input[data-k="${k}"]`).forEach((inp) => {
+            vals[k] = inp.value;
+            const v = parseFloat(inp.value.replace(/,/g, "").trim());
+            const ok = !isNaN(v) && Math.abs(v - f.a) <= (f.t || 0);
+            inp.classList.add(ok ? "right" : "wrong");
+            inp.readOnly = true;
+            if (!ok) {
+              all = false;
+              const c = inp.nextElementSibling;
+              if (c) c.textContent = String(f.a);
+            }
+          });
+        });
+        st[idx] = { ok: all, vals };
+        $("fb").innerHTML = all
+          ? okBox()
+          : badBox(
+              "✗ Not quite — the correct values are shown in green next to each box",
+              q.e,
+            );
+        reveal();
+        if (!restoring) $("next").focus();
+      }
+      function showModel(restoring) {
+        if (answered) return;
+        const q = deck[idx];
+        answered = true;
+        const ta = app.querySelector("textarea");
+        ta.readOnly = true;
+        $("check").classList.add("hidden");
+        const prev = st[idx];
+        $("fb").innerHTML =
+          `<div class="model"><div class="h">Model answer</div>${q.m}</div>
     <div class="row" style="margin-top:12px"><span class="sub">Did your answer cover it?</span>
     <button class="btn" id="yes">Yes, I got it</button><button class="btn ghost" id="no">No, I missed it</button></div>`;
-  $('yes').onclick=()=>{results[idx]=true;afterSelf()}; $('no').onclick=()=>{results[idx]=false;afterSelf()};
-}
-function afterSelf(){ $('yes').disabled=$('no').disabled=true; reveal(); }
+        const mark = (ok) => {
+          st[idx] = { ok, txt: ta.value };
+          $("yes").disabled = $("no").disabled = true;
+          reveal();
+          $("next").focus();
+        };
+        $("yes").onclick = () => mark(true);
+        $("no").onclick = () => mark(false);
+        if (prev && prev.ok !== undefined) {
+          $("yes").disabled = $("no").disabled = true;
+          (prev.ok ? $("yes") : $("no")).style.outline =
+            "3px solid var(--accent)";
+          reveal();
+        } else {
+          st[idx] = { txt: ta.value };
+        }
+      }
 
-function nextQ(){ if(idx<deck.length-1){idx++;render();window.scrollTo(0,0)} else finish(); }
+      function nextQ() {
+        if (idx < deck.length - 1) {
+          idx++;
+          render();
+          window.scrollTo(0, 0);
+        } else finish();
+      }
+      function prevQ() {
+        if (idx > 0) {
+          idx--;
+          render();
+          window.scrollTo(0, 0);
+        }
+      }
 
-function finish(){
-  const tot=deck.length, done=results.filter(r=>r!==null).length, right=results.filter(r=>r===true).length;
-  const by={}; deck.forEach((q,i)=>{by[q.s]=by[q.s]||{r:0,n:0,a:0};by[q.s].n++; if(results[i]!==null)by[q.s].a++; if(results[i]===true)by[q.s].r++;});
-  const missed = deck.filter((q,i)=>results[i]!==true);
-  const pct = done?Math.round(right/done*100):0;
-  app.innerHTML = `<div class="card">
+      function finish() {
+        const tot = deck.length,
+          done = st.filter((r) => r && r.ok !== undefined).length,
+          right = st.filter((r) => r && r.ok === true).length;
+        const by = {};
+        deck.forEach((q, i) => {
+          by[q.s] = by[q.s] || { r: 0, n: 0, a: 0 };
+          by[q.s].n++;
+          if (st[i] && st[i].ok !== undefined) by[q.s].a++;
+          if (st[i] && st[i].ok === true) by[q.s].r++;
+        });
+        const missed = deck.filter((q, i) => !(st[i] && st[i].ok === true));
+        const pct = done ? Math.round((right / done) * 100) : 0;
+        deck = [];
+        app.innerHTML = `<div class="card">
     <div class="sub">Your result</div>
     <div class="score-big">${right} / ${done} <span style="font-size:20px;color:var(--mute)">(${pct}%)</span></div>
-    <div class="sub">${tot-done} skipped / unanswered</div>
+    <div class="sub">${tot - done} skipped / unanswered</div>
     <table><tr><th>Section</th><th class="n">Correct</th><th class="n">Answered</th></tr>
-    ${Object.entries(by).map(([k,v])=>`<tr><td>${S[k]}</td><td class="n">${v.r}</td><td class="n">${v.a} / ${v.n}</td></tr>`).join('')}</table>
+    ${Object.entries(by)
+      .map(
+        ([k, v]) =>
+          `<tr><td>${S[k]}</td><td class="n">${v.r}</td><td class="n">${v.a} / ${v.n}</td></tr>`,
+      )
+      .join("")}</table>
     <div class="row" style="margin-top:18px">
-      ${missed.length?`<button class="btn" id="redo">Retry missed & skipped (${missed.length})</button>`:''}
+      ${missed.length ? `<button class="btn" id="redo">Retry missed & skipped (${missed.length})</button>` : ""}
       <button class="btn ghost" id="home">Back to start</button>
     </div></div>`;
-  $('home').onclick=startScreen;
-  if(missed.length) $('redo').onclick=()=>begin(missed);
-}
+        $("home").onclick = startScreen;
+        if (missed.length) $("redo").onclick = () => begin(missed);
+      }
 
-document.addEventListener('keydown',e=>{
-  if(!deck.length || !document.querySelector('.q')) return;
-  const q=deck[idx];
-  if(e.target.tagName==='TEXTAREA') return;
-  if(q.type==='mcq' && !answered && /^[1-4]$/.test(e.key) && +e.key<=q.o.length){ gradeMcq(+e.key-1); }
-  else if(e.key==='Enter'){
-    e.preventDefault();
-    if(answered){ const n=document.getElementById('next'); if(n && !n.classList.contains('hidden')) nextQ(); }
-    else if(q.type==='fill') gradeFill();
-  }
-});
+      document.addEventListener("keydown", (e) => {
+        if (!deck.length || !document.querySelector(".q")) return;
+        const q = deck[idx];
+        if (e.target.tagName === "TEXTAREA") return;
+        if (
+          q.type === "mcq" &&
+          !answered &&
+          /^[1-4]$/.test(e.key) &&
+          +e.key <= q.o.length
+        ) {
+          gradeMcq(+e.key - 1);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (answered) {
+            const n = $("next");
+            if (n && !n.classList.contains("hidden")) nextQ();
+          } else if (q.type === "fill") gradeFill();
+        }
+      });
 
-startScreen();
-</script>
-</body>
+      startScreen();
+    </script>
+  </body>
 </html>
