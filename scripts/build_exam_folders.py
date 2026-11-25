@@ -198,7 +198,25 @@ def course_exams(index_path, exams_url):
                 seen.add(tile[0])
                 tiles.append(tile)
     number = lambda t: int(re.match(r"(\d+)", t[0].rstrip("/").split("/")[-1]).group(1)) if re.match(r"\d+", t[0].rstrip("/").split("/")[-1]) else 10**6
-    return sorted(tiles, key=number)
+    tiles = sorted(tiles, key=number)
+    # Courses whose exam folders aren't numbered in chapter order list that order here.
+    course = os.path.basename(os.path.dirname(os.path.dirname(index_path)))
+    order = EXAM_ORDER.get(course)
+    if order:
+        rank = {slug: i for i, slug in enumerate(order)}
+        tiles = sorted(tiles, key=lambda t: rank.get(t[0].rstrip("/").split("/")[-1], len(order)))
+    return tiles
+
+
+# Exam folders by course, in the order students should see them (first chapter to last).
+# Folders not listed keep their numbered order after the listed ones.
+EXAM_ORDER = {
+    "se423": [
+        "04-introduction-quiz", "13-organizational-context-quiz", "12-team-quiz", "02-development-approach-quiz",
+        "07-risk-management-quiz", "03-estimation-quiz", "08-scheduling-and-tracking-quiz", "06-quality-quiz",
+        "10-stakeholders-quiz", "01-change-management-quiz", "09-software-engineering-quiz",
+    ],
+}
 
 
 # Tiles that carry their own strip need --strip resolved on the tile, since the
