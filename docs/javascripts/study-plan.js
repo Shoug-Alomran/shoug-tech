@@ -3176,6 +3176,27 @@
       return i.id === id;
     });
   }
+  // Latest mock exam score in a chapter (mock-exam.js, this browser only).
+  function mockMeta(course, chId) {
+    var all;
+    try {
+      all = JSON.parse(localStorage.getItem("shoug-mock-readiness")) || {};
+    } catch (e) {
+      return "";
+    }
+    var c = all[String(course).replace(/\s+/g, "").toLowerCase()],
+      r = c && c[chId];
+    if (!r || !r.t) return "";
+    return (
+      " · Mock exam " +
+      (r.r % 1 ? r.r.toFixed(1) : r.r) +
+      "/" +
+      r.t +
+      " (" +
+      Math.round((100 * r.r) / r.t) +
+      "%)"
+    );
+  }
   function levelButtons(unit, lv, course) {
     return (
       '<span class="sp-level" role="group" aria-label="Readiness">' +
@@ -3454,6 +3475,7 @@
             " · " +
             hours(left) +
             " left" +
+            esc(mockMeta(course, ch.id)) +
             "</span>" +
             studyLinksHtml(ch) +
             "</div>" +

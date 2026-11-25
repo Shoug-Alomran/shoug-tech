@@ -33,6 +33,7 @@ PAGES = [
     ("/resources/", "Resources", "curated tools, references and links"),
     ("/academics/", "Academics", "all courses by track"),
     ("/academics/study-pack/", "Study Pack", "printable revision checklist for any course"),
+    ("/academics/mock-exam/", "Mock Exam Builder", "timed mock exams drawn from every quiz and past paper in a course, scored by chapter"),
 ]
 ORDER = ["slides", "annotated-slides", "slide-breakdowns", "slides-with-notes", "extra-resources", "exams", "quizzes"]
 

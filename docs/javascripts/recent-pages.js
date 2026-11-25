@@ -272,3 +272,98 @@
   s.async = true;
   document.head.appendChild(s);
 })();
+
+// Mock exam entry points (see mock-exam.js): a banner on each course's Exams
+// pages when the course has a question bank, and a link on the Academics hub.
+(function () {
+  var path = window.location.pathname;
+  var exams = path.match(
+    /^\/academics\/[^/]+\/([^/]+)\/exams\/(?:(chapter-quizzes|midterm-1|midterm-2|final)\/)?(?:index\.html)?$/,
+  );
+  if (path !== "/academics/" && !exams) return;
+
+  var CSS = [
+    ".shoug-mock-cta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;",
+    "margin:22px clamp(16px,3vw,40px) 4px;",
+    "padding:16px 18px;text-decoration:none;border:1px solid rgba(184,41,234,0.45);",
+    "background:linear-gradient(90deg,rgba(184,41,234,0.16),rgba(184,41,234,0.04));",
+    "transition:border-color 160ms ease,background 160ms ease}",
+    ".shoug-mock-cta:hover{border-color:#ff2a4b}",
+    '.shoug-mock-cta__k{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:0.66rem;',
+    "font-weight:800;letter-spacing:0.16em;color:#ff2a4b}",
+    ".shoug-mock-cta__t{flex:1 1 260px;min-width:0;color:#f8f7fb;font-size:0.92rem;line-height:1.45}",
+    '.shoug-mock-cta__go{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:0.74rem;',
+    "font-weight:800;letter-spacing:0.08em;color:#c75cf0;white-space:nowrap}",
+    "body.shoug-light-mode .shoug-mock-cta{background:linear-gradient(90deg,rgba(155,31,208,0.1),#fff);",
+    "border-color:rgba(155,31,208,0.4)}",
+    "body.shoug-light-mode .shoug-mock-cta__t{color:#16111f}",
+    "body.shoug-light-mode .shoug-mock-cta__go{color:#9b1fd0}",
+  ].join("");
+
+  function hubLink() {
+    var pack = document.querySelector('.hero-cta a[href="/academics/study-pack/"]');
+    if (!pack || document.querySelector('.hero-cta a[href^="/academics/mock-exam/"]')) return;
+    var a = document.createElement("a");
+    a.href = "/academics/mock-exam/";
+    a.textContent = "Take a timed mock exam ->";
+    a.setAttribute("data-ar-text", "خذي اختبارًا تجريبيًا بوقت محدد");
+    pack.parentNode.appendChild(document.createElement("br"));
+    pack.parentNode.appendChild(a);
+  }
+
+  function examBanner(course, group) {
+    fetch("/academics/mock-exam/banks/index.json")
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (j) {
+        var c =
+          j &&
+          (j.courses || []).find(function (x) {
+            return x.course === course;
+          });
+        if (!c || document.querySelector(".shoug-mock-cta")) return;
+        var host =
+          document.querySelector("main [data-exam-folders]") ||
+          document.querySelector("main .directory-container") ||
+          document.querySelector("main .slide-hub");
+        if (!host || !host.parentNode) return;
+        var style = document.createElement("style");
+        style.textContent = CSS;
+        document.head.appendChild(style);
+        var a = document.createElement("a");
+        a.className = "shoug-mock-cta";
+        a.href =
+          "/academics/mock-exam/?course=" +
+          encodeURIComponent(course) +
+          (group && group !== "chapter-quizzes" ? "&exam=" + group : "");
+        var k = document.createElement("span");
+        k.className = "shoug-mock-cta__k";
+        k.textContent = "MOCK EXAM";
+        var t = document.createElement("span");
+        t.className = "shoug-mock-cta__t";
+        t.textContent =
+          "Mix " +
+          c.count +
+          " " +
+          c.name +
+          " questions from every quiz and past paper into one timed exam, then see your score in each chapter.";
+        var go = document.createElement("span");
+        go.className = "shoug-mock-cta__go";
+        go.textContent = "BUILD ONE ->";
+        a.appendChild(k);
+        a.appendChild(t);
+        a.appendChild(go);
+        host.parentNode.insertBefore(a, host);
+      })
+      .catch(function () {});
+  }
+
+  function init() {
+    if (exams) examBanner(exams[1], exams[2] || "");
+    else hubLink();
+  }
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
