@@ -35,10 +35,11 @@
     ["tf", "True / false", "Auto-marked"],
     ["multi", "Select all that apply", "Auto-marked, all or nothing"],
     ["fill", "Fill in the blank", "Auto-marked, small typos allowed"],
+    ["match", "Matching", "Auto-marked, part marks per pair"],
     ["written", "Written answer", "You mark it after"],
   ];
   // Suggested minutes per question type, close to PSU exam pacing.
-  var PACE = { mcq: 1, tf: 0.6, multi: 1.5, fill: 1, written: 4 };
+  var PACE = { mcq: 1, tf: 0.6, multi: 1.5, fill: 1, match: 2, written: 4 };
   var LETTERS = "ABCDEFGHIJ";
 
   /* ------------------------------------------------------------ storage */
@@ -269,6 +270,10 @@
       var r = load(K.ready, {});
       delete r[bank.course];
       save(K.ready, r);
+      var cleared = load("shoug-mock-cleared", {});
+      cleared[bank.course] = Date.now();
+      save("shoug-mock-cleared", cleared);
+      synced();
       renderHistory();
       renderChapters();
     });
@@ -686,6 +691,7 @@
     };
     qs.forEach(function (q) {
       if (q.o) exam.order[q.id] = optionOrder(q);
+      if (q.pairs) exam.order[q.id] = shuffle(q.pairs.map(function (p, i) { return i; }));
     });
     persist();
     runExam();
@@ -701,7 +707,7 @@
   }
   function answered(v) {
     if (v == null) return false;
-    if (Array.isArray(v)) return v.length > 0;
+    if (Array.isArray(v)) return v.some(function (x) { return x != null; });
     if (typeof v === "string") return v.trim().length > 0;
     return true;
   }
@@ -797,6 +803,35 @@
       });
       card.appendChild(box);
       if (multi) card.appendChild(el("p", "hint", "Select every correct option. You need all of them, and no wrong ones, for the mark."));
+    } else if (q.t === "match") {
+      var rows = el("div", "match");
+      var cur = Array.isArray(ans) ? ans : q.pairs.map(function () { return null; });
+      q.pairs.forEach(function (pair, ti) {
+        var row = el("label", "match-row");
+        row.appendChild(html("span", "match-term", pair[0]));
+        var sel = el("select", "match-pick");
+        sel.setAttribute("aria-label", "Match for " + plain(pair[0]));
+        var none = el("option", "", "Choose…");
+        none.value = "";
+        sel.appendChild(none);
+        exam.order[q.id].forEach(function (di) {
+          var o = el("option", "", plain(q.pairs[di][1]));
+          o.value = String(di);
+          sel.appendChild(o);
+        });
+        sel.value = cur[ti] == null ? "" : String(cur[ti]);
+        sel.addEventListener("change", function () {
+          var next = (Array.isArray(exam.answers[q.id]) ? exam.answers[q.id] : cur).slice();
+          next[ti] = sel.value === "" ? null : +sel.value;
+          exam.answers[q.id] = next;
+          persist();
+          renderNav();
+        });
+        row.appendChild(sel);
+        rows.appendChild(row);
+      });
+      card.appendChild(rows);
+      card.appendChild(el("p", "hint", "Each correct pair earns its share of the mark."));
     } else if (q.t === "fill") {
       var inp = el("input", "fill-input");
       inp.type = "text";
@@ -857,7 +892,7 @@
   }
 
   function typeName(q) {
-    return { mcq: "Multiple choice", tf: "True or false", multi: "Select all that apply", fill: "Fill in the blank", written: "Written answer" }[q.t];
+    return { mcq: "Multiple choice", tf: "True or false", multi: "Select all that apply", fill: "Fill in the blank", match: "Matching", written: "Written answer" }[q.t];
   }
 
   function choose(q, oi) {
@@ -986,6 +1021,11 @@
     var a = ex.answers[q.id];
     if (q.t === "written") return ex.marks[q.id] == null ? null : ex.marks[q.id];
     if (!answered(a)) return 0;
+    if (q.t === "match") {
+      var got = 0;
+      q.pairs.forEach(function (p, i) { if (a[i] === i) got++; });
+      return Math.round((got / q.pairs.length) * 100) / 100;
+    }
     if (q.t === "multi") {
       var want = q.a.slice().sort(function (x, y) { return x - y; }).join(","),
         got = (a || []).slice().sort(function (x, y) { return x - y; }).join(",");
@@ -1008,9 +1048,9 @@
         return;
       }
       t.max++;
-      t.score += m;
+      t.score = Math.round((t.score + m) * 100) / 100;
       t.ch[k].t++;
-      t.ch[k].r += m;
+      t.ch[k].r = Math.round((t.ch[k].r + m) * 100) / 100;
       if (m === 1) t.right++;
       else if (m === 0) t.wrong++;
     });
@@ -1052,6 +1092,7 @@
       max: t.max,
       pending: t.pending,
       ch: chapters,
+      upd: Date.now(),
     });
     save(K.history, hist.slice(-200));
 
@@ -1071,18 +1112,23 @@
     var rc = ready[exam.course] || {};
     Object.keys(chapters).forEach(function (k) {
       if (k === OTHER) return;
-      rc[k] = { r: chapters[k][0], t: chapters[k][1], at: exam.finished, attempt: exam.attempt };
+      rc[k] = { r: chapters[k][0], t: chapters[k][1], at: exam.finished, attempt: exam.attempt, title: chapterTitle(bank, k) };
     });
     ready[exam.course] = rc;
     save(K.ready, ready);
 
     saveMistakes();
+    synced();
+  }
+  function synced() {
+    if (window.ShougStudySync) window.ShougStudySync.changed();
   }
 
   function saveMistakes() {
     var list = load(K.mistakes, []);
     if (!Array.isArray(list)) list = [];
-    var added = 0;
+    var added = 0,
+      forgotten = [];
     exam.ids.forEach(function (id) {
       var q = bank.byId[id];
       if (!q) return;
@@ -1092,7 +1138,9 @@
         mid = hash((src.url || "") + "|" + text);
       if (m == null || m >= 1) {
         // Re-marked as right: take back only what this attempt added.
+        var had = list.some(function (x) { return x.id === mid && x.attempt === exam.attempt; });
         list = list.filter(function (x) { return !(x.id === mid && x.attempt === exam.attempt); });
+        if (had) forgotten.push(mid);
         return;
       }
       list = list.filter(function (x) { return x.id !== mid; });
@@ -1114,6 +1162,11 @@
       added++;
     });
     save(K.mistakes, list.slice(-400));
+    if (forgotten.length) {
+      var gone = load("shoug-quiz-mistakes-gone", {});
+      forgotten.forEach(function (id) { gone[id] = Date.now(); });
+      save("shoug-quiz-mistakes-gone", gone);
+    }
     exam.mistakesAdded = added;
   }
 
@@ -1121,11 +1174,13 @@
     var a = ex.answers[q.id];
     if (!answered(a)) return "";
     if (q.t === "multi") return a.map(function (i) { return plain(q.o[i]); }).join("; ");
+    if (q.t === "match") return q.pairs.map(function (p, i) { return plain(p[0]) + " → " + (a[i] == null ? "?" : plain(q.pairs[a[i]][1])); }).join("; ");
     if (q.o) return plain(q.o[a]);
     return String(a);
   }
   function correctText(q) {
     if (q.t === "multi") return q.a.map(function (i) { return plain(q.o[i]); }).join("; ");
+    if (q.t === "match") return q.pairs.map(function (p) { return plain(p[0]) + " → " + plain(p[1]); }).join("; ");
     if (q.o) return plain(q.o[q.a]);
     if (q.t === "fill") return q.a.join(" / ");
     return plain(q.m);
@@ -1327,7 +1382,8 @@
   function countPart() {
     return exam.ids.filter(function (id) {
       var q = bank.byId[id];
-      return q && markOf(q, exam) === 0.5;
+      var m = q && markOf(q, exam);
+      return m != null && m > 0 && m < 1;
     }).length;
   }
 
@@ -1336,14 +1392,26 @@
     var card = el("article", "rv " + state);
     var meta = el("div", "rv-meta");
     meta.appendChild(el("span", "", "Q" + (i + 1)));
-    meta.appendChild(el("span", "verdict " + state, { right: "Right", wrong: answered(exam.answers[q.id]) ? "Wrong" : "Not answered", part: "Half marks", pending: "Mark this" }[state]));
+    meta.appendChild(el("span", "verdict " + state, { right: "Right", wrong: answered(exam.answers[q.id]) ? "Wrong" : "Not answered", part: q.t === "match" ? "Part marks" : "Half marks", pending: "Mark this" }[state]));
     meta.appendChild(el("span", "", shortTitle(chapterTitle(bank, chKey(q))).split(" · ")[0]));
     if (exam.flags[q.id]) meta.appendChild(el("span", "", "Flagged"));
     card.appendChild(meta);
     card.appendChild(html("div", "rv-q", q.q));
     var a = exam.answers[q.id];
 
-    if (q.o) {
+    if (q.t === "match") {
+      var mul = el("ul", "rv-opts");
+      q.pairs.forEach(function (p, i) {
+        var pick = Array.isArray(a) ? a[i] : null;
+        var ok = pick === i;
+        var li = el("li", ok ? "correct picked" : pick != null ? "picked" : "");
+        li.appendChild(html("span", "", "<b>" + p[0] + "</b> → " + (pick == null ? "<i>no answer</i>" : q.pairs[pick][1])));
+        if (!ok) li.appendChild(html("span", "tag", "Correct: " + p[1]));
+        else li.appendChild(el("span", "tag", "✓"));
+        mul.appendChild(li);
+      });
+      card.appendChild(mul);
+    } else if (q.o) {
       var ul = el("ul", "rv-opts");
       exam.order[q.id].forEach(function (oi, pos) {
         var right = q.t === "multi" ? q.a.indexOf(oi) > -1 : q.a === oi;
@@ -1388,14 +1456,105 @@
     }
     if (q.e) card.appendChild(html("p", "rv-why", q.e));
     var src = bank.sources[q.s];
+    var foot = el("p", "rv-src muted");
     if (src) {
-      var p = el("p", "rv-src muted", "From ");
+      foot.appendChild(document.createTextNode("From "));
       var link = el("a", "", src.title);
       link.href = src.url;
-      p.appendChild(link);
-      card.appendChild(p);
+      foot.appendChild(link);
+      foot.appendChild(document.createTextNode(" · "));
     }
+    var rep = el("button", "linkish", reported[q.id] ? "Reported, thank you" : "Report a problem");
+    rep.type = "button";
+    rep.disabled = !!reported[q.id];
+    rep.addEventListener("click", function () {
+      rep.hidden = true;
+      card.appendChild(reportForm(q, src, function () {
+        rep.textContent = "Reported, thank you";
+        rep.disabled = true;
+        rep.hidden = false;
+      }, function () {
+        rep.hidden = false;
+      }));
+    });
+    foot.appendChild(rep);
+    card.appendChild(foot);
     return card;
+  }
+
+  // Questions were pulled from many quiz formats automatically, so a wrong key
+  // or a broken question can slip through. Reports go to the site admin
+  // (Firestore questionReports, signed in) or, signed out, to an email draft.
+  var reported = {};
+  var REASONS = [
+    ["answer", "The marked answer is wrong"],
+    ["unclear", "The question is unclear or broken"],
+    ["missing", "It needs a figure, table or code that isn't shown"],
+    ["chapter", "It's in the wrong chapter"],
+    ["other", "Something else"],
+  ];
+  function reportForm(q, src, done, undo) {
+    var f = el("form", "report");
+    f.appendChild(el("div", "label", "What's wrong?"));
+    var sel = el("select");
+    sel.setAttribute("aria-label", "What's wrong");
+    REASONS.forEach(function (r) {
+      var o = el("option", "", r[1]);
+      o.value = r[0];
+      sel.appendChild(o);
+    });
+    var note = el("textarea");
+    note.rows = 2;
+    note.maxLength = 1000;
+    note.placeholder = "Optional: what should it say?";
+    note.setAttribute("aria-label", "Details");
+    var row = el("div", "row");
+    var send = el("button", "btn primary small", "Send report");
+    send.type = "submit";
+    var cancel = el("button", "btn small", "Cancel");
+    cancel.type = "button";
+    var status = el("span", "muted");
+    row.appendChild(send);
+    row.appendChild(cancel);
+    row.appendChild(status);
+    f.appendChild(sel);
+    f.appendChild(note);
+    f.appendChild(row);
+    cancel.addEventListener("click", function () {
+      f.remove();
+      undo();
+    });
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var data = {
+        course: bank.course,
+        qid: q.id,
+        source: (src && src.url) || "",
+        reason: sel.value,
+        note: note.value.trim().slice(0, 1000),
+        question: plain(q.q).slice(0, 600),
+      };
+      send.disabled = true;
+      status.textContent = "Sending…";
+      var sync = window.ShougStudySync;
+      (sync && sync.user() ? sync.report(data) : Promise.resolve(false)).then(function (ok) {
+        if (ok) {
+          reported[q.id] = true;
+          f.remove();
+          done();
+          return;
+        }
+        // Signed out (or the rules aren't live yet): hand over an email draft.
+        var body = "Course: " + bank.name + "\nQuestion id: " + q.id + "\nPage: " + location.origin + data.source +
+          "\nProblem: " + sel.options[sel.selectedIndex].text + "\n\n" + data.question + (data.note ? "\n\nNote: " + data.note : "");
+        location.href = "mailto:shoug.alomran@shoug-tech.com?subject=" +
+          encodeURIComponent("Mock exam question report (" + bank.name + ")") + "&body=" + encodeURIComponent(body);
+        status.textContent = "Opened an email draft. Sign in to send reports from here.";
+        send.disabled = false;
+      });
+    });
+    setTimeout(function () { sel.focus(); }, 0);
+    return f;
   }
 
   /* --------------------------------------------------------------- boot */
@@ -1405,6 +1564,13 @@
       persist();
       e.preventDefault();
       e.returnValue = "";
+    }
+  });
+
+  window.addEventListener("shoug:study-sync", function () {
+    if (!$("setup").hidden && bank) {
+      renderHistory();
+      renderChapters();
     }
   });
 

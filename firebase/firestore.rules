@@ -131,9 +131,17 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create: if owns(uid) && profileKeepsPrivateOut() && validColor(request.resource.data);
       allow update: if owns(uid) && profileKeepsPrivateOut() && validColor(request.resource.data);
+      // data: the academic record. mock and mistakes: Mock exam results and
+      // Review mistakes, synced from this browser's copy (study-sync.js), each
+      // in its own document so they can't crowd the record's 1 MB limit.
       match /private/{docId} {
         allow read, delete: if owns(uid);
-        allow create, update: if owns(uid) && docId == 'data' && validAcademicRecordUpdate();
+        allow create, update: if owns(uid) && (
+          (docId == 'data' && validAcademicRecordUpdate())
+          || (docId == 'mock'
+            && request.resource.data.keys().hasOnly(['history', 'ready', 'seen', 'cleared', 'updatedAt']))
+          || (docId == 'mistakes'
+            && request.resource.data.keys().hasOnly(['items', 'gone', 'updatedAt'])));
       }
       match /following/{targetUid} {
         allow read: if signedIn();
@@ -279,6 +287,26 @@ service cloud.firestore {
       allow create: if validResourceRatingCreate(docId);
       allow update: if validResourceRatingUpdate();
       allow delete: if false;
+    }
+    // "Report a problem" on Mock exam questions (mock-exam.js). A signed-in
+    // student files a report as themselves; only the site admin reads them.
+    function validQuestionReport() {
+      let d = request.resource.data;
+      return signedIn()
+        && d.keys().hasOnly(['uid', 'course', 'qid', 'source', 'reason', 'note', 'question', 'createdAt'])
+        && d.uid == request.auth.uid
+        && d.course is string && d.course.matches('[a-z]{2,6}[0-9]{3}')
+        && d.qid is string && d.qid.size() >= 1 && d.qid.size() <= 20
+        && d.source is string && d.source.size() <= 300 && (d.source == '' || d.source.matches('/.*'))
+        && d.reason in ['answer', 'unclear', 'missing', 'chapter', 'other']
+        && d.note is string && d.note.size() <= 1000
+        && d.question is string && d.question.size() <= 600
+        && d.createdAt == request.time;
+    }
+    match /questionReports/{reportId} {
+      allow create: if validQuestionReport();
+      allow read, delete: if transferAdmin();
+      allow update: if false;
     }
   }
 }

@@ -3176,17 +3176,47 @@
       return i.id === id;
     });
   }
-  // Latest mock exam score in a chapter (mock-exam.js, this browser only).
-  function mockMeta(course, chId) {
+  // Latest mock exam score in a chapter (mock-exam.js; synced to the account
+  // by study-sync.js when signed in).
+  function mockRecord(course, chId) {
     var all;
     try {
       all = JSON.parse(localStorage.getItem("shoug-mock-readiness")) || {};
     } catch (e) {
-      return "";
+      return null;
     }
     var c = all[String(course).replace(/\s+/g, "").toLowerCase()],
       r = c && c[chId];
-    if (!r || !r.t) return "";
+    return r && r.t ? r : null;
+  }
+  // Offer the rating the latest mock score points to, when it differs:
+  // 80% and up is Solid, anything less is Shaky. It's the same button the
+  // readiness row uses, so it saves the same way.
+  function mockSuggest(course, chId, lv) {
+    var r = mockRecord(course, chId);
+    if (!r || r.t < 3) return "";
+    var p = Math.round((100 * r.r) / r.t),
+      want = p >= 80 ? 2 : 1;
+    if (lv === want) return "";
+    return (
+      '<button type="button" class="sp-mock-apply" data-sp-level="' +
+      want +
+      '" data-sp-unit="ch:' +
+      esc(chId) +
+      '" data-sp-ready-course="' +
+      esc(course) +
+      '" title="Your latest mock exam: ' +
+      esc(String(r.r)) +
+      " of " +
+      r.t +
+      ' right">Mock says ' +
+      LEVELS[want] +
+      "</button>"
+    );
+  }
+  function mockMeta(course, chId) {
+    var r = mockRecord(course, chId);
+    if (!r) return "";
     return (
       " · Mock exam " +
       (r.r % 1 ? r.r.toFixed(1) : r.r) +
@@ -3495,7 +3525,7 @@
                     "ch:" + ch.id,
                     level(course, a, "ch:" + ch.id),
                     course,
-                  )) +
+                  ) + mockSuggest(course, ch.id, level(course, a, "ch:" + ch.id))) +
             "</div>";
           if (!a.curated || ch.upcoming) return head;
           if (!open) return head;
@@ -5789,6 +5819,10 @@
     C = window.__shougCal;
     typeAsked = true;
     $("study-plan-root").addEventListener("click", onClick);
+    // Mock exam scores from another device arrived (study-sync.js).
+    window.addEventListener("shoug:study-sync", function () {
+      render();
+    });
     // A study session in the day view opens too, unless it was being dragged
     // or the click was on one of its own buttons.
     var pressX = 0,

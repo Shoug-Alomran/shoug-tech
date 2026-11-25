@@ -159,3 +159,50 @@ test("final roadmap statuses are owner-only and stay off the public profile", as
     as("shoug").doc("users/shoug").set(roadmap, { merge: true }),
   );
 });
+
+test("mock exam and mistakes sync docs are owner-only, with their own fields", async () => {
+  const mock = { history: [], ready: {}, seen: {}, updatedAt: 1 };
+  const mistakes = { items: [], gone: {}, updatedAt: 1 };
+  await assertSucceeds(as("shoug").doc("users/shoug/private/mock").set(mock));
+  await assertSucceeds(as("shoug").doc("users/shoug/private/mistakes").set(mistakes));
+  await assertSucceeds(as("shoug").doc("users/shoug/private/mock").get());
+  await assertFails(as("someone").doc("users/shoug/private/mock").get());
+  await assertFails(as("someone").doc("users/shoug/private/mistakes").set(mistakes));
+  // Each doc takes only its own fields, so neither can carry the academic record.
+  await assertFails(
+    as("shoug").doc("users/shoug/private/mock").set({ ...mock, academicRecord: record.academicRecord }),
+  );
+  await assertFails(as("shoug").doc("users/shoug/private/mistakes").set({ history: [] }));
+});
+
+const report = () => ({
+  uid: "shoug",
+  course: "se423",
+  qid: "abc123",
+  source: "/academics/software-engineering/se423/exams/03-estimation-quiz/",
+  reason: "answer",
+  note: "Option B is also right.",
+  question: "A project is sized at 15 KLOC...",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+});
+
+test("signed-in students can report a question as themselves", async () => {
+  await assertSucceeds(as("shoug").collection("questionReports").add(report()));
+  await assertFails(as("someone").collection("questionReports").add(report()));
+  await assertFails(
+    env.unauthenticatedContext().firestore().collection("questionReports").add({ ...report(), uid: "" }),
+  );
+  await assertFails(as("shoug").collection("questionReports").add({ ...report(), reason: "spam" }));
+  await assertFails(as("shoug").collection("questionReports").add({ ...report(), extra: 1 }));
+});
+
+test("only the admin reads question reports", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await ctx.firestore().doc("courseCommerce/ethics").set({ adminUid: "admin" });
+    await ctx.firestore().doc("questionReports/r1").set({ ...report(), createdAt: 1 });
+  });
+  const admin = env.authenticatedContext("admin", { email_verified: true }).firestore();
+  await assertSucceeds(admin.doc("questionReports/r1").get());
+  await assertFails(as("shoug").doc("questionReports/r1").get());
+  await assertFails(as("shoug").doc("questionReports/r1").update({ note: "x" }));
+});

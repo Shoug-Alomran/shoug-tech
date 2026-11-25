@@ -418,6 +418,22 @@ function normalize(raw, ctx, base) {
   }
   if (raw.past || raw.pastExam) q.p = 1;
 
+  // Matching: pairs of term -> definition, in any of the usual shapes.
+  if (/^match/.test(type) || (Array.isArray(raw.pairs) && !rawOpts)) {
+    const pairs = (raw.pairs || raw.matches || [])
+      .map((pr) => (Array.isArray(pr) ? pr : pr && typeof pr === "object" ? [pr.term ?? pr.left ?? pr.a ?? pr.q, pr.def ?? pr.right ?? pr.b ?? pr.answer] : null))
+      .filter((pr) => pr && pr[0] != null && pr[1] != null)
+      .map((pr) => [cleanHtml(pr[0], base), cleanHtml(pr[1], base)])
+      .filter((pr) => textOf(pr[0]) && textOf(pr[1]));
+    if (pairs.length < 2 || new Set(pairs.map((pr) => textOf(pr[1]))).size !== pairs.length) return null;
+    q.t = "match";
+    q.pairs = pairs;
+    const e = typeof explainRaw === "string" ? cleanHtml(explainRaw, base) : "";
+    if (e) q.e = e;
+    q._hint = hint;
+    return q;
+  }
+
   let opts = null, keys = null;
   if (Array.isArray(rawOpts)) {
     opts = rawOpts.map((o) => cleanHtml(stripMarker(optionText(o)), base));
@@ -633,7 +649,7 @@ function tokens(s) {
 function loadChapters(course) {
   if (course === ETHICS_COURSE) {
     const chapters = ETHICS_CHAPTERS.map((title, i) => ({ id: "e" + i, title, num: "", kind: "", tok: new Set(tokens(title)), link: "" }));
-    return { chapters, scopes: [], name: "ETHCS 303", ethics: true };
+    return { chapters, scopes: [], items: [], name: "ETHCS 303", ethics: true };
   }
   const file = path.join(ANALYSIS, course + "-final.json");
   if (!fs.existsSync(file)) return { chapters: [], scopes: [], name: "" };
@@ -649,10 +665,15 @@ function loadChapters(course) {
       link: ((c.links || [])[0] || {}).url || "",
     };
   });
+  // Named concepts per chapter (curated courses): "Tuckman's stages" -> ch3.
+  const items = (d.items || [])
+    .filter((it) => it.chapter && it.name && chapters.some((c) => c.id === it.chapter))
+    .map((it) => ({ chapter: it.chapter, phrase: phraseOf(it.name) }))
+    .filter((it) => it.phrase.split(" ").length >= 2 || it.phrase.length >= 7);
   const scopes = (d.exam_scopes || [])
     .map((s) => ({ label: s.label, type: s.type, chapters: (s.chapters || []).filter((id) => chapters.some((c) => c.id === id)) }))
     .filter((s) => s.chapters.length);
-  return { chapters, scopes, name: d.course || "" };
+  return { chapters, scopes, items, name: d.course || "" };
 }
 function byNumber(chapters, n) {
   if (n == null || n === "") return null;
@@ -781,8 +802,76 @@ function displayName(course, fromAnalysis) {
   return m ? m[1].toUpperCase() + " " + m[2] : course.toUpperCase();
 }
 
+/* ------------------------------------------------- matching by question text */
+
+function phraseOf(s) {
+  return " " + tokens(String(s).replace(/\(.*?\)/g, " ")).join(" ") + " ";
+}
+/**
+ * Chapter for a question from its own words, for questions the page and hints
+ * couldn't place. Distinctive chapter-title words count more the fewer
+ * chapters share them; a named concept from the exam analysis counts double.
+ * Returns null unless one chapter clearly wins.
+ */
+function textMatcher(chapters, items) {
+  const df = {};
+  for (const c of chapters) for (const w of c.tok) df[w] = (df[w] || 0) + 1;
+  // Words that name most chapters ("software", "security") say nothing.
+  const usable = (w) => df[w] && df[w] <= Math.max(1, Math.floor(chapters.length / 4));
+  return function (q) {
+    const text = textOf(q.q + " " + (q.o || []).join(" ") + " " + (q.pairs || []).flat().join(" ") + " " + (q.m || ""));
+    const words = new Set(tokens(text));
+    const flat = " " + tokens(text).join(" ") + " ";
+    const score = {};
+    for (const c of chapters) {
+      let sc = 0;
+      for (const w of c.tok) if (usable(w) && words.has(w)) sc += 1 / df[w];
+      if (sc) score[c.id] = sc;
+    }
+    for (const it of items) if (flat.includes(it.phrase)) score[it.chapter] = (score[it.chapter] || 0) + 2;
+    const ranked = Object.entries(score).sort((a, b) => b[1] - a[1]);
+    if (!ranked.length) return null;
+    const [best, second] = [ranked[0][1], ranked[1] ? ranked[1][1] : 0];
+    if (best < 1.5 || best < second * 2) return null;
+    return chapters.find((c) => c.id === ranked[0][0]) || null;
+  };
+}
+
+/* ------------------------------------------------- presets from exam folders */
+
+// Each course's Exams page is sorted into midterm-1 / midterm-2 / final folders
+// (build_exam_folders.py). The chapters its past papers there touch become a
+// preset, for courses whose exam analysis has no exam scopes of that kind.
+const FOLDER_PRESETS = [
+  ["midterm-1", "midterm", "Midterm 1 (from past papers)"],
+  ["midterm-2", "midterm", "Midterm 2 (from past papers)"],
+];
+// No final preset: a final covers the course, which "Everything" already is.
+function folderPresets(exams, scopes, sources, questions) {
+  // Analysis scopes win; "midterm" there covers both midterms.
+  const have = new Set(scopes.map((s) => s.type));
+  const out = [];
+  for (const [folder, type, label] of FOLDER_PRESETS) {
+    if (have.has(type)) continue;
+    const file = path.join(exams, folder, "index.html");
+    if (!fs.existsSync(file)) continue;
+    const links = new Set();
+    const html = fs.readFileSync(file, "utf8");
+    const re = /href="([^"]+)"/g;
+    let m;
+    while ((m = re.exec(html))) links.add(m[1].replace(/index\.html$/, ""));
+    const srcs = new Set(sources.map((s, i) => (links.has(s.url) ? i : -1)).filter((i) => i >= 0));
+    if (!srcs.size) continue;
+    const counts = {};
+    for (const q of questions) if (srcs.has(q.s) && q.c) counts[q.c] = (counts[q.c] || 0) + 1;
+    const ids = Object.keys(counts).filter((id) => counts[id] >= 2);
+    if (ids.length >= 2) out.push({ label, type, chapters: ids, fromPapers: true });
+  }
+  return out;
+}
+
 function buildCourse({ track, course, exams }) {
-  const { chapters, scopes, name, ethics } = loadChapters(course);
+  const { chapters, scopes, items, name, ethics } = loadChapters(course);
   const sources = [];
   const questions = [];
   const seen = new Set();
@@ -815,7 +904,7 @@ function buildCourse({ track, course, exams }) {
       }
       if (q.e) q.e = stripExplainLabel(q.e);
       if (q.e === "") delete q.e;
-      const keyText = textOf(q.q).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + "|" + (q.o ? q.o.map((o) => textOf(o).toLowerCase()).join("|") : "");
+      const keyText = textOf(q.q).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + "|" + (q.o ? q.o.map((o) => textOf(o).toLowerCase()).join("|") : q.pairs ? q.pairs.map((pr) => textOf(pr[0]).toLowerCase()).join("|") : "");
       if (seen.has(keyText)) continue;
       seen.add(keyText);
       let ch = null;
@@ -836,6 +925,30 @@ function buildCourse({ track, course, exams }) {
     }
     report.push(`  ${String(added).padStart(4)}  ${path.relative(exams, file).split(path.sep).join("/")}  →  ${Object.entries(tally).map(([k, v]) => k + "×" + v).join(" ")}`);
   }
+  // Questions nothing placed: try their own words. Checked first against
+  // questions whose chapter is known, and reported, so a weak course shows.
+  if (chapters.length && !ethics) {
+    const guess = textMatcher(chapters, items || []);
+    let tried = 0, right = 0, known = 0;
+    for (const q of questions) {
+      if (!q.c) continue;
+      known++;
+      const g = guess(q);
+      if (g) { tried++; if (g.id === q.c) right++; }
+    }
+    const precise = tried >= 10 ? right / tried : 0;
+    let placed = 0;
+    if (precise >= 0.85) {
+      for (const q of questions) {
+        if (q.c) continue;
+        const g = guess(q);
+        if (g) { q.c = g.id; placed++; }
+      }
+    }
+    report.push(`  text matcher: ${right}/${tried} right on ${known} known questions (${Math.round(precise * 100)}%)` +
+      (precise >= 0.85 ? `, placed ${placed} more` : ", too unsure to use here"));
+  }
+  const allScopes = scopes.concat(folderPresets(exams, scopes, sources, questions));
   // Keep only chapters that have questions, in course order.
   const usedCh = new Set(questions.map((q) => q.c).filter(Boolean));
   if (dropped) report.push(`  (${dropped} questions dropped: they point at a figure or code the page shows outside the question)`);
@@ -845,7 +958,7 @@ function buildCourse({ track, course, exams }) {
       name: displayName(course, name),
       page: `/academics/${track}/${course}/`,
       chapters: chapters.filter((c) => usedCh.has(c.id)).map((c) => (c.link ? { id: c.id, title: c.title, link: c.link } : { id: c.id, title: c.title })),
-      scopes: scopes.map((s) => ({ ...s, chapters: s.chapters.filter((id) => usedCh.has(id)) })).filter((s) => s.chapters.length),
+      scopes: allScopes.map((s) => ({ ...s, chapters: s.chapters.filter((id) => usedCh.has(id)) })).filter((s) => s.chapters.length),
       sources,
       questions,
     },

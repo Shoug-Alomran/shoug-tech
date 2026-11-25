@@ -367,3 +367,189 @@
     document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
+
+// Mock exam readiness on each course's overview page: the latest score in
+// every chapter, with a sparkline of that chapter across past mock exams
+// (mock-exam.js keeps them; study-sync.js brings them from other devices).
+(function () {
+  var m = window.location.pathname.match(/^\/academics\/([^/]+)\/([^/]+)\/(?:index\.html)?$/);
+  if (!m || m[1] === "mock-exam" || m[1] === "review" || m[1] === "study-pack") return;
+  var course = m[2].toLowerCase();
+
+  var CSS = [
+    ".shoug-ready{margin:0 0 30px;padding:18px 20px;border:1px solid rgba(184,41,234,0.32);background:rgba(10,5,20,0.5)}",
+    ".shoug-ready__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}",
+    '.shoug-ready__k{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:0.66rem;font-weight:800;letter-spacing:0.16em;color:#ff2a4b}',
+    ".shoug-ready__sub{color:#a99fb5;font-size:0.82rem;margin-top:4px}",
+    '.shoug-ready__links{display:flex;flex-wrap:wrap;gap:14px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:0.72rem;font-weight:800;letter-spacing:0.06em}',
+    ".shoug-ready__links a{color:#c75cf0;text-decoration:none}",
+    ".shoug-ready__links a:hover{color:#ff2a4b}",
+    ".shoug-ready__rows{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}",
+    ".shoug-ready__row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;align-items:center;padding:10px 12px;border:1px solid rgba(255,255,255,0.08)}",
+    ".shoug-ready__name{color:#f8f7fb;font-size:0.86rem;line-height:1.35;overflow-wrap:anywhere}",
+    ".shoug-ready__meta{grid-column:1/-1;color:#8f8b9a;font-size:0.72rem}",
+    '.shoug-ready__pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:800;font-size:0.82rem;padding:2px 8px;border-radius:999px;color:#07040d}',
+    ".shoug-ready__pct.good{background:#41d6c3}.shoug-ready__pct.warn{background:#f2b84b}.shoug-ready__pct.bad{background:#ff536f}",
+    ".shoug-ready__spark{display:block}",
+    "body.shoug-light-mode .shoug-ready{background:#fff;border-color:rgba(155,31,208,0.3)}",
+    "body.shoug-light-mode .shoug-ready__name{color:#16111f}",
+    "body.shoug-light-mode .shoug-ready__row{border-color:rgba(22,17,31,0.12)}",
+    "body.shoug-light-mode .shoug-ready__links a{color:#9b1fd0}",
+    "body.shoug-light-mode .shoug-ready__pct.good{background:#0f8a6c;color:#fff}",
+    "body.shoug-light-mode .shoug-ready__pct.warn{background:#b26a00;color:#fff}",
+    "body.shoug-light-mode .shoug-ready__pct.bad{background:#d61f45;color:#fff}",
+  ].join("");
+
+  function load(key, fallback) {
+    try {
+      var v = JSON.parse(localStorage.getItem(key));
+      return v == null ? fallback : v;
+    } catch (e) {
+      return fallback;
+    }
+  }
+  function band(p) {
+    return p >= 80 ? "good" : p >= 50 ? "warn" : "bad";
+  }
+  function pretty(id) {
+    return String(id).replace(/^ch-?/, "Ch ").replace(/^lecture-/, "Lecture ").replace(/^t(\d+)-/, "Topic $1 · ").replace(/-/g, " ");
+  }
+  // Up to the last 8 scores as a tiny line, so a trend reads at a glance.
+  function spark(points) {
+    var NS = "http://www.w3.org/2000/svg",
+      w = 64,
+      h = 22,
+      svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "shoug-ready__spark");
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Mock scores over time: " + points.join("%, ") + "%");
+    if (points.length < 2) return svg;
+    var pts = points.map(function (p, i) {
+      return [2 + (i * (w - 4)) / (points.length - 1), h - 2 - ((h - 4) * p) / 100];
+    });
+    var line = document.createElementNS(NS, "polyline");
+    line.setAttribute("points", pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "));
+    line.setAttribute("fill", "none");
+    line.setAttribute("stroke", "currentColor");
+    line.setAttribute("stroke-width", "1.6");
+    line.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(line);
+    var last = pts[pts.length - 1],
+      dot = document.createElementNS(NS, "circle");
+    dot.setAttribute("cx", last[0]);
+    dot.setAttribute("cy", last[1]);
+    dot.setAttribute("r", "2.6");
+    dot.setAttribute("fill", "currentColor");
+    svg.appendChild(dot);
+    svg.style.color = points[points.length - 1] >= 80 ? "#41d6c3" : points[points.length - 1] >= 50 ? "#f2b84b" : "#ff536f";
+    return svg;
+  }
+
+  function render() {
+    var old = document.querySelector(".shoug-ready");
+    var ready = (load("shoug-mock-readiness", {}) || {})[course] || {};
+    var ids = Object.keys(ready).filter(function (k) { return ready[k] && ready[k].t; });
+    if (!ids.length) {
+      if (old) old.remove();
+      return;
+    }
+    var history = (load("shoug-mock-exams", []) || [])
+      .filter(function (h) { return h && h.course === course; })
+      .sort(function (a, b) { return (a.at || 0) - (b.at || 0); });
+    var anchor = document.querySelector("main .course-header") || (document.querySelector("main h1") || {}).parentNode;
+    if (!anchor || !anchor.parentNode) return;
+    if (!document.getElementById("shoug-ready-styles")) {
+      var st = document.createElement("style");
+      st.id = "shoug-ready-styles";
+      st.textContent = CSS;
+      document.head.appendChild(st);
+    }
+    var box = document.createElement("section");
+    box.className = "shoug-ready";
+    box.setAttribute("aria-label", "Mock exam readiness");
+    var head = document.createElement("div");
+    head.className = "shoug-ready__head";
+    var left = document.createElement("div");
+    var k = document.createElement("div");
+    k.className = "shoug-ready__k";
+    k.textContent = "MOCK EXAM READINESS";
+    var sub = document.createElement("div");
+    sub.className = "shoug-ready__sub";
+    var lastAt = history.length ? history[history.length - 1].at : 0;
+    sub.textContent =
+      history.length + " mock exam" + (history.length === 1 ? "" : "s") +
+      (lastAt ? " · last on " + new Date(lastAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "");
+    left.appendChild(k);
+    left.appendChild(sub);
+    var links = document.createElement("div");
+    links.className = "shoug-ready__links";
+    var rows = ids
+      .map(function (id) {
+        var r = ready[id],
+          p = Math.round((100 * r.r) / r.t);
+        var trend = history
+          .filter(function (h) { return h.ch && h.ch[id] && h.ch[id][1]; })
+          .map(function (h) { return Math.round((100 * h.ch[id][0]) / h.ch[id][1]); })
+          .slice(-8);
+        return { id: id, title: r.title || pretty(id), p: p, r: r, trend: trend.length ? trend : [p] };
+      })
+      .sort(function (a, b) { return a.title.localeCompare(b.title, "en", { numeric: true }); });
+    var weak = rows.filter(function (x) { return x.p < 80; });
+    if (weak.length) {
+      var w = document.createElement("a");
+      w.href = "/academics/mock-exam/?course=" + encodeURIComponent(course) + "&ch=" + weak.map(function (x) { return encodeURIComponent(x.id); }).join(",");
+      w.textContent = "PRACTISE " + weak.length + " WEAK ->";
+      links.appendChild(w);
+    }
+    var go = document.createElement("a");
+    go.href = "/academics/mock-exam/?course=" + encodeURIComponent(course);
+    go.textContent = "NEW MOCK EXAM ->";
+    links.appendChild(go);
+    head.appendChild(left);
+    head.appendChild(links);
+    box.appendChild(head);
+    var grid = document.createElement("div");
+    grid.className = "shoug-ready__rows";
+    rows.forEach(function (x) {
+      var row = document.createElement("div");
+      row.className = "shoug-ready__row";
+      var name = document.createElement("span");
+      name.className = "shoug-ready__name";
+      name.textContent = x.title;
+      var pct = document.createElement("span");
+      pct.className = "shoug-ready__pct " + band(x.p);
+      pct.textContent = x.p + "%";
+      var meta = document.createElement("span");
+      meta.className = "shoug-ready__meta";
+      var d = x.trend.length > 1 ? x.trend[x.trend.length - 1] - x.trend[0] : 0;
+      meta.textContent =
+        (x.r.r % 1 ? x.r.r.toFixed(1) : x.r.r) + " of " + x.r.t + " right last time" +
+        (x.trend.length > 1 ? " · " + (d > 0 ? "up " : d < 0 ? "down " : "steady ") + (d ? Math.abs(d) + " pts over " + x.trend.length + " tries" : "over " + x.trend.length + " tries") : "");
+      row.appendChild(name);
+      row.appendChild(spark(x.trend));
+      row.appendChild(pct);
+      row.appendChild(meta);
+      grid.appendChild(row);
+    });
+    box.appendChild(grid);
+    if (old) old.replaceWith(box);
+    else anchor.parentNode.insertBefore(box, anchor.nextSibling);
+  }
+
+  function init() {
+    render();
+    window.addEventListener("shoug:study-sync", render);
+    // Brings results from the student's other devices when signed in.
+    if (!window.ShougStudySync && !document.querySelector('script[src*="study-sync.js"]')) {
+      var s = document.createElement("script");
+      s.src = "/javascripts/study-sync.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
