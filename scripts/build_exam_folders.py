@@ -53,6 +53,8 @@ OVERRIDES: dict[str, str] = {
     # ISC113 calls its two midterms "Exam 1" and "Exam 2".
     "01-exam-1": "midterm-1",
     "02-exam-2": "midterm-2",
+    # SE401's photographed past paper doesn't say which exam it was; it was a final.
+    "15-past-exam-mcq-and-fill-in": "final",
 }
 
 # Attributes in any order: tiles may carry a style="--strip-..." before href.

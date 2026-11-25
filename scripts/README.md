@@ -14,8 +14,10 @@ Run everything from the repo root, for example `python3 scripts/embed_resources.
 | `repair_slide_breakdown_viewers.py`   | Rebuilds slide-breakdown viewers from what is on disk                                                                                       |
 | `apply_cyber_red_theme.py`            | Keeps the cybersecurity track red                                                                                                           |
 | `install_breakdown_language.py`       | Adds translation to lesson documents                                                                                                        |
+| `install_slide_reader.py`             | Adds read-aloud (`slide-reader.js`) to annotated decks and breakdown lessons                                                                |
 | `build-course-manifest.js`            | Writes the course page list that progress tracking counts                                                                                   |
 | `build-search-index.js`               | Writes `docs/search-index.json`                                                                                                             |
+| `build-mock-exam-banks.js`            | Writes the Mock Exam question banks (`docs/academics/mock-exam/banks/`) from every course's quizzes and past papers                          |
 | `build_ai_slide_contexts.py`          | Writes the AI context files for academic pages                                                                                              |
 | `optimize_site_html.py`               | Lighthouse and crawler fixes on the generated HTML                                                                                          |
 | `fix_se371_viewers.py`                | Rebuilds SE371 chapter routes as viewer pages                                                                                               |
@@ -98,6 +100,7 @@ These touch every course unless you scope them. Revert anything they change outs
 | `build_search_index.py`                                                                           | Older Python search index. Use `build-search-index.js` instead                                                                       |
 | `build_pdf_search_index.py`                                                                       | Searchable text index of course PDFs                                                                                                 |
 | `install_quiz_review.py`                                                                          | "Review mistakes" tracker on quiz pages                                                                                              |
+| `build-mock-exam-banks.js`                                                                        | Mock Exam question banks. `--report` shows which chapter each page's questions went to; pass course codes to rebuild only those        |
 | `install_quiz_motion.py`                                                                          | Colour and motion layer (quiz-motion.css/js) on every course's exam pages (not CS331, ETHCS303)                                      |
 | `build_exam_folders.py`                                                                           | Sorts each course's Exams page into Chapter Quizzes / Midterm 1 / Midterm 2 / Final folders (+ sidebar data)                         |
 | `build_past_exam_notes.py`                                                                        | "Past exam" blocks in a course's slide breakdowns, from the annotated slides' real-paper questions (`past_exam_notes/<course>.json`) |

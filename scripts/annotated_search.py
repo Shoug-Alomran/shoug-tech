@@ -18,7 +18,8 @@ from urllib.parse import unquote
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(REPO, 'docs')
 TAG = '<script src="/javascripts/annotated-search.js?v=1"></script>'
-BOOKMARK_TAG = '<script src="/javascripts/slide-bookmarks.js?v=3"></script>'
+BOOKMARK_TAG = '<script src="/javascripts/slide-bookmarks.js?v=4"></script>'
+READER_TAG = '<script src="/javascripts/slide-reader.js?v=1" defer></script>'
 SKIP_TAGS = {'details', 'svg', 'button', 'textarea', 'script', 'style', 'header', 'h4', 'select', 'figure'}
 SKIP_CLASSES = {'picks', 'opt-why', 'verdict', 'reveal-ans', 'weight', 'slide-foot', 'num', 'kind'}
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'}
@@ -154,7 +155,7 @@ def build_course(course_dir):
             continue
         data, path, page = entry
         decks.append(data)
-        missing = ''.join(t + '\n' for t in (TAG, BOOKMARK_TAG) if t not in page)
+        missing = ''.join(t + '\n' for t in (TAG, BOOKMARK_TAG, READER_TAG) if t not in page)
         if missing:
             with open(path, 'w', encoding='utf-8') as fh:
                 fh.write(page.replace('</body>', missing + '</body>', 1))

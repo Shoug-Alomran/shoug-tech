@@ -24,11 +24,19 @@ assets. Back up the private source separately before cleaning ignored files.
 Build and deploy after editing private source or checkout:
 
 ```sh
+node scripts/build-mock-exam-banks.js ethcs303
 python3 scripts/secure_ethics_content.py --build-worker --seal --check
 node --test workers/course-access/src/index.test.js
 wrangler whoami
 wrangler deploy --config workers/course-access/wrangler.jsonc
 ```
+
+The first command writes the Mock Exam question bank to the private source
+(`.private-courses/ethics/academics/other-courses/ethcs303/mock-exam-bank.json`),
+so the Worker serves it only to approved buyers, and lists ETHCS303 in the public
+`docs/academics/mock-exam/banks/index.json` (name and question count only). Commit
+that index change after the Worker is deployed, so the course isn't listed before
+its bank is live. CI has no private source and keeps the committed entry.
 
 The Pages workflow seals paid content after generators run. It must not publish
 new private lessons. If using an old generator that writes to `docs`, archive its

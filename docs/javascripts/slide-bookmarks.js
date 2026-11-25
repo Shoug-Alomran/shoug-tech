@@ -34,6 +34,21 @@
   var listLoaded = false;
   var connectFailed = false;
   var giveUpTimer = null;
+  // The window whose Firebase we use: the course page's, or this page's own when it has none.
+  var fbWindow = rootWindow;
+  var ownLoadStarted = false;
+
+  // Same public web config as firebase-auth.js. A deck opened in its own tab has no
+  // course page around it, so it signs in with this; the login is shared across the site.
+  var FB_BASE = "https://www.gstatic.com/firebasejs/10.12.0/firebase-";
+  var FB_CONFIG = {
+    apiKey: "AIzaSyDUklr3u8laDZH2jhHVAO3BPE12GaPpOmI",
+    authDomain: "shoug-tech.firebaseapp.com",
+    projectId: "shoug-tech",
+    storageBucket: "shoug-tech.firebasestorage.app",
+    messagingSenderId: "621041999813",
+    appId: "1:621041999813:web:8982befd8b0ccc1d9475ac",
+  };
 
   var CSS =
     "html{--sb-bg:#fff;--sb-ink:#1d1d1f;--sb-muted:#5b5b63;--sb-line:#cfcdc7;--sb-accent:#2f5bb7;--sb-accent-ink:#fff}" +
@@ -53,6 +68,7 @@
     ".sb-list button:hover{background:var(--sb-line)}" +
     ".sb-list p{margin:0;padding:12px 14px;color:var(--sb-muted)}" +
     ".sb-toast{position:fixed;z-index:80;left:50%;bottom:20px;transform:translateX(-50%);max-width:calc(100vw - 24px);padding:10px 14px;border-radius:8px;background:#16111f;color:#fff;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}" +
+    ".sb-toast a{color:#9fc0ff;font-weight:600;text-decoration:underline}" +
     ".sb-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:0 0 8px;border:1px solid var(--sb-line);border-radius:8px;background:var(--sb-bg);color:var(--sb-ink);font-size:13px}" +
     ".sb-bar label{font-weight:600}" +
     ".sb-input{box-sizing:border-box;width:76px;min-height:32px;padding:4px 8px;border:1px solid var(--sb-line);border-radius:8px;background:var(--sb-bg);color:var(--sb-ink);font:inherit;font-size:16px}" +
@@ -76,7 +92,7 @@
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>';
   var toastTimer = null;
 
-  function toast(text) {
+  function toast(text, link) {
     var el = document.querySelector(".sb-toast");
     if (!el) {
       el = document.createElement("div");
@@ -85,15 +101,37 @@
       document.body.appendChild(el);
     }
     el.textContent = text;
+    if (link) {
+      var a = document.createElement("a");
+      a.href = link.href;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = link.text;
+      el.appendChild(document.createTextNode(" "));
+      el.appendChild(a);
+    }
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      el.remove();
-    }, 3200);
+    toastTimer = setTimeout(
+      function () {
+        el.remove();
+      },
+      link ? 6000 : 3200,
+    );
   }
 
-  // Firebase lives in the course page, and rejects objects created in this frame.
+  // Signing in happens on the course page; open it beside this tab, not instead of it.
+  function signInToast() {
+    if (rootWindow === window && pagePath !== location.pathname)
+      toast("Sign in to bookmark slides.", {
+        href: pagePath,
+        text: "Sign in (opens a new tab)",
+      });
+    else toast("Sign in to bookmark slides.");
+  }
+
+  // Firebase may live in the course page, and rejects objects created in this frame.
   function plain(values) {
-    var out = new rootWindow.Object();
+    var out = new fbWindow.Object();
     Object.keys(values).forEach(function (k) {
       out[k] = values[k];
     });
@@ -111,11 +149,6 @@
   }
 
   function save(n, label, anchor, on) {
-    if (!canLoadAccount()) {
-      // This deck was opened on its own, without the course page that holds the login.
-      rootWindow.location.href = pagePath + "#" + anchor + n;
-      return false;
-    }
     if (connectFailed) {
       toast("Couldn’t reach your account. Reload the page and try again.");
       return false;
@@ -129,7 +162,7 @@
       return false;
     }
     if (!user) {
-      toast("Sign in to bookmark slides.");
+      signInToast();
       return false;
     }
     function undo() {
@@ -281,9 +314,7 @@
     savedList.textContent = "";
     if (!saved_ns.length) {
       var empty = document.createElement("p");
-      empty.textContent = !canLoadAccount()
-        ? "Open this deck from its course page to use bookmarks."
-        : connectFailed
+      empty.textContent = connectFailed
           ? "Couldn’t reach your account. Reload the page and try again."
           : !authKnown || (user && !listLoaded)
             ? "Connecting to your account…"
@@ -430,29 +461,71 @@
   }
 
   function firebaseReady() {
+    var wins = rootWindow === window ? [window] : [rootWindow, window];
+    for (var i = 0; i < wins.length; i++) {
+      try {
+        var candidate = wins[i].__shoug_fb || wins[i].firebase;
+        if (
+          candidate &&
+          candidate.apps &&
+          candidate.apps.length &&
+          candidate.auth &&
+          candidate.firestore
+        ) {
+          fbWindow = wins[i];
+          return candidate;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  function siteLoader() {
     try {
-      var candidate = rootWindow.__shoug_fb || rootWindow.firebase;
-      if (
-        candidate &&
-        candidate.apps &&
-        candidate.apps.length &&
-        candidate.auth &&
-        candidate.firestore
-      )
-        return candidate;
+      if (typeof rootWindow.__shougLoadFirebaseAuth === "function")
+        return rootWindow.__shougLoadFirebaseAuth;
     } catch (e) {}
     return null;
   }
 
-  function canLoadAccount() {
-    try {
-      return !!(
-        firebaseReady() ||
-        typeof rootWindow.__shougLoadFirebaseAuth === "function"
-      );
-    } catch (e) {
-      return false;
+  function loadScript(src, done, fail) {
+    var s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.onload = done;
+    s.onerror = fail;
+    document.head.appendChild(s);
+  }
+
+  // No course page around this deck (it was opened in its own tab): load Firebase here.
+  function loadOwnFirebase() {
+    if (ownLoadStarted) return;
+    ownLoadStarted = true;
+    function fail() {
+      connectFailed = true;
+      pending = null;
+      refresh();
     }
+    loadScript(
+      FB_BASE + "app-compat.js",
+      function () {
+        var left = 2;
+        function done() {
+          if (--left) return;
+          try {
+            if (!window.firebase.apps.length)
+              window.firebase.initializeApp(FB_CONFIG);
+            window.__shoug_fb = window.firebase;
+            window.dispatchEvent(new CustomEvent("shoug:fb"));
+          } catch (e) {
+            fail();
+          }
+        }
+        loadScript(FB_BASE + "auth-compat.js", done, fail);
+        loadScript(FB_BASE + "firestore-compat.js", done, fail);
+      },
+      fail,
+    );
   }
 
   // The site loads its account code late, on purpose, so slide pages stay fast. Ask for it.
@@ -465,10 +538,12 @@
         refresh();
       }, 20000);
     }
-    try {
-      if (typeof rootWindow.__shougLoadFirebaseAuth === "function")
-        rootWindow.__shougLoadFirebaseAuth(false);
-    } catch (e) {}
+    var loader = siteLoader();
+    if (loader) {
+      try {
+        loader(false);
+      } catch (e) {}
+    } else if (!firebaseReady()) loadOwnFirebase();
   }
 
   function attach() {
@@ -502,6 +577,7 @@
     if (attach()) return;
     try {
       rootWindow.addEventListener("shoug:fb", attach);
+      if (rootWindow !== window) window.addEventListener("shoug:fb", attach);
     } catch (e) {}
     var timer = setInterval(function () {
       if (attach()) clearInterval(timer);
