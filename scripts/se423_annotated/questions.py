@@ -15,6 +15,15 @@ QUESTIONS = {
     'ch9': ch07_09_extra.Q_9,
 }
 
+# Second round (questions_more.Q): appended after the questions above on the same slide.
+from . import questions_more  # noqa: E402
+
+for _key, _extra in questions_more.Q.items():
+    _merged = {n: list(qs) for n, qs in QUESTIONS.get(_key, {}).items()}
+    for _n, _qs in _extra.items():
+        _merged.setdefault(_n, []).extend(_qs)
+    QUESTIONS[_key] = _merged
+
 # Explaining notes for decks not in the page schema: they replace a slide's first notes (None keeps one).
 NOTES = {
     'ch5': ch05_extra.NOTES,
