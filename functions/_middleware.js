@@ -8,8 +8,8 @@
 //    which search engines and AI fetchers follow.
 // 3. PDFs that have a viewer page get a Link canonical header pointing at it.
 // 4. Every HTML page gets the site analytics script (docs/javascripts/
-//    site-analytics.js), so the ~3,900 static pages need no edits. Admin
-//    pages are skipped; the script also skips them itself.
+//    site-analytics.js) and the admin header tab (admin-nav.js), so the
+//    ~3,900 static pages need no edits. Admin pages get no analytics.
 import manifest from "../workers/indexing/src/manifest.json";
 import moved from "../.pages-build/meta-redirects.json";
 
@@ -31,15 +31,41 @@ const HEADERS = {
 
 const ANALYTICS_TAG =
   '<script defer src="/javascripts/site-analytics.js?v=1"></script>';
+// The administrator's "Admin" header tab (docs/javascripts/admin-nav.js).
+const ADMIN_NAV_TAG =
+  '<script defer src="/javascripts/admin-nav.js?v=1"></script>';
 
-function withAnalytics(response, path) {
+// Microsoft Clarity (heatmaps and session replay). About 2,900 pages carry the
+// snippet in their own <head>; the generated study pages (annotated slides,
+// exams, breakdowns...) never did. Pages without it get it here, except where
+// replay is deliberately off: admin, account, payment and paid-course pages.
+// Masking for account and community pages is configured in Clarity itself.
+const CLARITY_TAG = `<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xub0eqmvs9");</script>`;
+const NO_CLARITY =
+  /^\/(?:admin|account|checkout|course-access|course-media)(?:\/|$)|^\/academics\/other-courses\/ethcs303(?:\/|$)/;
+
+function withSiteScripts(response, path) {
   const type = response.headers.get("content-type") || "";
-  if (!response.ok || !type.includes("text/html") || path.startsWith("/admin/"))
-    return response;
+  if (!response.ok || !type.includes("text/html")) return response;
+  const tags = path.startsWith("/admin")
+    ? ADMIN_NAV_TAG
+    : ANALYTICS_TAG + ADMIN_NAV_TAG;
+  const wantClarity = !NO_CLARITY.test(path);
+  let hasClarity = false;
   return new HTMLRewriter()
+    .on("head script", {
+      text(chunk) {
+        if (chunk.text.includes("clarity.ms/tag")) hasClarity = true;
+      },
+    })
     .on("head", {
       element(head) {
-        head.append(ANALYTICS_TAG, { html: true });
+        head.append(tags, { html: true });
+        // Decided at </head>, once every script in the head has been seen.
+        if (wantClarity)
+          head.onEndTag((end) => {
+            if (!hasClarity) end.before(CLARITY_TAG, { html: true });
+          });
       },
     })
     .transform(response);
@@ -87,5 +113,5 @@ export async function onRequest({ request, next, env }) {
   for (const [name, value] of Object.entries(HEADERS)) {
     if (!response.headers.has(name)) response.headers.set(name, value);
   }
-  return request.method === "GET" ? withAnalytics(response, path) : response;
+  return request.method === "GET" ? withSiteScripts(response, path) : response;
 }
