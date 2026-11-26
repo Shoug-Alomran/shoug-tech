@@ -610,7 +610,7 @@ def page_html(spec, cards, titles, has_pdf):
 %(se322_mcq_js)s
 <script src="/javascripts/annotated-search.js?v=1"></script>
 <script src="/javascripts/slide-bookmarks.js?v=4"></script>
-<script src="/javascripts/slide-reader.js?v=1" defer></script>
+<script src="/javascripts/slide-reader.js?v=2" defer></script>
 </body>
 </html>
 ''' % dict(head=e(spec['head_title']), desc=e(spec['description']), url=e(spec['url']), boot=THEME_BOOT,

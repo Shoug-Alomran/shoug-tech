@@ -964,7 +964,7 @@ def deck_page(deck, mod):
 <script src="/javascripts/annotated-slides.js"></script>
 <script src="/javascripts/annotated-search.js?v=1"></script>
 <script src="/javascripts/slide-bookmarks.js?v=4"></script>
-<script src="/javascripts/slide-reader.js?v=1" defer></script>
+<script src="/javascripts/slide-reader.js?v=2" defer></script>
 </body>
 </html>
 '''.format(code=C.code, w_direct=C.papers['n_direct'], w_related=C.papers['n_related'], overview=overview_html,

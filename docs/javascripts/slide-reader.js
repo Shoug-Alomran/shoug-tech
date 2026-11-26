@@ -1,8 +1,8 @@
 /* Read aloud for Annotated Slides decks and slide breakdowns.
    Uses the browser's own speech (Web Speech API): no server, no key, nothing leaves the device.
 
-   Annotated decks: each slide card gets a Listen button. It reads the slide title, its notes,
-   tips and exam questions with their options (never the answers), then goes on to the next slide.
+   Annotated decks: each slide card gets a Listen button. It reads the slide itself (the text of
+   its PDF page, embedded by scripts/build_slide_speech.py), not the notes, then goes on to the next slide.
    Breakdowns: the lesson is split at its h2 headings. Each heading gets a Listen button, and only
    what is on screen is read: translated text when Arabic is showing, closed panels are skipped.
    The floating Listen button starts from wherever the reader is on the page. */
@@ -24,12 +24,11 @@
   /* ------------------------------------------------------------------ text */
   var UI =
     ".sr-ui,.sb-btn,.sb-saved,.sb-toast,.bd-language,.bd-contents,.sg-ai-panel,.sg-ai-launch,.sg-page-search,.sys-time,.sfx-lightbox";
-  var BREAK = " "; // a <br>: a pause inside one block
+  var BREAK = "\u2028"; // a <br>: a pause inside one block
   var SKIP_COMMON =
     "script,style,noscript,template,svg,canvas,iframe,video,audio,img,button,select,textarea,input,nav,annotation," +
     '[hidden],[aria-hidden="true"],' + UI;
   // In a slide card: no header (read separately), no slide image, no answers or feedback.
-  var SKIP_DECK = SKIP_COMMON.replace("button,", "") + ",.card-head,.notes>h4,figure,details,.opt-why,.verdict,.reveal-ans,button:not(.choice)";
   var SKIP_BREAKDOWN = SKIP_COMMON + ",footer";
 
   var BLOCK = {
@@ -172,6 +171,19 @@
       : "";
   }
 
+  // Each slide is a picture of a PDF page; scripts/build_slide_speech.py embeds the page text.
+  var speech = null;
+  function slideSpeech() {
+    if (speech === null) {
+      speech = {};
+      var data = document.getElementById("slide-speech");
+      try {
+        if (data) speech = JSON.parse(data.textContent).slides || {};
+      } catch (e) {}
+    }
+    return speech;
+  }
+
   if (mode === "deck") {
     deckCards.forEach(function (card) {
       var n = card.getAttribute("data-slide");
@@ -181,10 +193,17 @@
         mark: card,
         label: "Slide " + n + (cardTitle(card) ? ": " + cardTitle(card) : ""),
         host: head,
+        // The slide itself, not the study notes beside it.
         chunks: function () {
-          var title = cardTitle(card);
-          var items = [{ el: head, text: "Slide " + n + (title ? ". " + title : "") }];
-          return toChunks(items.concat(collect(card, card, null, SKIP_DECK, false)));
+          var lines = slideSpeech()[n] || [];
+          var figure = card.querySelector("figure.slide") || card;
+          var items = [{ el: head, text: "Slide " + n + "." }];
+          if (lines.length) items.push({ el: figure, text: lines.join(BREAK) });
+          else {
+            var title = /^slide\s*\d+$/i.test(cardTitle(card)) ? "" : cardTitle(card);
+            items.push({ el: figure, text: (title ? title + "." + BREAK : "") + t("picture") });
+          }
+          return toChunks(items);
         },
       });
     });
@@ -275,6 +294,7 @@
       reading: "Reading", paused: "Paused", auto: "Default",
       noVoice: "This device has no voice for this language. Install one in your system speech settings.",
       start: "Listen to this page", here: "Listen from here",
+      picture: "This slide is a picture with no text to read.",
     },
     ar: {
       listen: "استمع", listening: "يقرأ", pause: "إيقاف مؤقت", resume: "متابعة", stop: "إيقاف",
@@ -282,6 +302,7 @@
       reading: "يقرأ الآن", paused: "متوقف مؤقتًا", auto: "تلقائي",
       noVoice: "لا يوجد صوت لهذه اللغة على جهازك. يمكنك تثبيته من إعدادات النطق في النظام.",
       start: "استمع إلى الصفحة", here: "استمع من هنا",
+      picture: "هذه الشريحة صورة بلا نص للقراءة.",
     },
   };
   function t(key) {

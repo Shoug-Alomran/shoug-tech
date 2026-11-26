@@ -270,7 +270,7 @@ def source_of(href, page_url, depth=0):
     listing = os.path.join(path, 'index.html')
     if docs and not (os.path.isfile(listing) and CONTAINER.search(read(listing))):
         return 'docx', docs[0]
-    pages = [p for p in sorted(glob.glob(os.path.join(path, '*.html'))) if not p.endswith('/index.html')]
+    pages = [p for p in sorted(glob.glob(os.path.join(path, '*.html'))) if os.path.basename(p) != 'index.html']
     if pages:
         return 'html', pages[0]
     index = os.path.join(path, 'index.html')

@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 DOCS = Path(__file__).resolve().parents[1] / "docs"
-VERSION = "1"
+VERSION = "2"
 TAG = f'<script src="/javascripts/slide-reader.js?v={VERSION}" defer></script>'
 EXISTING = re.compile(r'<script src="/javascripts/slide-reader\.js(?:\?v=[^"]*)?"(?: defer)?></script>')
 
