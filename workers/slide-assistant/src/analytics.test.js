@@ -457,3 +457,10 @@ test("handleAnalyticsQuery gates on sign-in, admin and configuration", async () 
   assert.deepEqual(body.data.totals, [{ n: 3 }]);
   assert.ok(Object.keys(body.data).length > 30);
 });
+
+test("if() branches that multiply by a double fall back to 0.0, not 0", () => {
+  // Analytics Engine rejects if() whose branches differ in type (Double vs Integer).
+  for (const [name, sql] of Object.entries(buildQueries("7").queries)) {
+    assert.doesNotMatch(sql, /\* double\d+, 0\)/, name);
+  }
+});

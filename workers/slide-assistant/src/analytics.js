@@ -363,17 +363,17 @@ export function buildQueries(rangeKey, filters) {
   const totals = (previous) =>
     `SELECT
       SUM(if(blob1 = 'pageview', _sample_interval, 0)) AS pageviews,
-      SUM(if(blob1 = 'pageview', _sample_interval * double6, 0)) AS visitors,
-      SUM(if(blob1 = 'pageview', _sample_interval * double5, 0)) AS new_visitors,
+      SUM(if(blob1 = 'pageview', _sample_interval * double6, 0.0)) AS visitors,
+      SUM(if(blob1 = 'pageview', _sample_interval * double5, 0.0)) AS new_visitors,
       SUM(if(blob1 = 'pageview' AND double7 = 1, _sample_interval, 0)) AS sessions,
       SUM(if(blob1 = 'pageview' AND double7 = 2, _sample_interval, 0)) AS sessions_2plus,
-      SUM(if(blob1 = 'engage', _sample_interval * double2, 0)) AS engaged_seconds,
-      SUM(if(blob1 = 'engage', _sample_interval * double3, 0)) AS scroll_sum,
-      SUM(if(blob1 = 'engage', _sample_interval * double15, 0)) AS scroll_n,
+      SUM(if(blob1 = 'engage', _sample_interval * double2, 0.0)) AS engaged_seconds,
+      SUM(if(blob1 = 'engage', _sample_interval * double3, 0.0)) AS scroll_sum,
+      SUM(if(blob1 = 'engage', _sample_interval * double15, 0.0)) AS scroll_n,
       SUM(if(blob1 = 'search', _sample_interval, 0)) AS searches,
       SUM(if(blob1 = 'quiz', _sample_interval, 0)) AS quiz_submits,
-      SUM(if(blob1 = 'engage', _sample_interval * double9, 0)) AS quiz_answered,
-      SUM(if(blob1 = 'engage', _sample_interval * double10, 0)) AS quiz_correct,
+      SUM(if(blob1 = 'engage', _sample_interval * double9, 0.0)) AS quiz_answered,
+      SUM(if(blob1 = 'engage', _sample_interval * double10, 0.0)) AS quiz_correct,
       SUM(if(blob1 = 'error', _sample_interval, 0)) AS errors,
       SUM(if(blob1 = 'pageview' AND blob18 = '404', _sample_interval, 0)) AS not_found
     ${from} WHERE ${windowClause(days, previous)}${scope}`;
@@ -382,7 +382,7 @@ export function buildQueries(rangeKey, filters) {
     totals: totals(false),
     series: `SELECT double11 AS day,
         SUM(if(blob1 = 'pageview', _sample_interval, 0)) AS pageviews,
-        SUM(if(blob1 = 'pageview', _sample_interval * double6, 0)) AS visitors,
+        SUM(if(blob1 = 'pageview', _sample_interval * double6, 0.0)) AS visitors,
         SUM(if(blob1 = 'pageview' AND double7 = 1, _sample_interval, 0)) AS sessions
       ${from} WHERE ${windowClause(days)}${scope}
       GROUP BY day ORDER BY day`,
