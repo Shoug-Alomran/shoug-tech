@@ -713,6 +713,10 @@
       })
       .then(function (res) {
         return res.json().then(function (body) {
+          if (res.status === 404)
+            throw new Error(
+              "The analytics service isn't live yet. Deploy the updated worker: cd workers/slide-assistant && npx wrangler deploy",
+            );
           if (!res.ok) throw new Error(body.error || "Request failed (" + res.status + ")");
           return body;
         });

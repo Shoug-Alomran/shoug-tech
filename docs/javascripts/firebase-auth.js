@@ -206,6 +206,7 @@
     if (isLegalPage()) return false;
     if (
       path === "/" ||
+      path.indexOf("/admin") === 0 ||
       path.indexOf("/account") === 0 ||
       path.indexOf("/community") === 0 ||
       path.indexOf("/bookmarks") === 0
