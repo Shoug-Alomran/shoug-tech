@@ -3,6 +3,7 @@ import { handleAbout } from "./about.js";
 import { extractTranscript } from "./transcript.js";
 import { extractSchedule } from "./schedule.js";
 import { verifyIdToken } from "./firebase-token.js";
+import { handleCollect, handleAnalyticsQuery } from "./analytics.js";
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
 const MAX_CONTEXT = 26000;
@@ -892,6 +893,25 @@ export default {
       });
     if (request.method !== "POST")
       return json({ error: "Not found." }, 404, origin);
+    // Site analytics: page events from every page, and the admin dashboard.
+    if (url.pathname === "/v1/collect") {
+      if (Number(request.headers.get("content-length") || 0) > 32 * 1024)
+        return json({ error: "Request is too large." }, 413, origin);
+      try {
+        return await handleCollect(request, env, origin);
+      } catch (error) {
+        console.error(error);
+        return new Response(null, { status: 204, headers: { "access-control-allow-origin": origin, vary: "Origin" } });
+      }
+    }
+    if (url.pathname === "/v1/analytics-query") {
+      try {
+        return await handleAnalyticsQuery(request, env, origin, json, verifyIdToken);
+      } catch (error) {
+        console.error(error);
+        return json({ error: "Analytics are temporarily unavailable." }, 500, origin);
+      }
+    }
     const isCalendar = url.pathname === "/v1/calendar-assistant";
     const isTranslation = url.pathname === "/v1/breakdown-translation";
     const isAbout = url.pathname === "/v1/about-assistant";

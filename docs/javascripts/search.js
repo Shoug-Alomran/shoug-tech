@@ -236,6 +236,12 @@
       return;
     }
     var matches = search(q).concat(searchPdfs(q));
+    // site-analytics.js records the settled query and how many results it found.
+    document.dispatchEvent(
+      new CustomEvent("shoug:search", {
+        detail: { query: q, results: matches.length },
+      }),
+    );
     if (!matches.length) {
       results.innerHTML =
         '<div class="shoug-sr-empty">No results for &ldquo;' +

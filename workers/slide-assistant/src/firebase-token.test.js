@@ -50,7 +50,13 @@ test("a correctly signed Firebase token is accepted", async () => {
   assert.deepEqual(await verifyIdToken(await sign(good), opts), {
     uid: "user-1",
     email: "s@example.com",
+    emailVerified: false,
   });
+  assert.equal(
+    (await verifyIdToken(await sign({ ...good, email_verified: true }), opts))
+      .emailVerified,
+    true,
+  );
 });
 
 test("tampered, foreign, expired or unknown-key tokens are rejected", async () => {

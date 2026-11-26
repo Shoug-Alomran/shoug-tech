@@ -183,11 +183,40 @@
 
   // One pulse per question per check, even when a template marks several elements at once.
   var flashed = new WeakMap();
+  // Each question's first marking is reported to site-analytics.js, counted
+  // only for questions the student touched: a "reveal all" button marks every
+  // card without an answer. Templates often show the right option green beside
+  // a wrong pick, so any wrong mark within 150ms makes the answer wrong.
+  var touched = new WeakSet();
+  var reported = new WeakSet();
+  var pending = new WeakMap();
+  function touch(event) {
+    var card = event.target && event.target.closest && event.target.closest(".cqm-card");
+    if (card) touched.add(card);
+  }
+  function report(card, ok) {
+    if (!card || reported.has(card) || !touched.has(card)) return;
+    var state = pending.get(card);
+    if (state) {
+      state.ok = state.ok && ok;
+      return;
+    }
+    state = { ok: ok };
+    pending.set(card, state);
+    setTimeout(function () {
+      pending.delete(card);
+      reported.add(card);
+      document.dispatchEvent(
+        new CustomEvent("shoug:quiz-answer", { detail: { ok: state.ok } }),
+      );
+    }, 150);
+  }
   function answered(el, ok) {
     var card = el.closest(".cqm-card");
     var target = el.closest(".cqm-opt") || card || el;
     var key = card || target;
     var now = Date.now();
+    report(card, ok);
     if (flashed.get(key) > now - 400) return;
     flashed.set(key, now);
     if (card) card.classList.add("cqm-answered");
@@ -294,6 +323,9 @@
       attributeFilter: ["class"],
     });
     document.addEventListener("pointerdown", ripple, true);
+    document.addEventListener("pointerdown", touch, true);
+    document.addEventListener("change", touch, true);
+    document.addEventListener("keydown", touch, true);
   }
 
   if (document.readyState === "loading")

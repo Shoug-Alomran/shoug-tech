@@ -40,7 +40,7 @@ function json(part) {
 }
 
 /**
- * Returns { uid, email } for a valid token, or null. `options.keys` and
+ * Returns { uid, email, emailVerified } for a valid token, or null. `options.keys` and
  * `options.now` (seconds) exist for tests.
  */
 export async function verifyIdToken(token, options = {}) {
@@ -82,7 +82,13 @@ export async function verifyIdToken(token, options = {}) {
       bytes(parts[2]),
       new TextEncoder().encode(`${parts[0]}.${parts[1]}`),
     );
-    return ok ? { uid: claims.sub, email: claims.email || "" } : null;
+    return ok
+      ? {
+          uid: claims.sub,
+          email: claims.email || "",
+          emailVerified: claims.email_verified === true,
+        }
+      : null;
   } catch {
     return null;
   }

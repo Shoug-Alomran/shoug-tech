@@ -7,6 +7,9 @@
 //    pages (generated at deploy by scripts/build_meta_redirects.py) get real 301s,
 //    which search engines and AI fetchers follow.
 // 3. PDFs that have a viewer page get a Link canonical header pointing at it.
+// 4. Every HTML page gets the site analytics script (docs/javascripts/
+//    site-analytics.js), so the ~3,900 static pages need no edits. Admin
+//    pages are skipped; the script also skips them itself.
 import manifest from "../workers/indexing/src/manifest.json";
 import moved from "../.pages-build/meta-redirects.json";
 
@@ -25,6 +28,22 @@ const HEADERS = {
   "Permissions-Policy":
     "camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), browsing-topics=(), geolocation=(self), fullscreen=(self)",
 };
+
+const ANALYTICS_TAG =
+  '<script defer src="/javascripts/site-analytics.js?v=1"></script>';
+
+function withAnalytics(response, path) {
+  const type = response.headers.get("content-type") || "";
+  if (!response.ok || !type.includes("text/html") || path.startsWith("/admin/"))
+    return response;
+  return new HTMLRewriter()
+    .on("head", {
+      element(head) {
+        head.append(ANALYTICS_TAG, { html: true });
+      },
+    })
+    .transform(response);
+}
 
 // Old links may omit the trailing slash or name index.html directly.
 function lookup(table, path) {
@@ -68,5 +87,5 @@ export async function onRequest({ request, next, env }) {
   for (const [name, value] of Object.entries(HEADERS)) {
     if (!response.headers.has(name)) response.headers.set(name, value);
   }
-  return response;
+  return request.method === "GET" ? withAnalytics(response, path) : response;
 }

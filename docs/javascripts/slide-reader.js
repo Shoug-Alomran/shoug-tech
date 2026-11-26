@@ -294,6 +294,8 @@
       reading: "Reading", paused: "Paused", auto: "Default",
       noVoice: "This device has no voice for this language. Install one in your system speech settings.",
       start: "Listen to this page", here: "Listen from here",
+      move: "Move the player (drag, or use the arrow keys)", collapse: "Collapse", expand: "Expand",
+      hide: "Hide the player (keeps reading)", show: "Show the player",
       picture: "This slide is a picture with no text to read.",
     },
     ar: {
@@ -302,6 +304,8 @@
       reading: "يقرأ الآن", paused: "متوقف مؤقتًا", auto: "تلقائي",
       noVoice: "لا يوجد صوت لهذه اللغة على جهازك. يمكنك تثبيته من إعدادات النطق في النظام.",
       start: "استمع إلى الصفحة", here: "استمع من هنا",
+      move: "حرّك المشغل (اسحبه أو استخدم الأسهم)", collapse: "تصغير", expand: "توسيع",
+      hide: "إخفاء المشغل (تستمر القراءة)", show: "إظهار المشغل",
       picture: "هذه الشريحة صورة بلا نص للقراءة.",
     },
   };
@@ -316,6 +320,12 @@
   var ICON_PREV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-8 6 8 6zM6 6v12"/></svg>';
   var ICON_NEXT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l8 6-8 6zM18 6v12"/></svg>';
   var ICON_STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>';
+  var ICON_GRIP =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" stroke-width="3.2"/></svg>';
+  var ICON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  var ICON_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
+  var ICON_HIDE =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a13 13 0 0 1-3 4.2M6.6 6.6C4.4 8 2.8 10.2 2 12c1 2.5 5 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 
   var CSS =
     ".sr-btn{appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px;border:1px solid currentColor;border-color:color-mix(in srgb,currentColor 35%,transparent);border-radius:8px;background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:600;line-height:1.2;cursor:pointer;white-space:nowrap;letter-spacing:normal;text-transform:none}" +
@@ -343,6 +353,20 @@
     "html body #sr-player select{max-width:min(300px,100%)!important;min-height:32px!important;padding:2px 4px!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:6px!important;background:#221b30!important;color:#fff!important;font:inherit!important;font-size:13px!important}" +
     "html body .sr-spacer{flex:1!important}" +
     "html body .sr-note{margin:0!important;font-weight:500!important;font-size:12px!important;color:#ffd38a!important}" +
+    "html body .sr-top{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important}" +
+    "html body .sr-top .sr-status{flex:1!important}" +
+    "html body #sr-player .sr-top button{min-width:30px!important;min-height:30px!important;padding:0 6px!important;border-color:transparent!important}" +
+    "html body #sr-player .sr-top button:hover{border-color:rgba(255,255,255,.2)!important}" +
+    "html body #sr-player button.sr-grip{cursor:grab!important;touch-action:none!important;margin-inline-start:-4px!important;color:#9a9fb0!important}" +
+    "html body #sr-player button.sr-grip:active{cursor:grabbing!important}" +
+    "html body #sr-player button.sr-mini{background:#2f5bb7!important;border-color:#2f5bb7!important}" +
+    "html body #sr-player .sr-mini[hidden]{display:none!important}" +
+    "html body #sr-player.sr-collapsed{width:auto!important;max-width:min(340px,calc(100vw - 16px))!important;padding:6px 8px!important}" +
+    "html body #sr-player.sr-collapsed .sr-row,html body #sr-player.sr-collapsed .sr-note{display:none!important}" +
+    "html body #sr-launch.sr-bubble{width:46px!important;height:46px!important;min-height:0!important;padding:0!important;justify-content:center!important;border-radius:50%!important;background:#2f5bb7!important;touch-action:none!important}" +
+    "html body #sr-launch.sr-bubble svg{width:20px!important;height:20px!important}" +
+    "html body #sr-launch{touch-action:none!important}" +
+    "html body .sr-dragging{transition:none!important;opacity:.92!important;user-select:none!important}" +
     "@media (max-width:520px){html body #sr-launch,html body #sr-player{left:8px!important;bottom:8px!important}html body #sr-player{width:calc(100vw - 16px)!important}}" +
     "@media print{.sr-btn,#sr-launch,#sr-player{display:none!important}.sr-reading{outline:0}.sr-now{background:none;box-shadow:none}}";
 
@@ -381,7 +405,12 @@
   launch.id = "sr-launch";
   launch.type = "button";
   launch.addEventListener("click", function () {
-    play(startIndex());
+    if (dragMoved) return; // that press was a drag, not a click
+    if (state.active) {
+      playerHidden = false; // the round button stands in for a hidden player
+      paint();
+      bPlay.focus();
+    } else play(startIndex());
   });
 
   var panel = el("div", "sr-player sr-ui");
@@ -427,7 +456,21 @@
   voiceLabel.appendChild(voiceText);
   voiceLabel.appendChild(voiceSel);
   voiceRow.appendChild(voiceLabel);
-  panel.appendChild(status);
+  // Top row: drag handle, status, and (collapsed) play/pause, then collapse and hide.
+  var top = el("div", "sr-top");
+  var bGrip = el("button", "sr-grip", ICON_GRIP);
+  var bMini = el("button", "sr-mini");
+  var bFold = el("button", "sr-fold");
+  var bHide = el("button", "sr-hide", ICON_HIDE);
+  [bGrip, bMini, bFold, bHide].forEach(function (b) {
+    b.type = "button";
+  });
+  top.appendChild(bGrip);
+  top.appendChild(bMini);
+  top.appendChild(status);
+  top.appendChild(bFold);
+  top.appendChild(bHide);
+  panel.appendChild(top);
   panel.appendChild(row);
   panel.appendChild(voiceRow);
   panel.appendChild(note);
@@ -441,7 +484,124 @@
     move(1);
   });
   bPlay.addEventListener("click", togglePause);
+  bMini.addEventListener("click", togglePause);
   bStop.addEventListener("click", stop);
+  bFold.addEventListener("click", function () {
+    collapsed = !collapsed;
+    LS.set("shoug-reader-collapsed", collapsed ? "1" : "0");
+    paint();
+    bFold.focus();
+  });
+  bHide.addEventListener("click", function () {
+    playerHidden = true;
+    paint();
+    launch.focus();
+  });
+
+  /* ------------------------------------------------------------ position */
+  // One spot shared by the player and the Listen button, kept between visits.
+  var collapsed = LS.get("shoug-reader-collapsed") === "1";
+  var playerHidden = false;
+  var pos = null;
+  var dragMoved = false;
+  try {
+    pos = JSON.parse(LS.get("shoug-reader-pos") || "null");
+  } catch (e) {}
+
+  function visibleBox() {
+    return panel.hidden ? launch : panel;
+  }
+
+  function place() {
+    [launch, panel].forEach(function (node) {
+      if (!pos) {
+        ["left", "top", "bottom", "right"].forEach(function (p) {
+          node.style.removeProperty(p);
+        });
+        return;
+      }
+      node.style.setProperty("left", pos.x + "px", "important");
+      node.style.setProperty("top", pos.y + "px", "important");
+      node.style.setProperty("bottom", "auto", "important");
+      node.style.setProperty("right", "auto", "important");
+    });
+    if (pos) clampInto(visibleBox());
+  }
+
+  // Keep the box fully on screen (the window shrank, or the player is bigger than the button).
+  function clampInto(node) {
+    if (!pos) return;
+    var w = node.offsetWidth;
+    var h = node.offsetHeight;
+    var x = Math.max(4, Math.min(pos.x, window.innerWidth - w - 4));
+    var y = Math.max(4, Math.min(pos.y, window.innerHeight - h - 4));
+    if (x !== pos.x || y !== pos.y) {
+      node.style.setProperty("left", x + "px", "important");
+      node.style.setProperty("top", y + "px", "important");
+    }
+  }
+
+  function savePos() {
+    LS.set("shoug-reader-pos", JSON.stringify(pos));
+  }
+
+  function draggable(handle, box) {
+    var start = null;
+    handle.addEventListener("pointerdown", function (ev) {
+      if (ev.button !== 0) return;
+      var r = box.getBoundingClientRect();
+      start = { px: ev.clientX, py: ev.clientY, x: r.left, y: r.top };
+      dragMoved = false;
+      try {
+        handle.setPointerCapture(ev.pointerId);
+      } catch (e) {}
+    });
+    handle.addEventListener("pointermove", function (ev) {
+      if (!start) return;
+      var dx = ev.clientX - start.px;
+      var dy = ev.clientY - start.py;
+      if (!dragMoved && Math.abs(dx) + Math.abs(dy) < 5) return;
+      dragMoved = true;
+      box.classList.add("sr-dragging");
+      pos = {
+        x: Math.round(Math.max(4, Math.min(start.x + dx, window.innerWidth - box.offsetWidth - 4))),
+        y: Math.round(Math.max(4, Math.min(start.y + dy, window.innerHeight - box.offsetHeight - 4))),
+      };
+      place();
+      ev.preventDefault();
+    });
+    function end() {
+      if (!start) return;
+      start = null;
+      box.classList.remove("sr-dragging");
+      if (dragMoved) savePos();
+      // The click that follows a drag must not count as a press.
+      setTimeout(function () {
+        dragMoved = false;
+      }, 0);
+    }
+    handle.addEventListener("pointerup", end);
+    handle.addEventListener("pointercancel", end);
+  }
+  draggable(bGrip, panel);
+  draggable(launch, launch);
+
+  // Arrow keys on the handle move the player too (Shift for bigger steps).
+  bGrip.addEventListener("keydown", function (ev) {
+    var step = ev.shiftKey ? 40 : 10;
+    var d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+    if (!d) return;
+    var r = panel.getBoundingClientRect();
+    pos = { x: Math.round(r.left + d[0]), y: Math.round(r.top + d[1]) };
+    place();
+    var now = panel.getBoundingClientRect();
+    pos = { x: Math.round(now.left), y: Math.round(now.top) };
+    savePos();
+    ev.preventDefault();
+  });
+  window.addEventListener("resize", function () {
+    if (pos) clampInto(visibleBox());
+  });
   speed.addEventListener("change", function () {
     rate = parseFloat(speed.value) || 1;
     LS.set("shoug-reader-rate", String(rate));
@@ -483,8 +643,21 @@
     var dir = isArabic() ? "rtl" : "ltr";
     panel.dir = dir;
     launch.dir = dir;
-    launch.innerHTML = ICON_SPEAK + "<span>" + t("start") + "</span>";
-    launch.setAttribute("aria-label", t("start"));
+    var bubble = state.active && playerHidden;
+    launch.classList.toggle("sr-bubble", bubble);
+    launch.innerHTML = bubble ? ICON_SPEAK : ICON_SPEAK + "<span>" + t("start") + "</span>";
+    launch.setAttribute("aria-label", bubble ? t("show") : t("start"));
+    launch.title = bubble ? t("show") : "";
+    panel.classList.toggle("sr-collapsed", collapsed);
+    bGrip.setAttribute("aria-label", t("move"));
+    bGrip.title = t("move");
+    bFold.innerHTML = collapsed ? ICON_UP : ICON_DOWN;
+    bFold.setAttribute("aria-label", collapsed ? t("expand") : t("collapse"));
+    bFold.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    bFold.title = collapsed ? t("expand") : t("collapse");
+    bHide.setAttribute("aria-label", t("hide"));
+    bHide.title = t("hide");
+    bMini.hidden = !collapsed;
     panel.setAttribute("aria-label", t("listen"));
     bPrev.setAttribute("aria-label", t("prev"));
     bPrev.title = t("prev");
@@ -496,6 +669,9 @@
     bPlay.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
     bPlay.setAttribute("aria-label", playing ? t("pause") : t("resume"));
     bPlay.title = playing ? t("pause") : t("resume");
+    bMini.innerHTML = bPlay.innerHTML;
+    bMini.setAttribute("aria-label", bPlay.getAttribute("aria-label"));
+    bMini.title = bPlay.title;
     speedText.textContent = t("speed");
     voiceText.textContent = t("voice");
     segments.forEach(function (seg, i) {
@@ -509,8 +685,9 @@
       statusState.textContent = (state.paused ? t("paused") : t("reading")) + " ·";
       statusLabel.textContent = segments[state.seg] ? segments[state.seg].label : "";
     }
-    launch.hidden = state.active;
-    panel.hidden = !state.active;
+    launch.hidden = state.active && !playerHidden;
+    panel.hidden = !state.active || playerHidden;
+    place();
   }
 
   /* ---------------------------------------------------------------- engine */
@@ -676,6 +853,7 @@
     state.active = false;
     state.paused = false;
     state.seg = -1;
+    playerHidden = false;
     clearMarks();
     note.hidden = true;
     paint();

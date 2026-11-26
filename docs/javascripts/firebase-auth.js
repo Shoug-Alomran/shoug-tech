@@ -1816,6 +1816,11 @@
           link.href = "/admin/transfers/";
           link.textContent = "Manage course payments";
           el.querySelector("#shoug-signout").before(link);
+          var stats = document.createElement("a");
+          stats.className = "shoug-drop-link";
+          stats.href = "/admin/analytics/";
+          stats.textContent = "Site analytics";
+          el.querySelector("#shoug-signout").before(stats);
         })
         .catch(function () {});
 
@@ -1980,30 +1985,23 @@
       };
       if (next)
         data.completedAt = firebase.firestore.FieldValue.serverTimestamp();
-      pageDoc(user).set(data, { merge: true });
+      var saved = pageDoc(user).set(data, { merge: true });
 
-      // Sync totalCompleted on the user doc
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(user.uid)
-        .set(
-          {
-            totalCompleted: firebase.firestore.FieldValue.increment(
-              next ? 1 : -1,
-            ),
-          },
-          { merge: true },
-        );
-
-      // Sync coursesActive: recount distinct completed courses from userProgress
-      firebase
-        .firestore()
-        .collection("userProgress")
-        .doc(user.uid)
-        .collection("pages")
-        .where("completed", "==", true)
-        .get()
+      // Recount totalCompleted and coursesActive from userProgress after the
+      // write. Both are on the public profile (the community leaderboard ranks
+      // by totalCompleted). An increment drifted whenever the button showed a
+      // stale state (a second tab, another device, the cache before the read
+      // resolved); a recount corrects any earlier drift on the next toggle.
+      saved
+        .then(function () {
+          return firebase
+            .firestore()
+            .collection("userProgress")
+            .doc(user.uid)
+            .collection("pages")
+            .where("completed", "==", true)
+            .get();
+        })
         .then(function (snap) {
           var seen = {};
           snap.forEach(function (doc) {
@@ -2014,12 +2012,20 @@
             if (parts.length >= 3)
               seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
           });
-          firebase
+          return firebase
             .firestore()
             .collection("users")
             .doc(user.uid)
-            .update({ coursesActive: Object.keys(seen).length })
-            .catch(function () {});
+            .set(
+              {
+                totalCompleted: snap.size,
+                coursesActive: Object.keys(seen).length,
+              },
+              { merge: true },
+            );
+        })
+        .catch(function (error) {
+          console.error("Progress count sync failed", error);
         });
     });
   }
