@@ -308,5 +308,60 @@ service cloud.firestore {
       allow read, delete: if transferAdmin();
       allow update: if false;
     }
+
+    // ── Paid course instructor panel (/admin/course/) ─────────────────────
+    // A buyer is a verified account whose Ethics transfer was approved.
+    function paidBuyer(uid) {
+      return transferBuyer(uid)
+        && get(/databases/$(database)/documents/courseTransfers/$(uid)).data.status == 'approved';
+    }
+    function isPaidBuyer() {
+      return signedIn() && paidBuyer(request.auth.uid);
+    }
+
+    // One progress record per paid student (docs/javascripts/course-tracking.js):
+    // lesson views, watch time, likes and quiz results. The privacy notice says
+    // the course administrator can see it. Only the student writes it.
+    match /courseProgress/{course}/students/{uid} {
+      allow read: if owns(uid) || transferAdmin();
+      allow create, update: if course == 'ethics' && paidBuyer(uid)
+        && request.resource.data.keys().hasOnly(['uid', 'lessons', 'quizzes', 'firstSeenAt', 'lastSeenAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.lessons is map && request.resource.data.lessons.size() <= 600
+        && request.resource.data.quizzes is map && request.resource.data.quizzes.size() <= 200;
+      allow delete: if owns(uid) || transferAdmin();
+    }
+
+    // Course settings the panel edits (terms). Readable by buyers and admin.
+    match /courseConfig/{course} {
+      allow read: if isPaidBuyer() || transferAdmin();
+      allow write: if transferAdmin();
+    }
+
+    // Calendar: events (live sessions, office hours, academic dates), bookable
+    // slots, and one booking per slot. Buyers see events and slots; a buyer may
+    // book a free slot as themselves and cancel their own booking.
+    match /courseEvents/{eventId} {
+      allow read: if isPaidBuyer() || transferAdmin();
+      allow write: if transferAdmin();
+    }
+    match /courseSlots/{slotId} {
+      allow read: if isPaidBuyer() || transferAdmin();
+      allow write: if transferAdmin();
+    }
+    match /courseBookings/{slotId} {
+      allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || transferAdmin());
+      allow list: if transferAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create: if isPaidBuyer()
+        && exists(/databases/$(database)/documents/courseSlots/$(slotId))
+        && request.resource.data.keys().hasOnly(['slotId', 'uid', 'name', 'note', 'createdAt'])
+        && request.resource.data.slotId == slotId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string && request.resource.data.name.size() <= 120
+        && request.resource.data.note is string && request.resource.data.note.size() <= 500
+        && request.resource.data.createdAt == request.time;
+      allow delete: if transferAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update: if false;
+    }
   }
 }

@@ -207,9 +207,19 @@
       pending.delete(card);
       reported.add(card);
       document.dispatchEvent(
-        new CustomEvent("shoug:quiz-answer", { detail: { ok: state.ok } }),
+        new CustomEvent("shoug:quiz-answer", {
+          detail: { ok: state.ok, text: questionText(card) },
+        }),
       );
     }, 150);
+  }
+  // The question's own wording (not its options), for "most missed" reports.
+  var PROMPT =
+    ".prompt, .q-prompt, .question-text, .q-text, .q-title, .stem, legend, h2, h3, h4, p";
+  function questionText(card) {
+    var node = card.querySelector(PROMPT);
+    var text = (node && !node.closest(OPTION) ? node : card).textContent || "";
+    return text.replace(/\s+/g, " ").trim().slice(0, 160);
   }
   function answered(el, ok) {
     var card = el.closest(".cqm-card");

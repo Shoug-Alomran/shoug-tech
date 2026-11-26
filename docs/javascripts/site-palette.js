@@ -838,3 +838,15 @@
     });
   }
 })();
+
+// Paid course tools (docs/javascripts/course-tracking.js). The paid pages are
+// served by the course-access Worker, but every one of them loads this file
+// from the Pages site, so the tracker can change without redeploying the course.
+(function () {
+  if (location.pathname.indexOf("/academics/other-courses/ethcs303") !== 0) return;
+  if (document.querySelector('script[src*="course-tracking.js"]')) return;
+  var s = document.createElement("script");
+  s.src = "/javascripts/course-tracking.js?v=1";
+  s.defer = true;
+  document.head.appendChild(s);
+})();
