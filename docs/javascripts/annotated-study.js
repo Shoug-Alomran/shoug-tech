@@ -928,7 +928,7 @@
       text: "Quiz",
       on: { click: openQuiz },
     });
-    if (controls) {
+    if (controls && qs.length) {
       var anchor = controls.querySelector("a.btn");
       controls.insertBefore(quizBtn, anchor);
       controls.insertBefore(wrapS, anchor);
@@ -1177,6 +1177,11 @@
     var FINAL_KEY = "shoug-study-final-only-" + COURSE;
     var finalOnly = lsGet(FINAL_KEY) !== "0";
     var bank = null;
+    function hasScope() {
+      return bank.decks.some(function (d) {
+        return d.final === false;
+      });
+    }
 
     fetch(src)
       .then(function (r) {
@@ -1197,7 +1202,7 @@
 
     function decks() {
       return bank.decks.filter(function (d) {
-        return !finalOnly || d.final;
+        return !finalOnly || !hasScope() || d.final !== false;
       });
     }
     function itemsFor(d) {
@@ -1249,6 +1254,9 @@
         tot.total += s.total;
       });
 
+      var offDecks = bank.decks.filter(function (d) {
+        return d.final === false;
+      });
       var filter = el("label", { class: "rv-filter" }, [
         el("input", {
           type: "checkbox",
@@ -1261,13 +1269,15 @@
             },
           },
         }),
-        " Final chapters only (hides Ch 6.2 Scheduling and Ch 7 Quality)",
+        " Final chapters only (hides " +
+          offDecks.map(function (d) { return d.chapter + " " + d.title; }).join(" and ") +
+          ")",
       ]);
-      root.appendChild(filter);
+      if (offDecks.length) root.appendChild(filter);
 
       root.appendChild(
         el("section", { class: "rv-card rv-summary" }, [
-          el("h2", { text: finalOnly ? "Your progress on the final chapters" : "Your progress on every chapter" }),
+          el("h2", { text: finalOnly && hasScope() ? "Your progress on the final chapters" : "Your progress on every chapter" }),
           el("div", { class: "ss-meter" }, [
             el("i", { class: "g", style: "width:" + (100 * tot.right) / (tot.total || 1) + "%" }),
             el("i", { class: "b", style: "width:" + (100 * tot.missed) / (tot.total || 1) + "%" }),
@@ -1293,7 +1303,7 @@
             }),
             el("button", {
               type: "button",
-              text: "Random mix from " + (finalOnly ? "the final chapters" : "every chapter"),
+              text: "Random mix from " + (finalOnly && hasScope() ? "the final chapters" : "every chapter"),
               on: { click: function () { runQuiz(everything, "Random mix", render); } },
             }),
           ]),
@@ -1310,7 +1320,9 @@
               el("div", null, [
                 el("small", { text: d.chapter }),
                 el("strong", { text: d.title }),
-                el("span", { class: "ss-final " + (d.final ? "on" : "off"), text: d.final ? "On the final" : "Not on the final" }),
+                d.final === null || d.final === undefined
+                  ? null
+                  : el("span", { class: "ss-final " + (d.final ? "on" : "off"), text: d.final ? "On the final" : "Not on the final" }),
               ]),
               el("span", { class: "rv-score", text: s.right + "/" + s.total }),
             ]),
@@ -1330,11 +1342,12 @@
       root.appendChild(el("h2", { class: "rv-h", text: "By chapter" }));
       root.appendChild(table);
 
+      if (!(bank.drills || []).length) return;
       root.appendChild(el("h2", { class: "rv-h", id: "drills", text: "Calculation drills" }));
       root.appendChild(el("p", { class: "ss-muted", text: "New numbers every time. Type the answer (or the calculation, like 100/10), check it, then compare with the step-by-step working." }));
       var dr = el("div", { class: "rv-drills" });
       (bank.drills || []).forEach(function (x) {
-        if (finalOnly && !x.final) return;
+        if (finalOnly && hasScope() && x.final === false) return;
         var d = makeDrill(x.type, x.label);
         if (d) dr.appendChild(d);
       });
@@ -1357,6 +1370,7 @@
         ".ss-hub-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px}" +
         ".ss-hub-bar a{font-weight:700}" +
         ".ss-hub-bar label{display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-size:14px}" +
+        ".ss-hub-bar label[hidden]{display:none}" +
         ".deck-preview{position:relative}" +
         ".ss-tile{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:12px;font-weight:700}" +
         ".ss-tile span{padding:1px 7px;border-radius:999px;border:1px solid currentColor}" +
@@ -1365,9 +1379,7 @@
     });
     document.head.appendChild(style);
     var finalOnly = lsGet(FINAL_KEY) === "1";
-    var bar = el("div", { class: "ss-hub-bar" }, [
-      el("a", { class: "btn btn-primary", href: reviewUrl, text: "[ REVIEW MY MISTAKES & DRILLS -> ]" }),
-      el("label", null, [
+    var toggle = el("label", { hidden: true }, [
         el("input", {
           type: "checkbox",
           checked: finalOnly ? true : null,
@@ -1380,22 +1392,27 @@
           },
         }),
         "Final chapters only",
-      ]),
+      ]);
+    var bar = el("div", { class: "ss-hub-bar" }, [
+      el("a", { class: "btn btn-primary", href: reviewUrl, text: "[ REVIEW & PRACTICE -> ]" }),
+      toggle,
     ]);
     var h2 = gallery.querySelector("h2");
     gallery.insertBefore(bar, h2 ? h2.nextSibling : gallery.firstChild);
-    gallery.classList.toggle("ss-hide-off", finalOnly);
     function paint() {
       if (!summary) return;
+      var scoped = summary.decks.some(function (x) { return x.final === false; });
+      toggle.hidden = !scoped;
+      gallery.classList.toggle("ss-hide-off", scoped && finalOnly);
       links.forEach(function (a) {
         var key = a.getAttribute("href").replace(/\/$/, "").split("/").pop();
         var d = summary.decks.filter(function (x) { return x.key === key; })[0];
         if (!d) return;
-        a.classList.toggle("ss-off", !d.final);
+        a.classList.toggle("ss-off", d.final === false);
         var box = a.querySelector(".ss-tile") || a.appendChild(el("div", { class: "ss-tile" }));
         var s = deckStats(d.key, null);
         box.innerHTML = "";
-        box.appendChild(el("span", { class: d.final ? "on" : "off", text: d.final ? "On final" : "Not on final" }));
+        if (scoped) box.appendChild(el("span", { class: d.final ? "on" : "off", text: d.final ? "On final" : "Not on final" }));
         if (s.answered)
           box.appendChild(el("span", { class: "sc", text: s.right + "/" + d.count + (s.missed ? " · " + s.missed + " missed" : "") }));
       });
