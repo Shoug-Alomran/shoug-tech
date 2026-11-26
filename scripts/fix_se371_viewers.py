@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import html
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,7 +91,35 @@ def viewer_main(i: int, slug: str, filename: str, title: str) -> str:
 </main>'''
 
 
+def check() -> None:
+    """Read-only guard for CI: fail if a chapter route stopped being a viewer.
+
+    The committed routes are already repaired, so the deploy only needs to
+    confirm they still embed their own chapter (not a clone of the listing or
+    the hub). Run without --check to regenerate them if this ever fails.
+    """
+    problems = []
+    for slug, filename, _ in CHAPTERS:
+        index = SLIDES / slug / "index.html"
+        if not (SLIDES / slug / filename).is_file():
+            problems.append(f"{slug}: missing authored breakdown {filename}")
+            continue
+        text = index.read_text(encoding="utf-8") if index.is_file() else ""
+        if not re.search(rf'<iframe\b[^>]*\bsrc="\./{re.escape(filename)}"', text):
+            problems.append(f"{slug}: index.html does not embed ./{filename}")
+        if HUB_ABS in text:
+            problems.append(f"{slug}: index.html still carries the hub's URL metadata")
+    if problems:
+        print("SE371 chapter routes are broken -- run python3 scripts/fix_se371_viewers.py:")
+        print("\n".join(f"  - {p}" for p in problems))
+        raise SystemExit(1)
+    print(f"SE371 viewers ok: {len(CHAPTERS)} chapter routes embed their own breakdown")
+
+
 def main() -> None:
+    if "--check" in sys.argv[1:]:
+        check()
+        return
     template = HUB.read_text(encoding="utf-8")
     if not MAIN_RE.search(template):
         raise SystemExit("SE371 Slides hub no longer contains #main-content; refusing to generate broken viewers")

@@ -44,7 +44,11 @@
           Object.keys(attrs.on).forEach(function (e) {
             n.addEventListener(e, attrs.on[e]);
           });
-        else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false)
+        else if (
+          attrs[k] !== null &&
+          attrs[k] !== undefined &&
+          attrs[k] !== false
+        )
           n.setAttribute(k, attrs[k] === true ? "" : attrs[k]);
       });
     (kids || []).forEach(function (c) {
@@ -428,19 +432,58 @@
           P = (kloc * 1000) / E;
         return {
           given:
-            "A <b>" + mode + "</b> project of <b>" + kloc + " KLOC</b>. Constants: a = " +
-            k[0] + ", b = " + k[1] + ", c = 2.5, d = " + k[2] + ".",
+            "A <b>" +
+            mode +
+            "</b> project of <b>" +
+            kloc +
+            " KLOC</b>. Constants: a = " +
+            k[0] +
+            ", b = " +
+            k[1] +
+            ", c = 2.5, d = " +
+            k[2] +
+            ".",
           fields: [
             { label: "Effort E (person-months)", answer: E, rel: 0.03 },
             { label: "Development time TDEV (months)", answer: T, rel: 0.03 },
             { label: "Average staff SS (people)", answer: S, rel: 0.05 },
-            { label: "Productivity (LOC per person-month)", answer: P, rel: 0.05 },
+            {
+              label: "Productivity (LOC per person-month)",
+              answer: P,
+              rel: 0.05,
+            },
           ],
           steps: [
-            "E = a·KLOC<sup>b</sup> = " + k[0] + " × " + kloc + "<sup>" + k[1] + "</sup> = <b>" + fmt(E, 1) + " person-months</b>",
-            "TDEV = c·E<sup>d</sup> = 2.5 × " + fmt(E, 1) + "<sup>" + k[2] + "</sup> = <b>" + fmt(T, 1) + " months</b>",
-            "SS = E ÷ TDEV = " + fmt(E, 1) + " / " + fmt(T, 1) + " = <b>" + fmt(S, 1) + " people</b>",
-            "Productivity = LOC ÷ E = " + kloc * 1000 + " / " + fmt(E, 1) + " = <b>" + fmt(P, 0) + " LOC per person-month</b>",
+            "E = a·KLOC<sup>b</sup> = " +
+              k[0] +
+              " × " +
+              kloc +
+              "<sup>" +
+              k[1] +
+              "</sup> = <b>" +
+              fmt(E, 1) +
+              " person-months</b>",
+            "TDEV = c·E<sup>d</sup> = 2.5 × " +
+              fmt(E, 1) +
+              "<sup>" +
+              k[2] +
+              "</sup> = <b>" +
+              fmt(T, 1) +
+              " months</b>",
+            "SS = E ÷ TDEV = " +
+              fmt(E, 1) +
+              " / " +
+              fmt(T, 1) +
+              " = <b>" +
+              fmt(S, 1) +
+              " people</b>",
+            "Productivity = LOC ÷ E = " +
+              kloc * 1000 +
+              " / " +
+              fmt(E, 1) +
+              " = <b>" +
+              fmt(P, 0) +
+              " LOC per person-month</b>",
           ],
           tip: "Write each formula with your numbers in it before the result: that is where the method marks are.",
         };
@@ -456,14 +499,36 @@
           sd = (p - o) / 6;
         return {
           given:
-            "Optimistic O = <b>" + o + "</b>, most likely M = <b>" + m + "</b>, pessimistic P = <b>" + p + "</b> (days).",
+            "Optimistic O = <b>" +
+            o +
+            "</b>, most likely M = <b>" +
+            m +
+            "</b>, pessimistic P = <b>" +
+            p +
+            "</b> (days).",
           fields: [
             { label: "Expected time TE (days)", answer: te, abs: 0.02 },
             { label: "Standard deviation σ", answer: sd, abs: 0.02 },
           ],
           steps: [
-            "TE = (O + 4M + P) ÷ 6 = (" + o + " + 4×" + m + " + " + p + ") / 6 = " + (o + 4 * m + p) + " / 6 = <b>" + fmt(te) + "</b>",
-            "σ = (P − O) ÷ 6 = (" + p + " − " + o + ") / 6 = <b>" + fmt(sd) + "</b>",
+            "TE = (O + 4M + P) ÷ 6 = (" +
+              o +
+              " + 4×" +
+              m +
+              " + " +
+              p +
+              ") / 6 = " +
+              (o + 4 * m + p) +
+              " / 6 = <b>" +
+              fmt(te) +
+              "</b>",
+            "σ = (P − O) ÷ 6 = (" +
+              p +
+              " − " +
+              o +
+              ") / 6 = <b>" +
+              fmt(sd) +
+              "</b>",
           ],
           tip: "Only M is multiplied by 4, and you divide by 6. A bigger σ means a riskier task.",
         };
@@ -472,23 +537,42 @@
     risk: {
       name: "Risk exposure drill",
       make: function () {
-        var a = { p: pick([10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80]), i: rnd(2, 20) },
+        var a = {
+            p: pick([10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80]),
+            i: rnd(2, 20),
+          },
           b = { p: pick([10, 20, 25, 35, 40, 50, 65, 80, 90]), i: rnd(1, 16) };
         var ra = (a.p / 100) * a.i,
           rb = (b.p / 100) * b.i;
         return {
           given:
-            "Risk A: probability <b>" + a.p + "%</b>, impact <b>" + a.i + " weeks</b>.<br>Risk B: probability <b>" + b.p + "%</b>, impact <b>" + b.i + " weeks</b>.",
+            "Risk A: probability <b>" +
+            a.p +
+            "%</b>, impact <b>" +
+            a.i +
+            " weeks</b>.<br>Risk B: probability <b>" +
+            b.p +
+            "%</b>, impact <b>" +
+            b.i +
+            " weeks</b>.",
           fields: [
             { label: "Exposure of A (weeks)", answer: ra, abs: 0.01 },
             { label: "Exposure of B (weeks)", answer: rb, abs: 0.01 },
           ],
           steps: [
-            "RE = P × I. A: " + a.p / 100 + " × " + a.i + " = <b>" + fmt(ra) + " weeks</b>",
+            "RE = P × I. A: " +
+              a.p / 100 +
+              " × " +
+              a.i +
+              " = <b>" +
+              fmt(ra) +
+              " weeks</b>",
             "B: " + b.p / 100 + " × " + b.i + " = <b>" + fmt(rb) + " weeks</b>",
             ra === rb
               ? "Equal exposure: rank them by urgency."
-              : "Handle <b>" + (ra > rb ? "A" : "B") + "</b> first: it has the higher exposure.",
+              : "Handle <b>" +
+                (ra > rb ? "A" : "B") +
+                "</b> first: it has the higher exposure.",
           ],
           tip: "Convert the percentage to a decimal first (25% = 0.25). Exposure is in the same unit as the impact.",
         };
@@ -502,7 +586,12 @@
           a = (n * (n - 1)) / 2,
           b = ((n + k) * (n + k - 1)) / 2;
         return {
-          given: "A team of <b>" + n + "</b> people. The manager adds <b>" + k + "</b> more.",
+          given:
+            "A team of <b>" +
+            n +
+            "</b> people. The manager adds <b>" +
+            k +
+            "</b> more.",
           fields: [
             { label: "Channels now", answer: a, abs: 0 },
             { label: "Channels after adding", answer: b, abs: 0 },
@@ -511,7 +600,12 @@
           steps: [
             "n(n−1)/2 = " + n + "×" + (n - 1) + "/2 = <b>" + a + "</b>",
             "(" + (n + k) + ")×" + (n + k - 1) + "/2 = <b>" + b + "</b>",
-            b + " − " + a + " = <b>" + (b - a) + "</b> new paths: why adding people to a late project slows it down.",
+            b +
+              " − " +
+              a +
+              " = <b>" +
+              (b - a) +
+              "</b> new paths: why adding people to a late project slows it down.",
           ],
           tip: "People grow linearly; channels grow roughly with n².",
         };
@@ -521,12 +615,19 @@
       name: "Earned value drill",
       make: function () {
         var pv = rnd(8, 40) * 10,
-          ev = Math.round(pv * (0.6 + Math.random() * 0.6) / 10) * 10,
-          ac = Math.round(ev * (0.7 + Math.random() * 0.6) / 10) * 10;
+          ev = Math.round((pv * (0.6 + Math.random() * 0.6)) / 10) * 10,
+          ac = Math.round((ev * (0.7 + Math.random() * 0.6)) / 10) * 10;
         var cpi = ev / ac,
           spi = ev / pv;
         return {
-          given: "PV = <b>" + pv + "</b>, EV = <b>" + ev + "</b>, AC = <b>" + ac + "</b> (person-hours).",
+          given:
+            "PV = <b>" +
+            pv +
+            "</b>, EV = <b>" +
+            ev +
+            "</b>, AC = <b>" +
+            ac +
+            "</b> (person-hours).",
           fields: [
             { label: "CPI", answer: cpi, abs: 0.011 },
             { label: "SPI", answer: spi, abs: 0.011 },
@@ -534,9 +635,35 @@
             { label: "Schedule variance SV", answer: ev - pv, abs: 0 },
           ],
           steps: [
-            "CPI = EV ÷ AC = " + ev + " / " + ac + " = <b>" + fmt(cpi) + "</b> → " + (cpi < 1 ? "over budget" : cpi > 1 ? "under budget" : "on budget"),
-            "SPI = EV ÷ PV = " + ev + " / " + pv + " = <b>" + fmt(spi) + "</b> → " + (spi < 1 ? "behind schedule" : spi > 1 ? "ahead of schedule" : "on schedule"),
-            "CV = EV − AC = <b>" + (ev - ac) + "</b>, SV = EV − PV = <b>" + (ev - pv) + "</b> (negative = bad)",
+            "CPI = EV ÷ AC = " +
+              ev +
+              " / " +
+              ac +
+              " = <b>" +
+              fmt(cpi) +
+              "</b> → " +
+              (cpi < 1
+                ? "over budget"
+                : cpi > 1
+                  ? "under budget"
+                  : "on budget"),
+            "SPI = EV ÷ PV = " +
+              ev +
+              " / " +
+              pv +
+              " = <b>" +
+              fmt(spi) +
+              "</b> → " +
+              (spi < 1
+                ? "behind schedule"
+                : spi > 1
+                  ? "ahead of schedule"
+                  : "on schedule"),
+            "CV = EV − AC = <b>" +
+              (ev - ac) +
+              "</b>, SV = EV − PV = <b>" +
+              (ev - pv) +
+              "</b> (negative = bad)",
           ],
           tip: "EV is always on top. Below 1 (or negative variance) is bad.",
         };
@@ -549,10 +676,27 @@
           d = rnd(2, 60),
           c = s / (s + d);
         return {
-          given: "A web app has <b>" + s + "</b> static pages (Nsp) and <b>" + d + "</b> dynamic pages (Ndp).",
+          given:
+            "A web app has <b>" +
+            s +
+            "</b> static pages (Nsp) and <b>" +
+            d +
+            "</b> dynamic pages (Ndp).",
           fields: [{ label: "C = Nsp ÷ (Ndp + Nsp)", answer: c, abs: 0.011 }],
           steps: [
-            "C = " + s + " / (" + d + " + " + s + ") = " + s + " / " + (s + d) + " = <b>" + fmt(c) + "</b>",
+            "C = " +
+              s +
+              " / (" +
+              d +
+              " + " +
+              s +
+              ") = " +
+              s +
+              " / " +
+              (s + d) +
+              " = <b>" +
+              fmt(c) +
+              "</b>",
             c < 0.5
               ? "Closer to 0: mostly dynamic pages, so the app is highly customized."
               : "Closer to 1: mostly static pages, so there is little customization.",
@@ -571,14 +715,38 @@
           prod = pick([75, 80]);
         return {
           given:
-            "A task needs <b>" + effort + " person-days</b> of effort and <b>" + people + "</b> people work on it.<br>Another task needs <b>" + labor + " labor hours</b>, and people are productive <b>" + prod + "%</b> of the day.",
+            "A task needs <b>" +
+            effort +
+            " person-days</b> of effort and <b>" +
+            people +
+            "</b> people work on it.<br>Another task needs <b>" +
+            labor +
+            " labor hours</b>, and people are productive <b>" +
+            prod +
+            "%</b> of the day.",
           fields: [
             { label: "Duration (working days)", answer: days, abs: 0.01 },
-            { label: "Clock time (business hours)", answer: labor / (prod / 100), abs: 0.5 },
+            {
+              label: "Clock time (business hours)",
+              answer: labor / (prod / 100),
+              abs: 0.5,
+            },
           ],
           steps: [
-            "Duration = Effort ÷ People = " + effort + " / " + people + " = <b>" + days + " days</b>",
-            "Clock time = Labor ÷ productivity = " + labor + " / " + prod / 100 + " = <b>" + fmt(labor / (prod / 100), 1) + " hours</b>",
+            "Duration = Effort ÷ People = " +
+              effort +
+              " / " +
+              people +
+              " = <b>" +
+              days +
+              " days</b>",
+            "Clock time = Labor ÷ productivity = " +
+              labor +
+              " / " +
+              prod / 100 +
+              " = <b>" +
+              fmt(labor / (prod / 100), 1) +
+              " hours</b>",
           ],
           tip: "Effort is for cost; duration and clock time are for the schedule.",
         };
@@ -611,12 +779,21 @@
     function draw() {
       var d = def.make();
       box.innerHTML = "";
-      box.appendChild(el("h4", { text: "🧮 " + def.name + (label ? " · " + label : "") }));
+      box.appendChild(
+        el("h4", { text: "🧮 " + def.name + (label ? " · " + label : "") }),
+      );
       box.appendChild(el("p", { class: "ss-given", html: d.given }));
       var inputs = d.fields.map(function (f) {
-        var input = el("input", { type: "text", inputmode: "decimal", autocomplete: "off", "aria-label": f.label });
+        var input = el("input", {
+          type: "text",
+          inputmode: "decimal",
+          autocomplete: "off",
+          "aria-label": f.label,
+        });
         var mark = el("span", { class: "ss-mark", "aria-live": "polite" });
-        box.appendChild(el("label", null, [el("span", { text: f.label }), input, mark]));
+        box.appendChild(
+          el("label", null, [el("span", { text: f.label }), input, mark]),
+        );
         input.addEventListener("keydown", function (e) {
           if (e.key === "Enter") check();
         });
@@ -633,23 +810,47 @@
             a = x.f.answer;
           var tol = x.f.rel ? Math.abs(a) * x.f.rel : x.f.abs || 0;
           var ok = !isNaN(v) && Math.abs(v - a) <= Math.max(tol, 1e-9);
-          if (!ok && !isNaN(v) && x.f.rel === undefined && x.f.abs === 0) ok = Math.round(v) === Math.round(a);
+          if (!ok && !isNaN(v) && x.f.rel === undefined && x.f.abs === 0)
+            ok = Math.round(v) === Math.round(a);
           all = all && ok;
           x.input.className = isNaN(v) ? "" : ok ? "good" : "bad";
           x.mark.className = "ss-mark " + (isNaN(v) ? "" : ok ? "good" : "bad");
-          x.mark.textContent = isNaN(v) ? (x.input.value ? "Type a number" : "") : ok ? "✓" : "✗ try again";
+          x.mark.textContent = isNaN(v)
+            ? x.input.value
+              ? "Type a number"
+              : ""
+            : ok
+              ? "✓"
+              : "✗ try again";
         });
         if (all) steps.hidden = false;
       }
       box.appendChild(
         el("div", { class: "ss-row" }, [
           el("button", { type: "button", text: "Check", on: { click: check } }),
-          el("button", { type: "button", text: "Show the working", on: { click: function () { steps.hidden = false; } } }),
-          el("button", { type: "button", text: "New numbers", on: { click: draw } }),
+          el("button", {
+            type: "button",
+            text: "Show the working",
+            on: {
+              click: function () {
+                steps.hidden = false;
+              },
+            },
+          }),
+          el("button", {
+            type: "button",
+            text: "New numbers",
+            on: { click: draw },
+          }),
         ]),
       );
       box.appendChild(steps);
-      box.appendChild(el("p", { class: "ss-tip", text: d.tip + " You can type the calculation itself, like 100/10." }));
+      box.appendChild(
+        el("p", {
+          class: "ss-tip",
+          text: d.tip + " You can type the calculation itself, like 100/10.",
+        }),
+      );
     }
     draw();
     return box;
@@ -664,7 +865,12 @@
       return;
     }
     quizOpen = true;
-    var wrap = el("div", { class: "ss-quiz", role: "dialog", "aria-modal": "true", "aria-label": title });
+    var wrap = el("div", {
+      class: "ss-quiz",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-label": title,
+    });
     var box = el("div", { class: "ss-box" });
     wrap.appendChild(box);
     document.body.appendChild(wrap);
@@ -680,21 +886,57 @@
       if (onClose) onClose();
     }
     function top(extra) {
-      var t = el("div", { class: "ss-top" }, [el("strong", { text: title }), extra || null, el("button", { type: "button", text: "Close", on: { click: close } })]);
+      var t = el("div", { class: "ss-top" }, [
+        el("strong", { text: title }),
+        extra || null,
+        el("button", { type: "button", text: "Close", on: { click: close } }),
+      ]);
       box.appendChild(t);
     }
     function chooser() {
       box.innerHTML = "";
       top();
-      box.appendChild(el("p", { text: all.length + " questions. How many do you want? They come in random order, one at a time." }));
+      box.appendChild(
+        el("p", {
+          text:
+            all.length +
+            " questions. How many do you want? They come in random order, one at a time.",
+        }),
+      );
       var row = el("div", { class: "ss-pickn" });
       [10, 20, 40].forEach(function (n) {
         if (n < all.length)
-          row.appendChild(el("button", { type: "button", text: n + " questions", on: { click: function () { begin(n); } } }));
+          row.appendChild(
+            el("button", {
+              type: "button",
+              text: n + " questions",
+              on: {
+                click: function () {
+                  begin(n);
+                },
+              },
+            }),
+          );
       });
-      row.appendChild(el("button", { type: "button", "aria-pressed": "true", text: "All " + all.length, on: { click: function () { begin(all.length); } } }));
+      row.appendChild(
+        el("button", {
+          type: "button",
+          "aria-pressed": "true",
+          text: "All " + all.length,
+          on: {
+            click: function () {
+              begin(all.length);
+            },
+          },
+        }),
+      );
       box.appendChild(row);
-      box.appendChild(el("p", { class: "ss-muted", text: "Keys: 1–4 or A–D to answer, Enter for the next question, Esc to close." }));
+      box.appendChild(
+        el("p", {
+          class: "ss-muted",
+          text: "Keys: 1–4 or A–D to answer, Enter for the next question, Esc to close.",
+        }),
+      );
       row.lastChild.focus();
     }
     function begin(n) {
@@ -708,18 +950,38 @@
       box.innerHTML = "";
       answered = false;
       var it = items[i];
-      top(el("span", { class: "ss-muted", style: "margin:0", text: i + 1 + " / " + items.length + " · score " + score }));
-      box.appendChild(el("div", { class: "ss-prog" }, [el("i", { style: "width:" + (100 * i) / items.length + "%" })]));
+      top(
+        el("span", {
+          class: "ss-muted",
+          style: "margin:0",
+          text: i + 1 + " / " + items.length + " · score " + score,
+        }),
+      );
+      box.appendChild(
+        el("div", { class: "ss-prog" }, [
+          el("i", { style: "width:" + (100 * i) / items.length + "%" }),
+        ]),
+      );
       if (it.src) box.appendChild(el("p", { class: "ss-src", text: it.src }));
       box.appendChild(el("p", { class: "ss-qp", text: it.prompt }));
       var list = el("ol"),
         firstTry = true;
       var verdict = el("p", { class: "ss-verdict", role: "status" });
-      var next = el("button", { type: "button", text: i + 1 < items.length ? "Next question" : "See my score", disabled: true, on: { click: advance } });
+      var next = el("button", {
+        type: "button",
+        text: i + 1 < items.length ? "Next question" : "See my score",
+        disabled: true,
+        on: { click: advance },
+      });
       var opts = shuffle(it.options);
       var buttons = opts.map(function (o, k) {
-        var why = o.w ? el("div", { class: "ss-why", hidden: true, text: o.w }) : null;
-        var b = el("button", { type: "button", class: "ss-opt" }, [el("b", { text: LETTERS[k] }), el("span", { text: o.t })]);
+        var why = o.w
+          ? el("div", { class: "ss-why", hidden: true, text: o.w })
+          : null;
+        var b = el("button", { type: "button", class: "ss-opt" }, [
+          el("b", { text: LETTERS[k] }),
+          el("span", { text: o.t }),
+        ]);
         b.addEventListener("click", function () {
           if (answered) return;
           if (o.c) {
@@ -729,7 +991,9 @@
             else missed.push(it);
             record(it.deck, it.qid, firstTry);
             verdict.className = "ss-verdict good";
-            verdict.textContent = firstTry ? "Correct." : "That’s the one. This question goes on your mistakes list.";
+            verdict.textContent = firstTry
+              ? "Correct."
+              : "That’s the one. This question goes on your mistakes list.";
             buttons.forEach(function (x) {
               x.b.disabled = true;
               if (x.why) x.why.hidden = false;
@@ -753,7 +1017,13 @@
       box.appendChild(verdict);
       var foot = el("div", { class: "ss-foot" }, [
         el("span", { class: "ss-grow" }, [
-          it.href ? el("a", { href: it.href, target: "_top", text: "Open this slide" }) : null,
+          it.href
+            ? el("a", {
+                href: it.href,
+                target: "_top",
+                text: "Open this slide",
+              })
+            : null,
         ]),
         el("button", {
           type: "button",
@@ -785,13 +1055,47 @@
       box._buttons = null;
       top();
       var pct = Math.round((100 * score) / items.length);
-      box.appendChild(el("p", { class: "ss-big", text: score + " / " + items.length }));
-      box.appendChild(el("p", { text: pct >= 80 ? "Strong. Keep going with another set." : pct >= 50 ? "Getting there. Retry the ones you missed." : "Re-read the slides for the missed ones, then retry." }));
+      box.appendChild(
+        el("p", { class: "ss-big", text: score + " / " + items.length }),
+      );
+      box.appendChild(
+        el("p", {
+          text:
+            pct >= 80
+              ? "Strong. Keep going with another set."
+              : pct >= 50
+                ? "Getting there. Retry the ones you missed."
+                : "Re-read the slides for the missed ones, then retry.",
+        }),
+      );
       var row = el("div", { class: "ss-foot" });
       if (missed.length)
-        row.appendChild(el("button", { type: "button", "aria-pressed": "true", text: "Retry the " + missed.length + " I missed", on: { click: function () { items = shuffle(missed); i = 0; score = 0; missed = []; show(); } } }));
-      row.appendChild(el("button", { type: "button", text: "New set", on: { click: chooser } }));
-      row.appendChild(el("button", { type: "button", text: "Close", on: { click: close } }));
+        row.appendChild(
+          el("button", {
+            type: "button",
+            "aria-pressed": "true",
+            text: "Retry the " + missed.length + " I missed",
+            on: {
+              click: function () {
+                items = shuffle(missed);
+                i = 0;
+                score = 0;
+                missed = [];
+                show();
+              },
+            },
+          }),
+        );
+      row.appendChild(
+        el("button", {
+          type: "button",
+          text: "New set",
+          on: { click: chooser },
+        }),
+      );
+      row.appendChild(
+        el("button", { type: "button", text: "Close", on: { click: close } }),
+      );
       box.appendChild(row);
       box.appendChild(el("p", { class: "ss-muted", text: syncText() }));
     }
@@ -809,7 +1113,11 @@
       if (n >= 0 && bs[n] && !bs[n].b.disabled) {
         e.preventDefault();
         bs[n].b.click();
-      } else if ((k === "enter" || k === "n") && box._next && !box._next.disabled) {
+      } else if (
+        (k === "enter" || k === "n") &&
+        box._next &&
+        !box._next.disabled
+      ) {
         e.preventDefault();
         box._next.click();
       }
@@ -826,7 +1134,9 @@
     var chapter = body.getAttribute("data-chapter") || "";
     var reviewUrl = location.pathname.replace(/[^/]+\/[^/]*$/, "review/");
     var cards = [].slice.call(document.querySelectorAll("main>.card"));
-    var qs = [].slice.call(document.querySelectorAll("article.q.pick[data-qid]"));
+    var qs = [].slice.call(
+      document.querySelectorAll("article.q.pick[data-qid]"),
+    );
     var ids = qs.map(function (q) {
       return q.getAttribute("data-qid");
     });
@@ -847,15 +1157,17 @@
         slide: slideOf(q),
         src: "Slide " + slideOf(q),
         prompt: prompt ? prompt.textContent.replace(/\s+/g, " ").trim() : "",
-        options: [].slice.call(q.querySelectorAll(".picks>li")).map(function (li) {
-          var spans = li.querySelectorAll(".choice span");
-          var w = li.querySelector(".opt-why");
-          return {
-            t: (spans[1] || spans[0]).textContent.replace(/\s+/g, " ").trim(),
-            c: li.hasAttribute("data-c"),
-            w: w ? w.textContent.replace(/\s+/g, " ").trim() : "",
-          };
-        }),
+        options: [].slice
+          .call(q.querySelectorAll(".picks>li"))
+          .map(function (li) {
+            var spans = li.querySelectorAll(".choice span");
+            var w = li.querySelector(".opt-why");
+            return {
+              t: (spans[1] || spans[0]).textContent.replace(/\s+/g, " ").trim(),
+              c: li.hasAttribute("data-c"),
+              w: w ? w.textContent.replace(/\s+/g, " ").trim() : "",
+            };
+          }),
       };
     }
 
@@ -865,8 +1177,14 @@
       brand.appendChild(
         el("span", {
           class: "ss-final " + (finalOn === "1" ? "on" : "off"),
-          title: finalOn === "1" ? "This chapter is tested on the final exam" : "Your instructor said this chapter is not on the final",
-          text: finalOn === "1" ? "✓ On the final" : "✗ Not on the final (" + chapter + ")",
+          title:
+            finalOn === "1"
+              ? "This chapter is tested on the final exam"
+              : "Your instructor said this chapter is not on the final",
+          text:
+            finalOn === "1"
+              ? "✓ On the final"
+              : "✗ Not on the final (" + chapter + ")",
         }),
       );
 
@@ -906,7 +1224,10 @@
     function restore() {
       restoring = true;
       qs.forEach(function (q) {
-        if (result(DECK, q.getAttribute("data-qid")) === 1 && !q.classList.contains("done")) {
+        if (
+          result(DECK, q.getAttribute("data-qid")) === 1 &&
+          !q.classList.contains("done")
+        ) {
           var right = q.querySelector(".picks>li[data-c] .choice");
           if (right) right.click();
         }
@@ -918,7 +1239,12 @@
 
     // controls: score menu + quiz
     var controls = document.querySelector(".top .controls");
-    var scoreBtn = el("button", { type: "button", id: "ss-score", "aria-expanded": "false", title: "Your score on this deck (saved)" });
+    var scoreBtn = el("button", {
+      type: "button",
+      id: "ss-score",
+      "aria-expanded": "false",
+      title: "Your score on this deck (saved)",
+    });
     var panel = el("div", { class: "ss-panel", hidden: true });
     var wrapS = el("div", { class: "ss-scorewrap" }, [scoreBtn, panel]);
     var quizBtn = el("button", {
@@ -934,10 +1260,14 @@
       controls.insertBefore(wrapS, anchor);
     }
     function openQuiz() {
-      runQuiz(qs.map(itemOf), "Quiz · " + (document.querySelector(".brand strong") || {}).textContent, function () {
-        restore();
-        paint();
-      });
+      runQuiz(
+        qs.map(itemOf),
+        "Quiz · " + (document.querySelector(".brand strong") || {}).textContent,
+        function () {
+          restore();
+          paint();
+        },
+      );
     }
     function togglePanel(open) {
       if (open === undefined) open = panel.hidden;
@@ -954,46 +1284,120 @@
     });
     function paint() {
       var s = deckStats(DECK, ids);
-      scoreBtn.textContent = s.answered ? "Score " + s.right + "/" + s.total + (s.missed ? " · " + s.missed + " missed" : "") : "Score 0/" + s.total;
+      scoreBtn.textContent = s.answered
+        ? "Score " +
+          s.right +
+          "/" +
+          s.total +
+          (s.missed ? " · " + s.missed + " missed" : "")
+        : "Score 0/" + s.total;
       if (panel.hidden) return;
       panel.innerHTML = "";
       panel.appendChild(el("h4", { text: "Your progress on this deck" }));
       var meter = el("div", { class: "ss-meter" }, [
-        el("i", { class: "g", style: "width:" + (100 * s.right) / (s.total || 1) + "%" }),
-        el("i", { class: "b", style: "width:" + (100 * s.missed) / (s.total || 1) + "%" }),
+        el("i", {
+          class: "g",
+          style: "width:" + (100 * s.right) / (s.total || 1) + "%",
+        }),
+        el("i", {
+          class: "b",
+          style: "width:" + (100 * s.missed) / (s.total || 1) + "%",
+        }),
       ]);
       panel.appendChild(meter);
       panel.appendChild(
         el("div", { class: "ss-nums" }, [
-          el("div", null, [el("b", { text: s.right }), el("span", { text: "right first try" })]),
-          el("div", null, [el("b", { text: s.missed }), el("span", { text: "missed" })]),
-          el("div", null, [el("b", { text: s.total - s.answered }), el("span", { text: "not answered" })]),
+          el("div", null, [
+            el("b", { text: s.right }),
+            el("span", { text: "right first try" }),
+          ]),
+          el("div", null, [
+            el("b", { text: s.missed }),
+            el("span", { text: "missed" }),
+          ]),
+          el("div", null, [
+            el("b", { text: s.total - s.answered }),
+            el("span", { text: "not answered" }),
+          ]),
         ]),
       );
       var acts = el("div", { class: "ss-acts" }, [
-        el("button", { type: "button", text: "↓ Next unanswered question (U)", on: { click: function () { togglePanel(false); jumpTo("unanswered"); } } }),
-        s.missed ? el("button", { type: "button", text: "↓ Next missed question (M)", on: { click: function () { togglePanel(false); jumpTo("missed"); } } }) : null,
+        el("button", {
+          type: "button",
+          text: "↓ Next unanswered question (U)",
+          on: {
+            click: function () {
+              togglePanel(false);
+              jumpTo("unanswered");
+            },
+          },
+        }),
         s.missed
           ? el("button", {
               type: "button",
-              text: "Practice my " + s.missed + (s.missed === 1 ? " mistake" : " mistakes") + " here",
+              text: "↓ Next missed question (M)",
               on: {
                 click: function () {
                   togglePanel(false);
-                  runQuiz(qs.filter(function (q) { return result(DECK, q.getAttribute("data-qid")) === 0; }).map(itemOf), "My mistakes", function () { restore(); paint(); });
+                  jumpTo("missed");
                 },
               },
             })
           : null,
-        el("a", { class: "btn", href: reviewUrl + "?deck=" + encodeURIComponent(DECK), target: "_top", text: "All chapters: review page →" }),
-        el("button", { type: "button", text: "Keyboard shortcuts (?)", on: { click: function () { togglePanel(false); help(); } } }),
+        s.missed
+          ? el("button", {
+              type: "button",
+              text:
+                "Practice my " +
+                s.missed +
+                (s.missed === 1 ? " mistake" : " mistakes") +
+                " here",
+              on: {
+                click: function () {
+                  togglePanel(false);
+                  runQuiz(
+                    qs
+                      .filter(function (q) {
+                        return result(DECK, q.getAttribute("data-qid")) === 0;
+                      })
+                      .map(itemOf),
+                    "My mistakes",
+                    function () {
+                      restore();
+                      paint();
+                    },
+                  );
+                },
+              },
+            })
+          : null,
+        el("a", {
+          class: "btn",
+          href: reviewUrl + "?deck=" + encodeURIComponent(DECK),
+          target: "_top",
+          text: "All chapters: review page →",
+        }),
+        el("button", {
+          type: "button",
+          text: "Keyboard shortcuts (?)",
+          on: {
+            click: function () {
+              togglePanel(false);
+              help();
+            },
+          },
+        }),
         s.answered
           ? el("button", {
               type: "button",
               text: "Reset this deck’s answers",
               on: {
                 click: function () {
-                  if (confirm("Forget every saved answer on this deck? Reload the page afterwards to clear the answered questions.")) {
+                  if (
+                    confirm(
+                      "Forget every saved answer on this deck? Reload the page afterwards to clear the answered questions.",
+                    )
+                  ) {
                     resetDeck(DECK);
                     paint();
                   }
@@ -1018,10 +1422,12 @@
     }
     function currentIndex() {
       if (isFlip()) {
-        for (var i = 0; i < cards.length; i++) if (cards[i].classList.contains("current")) return i;
+        for (var i = 0; i < cards.length; i++)
+          if (cards[i].classList.contains("current")) return i;
         return 0;
       }
-      for (var k = 0; k < cards.length; k++) if (cards[k].getBoundingClientRect().bottom > 90) return k;
+      for (var k = 0; k < cards.length; k++)
+        if (cards[k].getBoundingClientRect().bottom > 90) return k;
       return cards.length - 1;
     }
     function goCard(i) {
@@ -1044,22 +1450,34 @@
       var from = currentIndex();
       var list = qs.filter(function (q) {
         var r = result(DECK, q.getAttribute("data-qid"));
-        return kind === "missed" ? r === 0 : r === null && !q.classList.contains("done");
+        return kind === "missed"
+          ? r === 0
+          : r === null && !q.classList.contains("done");
       });
       if (!list.length) {
-        alert(kind === "missed" ? "No missed questions left on this deck." : "You have answered every question on this deck.");
+        alert(
+          kind === "missed"
+            ? "No missed questions left on this deck."
+            : "You have answered every question on this deck.",
+        );
         return;
       }
-      var target = list.filter(function (q) {
-        var i = cards.indexOf(cardOf(q));
-        return i > from || (i === from && q.getBoundingClientRect().top > 100);
-      })[0] || list[0];
+      var target =
+        list.filter(function (q) {
+          var i = cards.indexOf(cardOf(q));
+          return (
+            i > from || (i === from && q.getBoundingClientRect().top > 100)
+          );
+        })[0] || list[0];
       var ci = cards.indexOf(cardOf(target));
       if (isFlip()) goCard(ci);
-      setTimeout(function () {
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        flash(target);
-      }, isFlip() ? 50 : 0);
+      setTimeout(
+        function () {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          flash(target);
+        },
+        isFlip() ? 50 : 0,
+      );
     }
     function activeQuestion() {
       var pool = qs.filter(function (q) {
@@ -1067,13 +1485,19 @@
       });
       if (isFlip()) {
         var cur = cards[currentIndex()];
-        return pool.filter(function (q) { return cardOf(q) === cur; })[0] || null;
+        return (
+          pool.filter(function (q) {
+            return cardOf(q) === cur;
+          })[0] || null
+        );
       }
       var vh = window.innerHeight;
-      return pool.filter(function (q) {
-        var r = q.getBoundingClientRect();
-        return r.bottom > 70 && r.top < vh;
-      })[0] || null;
+      return (
+        pool.filter(function (q) {
+          var r = q.getBoundingClientRect();
+          return r.bottom > 70 && r.top < vh;
+        })[0] || null
+      );
     }
 
     // reading progress bar
@@ -1081,7 +1505,8 @@
     body.appendChild(bar);
     function progress() {
       var f;
-      if (isFlip()) f = cards.length > 1 ? currentIndex() / (cards.length - 1) : 1;
+      if (isFlip())
+        f = cards.length > 1 ? currentIndex() / (cards.length - 1) : 1;
       else {
         var h = document.documentElement.scrollHeight - window.innerHeight;
         f = h > 0 ? window.scrollY / h : 1;
@@ -1089,15 +1514,22 @@
       bar.style.width = Math.max(0, Math.min(1, f)) * 100 + "%";
     }
     window.addEventListener("scroll", progress, { passive: true });
-    new MutationObserver(progress).observe(body, { attributes: true, subtree: true, attributeFilter: ["class"] });
+    new MutationObserver(progress).observe(body, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["class"],
+    });
     progress();
 
     // drills
     document.querySelectorAll(".card[data-drill]").forEach(function (card) {
-      card.getAttribute("data-drill").split(/\s+/).forEach(function (t) {
-        var d = makeDrill(t);
-        if (d) card.appendChild(d);
-      });
+      card
+        .getAttribute("data-drill")
+        .split(/\s+/)
+        .forEach(function (t) {
+          var d = makeDrill(t);
+          if (d) card.appendChild(d);
+        });
     });
 
     // keyboard shortcuts
@@ -1119,20 +1551,51 @@
         ["T", "Notes on/off"],
         ["?", "Show or hide this list"],
       ];
-      helpBox = el("div", { class: "ss-help", role: "dialog", "aria-label": "Keyboard shortcuts" }, [
-        el("strong", { text: "Keyboard shortcuts" }),
-        el("table", null, rows.map(function (r) {
-          return el("tr", null, [el("td", null, r[0].split(" / ").map(function (k, i) { return el("span", null, [i ? " " : "", el("kbd", { text: k })]); })), el("td", { text: r[1] })]);
-        })),
-        el("button", { type: "button", text: "Close", style: "margin-top:8px", on: { click: help } }),
-      ]);
+      helpBox = el(
+        "div",
+        {
+          class: "ss-help",
+          role: "dialog",
+          "aria-label": "Keyboard shortcuts",
+        },
+        [
+          el("strong", { text: "Keyboard shortcuts" }),
+          el(
+            "table",
+            null,
+            rows.map(function (r) {
+              return el("tr", null, [
+                el(
+                  "td",
+                  null,
+                  r[0].split(" / ").map(function (k, i) {
+                    return el("span", null, [
+                      i ? " " : "",
+                      el("kbd", { text: k }),
+                    ]);
+                  }),
+                ),
+                el("td", { text: r[1] }),
+              ]);
+            }),
+          ),
+          el("button", {
+            type: "button",
+            text: "Close",
+            style: "margin-top:8px",
+            on: { click: help },
+          }),
+        ],
+      );
       body.appendChild(helpBox);
     }
     document.addEventListener("keydown", function (e) {
-      if (quizOpen || e.ctrlKey || e.metaKey || e.altKey || typing(e.target)) return;
+      if (quizOpen || e.ctrlKey || e.metaKey || e.altKey || typing(e.target))
+        return;
       var k = e.key.toLowerCase(),
         done = true;
-      var n = "1234".indexOf(k) >= 0 && k.length === 1 ? +k - 1 : "abcd".indexOf(k);
+      var n =
+        "1234".indexOf(k) >= 0 && k.length === 1 ? +k - 1 : "abcd".indexOf(k);
       if (n >= 0 && k.length === 1) {
         var q = activeQuestion();
         var bs = q ? q.querySelectorAll(".picks>li .choice") : [];
@@ -1143,8 +1606,12 @@
       else if (k === "u") jumpTo("unanswered");
       else if (k === "m") jumpTo("missed");
       else if (k === "q") openQuiz();
-      else if (k === "h") (document.getElementById("t-hl") || {}).click && document.getElementById("t-hl").click();
-      else if (k === "t") (document.getElementById("t-notes") || {}).click && document.getElementById("t-notes").click();
+      else if (k === "h")
+        (document.getElementById("t-hl") || {}).click &&
+          document.getElementById("t-hl").click();
+      else if (k === "t")
+        (document.getElementById("t-notes") || {}).click &&
+          document.getElementById("t-notes").click();
       else if (e.key === "?") help();
       else if (e.key === "Escape" && helpBox) help();
       else done = false;
@@ -1159,10 +1626,14 @@
       if (q) q.classList.add("ss-active");
       lastActive = q;
     }
-    window.addEventListener("scroll", function () {
-      clearTimeout(markActive._t);
-      markActive._t = setTimeout(markActive, 120);
-    }, { passive: true });
+    window.addEventListener(
+      "scroll",
+      function () {
+        clearTimeout(markActive._t);
+        markActive._t = setTimeout(markActive, 120);
+      },
+      { passive: true },
+    );
     document.addEventListener("click", function () {
       setTimeout(markActive, 0);
     });
@@ -1194,7 +1665,8 @@
         if (deck && params.get("start")) startDeck(deck, params.get("start"));
       })
       .catch(function () {
-        root.textContent = "Couldn’t load the questions. Check your connection and reload.";
+        root.textContent =
+          "Couldn’t load the questions. Check your connection and reload.";
       });
     listeners.push(function () {
       if (bank && !quizOpen) render();
@@ -1229,15 +1701,24 @@
       (ds || decks()).forEach(function (d) {
         itemsFor(d).forEach(function (it) {
           var r = result(d.key, it.qid);
-          if (filter === "missed" ? r === 0 : filter === "new" ? r === null : true) out.push(it);
+          if (
+            filter === "missed" ? r === 0 : filter === "new" ? r === null : true
+          )
+            out.push(it);
         });
       });
       return out;
     }
     function startDeck(key, kind) {
-      var d = bank.decks.filter(function (x) { return x.key === key; })[0];
+      var d = bank.decks.filter(function (x) {
+        return x.key === key;
+      })[0];
       if (!d) return;
-      runQuiz(gather(kind || "all", [d]), d.chapter + " · " + d.title + (kind === "missed" ? " · mistakes" : ""), render);
+      runQuiz(
+        gather(kind || "all", [d]),
+        d.chapter + " · " + d.title + (kind === "missed" ? " · mistakes" : ""),
+        render,
+      );
     }
     function render() {
       root.innerHTML = "";
@@ -1270,44 +1751,93 @@
           },
         }),
         " Final chapters only (hides " +
-          offDecks.map(function (d) { return d.chapter + " " + d.title; }).join(" and ") +
+          offDecks
+            .map(function (d) {
+              return d.chapter + " " + d.title;
+            })
+            .join(" and ") +
           ")",
       ]);
       if (offDecks.length) root.appendChild(filter);
 
       root.appendChild(
         el("section", { class: "rv-card rv-summary" }, [
-          el("h2", { text: finalOnly && hasScope() ? "Your progress on the final chapters" : "Your progress on every chapter" }),
+          el("h2", {
+            text:
+              finalOnly && hasScope()
+                ? "Your progress on the final chapters"
+                : "Your progress on every chapter",
+          }),
           el("div", { class: "ss-meter" }, [
-            el("i", { class: "g", style: "width:" + (100 * tot.right) / (tot.total || 1) + "%" }),
-            el("i", { class: "b", style: "width:" + (100 * tot.missed) / (tot.total || 1) + "%" }),
+            el("i", {
+              class: "g",
+              style: "width:" + (100 * tot.right) / (tot.total || 1) + "%",
+            }),
+            el("i", {
+              class: "b",
+              style: "width:" + (100 * tot.missed) / (tot.total || 1) + "%",
+            }),
           ]),
           el("div", { class: "ss-nums" }, [
-            el("div", null, [el("b", { text: tot.right }), el("span", { text: "right first try" })]),
-            el("div", null, [el("b", { text: tot.missed }), el("span", { text: "missed" })]),
-            el("div", null, [el("b", { text: tot.total - tot.answered }), el("span", { text: "not answered" })]),
+            el("div", null, [
+              el("b", { text: tot.right }),
+              el("span", { text: "right first try" }),
+            ]),
+            el("div", null, [
+              el("b", { text: tot.missed }),
+              el("span", { text: "missed" }),
+            ]),
+            el("div", null, [
+              el("b", { text: tot.total - tot.answered }),
+              el("span", { text: "not answered" }),
+            ]),
           ]),
           el("div", { class: "rv-big" }, [
             el("button", {
               type: "button",
               "aria-pressed": missed.length ? "true" : null,
               disabled: missed.length ? null : true,
-              text: missed.length ? "Practice my " + missed.length + (missed.length === 1 ? " mistake" : " mistakes") : "No mistakes saved yet",
-              on: { click: function () { runQuiz(missed, "My mistakes", render); } },
+              text: missed.length
+                ? "Practice my " +
+                  missed.length +
+                  (missed.length === 1 ? " mistake" : " mistakes")
+                : "No mistakes saved yet",
+              on: {
+                click: function () {
+                  runQuiz(missed, "My mistakes", render);
+                },
+              },
             }),
             el("button", {
               type: "button",
               disabled: fresh.length ? null : true,
               text: "Questions I haven’t answered (" + fresh.length + ")",
-              on: { click: function () { runQuiz(fresh, "Not answered yet", render); } },
+              on: {
+                click: function () {
+                  runQuiz(fresh, "Not answered yet", render);
+                },
+              },
             }),
             el("button", {
               type: "button",
-              text: "Random mix from " + (finalOnly && hasScope() ? "the final chapters" : "every chapter"),
-              on: { click: function () { runQuiz(everything, "Random mix", render); } },
+              text:
+                "Random mix from " +
+                (finalOnly && hasScope()
+                  ? "the final chapters"
+                  : "every chapter"),
+              on: {
+                click: function () {
+                  runQuiz(everything, "Random mix", render);
+                },
+              },
             }),
           ]),
-          el("p", { class: "ss-muted", text: syncText() + " A question leaves the mistakes list when you get it right on the first try." }),
+          el("p", {
+            class: "ss-muted",
+            text:
+              syncText() +
+              " A question leaves the mistakes list when you get it right on the first try.",
+          }),
         ]),
       );
 
@@ -1322,19 +1852,61 @@
                 el("strong", { text: d.title }),
                 d.final === null || d.final === undefined
                   ? null
-                  : el("span", { class: "ss-final " + (d.final ? "on" : "off"), text: d.final ? "On the final" : "Not on the final" }),
+                  : el("span", {
+                      class: "ss-final " + (d.final ? "on" : "off"),
+                      text: d.final ? "On the final" : "Not on the final",
+                    }),
               ]),
               el("span", { class: "rv-score", text: s.right + "/" + s.total }),
             ]),
             el("div", { class: "ss-meter" }, [
-              el("i", { class: "g", style: "width:" + (100 * s.right) / (s.total || 1) + "%" }),
-              el("i", { class: "b", style: "width:" + (100 * s.missed) / (s.total || 1) + "%" }),
+              el("i", {
+                class: "g",
+                style: "width:" + (100 * s.right) / (s.total || 1) + "%",
+              }),
+              el("i", {
+                class: "b",
+                style: "width:" + (100 * s.missed) / (s.total || 1) + "%",
+              }),
             ]),
-            el("p", { class: "ss-muted", style: "margin:0 0 8px", text: s.answered + " answered · " + s.missed + " missed · " + (s.total - s.answered) + " to go" }),
+            el("p", {
+              class: "ss-muted",
+              style: "margin:0 0 8px",
+              text:
+                s.answered +
+                " answered · " +
+                s.missed +
+                " missed · " +
+                (s.total - s.answered) +
+                " to go",
+            }),
             el("div", { class: "rv-acts" }, [
-              el("a", { class: "btn", href: d.wrapper, target: "_top", text: "Open slides" }),
-              el("button", { type: "button", text: "Quiz this chapter", on: { click: function () { startDeck(d.key, "all"); } } }),
-              s.missed ? el("button", { type: "button", text: "Mistakes (" + s.missed + ")", on: { click: function () { startDeck(d.key, "missed"); } } }) : null,
+              el("a", {
+                class: "btn",
+                href: d.wrapper,
+                target: "_top",
+                text: "Open slides",
+              }),
+              el("button", {
+                type: "button",
+                text: "Quiz this chapter",
+                on: {
+                  click: function () {
+                    startDeck(d.key, "all");
+                  },
+                },
+              }),
+              s.missed
+                ? el("button", {
+                    type: "button",
+                    text: "Mistakes (" + s.missed + ")",
+                    on: {
+                      click: function () {
+                        startDeck(d.key, "missed");
+                      },
+                    },
+                  })
+                : null,
             ]),
           ]),
         );
@@ -1343,8 +1915,15 @@
       root.appendChild(table);
 
       if (!(bank.drills || []).length) return;
-      root.appendChild(el("h2", { class: "rv-h", id: "drills", text: "Calculation drills" }));
-      root.appendChild(el("p", { class: "ss-muted", text: "New numbers every time. Type the answer (or the calculation, like 100/10), check it, then compare with the step-by-step working." }));
+      root.appendChild(
+        el("h2", { class: "rv-h", id: "drills", text: "Calculation drills" }),
+      );
+      root.appendChild(
+        el("p", {
+          class: "ss-muted",
+          text: "New numbers every time. Type the answer (or the calculation, like 100/10), check it, then compare with the step-by-step working.",
+        }),
+      );
       var dr = el("div", { class: "rv-drills" });
       (bank.drills || []).forEach(function (x) {
         if (finalOnly && hasScope() && x.final === false) return;
@@ -1359,7 +1938,9 @@
   function hubMode() {
     var gallery = document.getElementById("annotated");
     if (!gallery) return;
-    var links = [].slice.call(gallery.querySelectorAll("a.deck-preview[href*='/annotated-slides/']"));
+    var links = [].slice.call(
+      gallery.querySelectorAll("a.deck-preview[href*='/annotated-slides/']"),
+    );
     if (!links.length) return;
     var base = links[0].getAttribute("href").replace(/[^/]+\/?$/, "");
     var reviewUrl = base + "review/";
@@ -1380,46 +1961,73 @@
     document.head.appendChild(style);
     var finalOnly = lsGet(FINAL_KEY) === "1";
     var toggle = el("label", { hidden: true }, [
-        el("input", {
-          type: "checkbox",
-          checked: finalOnly ? true : null,
-          on: {
-            change: function (e) {
-              finalOnly = e.target.checked;
-              lsSet(FINAL_KEY, finalOnly ? "1" : "0");
-              gallery.classList.toggle("ss-hide-off", finalOnly);
-            },
+      el("input", {
+        type: "checkbox",
+        checked: finalOnly ? true : null,
+        on: {
+          change: function (e) {
+            finalOnly = e.target.checked;
+            lsSet(FINAL_KEY, finalOnly ? "1" : "0");
+            gallery.classList.toggle("ss-hide-off", finalOnly);
           },
-        }),
-        "Final chapters only",
-      ]);
+        },
+      }),
+      "Final chapters only",
+    ]);
     var bar = el("div", { class: "ss-hub-bar" }, [
-      el("a", { class: "btn btn-primary", href: reviewUrl, text: "[ REVIEW & PRACTICE -> ]" }),
+      el("a", {
+        class: "btn btn-primary",
+        href: reviewUrl,
+        text: "[ REVIEW & PRACTICE -> ]",
+      }),
       toggle,
     ]);
     var h2 = gallery.querySelector("h2");
     gallery.insertBefore(bar, h2 ? h2.nextSibling : gallery.firstChild);
     function paint() {
       if (!summary) return;
-      var scoped = summary.decks.some(function (x) { return x.final === false; });
+      var scoped = summary.decks.some(function (x) {
+        return x.final === false;
+      });
       toggle.hidden = !scoped;
       gallery.classList.toggle("ss-hide-off", scoped && finalOnly);
       links.forEach(function (a) {
         var key = a.getAttribute("href").replace(/\/$/, "").split("/").pop();
-        var d = summary.decks.filter(function (x) { return x.key === key; })[0];
+        var d = summary.decks.filter(function (x) {
+          return x.key === key;
+        })[0];
         if (!d) return;
         a.classList.toggle("ss-off", d.final === false);
-        var box = a.querySelector(".ss-tile") || a.appendChild(el("div", { class: "ss-tile" }));
+        var box =
+          a.querySelector(".ss-tile") ||
+          a.appendChild(el("div", { class: "ss-tile" }));
         var s = deckStats(d.key, null);
         box.innerHTML = "";
-        if (scoped) box.appendChild(el("span", { class: d.final ? "on" : "off", text: d.final ? "On final" : "Not on final" }));
+        if (scoped)
+          box.appendChild(
+            el("span", {
+              class: d.final ? "on" : "off",
+              text: d.final ? "On final" : "Not on final",
+            }),
+          );
         if (s.answered)
-          box.appendChild(el("span", { class: "sc", text: s.right + "/" + d.count + (s.missed ? " · " + s.missed + " missed" : "") }));
+          box.appendChild(
+            el("span", {
+              class: "sc",
+              text:
+                s.right +
+                "/" +
+                d.count +
+                (s.missed ? " · " + s.missed + " missed" : ""),
+            }),
+          );
       });
     }
     listeners.push(paint);
     fetch(reviewUrl + "summary.json")
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        return r.json();
+      })
       .then(function (j) {
         summary = j;
         paint();
@@ -1435,6 +2043,7 @@
     else hubMode();
     Sync.start();
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

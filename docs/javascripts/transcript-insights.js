@@ -629,11 +629,11 @@
     });
     var shown = importSelect || progressSelect,
       label =
-      value && shown
-        ? shown.options[shown.selectedIndex].textContent
-            .replace(/\s+/g, " ")
-            .trim()
-        : "";
+        value && shown
+          ? shown.options[shown.selectedIndex].textContent
+              .replace(/\s+/g, " ")
+              .trim()
+          : "";
     [name, importName].forEach(function (el) {
       if (!el) return;
       el.hidden = !value;
@@ -821,7 +821,7 @@
                         '</select><small class="ti-elective-note"><span>Counted as ' +
                         o.missing * o.hours +
                         (o.missing * o.hours === 1 ? " hour" : " hours") +
-                        " until you choose.</span><a href=\"" +
+                        ' until you choose.</span><a href="' +
                         gridPlanUrl(value) +
                         '">Choose on the grid plan</a></small>'
                       : "") +
@@ -871,11 +871,9 @@
           JSON.parse(localStorage.getItem(plan.choicesKey) || "{}") || {};
       } catch (err) {}
       var limit = Number(plan.limits[g]) || 1,
-        list = []
-          .concat(choices[g] || [])
-          .filter(function (id, i, all) {
-            return id && id !== remove && all.indexOf(id) === i;
-          });
+        list = [].concat(choices[g] || []).filter(function (id, i, all) {
+          return id && id !== remove && all.indexOf(id) === i;
+        });
       if (add && list.indexOf(add) < 0) list.push(add);
       list = list.slice(-limit);
       // Same shape as the plan page: one course id per group, or a list.
@@ -889,8 +887,7 @@
           var card = document.querySelector(
             '#progress-body .ti-elective[data-group="' + g + '"]',
           );
-          var target =
-            card && card.querySelector("select, [data-unpick]");
+          var target = card && card.querySelector("select, [data-unpick]");
           if (target) target.focus();
         });
     });

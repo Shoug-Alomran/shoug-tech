@@ -191,7 +191,8 @@
   var reported = new WeakSet();
   var pending = new WeakMap();
   function touch(event) {
-    var card = event.target && event.target.closest && event.target.closest(".cqm-card");
+    var card =
+      event.target && event.target.closest && event.target.closest(".cqm-card");
     if (card) touched.add(card);
   }
   function report(card, ok) {

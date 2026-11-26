@@ -110,7 +110,10 @@
   }
 
   function siteLanguage() {
-    var lang = document.documentElement.getAttribute("lang") || get("shoug-lang") || "en";
+    var lang =
+      document.documentElement.getAttribute("lang") ||
+      get("shoug-lang") ||
+      "en";
     return lang.slice(0, 2).toLowerCase();
   }
 
@@ -125,7 +128,8 @@
     }
   } catch (e) {}
 
-  var isNotFound = /404/.test(document.title) && /not found/i.test(document.title);
+  var isNotFound =
+    /404/.test(document.title) && /not found/i.test(document.title);
   var displayMode =
     window.matchMedia && matchMedia("(display-mode: standalone)").matches
       ? "standalone"
@@ -182,7 +186,12 @@
     var sent = false;
     try {
       // text/plain keeps this a simple CORS request: no preflight.
-      sent = navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, new Blob([body], { type: "text/plain" }));
+      sent =
+        navigator.sendBeacon &&
+        navigator.sendBeacon(
+          ENDPOINT,
+          new Blob([body], { type: "text/plain" }),
+        );
     } catch (e) {}
     if (!sent) {
       try {
@@ -240,16 +249,22 @@
     tick();
     lastActive = Date.now();
   }
-  ["pointerdown", "keydown", "wheel", "touchstart", "mousemove"].forEach(function (type) {
-    window.addEventListener(type, active, { passive: true, capture: true });
-  });
+  ["pointerdown", "keydown", "wheel", "touchstart", "mousemove"].forEach(
+    function (type) {
+      window.addEventListener(type, active, { passive: true, capture: true });
+    },
+  );
   setInterval(tick, 5000);
 
   function measureScroll() {
     var doc = document.documentElement;
-    var height = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    var height = Math.max(
+      doc.scrollHeight,
+      document.body ? document.body.scrollHeight : 0,
+    );
     var seen = (window.scrollY || doc.scrollTop || 0) + window.innerHeight;
-    var pct = height <= window.innerHeight ? 100 : Math.round((seen / height) * 100);
+    var pct =
+      height <= window.innerHeight ? 100 : Math.round((seen / height) * 100);
     if (pct > maxScroll) maxScroll = Math.min(100, pct);
   }
   var scrollTimer = 0;
@@ -305,7 +320,10 @@
     var d = event.detail || {};
     clearTimeout(searchTimer);
     searchTimer = setTimeout(function () {
-      var q = String(d.query || "").trim().toLowerCase().slice(0, 80);
+      var q = String(d.query || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 80);
       if (q.length < 2 || q === lastQuery) return;
       lastQuery = q;
       track("search", { l: q, v: d.results | 0 });
@@ -313,7 +331,8 @@
   });
 
   // ------------------------------------------------------------- clicks --
-  var DOWNLOAD = /\.(pdf|docx?|pptx?|xlsx?|zip|rar|ipynb|csv|txt|py|java|sql|png|jpe?g)$/i;
+  var DOWNLOAD =
+    /\.(pdf|docx?|pptx?|xlsx?|zip|rar|ipynb|csv|txt|py|java|sql|png|jpe?g)$/i;
   var CTA = /check|submit|grade|finish|reveal|show (all|answers)|score/i;
   var clickCount = 0;
   var rageTarget = null;
@@ -335,7 +354,12 @@
   document.addEventListener(
     "click",
     function (event) {
-      var el = event.target && event.target.closest && event.target.closest("a, button, [role='button'], summary, input[type='submit']");
+      var el =
+        event.target &&
+        event.target.closest &&
+        event.target.closest(
+          "a, button, [role='button'], summary, input[type='submit']",
+        );
       if (!el) return;
 
       // Several clicks on the same thing within a second: something didn't respond.
@@ -345,7 +369,8 @@
         rageTimes = rageTimes.filter(function (t) {
           return now - t < 1000;
         });
-        if (rageTimes.length === 3) track("rage", { l: labelOf(el) || el.tagName.toLowerCase() });
+        if (rageTimes.length === 3)
+          track("rage", { l: labelOf(el) || el.tagName.toLowerCase() });
       } else {
         rageTarget = el;
         rageTimes = [now];
@@ -368,7 +393,10 @@
         if (!/^https?:$/.test(url.protocol)) return;
         if (!HOSTS[url.hostname] && url.hostname !== location.hostname) {
           clickCount++;
-          track("click", { l: (url.hostname + url.pathname).slice(0, 160), d: "outbound" });
+          track("click", {
+            l: (url.hostname + url.pathname).slice(0, 160),
+            d: "outbound",
+          });
         } else if (el.hasAttribute("download") || DOWNLOAD.test(url.pathname)) {
           clickCount++;
           track("click", { l: url.pathname.slice(0, 200), d: "download" });
@@ -414,22 +442,29 @@
     clearTimeout(themeTimer);
     themeTimer = setTimeout(function () {
       var now = themeName();
-      if (lastTheme !== null && now !== lastTheme) track("pref", { l: "theme", d: now });
+      if (lastTheme !== null && now !== lastTheme)
+        track("pref", { l: "theme", d: now });
       lastTheme = now;
     }, 400);
   }
   function startThemeWatch() {
     watchTheme();
-    var opts = { attributes: true, attributeFilter: ["class", "data-theme", "data-site-palette"] };
+    var opts = {
+      attributes: true,
+      attributeFilter: ["class", "data-theme", "data-site-palette"],
+    };
     new MutationObserver(watchTheme).observe(document.documentElement, opts);
-    if (document.body) new MutationObserver(watchTheme).observe(document.body, opts);
+    if (document.body)
+      new MutationObserver(watchTheme).observe(document.body, opts);
   }
   if (document.body) startThemeWatch();
   else document.addEventListener("DOMContentLoaded", startThemeWatch);
 
   // arabic-localization.js dispatches this on window.
   window.addEventListener("shoug:language-change", function (event) {
-    var lang = (event.detail && (event.detail.lang || event.detail.language)) || siteLanguage();
+    var lang =
+      (event.detail && (event.detail.lang || event.detail.language)) ||
+      siteLanguage();
     track("pref", { l: "language", d: String(lang).slice(0, 10) });
   });
 
@@ -443,18 +478,31 @@
     errorCount++;
     track("error", { l: message, d: String(source || "").slice(0, 120) });
   }
-  window.addEventListener("error", function (event) {
-    if (event.target && event.target !== window && event.target.tagName) {
-      var src = event.target.src || event.target.href || "";
-      if (src) reportError("Failed to load " + event.target.tagName.toLowerCase(), src.replace(location.origin, ""));
-      return;
-    }
-    var file = String(event.filename || "").replace(location.origin, "").split(/[?#]/)[0];
-    reportError(event.message, file ? file + ":" + event.lineno : "");
-  }, true);
+  window.addEventListener(
+    "error",
+    function (event) {
+      if (event.target && event.target !== window && event.target.tagName) {
+        var src = event.target.src || event.target.href || "";
+        if (src)
+          reportError(
+            "Failed to load " + event.target.tagName.toLowerCase(),
+            src.replace(location.origin, ""),
+          );
+        return;
+      }
+      var file = String(event.filename || "")
+        .replace(location.origin, "")
+        .split(/[?#]/)[0];
+      reportError(event.message, file ? file + ":" + event.lineno : "");
+    },
+    true,
+  );
   window.addEventListener("unhandledrejection", function (event) {
     var r = event.reason;
-    reportError("Unhandled promise: " + (r && r.message ? r.message : String(r)), "");
+    reportError(
+      "Unhandled promise: " + (r && r.message ? r.message : String(r)),
+      "",
+    );
   });
 
   // ----------------------------------------------------------- web vitals --
@@ -488,7 +536,11 @@
   var clsLast = 0;
   observe("layout-shift", function (entry) {
     if (entry.hadRecentInput) return;
-    if (clsWindow && entry.startTime - clsLast < 1000 && entry.startTime - clsFirst < 5000) {
+    if (
+      clsWindow &&
+      entry.startTime - clsLast < 1000 &&
+      entry.startTime - clsFirst < 5000
+    ) {
       clsWindow += entry.value;
     } else {
       clsWindow = entry.value;
@@ -519,7 +571,8 @@
       var value = vitals[name];
       if (typeof value !== "number" || !isFinite(value)) return;
       var t = THRESHOLDS[name];
-      var rating = value <= t[0] ? "good" : value <= t[1] ? "needs-improvement" : "poor";
+      var rating =
+        value <= t[0] ? "good" : value <= t[1] ? "needs-improvement" : "poor";
       track("vital", {
         l: name,
         v: name === "CLS" ? Math.round(value * 1000) / 1000 : Math.round(value),

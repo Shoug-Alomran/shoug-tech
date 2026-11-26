@@ -237,7 +237,7 @@ def embed(entry: dict, extract: bool, cache: dict) -> int:
             width, height = im.size
         blocks.setdefault(fig["section"], []).append(
             figure_html(f"figures/{out.name}", fig["caption"], width, height, fig["slide"],
-                        os.path.relpath(decks[deck_of(entry, fig)], page.parent) + f"#page={fig['slide']}"))
+                        Path(os.path.relpath(decks[deck_of(entry, fig)], page.parent)).as_posix() + f"#page={fig['slide']}"))
 
     text = FIGURE_RE.sub("", page.read_text(encoding="utf-8"))
     # Insert from the end of the file backwards so earlier offsets stay valid.

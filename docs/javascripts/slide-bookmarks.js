@@ -315,12 +315,12 @@
     if (!saved_ns.length) {
       var empty = document.createElement("p");
       empty.textContent = connectFailed
-          ? "Couldn’t reach your account. Reload the page and try again."
-          : !authKnown || (user && !listLoaded)
-            ? "Connecting to your account…"
-            : user
-              ? "No bookmarked slides in this deck yet."
-              : "Sign in to bookmark slides.";
+        ? "Couldn’t reach your account. Reload the page and try again."
+        : !authKnown || (user && !listLoaded)
+          ? "Connecting to your account…"
+          : user
+            ? "No bookmarked slides in this deck yet."
+            : "Sign in to bookmark slides.";
       savedList.appendChild(empty);
       return;
     }

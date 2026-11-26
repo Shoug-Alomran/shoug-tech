@@ -37,10 +37,22 @@
     ["fill", "Fill in the blank", "Auto-marked, small typos allowed"],
     ["match", "Matching", "Auto-marked, part marks per pair"],
     ["num", "Calculation", "Auto-marked, small rounding allowed"],
-    ["written", "Written answer", "Marked from key words; you can change the mark"],
+    [
+      "written",
+      "Written answer",
+      "Marked from key words; you can change the mark",
+    ],
   ];
   // Suggested minutes per question type, close to PSU exam pacing.
-  var PACE = { mcq: 1, tf: 0.6, multi: 1.5, fill: 1, match: 2, num: 2, written: 4 };
+  var PACE = {
+    mcq: 1,
+    tf: 0.6,
+    multi: 1.5,
+    fill: 1,
+    match: 2,
+    num: 2,
+    written: 4,
+  };
   var LETTERS = "ABCDEFGHIJ";
 
   /* ------------------------------------------------------------ storage */
@@ -110,7 +122,11 @@
     var h = Math.floor(sec / 3600),
       m = Math.floor((sec % 3600) / 60),
       s = sec % 60;
-    return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
+    return (
+      (h ? h + ":" + String(m).padStart(2, "0") : m) +
+      ":" +
+      String(s).padStart(2, "0")
+    );
   }
   function minutesText(min) {
     if (min < 60) return min + " min";
@@ -129,13 +145,19 @@
   }
   function dateText(ts) {
     var d = new Date(ts);
-    return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) +
-      " · " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    return (
+      d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) +
+      " · " +
+      d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
+    );
   }
   function shortTitle(t) {
-    return String(t || "").replace(/^(Ch|Chapter|Lecture|Topic)\s*([\d.]+)\s*·\s*/i, function (m, a, n) {
-      return (/^l/i.test(a) ? "L" : /^t/i.test(a) ? "T" : "Ch ") + n + " · ";
-    });
+    return String(t || "").replace(
+      /^(Ch|Chapter|Lecture|Topic)\s*([\d.]+)\s*·\s*/i,
+      function (m, a, n) {
+        return (/^l/i.test(a) ? "L" : /^t/i.test(a) ? "T" : "Ch ") + n + " · ";
+      },
+    );
   }
   function bar(p, cls) {
     var b = el("div", "bar " + (cls || band(p)));
@@ -150,37 +172,55 @@
   var index = null; // banks/index.json
   var banks = {}; // course -> bank
   var bank = null; // selected course's bank
-  var setup = { scope: null, chapters: {}, types: {}, count: 20, timing: "auto", minutes: 30, fresh: true };
+  var setup = {
+    scope: null,
+    chapters: {},
+    types: {},
+    count: 20,
+    timing: "auto",
+    minutes: 30,
+    fresh: true,
+  };
   var exam = null; // the run in progress (also in localStorage)
   var timerId = null;
 
   function fetchJson(url) {
-    return fetch(url, { cache: "no-cache", credentials: "same-origin" }).then(function (r) {
-      if (!r.ok) {
-        var err = new Error(r.status);
-        err.status = r.status;
-        throw err;
-      }
-      return r.json();
-    });
+    return fetch(url, { cache: "no-cache", credentials: "same-origin" }).then(
+      function (r) {
+        if (!r.ok) {
+          var err = new Error(r.status);
+          err.status = r.status;
+          throw err;
+        }
+        return r.json();
+      },
+    );
   }
   function entryFor(course) {
-    return (index && index.courses.find(function (c) { return c.course === course; })) || {};
+    return (
+      (index &&
+        index.courses.find(function (c) {
+          return c.course === course;
+        })) ||
+      {}
+    );
   }
   function getBank(course) {
     if (banks[course]) return Promise.resolve(banks[course]);
-    return fetchJson(entryFor(course).bank || BANKS + course + ".json").then(function (b) {
-      b.byId = {};
-      b.chById = {};
-      b.questions.forEach(function (q) {
-        b.byId[q.id] = q;
-      });
-      b.chapters.forEach(function (c) {
-        b.chById[c.id] = c;
-      });
-      banks[course] = b;
-      return b;
-    });
+    return fetchJson(entryFor(course).bank || BANKS + course + ".json").then(
+      function (b) {
+        b.byId = {};
+        b.chById = {};
+        b.questions.forEach(function (q) {
+          b.byId[q.id] = q;
+        });
+        b.chapters.forEach(function (c) {
+          b.chById[c.id] = c;
+        });
+        banks[course] = b;
+        return b;
+      },
+    );
   }
   function chapterTitle(b, id) {
     if (id === OTHER || !id) return "Mixed and past-paper questions";
@@ -201,15 +241,25 @@
 
   function params() {
     var p = new URLSearchParams(location.search);
-    return { course: (p.get("course") || "").toLowerCase(), ch: p.get("ch"), scope: p.get("scope"), exam: p.get("exam") };
+    return {
+      course: (p.get("course") || "").toLowerCase(),
+      ch: p.get("ch"),
+      scope: p.get("scope"),
+      exam: p.get("exam"),
+    };
   }
   // ?exam=midterm-1 | midterm-2 | final (from a course's exam folders) -> preset index.
   function scopeForExam(b, exam) {
     if (!exam) return null;
-    var want = /^final/.test(exam) ? "final" : /^midterm/.test(exam) ? "midterm" : "";
+    var want = /^final/.test(exam)
+      ? "final"
+      : /^midterm/.test(exam)
+        ? "midterm"
+        : "";
     var hits = [];
     b.scopes.forEach(function (s, i) {
-      if (s.type === want || (want === "midterm" && /mid|major/i.test(s.label))) hits.push(i);
+      if (s.type === want || (want === "midterm" && /mid|major/i.test(s.label)))
+        hits.push(i);
     });
     if (!hits.length) return null;
     return exam === "midterm-2" ? hits[Math.min(1, hits.length - 1)] : hits[0];
@@ -222,12 +272,25 @@
     placeholder.value = "";
     sel.appendChild(placeholder);
     index.courses.forEach(function (c) {
-      var o = el("option", "", c.name + " · " + c.count + " questions" + (c.locked ? " · course access" : ""));
+      var o = el(
+        "option",
+        "",
+        c.name +
+          " · " +
+          c.count +
+          " questions" +
+          (c.locked ? " · course access" : ""),
+      );
       o.value = c.course;
       sel.appendChild(o);
     });
     var want = params().course || load(K.settings, {}).lastCourse || "";
-    if (!index.courses.some(function (c) { return c.course === want; })) want = "";
+    if (
+      !index.courses.some(function (c) {
+        return c.course === want;
+      })
+    )
+      want = "";
     sel.value = want;
     sel.addEventListener("change", function () {
       selectCourse(sel.value, false);
@@ -242,7 +305,12 @@
     });
 
     $("ch-all").addEventListener("click", function () {
-      setChapters(availableChapters().map(function (c) { return c.id; }), null);
+      setChapters(
+        availableChapters().map(function (c) {
+          return c.id;
+        }),
+        null,
+      );
     });
     $("ch-none").addEventListener("click", function () {
       setChapters([], null);
@@ -254,7 +322,8 @@
     });
     $("timing").addEventListener("change", function () {
       setup.timing = this.value;
-      if (setup.timing === "custom" && !$("minutes").value) $("minutes").value = suggestedMinutes();
+      if (setup.timing === "custom" && !$("minutes").value)
+        $("minutes").value = suggestedMinutes();
       renderSummary();
     });
     $("minutes").addEventListener("input", function () {
@@ -266,8 +335,21 @@
     });
     $("start").addEventListener("click", startExam);
     $("history-clear").addEventListener("click", function () {
-      if (!bank || !confirm("Delete your past " + bank.name + " mock exam results from this browser?")) return;
-      save(K.history, load(K.history, []).filter(function (h) { return h.course !== bank.course; }));
+      if (
+        !bank ||
+        !confirm(
+          "Delete your past " +
+            bank.name +
+            " mock exam results from this browser?",
+        )
+      )
+        return;
+      save(
+        K.history,
+        load(K.history, []).filter(function (h) {
+          return h.course !== bank.course;
+        }),
+      );
       var r = load(K.ready, {});
       delete r[bank.course];
       save(K.ready, r);
@@ -286,8 +368,14 @@
 
   function renderEmptySetup() {
     bank = null;
-    $("course-note").textContent = index.courses.length + " courses, " +
-      index.courses.reduce(function (n, c) { return n + c.count; }, 0).toLocaleString() +
+    $("course-note").textContent =
+      index.courses.length +
+      " courses, " +
+      index.courses
+        .reduce(function (n, c) {
+          return n + c.count;
+        }, 0)
+        .toLocaleString() +
       " questions from the site's quizzes and past papers.";
     $("scopes").innerHTML = "";
     $("chapters").innerHTML = "";
@@ -313,33 +401,60 @@
         setup.types = {};
         TYPES.forEach(function (t) {
           var has = typeCount(t[0]) > 0;
-          setup.types[t[0]] = has && (saved.types ? saved.types.indexOf(t[0]) > -1 : true);
+          setup.types[t[0]] =
+            has && (saved.types ? saved.types.indexOf(t[0]) > -1 : true);
         });
-        if (!TYPES.some(function (t) { return setup.types[t[0]]; }))
-          TYPES.forEach(function (t) { setup.types[t[0]] = typeCount(t[0]) > 0; });
+        if (
+          !TYPES.some(function (t) {
+            return setup.types[t[0]];
+          })
+        )
+          TYPES.forEach(function (t) {
+            setup.types[t[0]] = typeCount(t[0]) > 0;
+          });
         setup.count = saved.count || 20;
         setup.timing = saved.timing || "auto";
         setup.minutes = saved.minutes || 30;
         $("count").value = setup.count;
         $("timing").value = setup.timing;
         $("minutes").value = setup.minutes;
-        var tagged = b.questions.filter(function (q) { return q.c; }).length;
+        var tagged = b.questions.filter(function (q) {
+          return q.c;
+        }).length;
         $("course-note").innerHTML = "";
-        $("course-note").appendChild(document.createTextNode(
-          b.questions.length + " questions from " + b.sources.length + " quizzes and past papers" +
-          (b.chapters.length ? ", " + pct(tagged, b.questions.length) + "% matched to a chapter. " : ". ")));
+        $("course-note").appendChild(
+          document.createTextNode(
+            b.questions.length +
+              " questions from " +
+              b.sources.length +
+              " quizzes and past papers" +
+              (b.chapters.length
+                ? ", " +
+                  pct(tagged, b.questions.length) +
+                  "% matched to a chapter. "
+                : ". "),
+          ),
+        );
         var a = el("a", "", "Course page");
         a.href = b.page;
         $("course-note").appendChild(a);
 
         // Chapters: from the link (?ch= or ?scope=), else the last setup, else everything.
-        var ids = null, scope = null;
+        var ids = null,
+          scope = null;
         if (p.ch) ids = p.ch.split(",");
         else if (p.scope != null && b.scopes[+p.scope]) scope = +p.scope;
-        else if (scopeForExam(b, p.exam) != null) scope = scopeForExam(b, p.exam);
-        else if (saved.chapters) { ids = saved.chapters; scope = saved.scope != null ? saved.scope : null; }
+        else if (scopeForExam(b, p.exam) != null)
+          scope = scopeForExam(b, p.exam);
+        else if (saved.chapters) {
+          ids = saved.chapters;
+          scope = saved.scope != null ? saved.scope : null;
+        }
         if (scope != null && b.scopes[scope]) ids = scopeIds(scope);
-        if (!ids) ids = availableChapters().map(function (c) { return c.id; });
+        if (!ids)
+          ids = availableChapters().map(function (c) {
+            return c.id;
+          });
         renderTypes();
         setChapters(ids, scope);
         renderHistory();
@@ -347,12 +462,18 @@
       },
       function (err) {
         if ($("course").value !== course) return;
-        if (entryFor(course).locked && err && (err.status === 401 || err.status === 403)) lockedSetup(course, err.status);
+        if (
+          entryFor(course).locked &&
+          err &&
+          (err.status === 401 || err.status === 403)
+        )
+          lockedSetup(course, err.status);
         else {
           renderEmptySetup();
-          $("course-note").textContent = err && err.status === 404
-            ? "This course's questions aren't published yet. Try again later."
-            : "Couldn't load this course's questions. Check your connection and try again.";
+          $("course-note").textContent =
+            err && err.status === 404
+              ? "This course's questions aren't published yet. Try again later."
+              : "Couldn't load this course's questions. Check your connection and try again.";
         }
       },
     );
@@ -365,20 +486,34 @@
     renderEmptySetup();
     var note = $("course-note");
     note.innerHTML = "";
-    note.appendChild(document.createTextNode(
-      c.count + " " + c.name + " questions come with the course. " +
-      (status === 403
-        ? "Your account doesn't have approved access yet. "
-        : "Sign in to the course with the account you bought it on, then come back here. ")));
-    var signIn = el("a", "", status === 403 ? "Check your access" : "Sign in to the course");
-    signIn.href = "/course-access/?next=" + encodeURIComponent("/academics/other-courses/" + course + "/exams/");
+    note.appendChild(
+      document.createTextNode(
+        c.count +
+          " " +
+          c.name +
+          " questions come with the course. " +
+          (status === 403
+            ? "Your account doesn't have approved access yet. "
+            : "Sign in to the course with the account you bought it on, then come back here. "),
+      ),
+    );
+    var signIn = el(
+      "a",
+      "",
+      status === 403 ? "Check your access" : "Sign in to the course",
+    );
+    signIn.href =
+      "/course-access/?next=" +
+      encodeURIComponent("/academics/other-courses/" + course + "/exams/");
     note.appendChild(signIn);
     note.appendChild(document.createTextNode(" · "));
     var buy = el("a", "", "Get access");
     buy.href = "/checkout/ethics/";
     note.appendChild(buy);
     $("chapters").innerHTML = "";
-    $("chapters").appendChild(el("p", "muted", "Chapters appear once the course is unlocked."));
+    $("chapters").appendChild(
+      el("p", "muted", "Chapters appear once the course is unlocked."),
+    );
   }
 
   // Chapters with questions, plus the untagged group when there is one.
@@ -391,16 +526,31 @@
     var list = bank.chapters.map(function (c) {
       return { id: c.id, title: c.title, n: counts[c.id] || 0 };
     });
-    var other = bank.questions.filter(function (q) { return !q.c; }).length;
-    if (other) list.push({ id: OTHER, title: chapterTitle(bank, OTHER), n: counts[OTHER] || 0 });
+    var other = bank.questions.filter(function (q) {
+      return !q.c;
+    }).length;
+    if (other)
+      list.push({
+        id: OTHER,
+        title: chapterTitle(bank, OTHER),
+        n: counts[OTHER] || 0,
+      });
     return list;
   }
   function scopeIds(i) {
     var s = bank.scopes[i];
     // Untagged past-paper questions span the course, so only a comprehensive
     // (final) preset takes them; a midterm preset would pull in final papers.
-    var comprehensive = s.type === "final" || /comprehensive|final/i.test(s.label);
-    return s.chapters.concat(comprehensive && bank.questions.some(function (q) { return !q.c; }) ? [OTHER] : []);
+    var comprehensive =
+      s.type === "final" || /comprehensive|final/i.test(s.label);
+    return s.chapters.concat(
+      comprehensive &&
+        bank.questions.some(function (q) {
+          return !q.c;
+        })
+        ? [OTHER]
+        : [],
+    );
   }
   function setChapters(ids, scope) {
     setup.chapters = {};
@@ -416,7 +566,9 @@
   function renderScopes() {
     var host = $("scopes");
     host.innerHTML = "";
-    var all = availableChapters().map(function (c) { return c.id; });
+    var all = availableChapters().map(function (c) {
+      return c.id;
+    });
     var opts = [["Everything", all, null]];
     bank.scopes.forEach(function (s, i) {
       opts.push([s.label, scopeIds(i), i]);
@@ -425,7 +577,8 @@
     opts.forEach(function (o) {
       var b = el("button", "chip", o[0]);
       b.type = "button";
-      var on = o[2] === setup.scope && (o[2] != null || sameSet(o[1], selectedIds()));
+      var on =
+        o[2] === setup.scope && (o[2] != null || sameSet(o[1], selectedIds()));
       b.setAttribute("aria-pressed", String(on));
       b.addEventListener("click", function () {
         setChapters(o[1], o[2]);
@@ -434,19 +587,32 @@
     });
   }
   function sameSet(a, b) {
-    return a.length === b.length && a.every(function (x) { return b.indexOf(x) > -1; });
+    return (
+      a.length === b.length &&
+      a.every(function (x) {
+        return b.indexOf(x) > -1;
+      })
+    );
   }
   function selectedIds() {
-    return Object.keys(setup.chapters).filter(function (k) { return setup.chapters[k]; });
+    return Object.keys(setup.chapters).filter(function (k) {
+      return setup.chapters[k];
+    });
   }
 
   function renderChapters() {
     var host = $("chapters");
     host.innerHTML = "";
-    var last = (load(K.ready, {})[bank.course]) || {};
+    var last = load(K.ready, {})[bank.course] || {};
     var list = availableChapters();
     if (!list.length) {
-      host.appendChild(el("p", "muted", "This course's questions aren't sorted into chapters yet, so the exam draws from all of them."));
+      host.appendChild(
+        el(
+          "p",
+          "muted",
+          "This course's questions aren't sorted into chapters yet, so the exam draws from all of them.",
+        ),
+      );
       return;
     }
     list.forEach(function (c) {
@@ -462,7 +628,9 @@
         renderSummary();
       });
       var t = el("span", "", shortTitle(c.title));
-      t.appendChild(el("small", "", c.n + " question" + (c.n === 1 ? "" : "s")));
+      t.appendChild(
+        el("small", "", c.n + " question" + (c.n === 1 ? "" : "s")),
+      );
       lab.appendChild(box);
       lab.appendChild(t);
       var r = last[c.id];
@@ -477,7 +645,11 @@
   }
 
   function typeCount(t) {
-    return bank ? bank.questions.filter(function (q) { return q.t === t; }).length : 0;
+    return bank
+      ? bank.questions.filter(function (q) {
+          return q.t === t;
+        }).length
+      : 0;
   }
   function renderTypes() {
     var host = $("types");
@@ -514,10 +686,21 @@
       n = Math.min(setup.count, p.length);
     if (!qs) {
       // Average pace of the questions you'd get.
-      var avg = p.length ? p.reduce(function (s, q) { return s + PACE[q.t]; }, 0) / p.length : 1;
+      var avg = p.length
+        ? p.reduce(function (s, q) {
+            return s + PACE[q.t];
+          }, 0) / p.length
+        : 1;
       return Math.max(5, Math.ceil((avg * n) / 5) * 5);
     }
-    return Math.max(5, Math.ceil(qs.reduce(function (s, q) { return s + PACE[q.t]; }, 0) / 5) * 5);
+    return Math.max(
+      5,
+      Math.ceil(
+        qs.reduce(function (s, q) {
+          return s + PACE[q.t];
+        }, 0) / 5,
+      ) * 5,
+    );
   }
   function renderCountChips() {
     var host = $("count-chips");
@@ -551,13 +734,26 @@
     var p = pool(),
       n = Math.min(setup.count, p.length),
       chs = {};
-    p.forEach(function (q) { chs[chKey(q)] = 1; });
-    var mins = setup.timing === "none" ? null : setup.timing === "custom" ? setup.minutes : suggestedMinutes();
-    $("minutes-note").textContent = setup.timing === "auto" ? minutesText(suggestedMinutes()) : "";
+    p.forEach(function (q) {
+      chs[chKey(q)] = 1;
+    });
+    var mins =
+      setup.timing === "none"
+        ? null
+        : setup.timing === "custom"
+          ? setup.minutes
+          : suggestedMinutes();
+    $("minutes-note").textContent =
+      setup.timing === "auto" ? minutesText(suggestedMinutes()) : "";
     [
       ["Course", bank.name],
       ["Questions", n + (p.length > n ? " of " + p.length : "")],
-      ["Chapters", Object.keys(chs).filter(function (k) { return k !== OTHER; }).length + (chs[OTHER] ? " + mixed" : "")],
+      [
+        "Chapters",
+        Object.keys(chs).filter(function (k) {
+          return k !== OTHER;
+        }).length + (chs[OTHER] ? " + mixed" : ""),
+      ],
       ["Time", mins == null ? "No limit" : minutesText(mins)],
     ].forEach(function (r) {
       dl.appendChild(el("dt", "", r[0]));
@@ -565,17 +761,28 @@
     });
     renderCountChips();
     if (!p.length) {
-      warn.textContent = "No questions match. Tick at least one chapter and one question type.";
+      warn.textContent =
+        "No questions match. Tick at least one chapter and one question type.";
       warn.hidden = false;
     } else if (setup.count > p.length) {
-      warn.textContent = "Only " + p.length + " questions match, so the exam will have " + p.length + ".";
+      warn.textContent =
+        "Only " +
+        p.length +
+        " questions match, so the exam will have " +
+        p.length +
+        ".";
       warn.hidden = false;
     }
     $("start").disabled = !p.length;
   }
 
   function renderHistory() {
-    var list = load(K.history, []).filter(function (h) { return h.course === bank.course; }).slice(-6).reverse();
+    var list = load(K.history, [])
+      .filter(function (h) {
+        return h.course === bank.course;
+      })
+      .slice(-6)
+      .reverse();
     $("history-panel").hidden = !list.length;
     var host = $("history");
     host.innerHTML = "";
@@ -597,9 +804,18 @@
       box.hidden = true;
       return;
     }
-    var done = a.ids.filter(function (id) { return answered(a.answers[id]); }).length;
-    $("resume-text").textContent = "You have an unfinished " + a.name + " mock exam: " + done + " of " + a.ids.length +
-      " answered" + (a.limit ? ", " + clock(remaining(a)) + " left." : ".");
+    var done = a.ids.filter(function (id) {
+      return answered(a.answers[id]);
+    }).length;
+    $("resume-text").textContent =
+      "You have an unfinished " +
+      a.name +
+      " mock exam: " +
+      done +
+      " of " +
+      a.ids.length +
+      " answered" +
+      (a.limit ? ", " + clock(remaining(a)) + " left." : ".");
     box.hidden = false;
     $("resume-go").onclick = function () {
       getBank(a.course).then(
@@ -610,9 +826,12 @@
           runExam();
         },
         function (err) {
-          $("resume-text").textContent = err && (err.status === 401 || err.status === 403)
-            ? "Sign in to the " + a.name + " course to continue this mock exam."
-            : "Couldn't load the questions for this mock exam. Check your connection and try again.";
+          $("resume-text").textContent =
+            err && (err.status === 401 || err.status === 403)
+              ? "Sign in to the " +
+                a.name +
+                " course to continue this mock exam."
+              : "Couldn't load the questions for this mock exam. Check your connection and try again.";
         },
       );
     };
@@ -628,7 +847,7 @@
   // Spread the questions across chapters (round robin, random order), with
   // unseen questions first, then ones you got wrong, then ones you got right.
   function pick(n) {
-    var seen = (load(K.seen, {})[bank.course]) || {};
+    var seen = load(K.seen, {})[bank.course] || {};
     var groups = {};
     pool().forEach(function (q) {
       (groups[chKey(q)] = groups[chKey(q)] || []).push(q);
@@ -639,17 +858,25 @@
     };
     var keys = shuffle(Object.keys(groups));
     keys.forEach(function (k) {
-      groups[k] = shuffle(groups[k]).sort(function (a, b) { return rank(a) - rank(b); });
+      groups[k] = shuffle(groups[k]).sort(function (a, b) {
+        return rank(a) - rank(b);
+      });
     });
     // Never two parts of the same scenario, and never two questions that ask nearly the same thing.
-    var out = [], usedGroups = {}, usedWords = [];
+    var out = [],
+      usedGroups = {},
+      usedWords = [];
     function clash(q) {
       if (q.g && usedGroups[q.g]) return true;
       var w = coreWords(q);
-      return usedWords.some(function (o) { return similar(o, w); });
+      return usedWords.some(function (o) {
+        return similar(o, w);
+      });
     }
     while (out.length < n && keys.length) {
-      keys = keys.filter(function (k) { return groups[k].length; });
+      keys = keys.filter(function (k) {
+        return groups[k].length;
+      });
       for (var i = 0; i < keys.length && out.length < n; i++) {
         var list = groups[keys[i]];
         while (list.length) {
@@ -666,38 +893,64 @@
   }
 
   var STOP = {};
-  ("which what when where that this with from into each your their there these those about would could should does have " +
+  (
+    "which what when where that this with from into each your their there these those about would could should does have " +
     "following best most describe explain name give list state between other than they them then also only some such being " +
-    "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct").split(" ").forEach(function (w) { STOP[w] = 1; });
+    "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct"
+  )
+    .split(" ")
+    .forEach(function (w) {
+      STOP[w] = 1;
+    });
   // The question plus its right answer, so "same concept, different wording" still counts as a repeat.
   // Words in more than 10% of the bank's questions (templates, the course's subject) are ignored.
   function commonWords() {
     if (bank._common) return bank._common;
     var df = {};
     bank.questions.forEach(function (q) {
-      rawWords(q).forEach(function (w) { df[w] = (df[w] || 0) + 1; });
+      rawWords(q).forEach(function (w) {
+        df[w] = (df[w] || 0) + 1;
+      });
     });
-    var limit = Math.max(6, bank.questions.length * 0.1), out = {};
-    Object.keys(df).forEach(function (w) { if (df[w] > limit) out[w] = 1; });
+    var limit = Math.max(6, bank.questions.length * 0.1),
+      out = {};
+    Object.keys(df).forEach(function (w) {
+      if (df[w] > limit) out[w] = 1;
+    });
     return (bank._common = out);
   }
   function coreWords(q) {
     var common = commonWords();
-    return rawWords(q).filter(function (w) { return !common[w]; });
+    return rawWords(q).filter(function (w) {
+      return !common[w];
+    });
   }
   function rawWords(q) {
     var seen = {};
-    var answer = q.o && typeof q.a === "number" && q.t !== "tf" ? " " + plain(q.o[q.a]) : "";
-    (plain(q.qc || q.q) + answer).toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).forEach(function (w) {
-      if (w.length > 3 && !STOP[w]) seen[w.replace(/(ies)$/, "y").replace(/(es|s)$/, "")] = 1;
-    });
+    var answer =
+      q.o && typeof q.a === "number" && q.t !== "tf"
+        ? " " + plain(q.o[q.a])
+        : "";
+    (plain(q.qc || q.q) + answer)
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]+/g, " ")
+      .split(/\s+/)
+      .forEach(function (w) {
+        if (w.length > 3 && !STOP[w])
+          seen[w.replace(/(ies)$/, "y").replace(/(es|s)$/, "")] = 1;
+      });
     return Object.keys(seen);
   }
   function similar(a, b) {
     if (a.length < 3 || b.length < 3) return false;
-    var set = {}, both = 0;
-    a.forEach(function (w) { set[w] = 1; });
-    b.forEach(function (w) { if (set[w]) both++; });
+    var set = {},
+      both = 0;
+    a.forEach(function (w) {
+      set[w] = 1;
+    });
+    b.forEach(function (w) {
+      if (set[w]) both++;
+    });
     // Stricter than the bank builder (which deletes at 0.5): here it only keeps two
     // look-alike questions out of the same exam.
     return both >= 3 && both / (a.length + b.length - both) >= 0.38;
@@ -706,11 +959,15 @@
   // Options keep their order when one refers to another ("all of the above").
   function fixedOrder(q) {
     return q.o.some(function (o) {
-      return /\b(all|none|both|neither) of (the )?(above|these|them)\b|\b(both|only) [a-e] and [a-e]\b|\b[a-e] (and|&) [a-e]\b|^\s*(all|none|both)\s*$/i.test(plain(o));
+      return /\b(all|none|both|neither) of (the )?(above|these|them)\b|\b(both|only) [a-e] and [a-e]\b|\b[a-e] (and|&) [a-e]\b|^\s*(all|none|both)\s*$/i.test(
+        plain(o),
+      );
     });
   }
   function optionOrder(q) {
-    var idx = q.o.map(function (o, i) { return i; });
+    var idx = q.o.map(function (o, i) {
+      return i;
+    });
     if (q.t === "tf") return idx;
     return fixedOrder(q) ? idx : shuffle(idx);
   }
@@ -719,10 +976,19 @@
     var qs = pick(Math.min(setup.count, pool().length));
     if (!qs.length) return;
     // The same number the summary showed.
-    var mins = setup.timing === "none" ? 0 : setup.timing === "custom" ? setup.minutes : suggestedMinutes();
+    var mins =
+      setup.timing === "none"
+        ? 0
+        : setup.timing === "custom"
+          ? setup.minutes
+          : suggestedMinutes();
     var all = load(K.settings, {});
     all[bank.course] = {
-      types: TYPES.map(function (t) { return t[0]; }).filter(function (t) { return setup.types[t]; }),
+      types: TYPES.map(function (t) {
+        return t[0];
+      }).filter(function (t) {
+        return setup.types[t];
+      }),
       chapters: selectedIds(),
       scope: setup.scope,
       count: setup.count,
@@ -735,8 +1001,13 @@
       v: 1,
       course: bank.course,
       name: bank.name,
-      scope: setup.scope != null && bank.scopes[setup.scope] ? bank.scopes[setup.scope].label : "",
-      ids: qs.map(function (q) { return q.id; }),
+      scope:
+        setup.scope != null && bank.scopes[setup.scope]
+          ? bank.scopes[setup.scope].label
+          : "",
+      ids: qs.map(function (q) {
+        return q.id;
+      }),
       order: {},
       answers: {},
       flags: {},
@@ -747,15 +1018,34 @@
       settings: all[bank.course],
     };
     // The right answers land evenly on A–D across the exam, so the letter never gives one away.
-    var free = qs.filter(function (q) { return q.t === "mcq" && q.o && q.o.length > 1 && !fixedOrder(q); });
+    var free = qs.filter(function (q) {
+      return q.t === "mcq" && q.o && q.o.length > 1 && !fixedOrder(q);
+    });
     var off = Math.floor(Math.random() * 4);
-    var slots = shuffle(free.map(function (q, i) { return (i + off) % 4; }));
+    var slots = shuffle(
+      free.map(function (q, i) {
+        return (i + off) % 4;
+      }),
+    );
     qs.forEach(function (q) {
       if (q.o) exam.order[q.id] = optionOrder(q);
-      if (q.pairs) exam.order[q.id] = shuffle(q.pairs.map(function (p, i) { return i; }));
+      if (q.pairs)
+        exam.order[q.id] = shuffle(
+          q.pairs.map(function (p, i) {
+            return i;
+          }),
+        );
     });
     free.forEach(function (q, i) {
-      var rest = shuffle(q.o.map(function (o, k) { return k; }).filter(function (k) { return k !== q.a; }));
+      var rest = shuffle(
+        q.o
+          .map(function (o, k) {
+            return k;
+          })
+          .filter(function (k) {
+            return k !== q.a;
+          }),
+      );
       rest.splice(slots[i] % q.o.length, 0, q.a);
       exam.order[q.id] = rest;
     });
@@ -773,27 +1063,45 @@
   }
   function answered(v) {
     if (v == null) return false;
-    if (Array.isArray(v)) return v.some(function (x) { return x != null; });
+    if (Array.isArray(v))
+      return v.some(function (x) {
+        return x != null;
+      });
     if (typeof v === "string") return v.trim().length > 0;
     return true;
   }
 
   function runExam() {
     show("exam");
-    $("exam-title").textContent = exam.name + (exam.scope ? " · " + exam.scope : "") + " · MOCK";
+    $("exam-title").textContent =
+      exam.name + (exam.scope ? " · " + exam.scope : "") + " · MOCK";
     document.title = exam.name + " mock exam | SHOUG.TECH";
     $("finish").onclick = function () {
-      var left = exam.ids.filter(function (id) { return !answered(exam.answers[id]); }).length;
-      var flagged = exam.ids.filter(function (id) { return exam.flags[id]; }).length;
+      var left = exam.ids.filter(function (id) {
+        return !answered(exam.answers[id]);
+      }).length;
+      var flagged = exam.ids.filter(function (id) {
+        return exam.flags[id];
+      }).length;
       var msg = left
-        ? left + " question" + (left === 1 ? " is" : "s are") + " unanswered and will be marked wrong. Finish anyway?"
+        ? left +
+          " question" +
+          (left === 1 ? " is" : "s are") +
+          " unanswered and will be marked wrong. Finish anyway?"
         : flagged
-          ? "You flagged " + flagged + " question" + (flagged === 1 ? "" : "s") + " to come back to. Finish anyway?"
+          ? "You flagged " +
+            flagged +
+            " question" +
+            (flagged === 1 ? "" : "s") +
+            " to come back to. Finish anyway?"
           : "Finish and see your results?";
       if (confirm(msg)) finishExam(false);
     };
     $("quit").onclick = function () {
-      if (!confirm("Quit this mock exam? Your answers won't be saved or scored.")) return;
+      if (
+        !confirm("Quit this mock exam? Your answers won't be saved or scored.")
+      )
+        return;
       stopTimer();
       drop(K.active);
       exam = null;
@@ -858,7 +1166,9 @@
         var b = el("button", "opt");
         b.type = "button";
         b.setAttribute("role", multi ? "checkbox" : "radio");
-        var on = multi ? Array.isArray(ans) && ans.indexOf(oi) > -1 : ans === oi;
+        var on = multi
+          ? Array.isArray(ans) && ans.indexOf(oi) > -1
+          : ans === oi;
         b.setAttribute("aria-checked", String(on));
         b.appendChild(el("span", "key", LETTERS[pos]));
         b.appendChild(html("span", "", q.o[oi]));
@@ -868,10 +1178,21 @@
         box.appendChild(b);
       });
       card.appendChild(box);
-      if (multi) card.appendChild(el("p", "hint", "Select every correct option. You need all of them, and no wrong ones, for the mark."));
+      if (multi)
+        card.appendChild(
+          el(
+            "p",
+            "hint",
+            "Select every correct option. You need all of them, and no wrong ones, for the mark.",
+          ),
+        );
     } else if (q.t === "match") {
       var rows = el("div", "match");
-      var cur = Array.isArray(ans) ? ans : q.pairs.map(function () { return null; });
+      var cur = Array.isArray(ans)
+        ? ans
+        : q.pairs.map(function () {
+            return null;
+          });
       q.pairs.forEach(function (pair, ti) {
         var row = el("label", "match-row");
         row.appendChild(html("span", "match-term", pair[0]));
@@ -887,7 +1208,9 @@
         });
         sel.value = cur[ti] == null ? "" : String(cur[ti]);
         sel.addEventListener("change", function () {
-          var next = (Array.isArray(exam.answers[q.id]) ? exam.answers[q.id] : cur).slice();
+          var next = (
+            Array.isArray(exam.answers[q.id]) ? exam.answers[q.id] : cur
+          ).slice();
           next[ti] = sel.value === "" ? null : +sel.value;
           exam.answers[q.id] = next;
           persist();
@@ -897,7 +1220,9 @@
         rows.appendChild(row);
       });
       card.appendChild(rows);
-      card.appendChild(el("p", "hint", "Each correct pair earns its share of the mark."));
+      card.appendChild(
+        el("p", "hint", "Each correct pair earns its share of the mark."),
+      );
     } else if (q.t === "fill") {
       var inp = el("input", "fill-input");
       inp.type = "text";
@@ -915,7 +1240,9 @@
         if (e.key === "Enter") go(1);
       });
       card.appendChild(inp);
-      setTimeout(function () { inp.focus(); }, 0);
+      setTimeout(function () {
+        inp.focus();
+      }, 0);
     } else if (q.t === "num") {
       var row = el("div", "num-row");
       var ni = el("input", "fill-input num-input");
@@ -936,7 +1263,9 @@
       row.appendChild(ni);
       if (q.u) row.appendChild(el("span", "num-unit", q.u));
       card.appendChild(row);
-      card.appendChild(el("p", "hint", "Small rounding differences are accepted."));
+      card.appendChild(
+        el("p", "hint", "Small rounding differences are accepted."),
+      );
     } else {
       var ta = el("textarea", "written");
       ta.setAttribute("aria-label", "Your answer");
@@ -948,7 +1277,13 @@
         renderNav();
       });
       card.appendChild(ta);
-      card.appendChild(el("p", "hint", "When you finish, this is marked from the key words in the model answer. You can change the mark if the check missed something you said in other words."));
+      card.appendChild(
+        el(
+          "p",
+          "hint",
+          "When you finish, this is marked from the key words in the model answer. You can change the mark if the check missed something you said in other words.",
+        ),
+      );
     }
 
     var acts = el("div", "q-actions");
@@ -957,11 +1292,19 @@
     var prev = el("button", "btn", "← Previous");
     prev.type = "button";
     prev.disabled = exam.cur === 0;
-    prev.addEventListener("click", function () { go(-1); });
-    var flag = el("button", "btn", exam.flags[q.id] ? "Flagged" : "Flag for review");
+    prev.addEventListener("click", function () {
+      go(-1);
+    });
+    var flag = el(
+      "button",
+      "btn",
+      exam.flags[q.id] ? "Flagged" : "Flag for review",
+    );
     flag.type = "button";
     flag.setAttribute("aria-pressed", String(!!exam.flags[q.id]));
-    flag.addEventListener("click", function () { toggleFlag(q); });
+    flag.addEventListener("click", function () {
+      toggleFlag(q);
+    });
     var last = exam.cur === n - 1;
     var next = el("button", "btn primary", last ? "Finish" : "Next →");
     next.type = "button";
@@ -979,12 +1322,22 @@
   }
 
   function typeName(q) {
-    return { mcq: "Multiple choice", tf: "True or false", multi: "Select all that apply", fill: "Fill in the blank", match: "Matching", num: "Calculation", written: "Written answer" }[q.t];
+    return {
+      mcq: "Multiple choice",
+      tf: "True or false",
+      multi: "Select all that apply",
+      fill: "Fill in the blank",
+      match: "Matching",
+      num: "Calculation",
+      written: "Written answer",
+    }[q.t];
   }
 
   function choose(q, oi) {
     if (q.t === "multi") {
-      var cur = Array.isArray(exam.answers[q.id]) ? exam.answers[q.id].slice() : [];
+      var cur = Array.isArray(exam.answers[q.id])
+        ? exam.answers[q.id].slice()
+        : [];
       var at = cur.indexOf(oi);
       if (at > -1) cur.splice(at, 1);
       else cur.push(oi);
@@ -993,9 +1346,13 @@
       exam.answers[q.id] = exam.answers[q.id] === oi ? null : oi;
     }
     persist();
-    var keep = document.activeElement && document.activeElement.classList.contains("opt")
-      ? Array.prototype.indexOf.call(document.activeElement.parentNode.children, document.activeElement)
-      : -1;
+    var keep =
+      document.activeElement && document.activeElement.classList.contains("opt")
+        ? Array.prototype.indexOf.call(
+            document.activeElement.parentNode.children,
+            document.activeElement,
+          )
+        : -1;
     renderQuestion();
     if (keep > -1) {
       var opts = $("q-card").querySelectorAll(".opt");
@@ -1018,8 +1375,11 @@
 
   function renderNav() {
     var n = exam.ids.length,
-      done = exam.ids.filter(function (id) { return answered(exam.answers[id]); }).length;
-    $("exam-count").textContent = "Question " + (exam.cur + 1) + " of " + n + " · " + done + " answered";
+      done = exam.ids.filter(function (id) {
+        return answered(exam.answers[id]);
+      }).length;
+    $("exam-count").textContent =
+      "Question " + (exam.cur + 1) + " of " + n + " · " + done + " answered";
     $("exam-bar").style.width = pct(done, n) + "%";
     var host = $("nav-grid");
     host.innerHTML = "";
@@ -1032,8 +1392,13 @@
         b.classList.add("current");
         b.setAttribute("aria-current", "step");
       }
-      b.setAttribute("aria-label", "Question " + (i + 1) +
-        (answered(exam.answers[id]) ? ", answered" : ", not answered") + (exam.flags[id] ? ", flagged" : ""));
+      b.setAttribute(
+        "aria-label",
+        "Question " +
+          (i + 1) +
+          (answered(exam.answers[id]) ? ", answered" : ", not answered") +
+          (exam.flags[id] ? ", flagged" : ""),
+      );
       b.addEventListener("click", function () {
         exam.cur = i;
         persist();
@@ -1048,9 +1413,21 @@
     var tag = (e.target.tagName || "").toLowerCase();
     if (tag === "input" || tag === "textarea" || tag === "select") return;
     var q = currentQ();
-    if (e.key === "ArrowRight") { go(1); e.preventDefault(); return; }
-    if (e.key === "ArrowLeft") { go(-1); e.preventDefault(); return; }
-    if (e.key === "F" && e.shiftKey) { toggleFlag(q); e.preventDefault(); return; }
+    if (e.key === "ArrowRight") {
+      go(1);
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "ArrowLeft") {
+      go(-1);
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "F" && e.shiftKey) {
+      toggleFlag(q);
+      e.preventDefault();
+      return;
+    }
     if (!q.o) return;
     var k = e.key.toUpperCase(),
       pos = /^[1-9]$/.test(k) ? +k - 1 : LETTERS.indexOf(k);
@@ -1077,15 +1454,25 @@
   }
   function close(a, b) {
     if (a === b) return true;
-    if (Math.abs(a.length - b.length) > 1 || Math.min(a.length, b.length) < 5) return false;
+    if (Math.abs(a.length - b.length) > 1 || Math.min(a.length, b.length) < 5)
+      return false;
     // One edit apart.
-    var i = 0, j = 0, edits = 0;
+    var i = 0,
+      j = 0,
+      edits = 0;
     while (i < a.length && j < b.length) {
-      if (a[i] === b[j]) { i++; j++; continue; }
+      if (a[i] === b[j]) {
+        i++;
+        j++;
+        continue;
+      }
       if (++edits > 1) return false;
       if (a.length > b.length) i++;
       else if (b.length > a.length) j++;
-      else { i++; j++; }
+      else {
+        i++;
+        j++;
+      }
     }
     return edits + (a.length - i) + (b.length - j) <= 1;
   }
@@ -1099,7 +1486,10 @@
       var as = a.split(" ").map(stem).join(" ");
       if (gs === as || close(gs, as)) return true;
       // A short answer that contains the accepted term ("management buy-in" for "management").
-      return g.split(" ").length <= 4 && (" " + gs + " ").indexOf(" " + as + " ") > -1;
+      return (
+        g.split(" ").length <= 4 &&
+        (" " + gs + " ").indexOf(" " + as + " ") > -1
+      );
     });
   }
 
@@ -1131,27 +1521,46 @@
   // Written answers: the points the question asks for (q.k, from the quiz's rubric), or, for
   // older questions, the distinctive words of the model answer. Returns the mark and what was found.
   var KW_STOP = {};
-  ("about above after again against because been before being below between both could does doing during each every " +
+  (
+    "about above after again against because been before being below between both could does doing during each every " +
     "from further have having here into itself more most must only other over same should some such than that their theirs " +
     "them then there these they this those through under until very what when where which while whom with would your " +
-    "also used uses using make makes made like just many much well need needs often usually example examples called mean means").split(" ").forEach(function (w) { KW_STOP[w] = 1; });
-  function keyPoints(q) {
-    if (q.k && q.k.length) return { list: q.k, need: Math.min(q.n || q.k.length, q.k.length), from: "rubric" };
-    var seen = {}, list = [];
-    norm(plain(q.m)).split(" ").forEach(function (w) {
-      if (w.length < 5 || KW_STOP[w] || /^\d+$/.test(w)) return;
-      var st = stem(w);
-      if (seen[st] || list.length >= 8) return;
-      seen[st] = 1;
-      list.push([w, [st]]);
+    "also used uses using make makes made like just many much well need needs often usually example examples called mean means"
+  )
+    .split(" ")
+    .forEach(function (w) {
+      KW_STOP[w] = 1;
     });
-    return { list: list, need: Math.max(1, Math.min(list.length, Math.ceil(list.length * 0.5))), from: "model" };
+  function keyPoints(q) {
+    if (q.k && q.k.length)
+      return {
+        list: q.k,
+        need: Math.min(q.n || q.k.length, q.k.length),
+        from: "rubric",
+      };
+    var seen = {},
+      list = [];
+    norm(plain(q.m))
+      .split(" ")
+      .forEach(function (w) {
+        if (w.length < 5 || KW_STOP[w] || /^\d+$/.test(w)) return;
+        var st = stem(w);
+        if (seen[st] || list.length >= 8) return;
+        seen[st] = 1;
+        list.push([w, [st]]);
+      });
+    return {
+      list: list,
+      need: Math.max(1, Math.min(list.length, Math.ceil(list.length * 0.5))),
+      from: "model",
+    };
   }
   function keywordMark(q, given) {
     var kp = keyPoints(q);
     var text = " " + norm(given).split(" ").map(stem).join(" ") + " ";
     var raw = " " + norm(given) + " ";
-    var found = [], missed = [];
+    var found = [],
+      missed = [];
     kp.list.forEach(function (pt) {
       var hit = pt[1].some(function (k) {
         var nk = norm(k);
@@ -1163,7 +1572,13 @@
     });
     var frac = kp.list.length ? Math.min(found.length, kp.need) / kp.need : 0;
     var mark = !answered(given) ? 0 : frac >= 0.75 ? 1 : frac >= 0.34 ? 0.5 : 0;
-    return { mark: mark, found: found, missed: missed, need: kp.need, from: kp.from };
+    return {
+      mark: mark,
+      found: found,
+      missed: missed,
+      need: kp.need,
+      from: kp.from,
+    };
   }
   function autoMarkWritten(ex) {
     ex.auto = ex.auto || {};
@@ -1179,16 +1594,29 @@
   // 1 right, 0 wrong, 0.5 half (written only), null not marked yet.
   function markOf(q, ex) {
     var a = ex.answers[q.id];
-    if (q.t === "written") return ex.marks[q.id] == null ? null : ex.marks[q.id];
+    if (q.t === "written")
+      return ex.marks[q.id] == null ? null : ex.marks[q.id];
     if (!answered(a)) return 0;
     if (q.t === "match") {
       var got = 0;
-      q.pairs.forEach(function (p, i) { if (a[i] === i) got++; });
+      q.pairs.forEach(function (p, i) {
+        if (a[i] === i) got++;
+      });
       return Math.round((got / q.pairs.length) * 100) / 100;
     }
     if (q.t === "multi") {
-      var want = q.a.slice().sort(function (x, y) { return x - y; }).join(","),
-        got = (a || []).slice().sort(function (x, y) { return x - y; }).join(",");
+      var want = q.a
+          .slice()
+          .sort(function (x, y) {
+            return x - y;
+          })
+          .join(","),
+        got = (a || [])
+          .slice()
+          .sort(function (x, y) {
+            return x - y;
+          })
+          .join(",");
       return want === got ? 1 : 0;
     }
     if (q.t === "fill") return fillRight(q, a) ? 1 : 0;
@@ -1229,7 +1657,10 @@
     record();
     document.title = exam.name + " mock exam results | SHOUG.TECH";
     renderResults();
-    if (timeUp) setTimeout(function () { alert("Time's up. Your exam was submitted."); }, 50);
+    if (timeUp)
+      setTimeout(function () {
+        alert("Time's up. Your exam was submitted.");
+      }, 50);
   }
 
   // Save the attempt, what you've seen, chapter readiness and missed questions.
@@ -1240,7 +1671,9 @@
     Object.keys(t.ch).forEach(function (k) {
       if (t.ch[k].t) chapters[k] = [t.ch[k].r, t.ch[k].t];
     });
-    var hist = load(K.history, []).filter(function (h) { return h.id !== exam.attempt; });
+    var hist = load(K.history, []).filter(function (h) {
+      return h.id !== exam.attempt;
+    });
     hist.push({
       id: exam.attempt,
       course: exam.course,
@@ -1266,7 +1699,10 @@
       if (m != null) mine[id] = m >= 1 ? 1 : 0;
     });
     var keys = Object.keys(mine);
-    if (keys.length > 5000) keys.slice(0, keys.length - 5000).forEach(function (k) { delete mine[k]; });
+    if (keys.length > 5000)
+      keys.slice(0, keys.length - 5000).forEach(function (k) {
+        delete mine[k];
+      });
     seen[exam.course] = mine;
     save(K.seen, seen);
 
@@ -1274,7 +1710,13 @@
     var rc = ready[exam.course] || {};
     Object.keys(chapters).forEach(function (k) {
       if (k === OTHER) return;
-      rc[k] = { r: chapters[k][0], t: chapters[k][1], at: exam.finished, attempt: exam.attempt, title: chapterTitle(bank, k) };
+      rc[k] = {
+        r: chapters[k][0],
+        t: chapters[k][1],
+        at: exam.finished,
+        attempt: exam.attempt,
+        title: chapterTitle(bank, k),
+      };
     });
     ready[exam.course] = rc;
     save(K.ready, ready);
@@ -1300,12 +1742,18 @@
         mid = hash((src.url || "") + "|" + text);
       if (m == null || m >= 1) {
         // Re-marked as right: take back only what this attempt added.
-        var had = list.some(function (x) { return x.id === mid && x.attempt === exam.attempt; });
-        list = list.filter(function (x) { return !(x.id === mid && x.attempt === exam.attempt); });
+        var had = list.some(function (x) {
+          return x.id === mid && x.attempt === exam.attempt;
+        });
+        list = list.filter(function (x) {
+          return !(x.id === mid && x.attempt === exam.attempt);
+        });
         if (had) forgotten.push(mid);
         return;
       }
-      list = list.filter(function (x) { return x.id !== mid; });
+      list = list.filter(function (x) {
+        return x.id !== mid;
+      });
       list.push({
         id: mid,
         q: text.slice(0, 600),
@@ -1326,7 +1774,9 @@
     save(K.mistakes, list.slice(-400));
     if (forgotten.length) {
       var gone = load("shoug-quiz-mistakes-gone", {});
-      forgotten.forEach(function (id) { gone[id] = Date.now(); });
+      forgotten.forEach(function (id) {
+        gone[id] = Date.now();
+      });
       save("shoug-quiz-mistakes-gone", gone);
     }
     exam.mistakesAdded = added;
@@ -1335,14 +1785,36 @@
   function yourAnswerText(q, ex) {
     var a = ex.answers[q.id];
     if (!answered(a)) return "";
-    if (q.t === "multi") return a.map(function (i) { return plain(q.o[i]); }).join("; ");
-    if (q.t === "match") return q.pairs.map(function (p, i) { return plain(p[0]) + " → " + (a[i] == null ? "?" : plain(q.pairs[a[i]][1])); }).join("; ");
+    if (q.t === "multi")
+      return a
+        .map(function (i) {
+          return plain(q.o[i]);
+        })
+        .join("; ");
+    if (q.t === "match")
+      return q.pairs
+        .map(function (p, i) {
+          return (
+            plain(p[0]) + " → " + (a[i] == null ? "?" : plain(q.pairs[a[i]][1]))
+          );
+        })
+        .join("; ");
     if (q.o) return plain(q.o[a]);
     return String(a);
   }
   function correctText(q) {
-    if (q.t === "multi") return q.a.map(function (i) { return plain(q.o[i]); }).join("; ");
-    if (q.t === "match") return q.pairs.map(function (p) { return plain(p[0]) + " → " + plain(p[1]); }).join("; ");
+    if (q.t === "multi")
+      return q.a
+        .map(function (i) {
+          return plain(q.o[i]);
+        })
+        .join("; ");
+    if (q.t === "match")
+      return q.pairs
+        .map(function (p) {
+          return plain(p[0]) + " → " + plain(p[1]);
+        })
+        .join("; ");
     if (q.o) return plain(q.o[q.a]);
     if (q.t === "fill") return q.a.join(" / ");
     if (q.t === "num") return String(q.a) + (q.u ? " " + q.u : "");
@@ -1362,11 +1834,25 @@
     ring.style.setProperty("--c", "var(--" + band(p) + ")");
     $("score-pct").textContent = t.max ? p + "%" : "—";
     $("score-raw").textContent = fmtScore(t.score) + " / " + t.max;
-    $("result-eyebrow").textContent = exam.name + (exam.scope ? " · " + exam.scope : "") + " · Mock exam";
-    $("result-title").textContent = exam.timeUp ? "Time's up" : t.max ? verdict(p) : "Mark your answers";
+    $("result-eyebrow").textContent =
+      exam.name + (exam.scope ? " · " + exam.scope : "") + " · Mock exam";
+    $("result-title").textContent = exam.timeUp
+      ? "Time's up"
+      : t.max
+        ? verdict(p)
+        : "Mark your answers";
     $("result-lede").textContent = t.max
-      ? "You scored " + fmtScore(t.score) + " out of " + t.max + (t.pending ? " so far" : "") + ". " +
-        (p >= 80 ? "Keep it there with a quick mock before the exam." : p >= 50 ? "Go back over the chapters marked Shaky and Weak below, then try again." : "Start with the weakest chapter below before taking another mock.")
+      ? "You scored " +
+        fmtScore(t.score) +
+        " out of " +
+        t.max +
+        (t.pending ? " so far" : "") +
+        ". " +
+        (p >= 80
+          ? "Keep it there with a quick mock before the exam."
+          : p >= 50
+            ? "Go back over the chapters marked Shaky and Weak below, then try again."
+            : "Start with the weakest chapter below before taking another mock.")
       : "Every question in this exam is written. Compare your answers with the model answers below and mark each one.";
     var secs = Math.round((exam.finished - exam.started) / 1000);
     var stats = $("result-stats");
@@ -1375,16 +1861,21 @@
       [t.right, "right"],
       [t.wrong, "wrong"],
       [clock(secs), exam.limit ? "of " + clock(exam.limit) : "taken"],
-    ].concat(t.pending ? [[t.pending, "to mark"]] : []).forEach(function (s) {
-      var d = el("div", "stat");
-      d.appendChild(el("b", "", String(s[0])));
-      d.appendChild(document.createTextNode(s[1]));
-      stats.appendChild(d);
-    });
+    ]
+      .concat(t.pending ? [[t.pending, "to mark"]] : [])
+      .forEach(function (s) {
+        var d = el("div", "stat");
+        d.appendChild(el("b", "", String(s[0])));
+        d.appendChild(document.createTextNode(s[1]));
+        stats.appendChild(d);
+      });
 
     $("pending-note").hidden = !t.pending;
     $("pending-text").textContent = t.pending
-      ? t.pending + " written answer" + (t.pending === 1 ? " needs" : "s need") + " marking before your score is complete."
+      ? t.pending +
+        " written answer" +
+        (t.pending === 1 ? " needs" : "s need") +
+        " marking before your score is complete."
       : "";
     $("pending-go").onclick = function () {
       reviewFilter = "pending";
@@ -1400,17 +1891,33 @@
     return s % 1 ? s.toFixed(1) : String(s);
   }
   function verdict(p) {
-    return p >= 90 ? "Exam ready" : p >= 80 ? "Strong result" : p >= 65 ? "Getting there" : p >= 50 ? "Halfway there" : "Needs work";
+    return p >= 90
+      ? "Exam ready"
+      : p >= 80
+        ? "Strong result"
+        : p >= 65
+          ? "Getting there"
+          : p >= 50
+            ? "Halfway there"
+            : "Needs work";
   }
 
   function chapterRows(t) {
     return Object.keys(t.ch)
-      .filter(function (k) { return t.ch[k].t; })
+      .filter(function (k) {
+        return t.ch[k].t;
+      })
       .map(function (k) {
-        return { id: k, r: t.ch[k].r, t: t.ch[k].t, p: pct(t.ch[k].r, t.ch[k].t) };
+        return {
+          id: k,
+          r: t.ch[k].r,
+          t: t.ch[k].t,
+          p: pct(t.ch[k].r, t.ch[k].t),
+        };
       })
       .sort(function (a, b) {
-        if ((a.id === OTHER) !== (b.id === OTHER)) return a.id === OTHER ? 1 : -1;
+        if ((a.id === OTHER) !== (b.id === OTHER))
+          return a.id === OTHER ? 1 : -1;
         return a.p - b.p || b.t - a.t;
       });
   }
@@ -1420,7 +1927,13 @@
     host.innerHTML = "";
     var rows = chapterRows(t);
     if (!rows.length) {
-      host.appendChild(el("p", "muted", "Mark your written answers to see how each chapter went."));
+      host.appendChild(
+        el(
+          "p",
+          "muted",
+          "Mark your written answers to see how each chapter went.",
+        ),
+      );
       return;
     }
     rows.forEach(function (r) {
@@ -1440,14 +1953,28 @@
       row.appendChild(bar(r.p));
       host.appendChild(row);
     });
-    if (rows.length && rows[0].id !== OTHER && rows.some(function (r) { return r.t < 3 && r.id !== OTHER; }))
-      host.appendChild(el("p", "muted", "Chapters with only one or two questions are a rough signal. A longer exam gives a clearer picture."));
+    if (
+      rows.length &&
+      rows[0].id !== OTHER &&
+      rows.some(function (r) {
+        return r.t < 3 && r.id !== OTHER;
+      })
+    )
+      host.appendChild(
+        el(
+          "p",
+          "muted",
+          "Chapters with only one or two questions are a rough signal. A longer exam gives a clearer picture.",
+        ),
+      );
   }
 
   function renderNextSteps(t) {
     var host = $("next-steps");
     host.innerHTML = "";
-    var weak = chapterRows(t).filter(function (r) { return r.id !== OTHER && r.p < 80; });
+    var weak = chapterRows(t).filter(function (r) {
+      return r.id !== OTHER && r.p < 80;
+    });
     function action(label, sub, fn, primary) {
       var b = el("button", "btn" + (primary ? " primary" : ""));
       b.type = "button";
@@ -1459,31 +1986,65 @@
     if (weak.length) {
       action(
         "Practise your weak chapters",
-        weak.slice(0, 3).map(function (r) { return shortTitle(chapterTitle(bank, r.id)).split(" · ")[0]; }).join(", ") +
-          (weak.length > 3 ? " and " + (weak.length - 3) + " more" : "") + " · new questions first",
+        weak
+          .slice(0, 3)
+          .map(function (r) {
+            return shortTitle(chapterTitle(bank, r.id)).split(" · ")[0];
+          })
+          .join(", ") +
+          (weak.length > 3 ? " and " + (weak.length - 3) + " more" : "") +
+          " · new questions first",
         function () {
-          backToSetup(weak.map(function (r) { return r.id; }));
+          backToSetup(
+            weak.map(function (r) {
+              return r.id;
+            }),
+          );
         },
         true,
       );
     }
-    action("Take another mock exam", "Same settings, questions you haven't seen first", function () {
-      backToSetup(null, true);
-    }, !weak.length);
-    action("Change the setup", "Different chapters, length or timer", function () {
-      backToSetup(null);
-    });
+    action(
+      "Take another mock exam",
+      "Same settings, questions you haven't seen first",
+      function () {
+        backToSetup(null, true);
+      },
+      !weak.length,
+    );
+    action(
+      "Change the setup",
+      "Different chapters, length or timer",
+      function () {
+        backToSetup(null);
+      },
+    );
     if (exam.mistakesAdded) {
       var a = el("a", "btn", "");
       a.href = "/academics/review/";
       a.appendChild(document.createTextNode("Review mistakes"));
-      a.appendChild(el("span", "", exam.mistakesAdded + " missed question" + (exam.mistakesAdded === 1 ? " was" : "s were") + " added. They come back tomorrow, then after 3 and 7 days."));
+      a.appendChild(
+        el(
+          "span",
+          "",
+          exam.mistakesAdded +
+            " missed question" +
+            (exam.mistakesAdded === 1 ? " was" : "s were") +
+            " added. They come back tomorrow, then after 3 and 7 days.",
+        ),
+      );
       host.appendChild(a);
     }
     var plan = el("a", "btn", "");
     plan.href = "/account/calendar/";
     plan.appendChild(document.createTextNode("Open your Study Plan"));
-    plan.appendChild(el("span", "", "Your chapter scores show next to your readiness ratings."));
+    plan.appendChild(
+      el(
+        "span",
+        "",
+        "Your chapter scores show next to your readiness ratings.",
+      ),
+    );
     host.appendChild(plan);
   }
 
@@ -1504,17 +2065,30 @@
         save(K.settings, all);
       }
       selectCourse(course, false);
-      if (startNow) setTimeout(function () { if (!$("start").disabled) startExam(); }, 0);
+      if (startNow)
+        setTimeout(function () {
+          if (!$("start").disabled) startExam();
+        }, 0);
     });
   }
 
   function renderReview() {
     var t = tally(exam);
-    var filters = [["all", "All " + exam.ids.length], ["wrong", "Wrong " + (t.wrong + countPart())]];
+    var filters = [
+      ["all", "All " + exam.ids.length],
+      ["wrong", "Wrong " + (t.wrong + countPart())],
+    ];
     if (t.pending) filters.push(["pending", "To mark " + t.pending]);
-    var flagged = exam.ids.filter(function (id) { return exam.flags[id]; }).length;
+    var flagged = exam.ids.filter(function (id) {
+      return exam.flags[id];
+    }).length;
     if (flagged) filters.push(["flagged", "Flagged " + flagged]);
-    if (!filters.some(function (f) { return f[0] === reviewFilter; })) reviewFilter = "all";
+    if (
+      !filters.some(function (f) {
+        return f[0] === reviewFilter;
+      })
+    )
+      reviewFilter = "all";
     var fh = $("review-filter");
     fh.innerHTML = "";
     filters.forEach(function (f) {
@@ -1540,7 +2114,16 @@
       host.appendChild(reviewCard(q, i, m));
       shown++;
     });
-    if (!shown) host.appendChild(el("div", "empty", reviewFilter === "wrong" ? "Nothing wrong. Nice work." : "Nothing here."));
+    if (!shown)
+      host.appendChild(
+        el(
+          "div",
+          "empty",
+          reviewFilter === "wrong"
+            ? "Nothing wrong. Nice work."
+            : "Nothing here.",
+        ),
+      );
   }
   function countPart() {
     return exam.ids.filter(function (id) {
@@ -1551,12 +2134,26 @@
   }
 
   function reviewCard(q, i, m) {
-    var state = m == null ? "pending" : m >= 1 ? "right" : m > 0 ? "part" : "wrong";
+    var state =
+      m == null ? "pending" : m >= 1 ? "right" : m > 0 ? "part" : "wrong";
     var card = el("article", "rv " + state);
     var meta = el("div", "rv-meta");
     meta.appendChild(el("span", "", "Q" + (i + 1)));
-    meta.appendChild(el("span", "verdict " + state, { right: "Right", wrong: answered(exam.answers[q.id]) ? "Wrong" : "Not answered", part: q.t === "match" ? "Part marks" : "Half marks", pending: "Mark this" }[state]));
-    meta.appendChild(el("span", "", shortTitle(chapterTitle(bank, chKey(q))).split(" · ")[0]));
+    meta.appendChild(
+      el(
+        "span",
+        "verdict " + state,
+        {
+          right: "Right",
+          wrong: answered(exam.answers[q.id]) ? "Wrong" : "Not answered",
+          part: q.t === "match" ? "Part marks" : "Half marks",
+          pending: "Mark this",
+        }[state],
+      ),
+    );
+    meta.appendChild(
+      el("span", "", shortTitle(chapterTitle(bank, chKey(q))).split(" · ")[0]),
+    );
     if (exam.flags[q.id]) meta.appendChild(el("span", "", "Flagged"));
     card.appendChild(meta);
     card.appendChild(html("div", "rv-q", q.q));
@@ -1568,7 +2165,16 @@
         var pick = Array.isArray(a) ? a[i] : null;
         var ok = pick === i;
         var li = el("li", ok ? "correct picked" : pick != null ? "picked" : "");
-        li.appendChild(html("span", "", "<b>" + p[0] + "</b> → " + (pick == null ? "<i>no answer</i>" : q.pairs[pick][1])));
+        li.appendChild(
+          html(
+            "span",
+            "",
+            "<b>" +
+              p[0] +
+              "</b> → " +
+              (pick == null ? "<i>no answer</i>" : q.pairs[pick][1]),
+          ),
+        );
         if (!ok) li.appendChild(html("span", "tag", "Correct: " + p[1]));
         else li.appendChild(el("span", "tag", "✓"));
         mul.appendChild(li);
@@ -1578,11 +2184,23 @@
       var ul = el("ul", "rv-opts");
       exam.order[q.id].forEach(function (oi, pos) {
         var right = q.t === "multi" ? q.a.indexOf(oi) > -1 : q.a === oi;
-        var picked = q.t === "multi" ? Array.isArray(a) && a.indexOf(oi) > -1 : a === oi;
+        var picked =
+          q.t === "multi" ? Array.isArray(a) && a.indexOf(oi) > -1 : a === oi;
         var li = el("li", (right ? "correct " : "") + (picked ? "picked" : ""));
         li.appendChild(el("b", "", LETTERS[pos]));
         li.appendChild(html("span", "", q.o[oi]));
-        if (right || picked) li.appendChild(el("span", "tag", right && picked ? "Your answer ✓" : right ? "Correct" : "Your answer"));
+        if (right || picked)
+          li.appendChild(
+            el(
+              "span",
+              "tag",
+              right && picked
+                ? "Your answer ✓"
+                : right
+                  ? "Correct"
+                  : "Your answer",
+            ),
+          );
         ul.appendChild(li);
       });
       card.appendChild(ul);
@@ -1606,28 +2224,65 @@
       card.appendChild(cn);
     } else {
       card.appendChild(el("div", "label", "Your answer"));
-      card.appendChild(el("div", "rv-yours", answered(a) ? a : "(nothing written)"));
+      card.appendChild(
+        el("div", "rv-yours", answered(a) ? a : "(nothing written)"),
+      );
       card.appendChild(el("div", "label", "Model answer"));
       card.appendChild(html("div", "rv-model", q.m));
-      var au = (exam.auto && exam.auto[q.id]) || (answered(a) || exam.done ? keywordMark(q, a) : null);
+      var au =
+        (exam.auto && exam.auto[q.id]) ||
+        (answered(a) || exam.done ? keywordMark(q, a) : null);
       if (au) {
         var kw = el("div", "kw-box");
-        kw.appendChild(el("div", "label", au.from === "rubric"
-          ? "Key points the question asks for: found " + Math.min(au.found.length, au.need) + " of " + au.need
-          : "Key words from the model answer: found " + au.found.length + " (" + au.need + " needed for full marks)"));
+        kw.appendChild(
+          el(
+            "div",
+            "label",
+            au.from === "rubric"
+              ? "Key points the question asks for: found " +
+                  Math.min(au.found.length, au.need) +
+                  " of " +
+                  au.need
+              : "Key words from the model answer: found " +
+                  au.found.length +
+                  " (" +
+                  au.need +
+                  " needed for full marks)",
+          ),
+        );
         var chips = el("div", "kw-chips");
-        au.found.forEach(function (w) { chips.appendChild(el("span", "kw hit", "✓ " + w)); });
-        au.missed.forEach(function (w) { chips.appendChild(el("span", "kw miss", w)); });
+        au.found.forEach(function (w) {
+          chips.appendChild(el("span", "kw hit", "✓ " + w));
+        });
+        au.missed.forEach(function (w) {
+          chips.appendChild(el("span", "kw miss", w));
+        });
         kw.appendChild(chips);
         card.appendChild(kw);
       }
       var sm = el("div", "selfmark");
       var NAMES = { 1: "Full", 0.5: "Half", 0: "None" };
-      var changed = au && exam.marks[q.id] != null && exam.marks[q.id] !== au.mark;
-      sm.appendChild(el("span", "label", !au ? "Your mark" : changed
-        ? "Auto mark: " + NAMES[au.mark] + " · you changed it to " + NAMES[exam.marks[q.id]]
-        : "Auto mark: " + NAMES[au.mark] + " · change it if you disagree"));
-      [[1, "Full"], [0.5, "Half"], [0, "None"]].forEach(function (o) {
+      var changed =
+        au && exam.marks[q.id] != null && exam.marks[q.id] !== au.mark;
+      sm.appendChild(
+        el(
+          "span",
+          "label",
+          !au
+            ? "Your mark"
+            : changed
+              ? "Auto mark: " +
+                NAMES[au.mark] +
+                " · you changed it to " +
+                NAMES[exam.marks[q.id]]
+              : "Auto mark: " + NAMES[au.mark] + " · change it if you disagree",
+        ),
+      );
+      [
+        [1, "Full"],
+        [0.5, "Half"],
+        [0, "None"],
+      ].forEach(function (o) {
         var b = el("button", "btn small", o[1]);
         b.type = "button";
         b.setAttribute("aria-pressed", String(exam.marks[q.id] === o[0]));
@@ -1652,18 +2307,29 @@
       foot.appendChild(link);
       foot.appendChild(document.createTextNode(" · "));
     }
-    var rep = el("button", "linkish", reported[q.id] ? "Reported, thank you" : "Report a problem");
+    var rep = el(
+      "button",
+      "linkish",
+      reported[q.id] ? "Reported, thank you" : "Report a problem",
+    );
     rep.type = "button";
     rep.disabled = !!reported[q.id];
     rep.addEventListener("click", function () {
       rep.hidden = true;
-      card.appendChild(reportForm(q, src, function () {
-        rep.textContent = "Reported, thank you";
-        rep.disabled = true;
-        rep.hidden = false;
-      }, function () {
-        rep.hidden = false;
-      }));
+      card.appendChild(
+        reportForm(
+          q,
+          src,
+          function () {
+            rep.textContent = "Reported, thank you";
+            rep.disabled = true;
+            rep.hidden = false;
+          },
+          function () {
+            rep.hidden = false;
+          },
+        ),
+      );
     });
     foot.appendChild(rep);
     card.appendChild(foot);
@@ -1725,23 +2391,44 @@
       send.disabled = true;
       status.textContent = "Sending…";
       var sync = window.ShougStudySync;
-      (sync && sync.user() ? sync.report(data) : Promise.resolve(false)).then(function (ok) {
-        if (ok) {
-          reported[q.id] = true;
-          f.remove();
-          done();
-          return;
-        }
-        // Signed out (or the rules aren't live yet): hand over an email draft.
-        var body = "Course: " + bank.name + "\nQuestion id: " + q.id + "\nPage: " + location.origin + data.source +
-          "\nProblem: " + sel.options[sel.selectedIndex].text + "\n\n" + data.question + (data.note ? "\n\nNote: " + data.note : "");
-        location.href = "mailto:shoug.alomran@shoug-tech.com?subject=" +
-          encodeURIComponent("Mock exam question report (" + bank.name + ")") + "&body=" + encodeURIComponent(body);
-        status.textContent = "Opened an email draft. Sign in to send reports from here.";
-        send.disabled = false;
-      });
+      (sync && sync.user() ? sync.report(data) : Promise.resolve(false)).then(
+        function (ok) {
+          if (ok) {
+            reported[q.id] = true;
+            f.remove();
+            done();
+            return;
+          }
+          // Signed out (or the rules aren't live yet): hand over an email draft.
+          var body =
+            "Course: " +
+            bank.name +
+            "\nQuestion id: " +
+            q.id +
+            "\nPage: " +
+            location.origin +
+            data.source +
+            "\nProblem: " +
+            sel.options[sel.selectedIndex].text +
+            "\n\n" +
+            data.question +
+            (data.note ? "\n\nNote: " + data.note : "");
+          location.href =
+            "mailto:shoug.alomran@shoug-tech.com?subject=" +
+            encodeURIComponent(
+              "Mock exam question report (" + bank.name + ")",
+            ) +
+            "&body=" +
+            encodeURIComponent(body);
+          status.textContent =
+            "Opened an email draft. Sign in to send reports from here.";
+          send.disabled = false;
+        },
+      );
     });
-    setTimeout(function () { sel.focus(); }, 0);
+    setTimeout(function () {
+      sel.focus();
+    }, 0);
     return f;
   }
 
@@ -1768,7 +2455,8 @@
       initSetup();
     },
     function () {
-      $("loading").textContent = "Couldn't load the question banks. Check your connection and reload the page.";
+      $("loading").textContent =
+        "Couldn't load the question banks. Check your connection and reload the page.";
     },
   );
 })();

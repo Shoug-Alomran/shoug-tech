@@ -301,8 +301,14 @@
   ].join("");
 
   function hubLink() {
-    var pack = document.querySelector('.hero-cta a[href="/academics/study-pack/"]');
-    if (!pack || document.querySelector('.hero-cta a[href^="/academics/mock-exam/"]')) return;
+    var pack = document.querySelector(
+      '.hero-cta a[href="/academics/study-pack/"]',
+    );
+    if (
+      !pack ||
+      document.querySelector('.hero-cta a[href^="/academics/mock-exam/"]')
+    )
+      return;
     var a = document.createElement("a");
     a.href = "/academics/mock-exam/";
     a.textContent = "Take a timed mock exam ->";
@@ -372,8 +378,11 @@
 // every chapter, with a sparkline of that chapter across past mock exams
 // (mock-exam.js keeps them; study-sync.js brings them from other devices).
 (function () {
-  var m = window.location.pathname.match(/^\/academics\/([^/]+)\/([^/]+)\/(?:index\.html)?$/);
-  if (!m || m[1] === "mock-exam" || m[1] === "review" || m[1] === "study-pack") return;
+  var m = window.location.pathname.match(
+    /^\/academics\/([^/]+)\/([^/]+)\/(?:index\.html)?$/,
+  );
+  if (!m || m[1] === "mock-exam" || m[1] === "review" || m[1] === "study-pack")
+    return;
   var course = m[2].toLowerCase();
 
   var CSS = [
@@ -412,7 +421,11 @@
     return p >= 80 ? "good" : p >= 50 ? "warn" : "bad";
   }
   function pretty(id) {
-    return String(id).replace(/^ch-?/, "Ch ").replace(/^lecture-/, "Lecture ").replace(/^t(\d+)-/, "Topic $1 · ").replace(/-/g, " ");
+    return String(id)
+      .replace(/^ch-?/, "Ch ")
+      .replace(/^lecture-/, "Lecture ")
+      .replace(/^t(\d+)-/, "Topic $1 · ")
+      .replace(/-/g, " ");
   }
   // Up to the last 8 scores as a tiny line, so a trend reads at a glance.
   function spark(points) {
@@ -425,13 +438,26 @@
     svg.setAttribute("height", h);
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label", "Mock scores over time: " + points.join("%, ") + "%");
+    svg.setAttribute(
+      "aria-label",
+      "Mock scores over time: " + points.join("%, ") + "%",
+    );
     if (points.length < 2) return svg;
     var pts = points.map(function (p, i) {
-      return [2 + (i * (w - 4)) / (points.length - 1), h - 2 - ((h - 4) * p) / 100];
+      return [
+        2 + (i * (w - 4)) / (points.length - 1),
+        h - 2 - ((h - 4) * p) / 100,
+      ];
     });
     var line = document.createElementNS(NS, "polyline");
-    line.setAttribute("points", pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "));
+    line.setAttribute(
+      "points",
+      pts
+        .map(function (p) {
+          return p[0].toFixed(1) + "," + p[1].toFixed(1);
+        })
+        .join(" "),
+    );
     line.setAttribute("fill", "none");
     line.setAttribute("stroke", "currentColor");
     line.setAttribute("stroke-width", "1.6");
@@ -444,22 +470,35 @@
     dot.setAttribute("r", "2.6");
     dot.setAttribute("fill", "currentColor");
     svg.appendChild(dot);
-    svg.style.color = points[points.length - 1] >= 80 ? "#41d6c3" : points[points.length - 1] >= 50 ? "#f2b84b" : "#ff536f";
+    svg.style.color =
+      points[points.length - 1] >= 80
+        ? "#41d6c3"
+        : points[points.length - 1] >= 50
+          ? "#f2b84b"
+          : "#ff536f";
     return svg;
   }
 
   function render() {
     var old = document.querySelector(".shoug-ready");
     var ready = (load("shoug-mock-readiness", {}) || {})[course] || {};
-    var ids = Object.keys(ready).filter(function (k) { return ready[k] && ready[k].t; });
+    var ids = Object.keys(ready).filter(function (k) {
+      return ready[k] && ready[k].t;
+    });
     if (!ids.length) {
       if (old) old.remove();
       return;
     }
     var history = (load("shoug-mock-exams", []) || [])
-      .filter(function (h) { return h && h.course === course; })
-      .sort(function (a, b) { return (a.at || 0) - (b.at || 0); });
-    var anchor = document.querySelector("main .course-header") || (document.querySelector("main h1") || {}).parentNode;
+      .filter(function (h) {
+        return h && h.course === course;
+      })
+      .sort(function (a, b) {
+        return (a.at || 0) - (b.at || 0);
+      });
+    var anchor =
+      document.querySelector("main .course-header") ||
+      (document.querySelector("main h1") || {}).parentNode;
     if (!anchor || !anchor.parentNode) return;
     if (!document.getElementById("shoug-ready-styles")) {
       var st = document.createElement("style");
@@ -480,8 +519,16 @@
     sub.className = "shoug-ready__sub";
     var lastAt = history.length ? history[history.length - 1].at : 0;
     sub.textContent =
-      history.length + " mock exam" + (history.length === 1 ? "" : "s") +
-      (lastAt ? " · last on " + new Date(lastAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "");
+      history.length +
+      " mock exam" +
+      (history.length === 1 ? "" : "s") +
+      (lastAt
+        ? " · last on " +
+          new Date(lastAt).toLocaleDateString(undefined, {
+            day: "numeric",
+            month: "short",
+          })
+        : "");
     left.appendChild(k);
     left.appendChild(sub);
     var links = document.createElement("div");
@@ -491,16 +538,38 @@
         var r = ready[id],
           p = Math.round((100 * r.r) / r.t);
         var trend = history
-          .filter(function (h) { return h.ch && h.ch[id] && h.ch[id][1]; })
-          .map(function (h) { return Math.round((100 * h.ch[id][0]) / h.ch[id][1]); })
+          .filter(function (h) {
+            return h.ch && h.ch[id] && h.ch[id][1];
+          })
+          .map(function (h) {
+            return Math.round((100 * h.ch[id][0]) / h.ch[id][1]);
+          })
           .slice(-8);
-        return { id: id, title: r.title || pretty(id), p: p, r: r, trend: trend.length ? trend : [p] };
+        return {
+          id: id,
+          title: r.title || pretty(id),
+          p: p,
+          r: r,
+          trend: trend.length ? trend : [p],
+        };
       })
-      .sort(function (a, b) { return a.title.localeCompare(b.title, "en", { numeric: true }); });
-    var weak = rows.filter(function (x) { return x.p < 80; });
+      .sort(function (a, b) {
+        return a.title.localeCompare(b.title, "en", { numeric: true });
+      });
+    var weak = rows.filter(function (x) {
+      return x.p < 80;
+    });
     if (weak.length) {
       var w = document.createElement("a");
-      w.href = "/academics/mock-exam/?course=" + encodeURIComponent(course) + "&ch=" + weak.map(function (x) { return encodeURIComponent(x.id); }).join(",");
+      w.href =
+        "/academics/mock-exam/?course=" +
+        encodeURIComponent(course) +
+        "&ch=" +
+        weak
+          .map(function (x) {
+            return encodeURIComponent(x.id);
+          })
+          .join(",");
       w.textContent = "PRACTISE " + weak.length + " WEAK ->";
       links.appendChild(w);
     }
@@ -526,8 +595,17 @@
       meta.className = "shoug-ready__meta";
       var d = x.trend.length > 1 ? x.trend[x.trend.length - 1] - x.trend[0] : 0;
       meta.textContent =
-        (x.r.r % 1 ? x.r.r.toFixed(1) : x.r.r) + " of " + x.r.t + " right last time" +
-        (x.trend.length > 1 ? " · " + (d > 0 ? "up " : d < 0 ? "down " : "steady ") + (d ? Math.abs(d) + " pts over " + x.trend.length + " tries" : "over " + x.trend.length + " tries") : "");
+        (x.r.r % 1 ? x.r.r.toFixed(1) : x.r.r) +
+        " of " +
+        x.r.t +
+        " right last time" +
+        (x.trend.length > 1
+          ? " · " +
+            (d > 0 ? "up " : d < 0 ? "down " : "steady ") +
+            (d
+              ? Math.abs(d) + " pts over " + x.trend.length + " tries"
+              : "over " + x.trend.length + " tries")
+          : "");
       row.appendChild(name);
       row.appendChild(spark(x.trend));
       row.appendChild(pct);
@@ -543,13 +621,17 @@
     render();
     window.addEventListener("shoug:study-sync", render);
     // Brings results from the student's other devices when signed in.
-    if (!window.ShougStudySync && !document.querySelector('script[src*="study-sync.js"]')) {
+    if (
+      !window.ShougStudySync &&
+      !document.querySelector('script[src*="study-sync.js"]')
+    ) {
       var s = document.createElement("script");
       s.src = "/javascripts/study-sync.js";
       s.async = true;
       document.head.appendChild(s);
     }
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

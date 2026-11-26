@@ -35,13 +35,25 @@
   };
 
   // ------------------------------------------------------------- lesson key --
-  var rest = path.slice(BASE.length).replace(/index\.html$/, "").replace(/\.html$/, "");
+  var rest = path
+    .slice(BASE.length)
+    .replace(/index\.html$/, "")
+    .replace(/\.html$/, "");
   var parts = rest.split("/").filter(Boolean);
-  var KEY = parts.length ? parts.join("~").toLowerCase().replace(/[^a-z0-9~_-]/g, "-").slice(0, 140) : "home";
+  var KEY = parts.length
+    ? parts
+        .join("~")
+        .toLowerCase()
+        .replace(/[^a-z0-9~_-]/g, "-")
+        .slice(0, 140)
+    : "home";
   var SECTION = parts[0] || "home";
   // The page address as firebase-auth.js keys page comments (pageComments/{slug}).
   var PATH = path.replace(/index\.html$/, "").slice(0, 300);
-  var TITLE = document.title.replace(/^SHOUG\.TECH\s*(\||\/\/|-)\s*/i, "").replace(/\s*[|·—-]\s*SHOUG\.TECH.*$/i, "").slice(0, 140);
+  var TITLE = document.title
+    .replace(/^SHOUG\.TECH\s*(\||\/\/|-)\s*/i, "")
+    .replace(/\s*[|·—-]\s*SHOUG\.TECH.*$/i, "")
+    .slice(0, 140);
   var IS_QUIZ = SECTION === "exams" && parts.length > 1;
   // Pages people learn from (not listings): one level below a section.
   var IS_LESSON = !IS_QUIZ && parts.length >= 2;
@@ -71,41 +83,66 @@
         document.querySelector('script[src*="firebase-auth.js"]') ||
         typeof window.__shougLoadFirebaseAuth === "function";
       if (hasLoader) {
-        window.addEventListener("shoug:fb", function () { resolve(window.__shoug_fb); }, { once: true });
-        if (typeof window.__shougLoadFirebaseAuth === "function") window.__shougLoadFirebaseAuth(false);
+        window.addEventListener(
+          "shoug:fb",
+          function () {
+            resolve(window.__shoug_fb);
+          },
+          { once: true },
+        );
+        if (typeof window.__shougLoadFirebaseAuth === "function")
+          window.__shougLoadFirebaseAuth(false);
         return;
       }
       if (window.firebase && window.firebase.apps) {
-        if (!window.firebase.apps.length) window.firebase.initializeApp(FB_CONFIG);
+        if (!window.firebase.apps.length)
+          window.firebase.initializeApp(FB_CONFIG);
         return resolve(window.firebase);
       }
       loadScript(FB_BASE + "app-compat.js")
         .then(function () {
-          return Promise.all([loadScript(FB_BASE + "auth-compat.js"), loadScript(FB_BASE + "firestore-compat.js")]);
+          return Promise.all([
+            loadScript(FB_BASE + "auth-compat.js"),
+            loadScript(FB_BASE + "firestore-compat.js"),
+          ]);
         })
         .then(function () {
-          if (!window.firebase.apps.length) window.firebase.initializeApp(FB_CONFIG);
+          if (!window.firebase.apps.length)
+            window.firebase.initializeApp(FB_CONFIG);
           resolve(window.firebase);
         })
         .catch(function () {});
     });
   }
 
-  var fb, db, user, ref, record = null, ready = false;
-  var inc = function (n) { return fb.firestore.FieldValue.increment(n); };
-  var now = function () { return fb.firestore.FieldValue.serverTimestamp(); };
+  var fb,
+    db,
+    user,
+    ref,
+    record = null,
+    ready = false;
+  var inc = function (n) {
+    return fb.firestore.FieldValue.increment(n);
+  };
+  var now = function () {
+    return fb.firestore.FieldValue.serverTimestamp();
+  };
 
   function save(patch) {
     if (!ready) return Promise.resolve();
     patch.lastSeenAt = now();
     return ref.set(patch, { merge: true }).catch(function (error) {
-      if (window.console) console.warn("Course progress not saved", error && error.code);
+      if (window.console)
+        console.warn("Course progress not saved", error && error.code);
     });
   }
 
   function lessonPatch(fields) {
     var lessons = {};
-    lessons[KEY] = Object.assign({ title: TITLE, section: SECTION, path: PATH }, fields);
+    lessons[KEY] = Object.assign(
+      { title: TITLE, section: SECTION, path: PATH },
+      fields,
+    );
     return { lessons: lessons };
   }
 
@@ -121,17 +158,29 @@
     fb.auth().onAuthStateChanged(function (u) {
       if (!u || ready) return;
       user = u;
-      db.collection("courseTransfers").doc(u.uid).get()
+      db.collection("courseTransfers")
+        .doc(u.uid)
+        .get()
         .then(function (snap) {
           if (!snap.exists || snap.data().status !== "approved") return null;
-          ref = db.collection("courseProgress").doc(COURSE).collection("students").doc(u.uid);
+          ref = db
+            .collection("courseProgress")
+            .doc(COURSE)
+            .collection("students")
+            .doc(u.uid);
           return ref.get().then(function (doc) {
             if (doc.exists) {
               record = doc.data();
               return;
             }
             record = { lessons: {}, quizzes: {} };
-            return ref.set({ uid: u.uid, lessons: {}, quizzes: {}, firstSeenAt: now(), lastSeenAt: now() });
+            return ref.set({
+              uid: u.uid,
+              lessons: {},
+              quizzes: {},
+              firstSeenAt: now(),
+              lastSeenAt: now(),
+            });
           });
         })
         .then(function () {
@@ -147,7 +196,14 @@
   function onReady() {
     var days = {};
     days[riyadhDay()] = inc(1);
-    save(lessonPatch({ views: inc(1), days: days, lastAt: now(), kind: IS_QUIZ ? "quiz" : IS_LESSON ? "lesson" : "page" }));
+    save(
+      lessonPatch({
+        views: inc(1),
+        days: days,
+        lastAt: now(),
+        kind: IS_QUIZ ? "quiz" : IS_LESSON ? "lesson" : "page",
+      }),
+    );
     watchVideos();
     if (IS_LESSON) addReactions();
     if (IS_HOME) addSessions();
@@ -177,10 +233,15 @@
         }
         if (v.duration && isFinite(v.duration)) {
           duration = v.duration;
-          furthest = Math.max(furthest, Math.min(100, Math.round((t / v.duration) * 100)));
+          furthest = Math.max(
+            furthest,
+            Math.min(100, Math.round((t / v.duration) * 100)),
+          );
         }
       });
-      v.addEventListener("seeking", function () { last.delete(v); });
+      v.addEventListener("seeking", function () {
+        last.delete(v);
+      });
       v.addEventListener("ended", flushWatch);
     });
     setInterval(flushWatch, 30000);
@@ -189,11 +250,19 @@
     if (pendingWatch < 1) return;
     var secs = Math.round(pendingWatch);
     pendingWatch = 0;
-    save(lessonPatch({ watchSeconds: inc(secs), maxPct: furthest, duration: Math.round(duration) }));
+    save(
+      lessonPatch({
+        watchSeconds: inc(secs),
+        maxPct: furthest,
+        duration: Math.round(duration),
+      }),
+    );
   }
 
   // ---------------------------------------------------------------- quiz --
-  var quizAnswered = 0, quizCorrect = 0, attemptCounted = false;
+  var quizAnswered = 0,
+    quizCorrect = 0,
+    attemptCounted = false;
   var wrongQueue = {};
   function hash(text) {
     var h = 0;
@@ -212,7 +281,10 @@
     }
     // Every question keeps two counters; its text is stored only once someone
     // gets it wrong, which keeps large question banks well under 1 MB.
-    var text = String(d.text || "").replace(/\s+/g, " ").trim().slice(0, 160);
+    var text = String(d.text || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 160);
     if (text) {
       var entry = { seen: inc(1), wrong: inc(d.ok ? 0 : 1) };
       if (!d.ok) entry.text = text;
@@ -226,7 +298,13 @@
     if (!quizAnswered) return;
     var prev = (record.quizzes && record.quizzes[KEY]) || {};
     var score = Math.round((quizCorrect / quizAnswered) * 100);
-    save(quizPatch({ lastScore: score, best: Math.max(score, Number(prev.best) || 0), lastAnswered: quizAnswered }));
+    save(
+      quizPatch({
+        lastScore: score,
+        best: Math.max(score, Number(prev.best) || 0),
+        lastAnswered: quizAnswered,
+      }),
+    );
   }
 
   document.addEventListener("visibilitychange", function () {
@@ -262,9 +340,14 @@
       b.addEventListener("click", function () {
         current = current === value ? 0 : value;
         box.querySelectorAll("button").forEach(function (x) {
-          x.setAttribute("aria-pressed", String(Number(x.dataset.v) === current));
+          x.setAttribute(
+            "aria-pressed",
+            String(Number(x.dataset.v) === current),
+          );
         });
-        record.lessons[KEY] = Object.assign({}, record.lessons[KEY], { reaction: current });
+        record.lessons[KEY] = Object.assign({}, record.lessons[KEY], {
+          reaction: current,
+        });
         save(lessonPatch({ reaction: current }));
       });
       b.dataset.v = value;
@@ -279,9 +362,20 @@
   // ------------------------------------------------------------- sessions --
   function fmt(ts) {
     var d = ts && ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Riyadh" });
+    return d.toLocaleString("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Riyadh",
+    });
   }
-  var TYPE = { live: "Live session", office: "Office hours", academic: "Academic date" };
+  var TYPE = {
+    live: "Live session",
+    office: "Office hours",
+    academic: "Academic date",
+  };
 
   function addSessions() {
     var now = new Date();
@@ -292,13 +386,29 @@
       db.collection("courseBookings").where("uid", "==", user.uid).get(),
     ])
       .then(function (r) {
-        var mineCourse = function (x) { return x.course === COURSE; };
-        var events = r[0].docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }).filter(mineCourse)
-          .sort(function (a, b) { return a.start.toMillis() - b.start.toMillis(); });
-        var slots = r[1].docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }).filter(mineCourse)
-          .sort(function (a, b) { return a.start.toMillis() - b.start.toMillis(); });
+        var mineCourse = function (x) {
+          return x.course === COURSE;
+        };
+        var events = r[0].docs
+          .map(function (d) {
+            return Object.assign({ id: d.id }, d.data());
+          })
+          .filter(mineCourse)
+          .sort(function (a, b) {
+            return a.start.toMillis() - b.start.toMillis();
+          });
+        var slots = r[1].docs
+          .map(function (d) {
+            return Object.assign({ id: d.id }, d.data());
+          })
+          .filter(mineCourse)
+          .sort(function (a, b) {
+            return a.start.toMillis() - b.start.toMillis();
+          });
         var mine = {};
-        r[2].forEach(function (d) { mine[d.id] = true; });
+        r[2].forEach(function (d) {
+          mine[d.id] = true;
+        });
         if (!events.length && !slots.length) return;
         renderSessions(events, slots, mine);
       })
@@ -322,7 +432,13 @@
       events.slice(0, 6).forEach(function (e) {
         var li = el("li");
         li.appendChild(el("strong", "", e.title));
-        li.appendChild(el("span", "ct-meta", (TYPE[e.type] || "Event") + " · " + fmt(e.start)));
+        li.appendChild(
+          el(
+            "span",
+            "ct-meta",
+            (TYPE[e.type] || "Event") + " · " + fmt(e.start),
+          ),
+        );
         if (e.link && /^https:\/\//.test(e.link)) {
           var a = el("a", "", "Join link");
           a.href = e.link;
@@ -342,26 +458,61 @@
         b.type = "button";
         var state = mine[s.id] ? "mine" : "unknown";
         function paint() {
-          b.textContent = fmt(s.start) + (state === "mine" ? " · Booked (cancel)" : state === "taken" ? " · Taken" : "");
+          b.textContent =
+            fmt(s.start) +
+            (state === "mine"
+              ? " · Booked (cancel)"
+              : state === "taken"
+                ? " · Taken"
+                : "");
           b.disabled = state === "taken";
           b.classList.toggle("is-mine", state === "mine");
         }
         if (state !== "mine")
-          db.collection("courseBookings").doc(s.id).get()
-            .then(function (d) { state = d.exists ? "taken" : "free"; paint(); })
-            .catch(function () { state = "taken"; paint(); });
+          db.collection("courseBookings")
+            .doc(s.id)
+            .get()
+            .then(function (d) {
+              state = d.exists ? "taken" : "free";
+              paint();
+            })
+            .catch(function () {
+              state = "taken";
+              paint();
+            });
         b.addEventListener("click", function () {
           var doc = db.collection("courseBookings").doc(s.id);
           if (state === "mine") {
             if (!confirm("Cancel this booking?")) return;
-            doc.delete().then(function () { state = "free"; paint(); });
+            doc.delete().then(function () {
+              state = "free";
+              paint();
+            });
             return;
           }
-          var note = prompt("Booking " + fmt(s.start) + ". Anything you'd like to cover? (optional)") ;
+          var note = prompt(
+            "Booking " +
+              fmt(s.start) +
+              ". Anything you'd like to cover? (optional)",
+          );
           if (note === null) return;
-          doc.set({ slotId: s.id, uid: user.uid, name: (user.displayName || user.email || "").slice(0, 120), note: String(note).slice(0, 500), createdAt: fb.firestore.FieldValue.serverTimestamp() })
-            .then(function () { state = "mine"; paint(); })
-            .catch(function () { state = "taken"; paint(); alert("Someone just booked that slot. Pick another one."); });
+          doc
+            .set({
+              slotId: s.id,
+              uid: user.uid,
+              name: (user.displayName || user.email || "").slice(0, 120),
+              note: String(note).slice(0, 500),
+              createdAt: fb.firestore.FieldValue.serverTimestamp(),
+            })
+            .then(function () {
+              state = "mine";
+              paint();
+            })
+            .catch(function () {
+              state = "taken";
+              paint();
+              alert("Someone just booked that slot. Pick another one.");
+            });
         });
         paint();
         grid.appendChild(b);
@@ -369,7 +520,10 @@
       card.appendChild(grid);
     }
     var host = document.querySelector("main") || document.body;
-    host.insertBefore(card, host.firstElementChild ? host.firstElementChild.nextSibling : null);
+    host.insertBefore(
+      card,
+      host.firstElementChild ? host.firstElementChild.nextSibling : null,
+    );
   }
 
   // --------------------------------------------------------------- styles --
@@ -396,6 +550,7 @@
   function boot() {
     firebaseReady().then(start);
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();

@@ -14,11 +14,20 @@
   var synth = window.speechSynthesis;
   if (!synth || typeof window.SpeechSynthesisUtterance === "undefined") return;
   // Breakdown wrapper pages only hold the lesson in an iframe; the lesson file runs its own copy.
-  if (/\/(?:index\.html)?$/.test(location.pathname) && !document.querySelector("section.card[data-slide]"))
+  if (
+    /\/(?:index\.html)?$/.test(location.pathname) &&
+    !document.querySelector("section.card[data-slide]")
+  )
     return;
 
-  var deckCards = [].slice.call(document.querySelectorAll("section.card[data-slide]"));
-  var mode = deckCards.length ? "deck" : /\/slide-breakdowns\//.test(location.pathname) ? "breakdown" : "";
+  var deckCards = [].slice.call(
+    document.querySelectorAll("section.card[data-slide]"),
+  );
+  var mode = deckCards.length
+    ? "deck"
+    : /\/slide-breakdowns\//.test(location.pathname)
+      ? "breakdown"
+      : "";
   if (!mode) return;
 
   /* ------------------------------------------------------------------ text */
@@ -27,14 +36,44 @@
   var BREAK = "\u2028"; // a <br>: a pause inside one block
   var SKIP_COMMON =
     "script,style,noscript,template,svg,canvas,iframe,video,audio,img,button,select,textarea,input,nav,annotation," +
-    '[hidden],[aria-hidden="true"],' + UI;
+    '[hidden],[aria-hidden="true"],' +
+    UI;
   // In a slide card: no header (read separately), no slide image, no answers or feedback.
   var SKIP_BREAKDOWN = SKIP_COMMON + ",footer";
 
   var BLOCK = {
-    P: 1, DIV: 1, LI: 1, UL: 1, OL: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, TD: 1, TH: 1, TR: 1,
-    TABLE: 1, CAPTION: 1, FIGCAPTION: 1, FIGURE: 1, DT: 1, DD: 1, DL: 1, BLOCKQUOTE: 1, SECTION: 1,
-    ARTICLE: 1, HEADER: 1, MAIN: 1, ASIDE: 1, PRE: 1, SUMMARY: 1, DETAILS: 1, LABEL: 1, BUTTON: 1,
+    P: 1,
+    DIV: 1,
+    LI: 1,
+    UL: 1,
+    OL: 1,
+    H1: 1,
+    H2: 1,
+    H3: 1,
+    H4: 1,
+    H5: 1,
+    H6: 1,
+    TD: 1,
+    TH: 1,
+    TR: 1,
+    TABLE: 1,
+    CAPTION: 1,
+    FIGCAPTION: 1,
+    FIGURE: 1,
+    DT: 1,
+    DD: 1,
+    DL: 1,
+    BLOCKQUOTE: 1,
+    SECTION: 1,
+    ARTICLE: 1,
+    HEADER: 1,
+    MAIN: 1,
+    ASIDE: 1,
+    PRE: 1,
+    SUMMARY: 1,
+    DETAILS: 1,
+    LABEL: 1,
+    BUTTON: 1,
   };
 
   function isVisible(el) {
@@ -42,7 +81,10 @@
       if (el.checkVisibility({ visibilityProperty: true })) return true;
       return getComputedStyle(el).display === "contents";
     }
-    return el.getClientRects().length > 0 || getComputedStyle(el).display === "contents";
+    return (
+      el.getClientRects().length > 0 ||
+      getComputedStyle(el).display === "contents"
+    );
   }
 
   function blockOf(el, scope) {
@@ -60,7 +102,12 @@
       var last = items[items.length - 1];
       if (last && last.el === el) {
         // <span>Prediction</span><span>Q1</span> must not run together as one word.
-        if (parent !== lastParent && !/\s$/.test(last.text) && !/^\s/.test(text)) text = " " + text;
+        if (
+          parent !== lastParent &&
+          !/\s$/.test(last.text) &&
+          !/^\s/.test(text)
+        )
+          text = " " + text;
         last.text += text;
       } else items.push({ el: el, text: text });
       lastParent = parent;
@@ -94,7 +141,12 @@
       }
       if (started && node.matches("pre,.code-block")) {
         // Code read symbol by symbol is noise; say it is there instead.
-        items.push({ el: node, text: isArabic() ? "مثال برمجي معروض على الشاشة." : "Code example on screen." });
+        items.push({
+          el: node,
+          text: isArabic()
+            ? "مثال برمجي معروض على الشاشة."
+            : "Code example on screen.",
+        });
         return;
       }
       for (var c = node.firstChild; c && !done; c = c.nextSibling) walk(c);
@@ -130,7 +182,11 @@
         var short = text.length <= 4;
         var prev = out[out.length - 1];
         if (short && lastShort && prev && prev.text.length < 180) {
-          prev.text = prev.text.replace(/[.]$/, "") + ", " + text.replace(/[.]$/, "") + ".";
+          prev.text =
+            prev.text.replace(/[.]$/, "") +
+            ", " +
+            text.replace(/[.]$/, "") +
+            ".";
           return;
         }
         lastShort = short;
@@ -147,7 +203,11 @@
               sentence = sentence.slice(cut + 1).trim();
             }
             var last = out[out.length - 1];
-            if (last && last.el === item.el && last.text.length + sentence.length < 200)
+            if (
+              last &&
+              last.el === item.el &&
+              last.text.length + sentence.length < 200
+            )
               last.text += " " + sentence;
             else if (sentence) out.push({ el: item.el, text: sentence });
           });
@@ -200,8 +260,13 @@
           var items = [{ el: head, text: "Slide " + n + "." }];
           if (lines.length) items.push({ el: figure, text: lines.join(BREAK) });
           else {
-            var title = /^slide\s*\d+$/i.test(cardTitle(card)) ? "" : cardTitle(card);
-            items.push({ el: figure, text: (title ? title + "." + BREAK : "") + t("picture") });
+            var title = /^slide\s*\d+$/i.test(cardTitle(card))
+              ? ""
+              : cardTitle(card);
+            items.push({
+              el: figure,
+              text: (title ? title + "." + BREAK : "") + t("picture"),
+            });
           }
           return toChunks(items);
         },
@@ -228,7 +293,11 @@
     var cleanLabel = function (el) {
       return el ? el.textContent.replace(/\s+/g, " ").trim() : "";
     };
-    if (h1 && (!heads.length || h1.compareDocumentPosition(heads[0]) & Node.DOCUMENT_POSITION_FOLLOWING))
+    if (
+      h1 &&
+      (!heads.length ||
+        h1.compareDocumentPosition(heads[0]) & Node.DOCUMENT_POSITION_FOLLOWING)
+    )
       addSeg(h1, heads[0] || null, cleanLabel(h1), null);
     else if (!heads.length) addSeg(root, null, document.title, null);
     heads.forEach(function (h, i) {
@@ -272,7 +341,8 @@
     var list = voicesFor(lang);
     if (!list.length) return null;
     var want = LS.get("shoug-reader-voice-" + lang);
-    for (var i = 0; i < list.length; i++) if (list[i].name === want) return list[i];
+    for (var i = 0; i < list.length; i++)
+      if (list[i].name === want) return list[i];
     function score(v) {
       var s = 0;
       if (/natural|neural|online|premium|enhanced/i.test(v.name)) s += 4;
@@ -289,23 +359,51 @@
   /* -------------------------------------------------------------------- UI */
   var TEXT = {
     en: {
-      listen: "Listen", listening: "Listening", pause: "Pause", resume: "Resume", stop: "Stop",
-      prev: "Previous section", next: "Next section", speed: "Speed", voice: "Voice",
-      reading: "Reading", paused: "Paused", auto: "Default",
-      noVoice: "This device has no voice for this language. Install one in your system speech settings.",
-      start: "Listen to this page", here: "Listen from here",
-      move: "Move the player (drag, or use the arrow keys)", collapse: "Collapse", expand: "Expand",
-      hide: "Hide the player (keeps reading)", show: "Show the player",
+      listen: "Listen",
+      listening: "Listening",
+      pause: "Pause",
+      resume: "Resume",
+      stop: "Stop",
+      prev: "Previous section",
+      next: "Next section",
+      speed: "Speed",
+      voice: "Voice",
+      reading: "Reading",
+      paused: "Paused",
+      auto: "Default",
+      noVoice:
+        "This device has no voice for this language. Install one in your system speech settings.",
+      start: "Listen to this page",
+      here: "Listen from here",
+      move: "Move the player (drag, or use the arrow keys)",
+      collapse: "Collapse",
+      expand: "Expand",
+      hide: "Hide the player (keeps reading)",
+      show: "Show the player",
       picture: "This slide is a picture with no text to read.",
     },
     ar: {
-      listen: "استمع", listening: "يقرأ", pause: "إيقاف مؤقت", resume: "متابعة", stop: "إيقاف",
-      prev: "القسم السابق", next: "القسم التالي", speed: "السرعة", voice: "الصوت",
-      reading: "يقرأ الآن", paused: "متوقف مؤقتًا", auto: "تلقائي",
-      noVoice: "لا يوجد صوت لهذه اللغة على جهازك. يمكنك تثبيته من إعدادات النطق في النظام.",
-      start: "استمع إلى الصفحة", here: "استمع من هنا",
-      move: "حرّك المشغل (اسحبه أو استخدم الأسهم)", collapse: "تصغير", expand: "توسيع",
-      hide: "إخفاء المشغل (تستمر القراءة)", show: "إظهار المشغل",
+      listen: "استمع",
+      listening: "يقرأ",
+      pause: "إيقاف مؤقت",
+      resume: "متابعة",
+      stop: "إيقاف",
+      prev: "القسم السابق",
+      next: "القسم التالي",
+      speed: "السرعة",
+      voice: "الصوت",
+      reading: "يقرأ الآن",
+      paused: "متوقف مؤقتًا",
+      auto: "تلقائي",
+      noVoice:
+        "لا يوجد صوت لهذه اللغة على جهازك. يمكنك تثبيته من إعدادات النطق في النظام.",
+      start: "استمع إلى الصفحة",
+      here: "استمع من هنا",
+      move: "حرّك المشغل (اسحبه أو استخدم الأسهم)",
+      collapse: "تصغير",
+      expand: "توسيع",
+      hide: "إخفاء المشغل (تستمر القراءة)",
+      show: "إظهار المشغل",
       picture: "هذه الشريحة صورة بلا نص للقراءة.",
     },
   };
@@ -315,15 +413,22 @@
 
   var ICON_SPEAK =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
-  var ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';
-  var ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg>';
-  var ICON_PREV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-8 6 8 6zM6 6v12"/></svg>';
-  var ICON_NEXT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l8 6-8 6zM18 6v12"/></svg>';
-  var ICON_STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>';
+  var ICON_PAUSE =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';
+  var ICON_PLAY =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg>';
+  var ICON_PREV =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-8 6 8 6zM6 6v12"/></svg>';
+  var ICON_NEXT =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l8 6-8 6zM18 6v12"/></svg>';
+  var ICON_STOP =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>';
   var ICON_GRIP =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" stroke-width="3.2"/></svg>';
-  var ICON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
-  var ICON_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
+  var ICON_DOWN =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  var ICON_UP =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
   var ICON_HIDE =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a13 13 0 0 1-3 4.2M6.6 6.6C4.4 8 2.8 10.2 2 12c1 2.5 5 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 
@@ -393,7 +498,8 @@
     });
     if (mode === "deck") {
       var before = seg.host.querySelector(".sb-btn, .note-toggle");
-      if (before && before.parentNode === seg.host) seg.host.insertBefore(btn, before);
+      if (before && before.parentNode === seg.host)
+        seg.host.insertBefore(btn, before);
       else seg.host.appendChild(btn);
     } else if (seg.host) {
       btn.classList.add("sr-head");
@@ -564,8 +670,18 @@
       dragMoved = true;
       box.classList.add("sr-dragging");
       pos = {
-        x: Math.round(Math.max(4, Math.min(start.x + dx, window.innerWidth - box.offsetWidth - 4))),
-        y: Math.round(Math.max(4, Math.min(start.y + dy, window.innerHeight - box.offsetHeight - 4))),
+        x: Math.round(
+          Math.max(
+            4,
+            Math.min(start.x + dx, window.innerWidth - box.offsetWidth - 4),
+          ),
+        ),
+        y: Math.round(
+          Math.max(
+            4,
+            Math.min(start.y + dy, window.innerHeight - box.offsetHeight - 4),
+          ),
+        ),
       };
       place();
       ev.preventDefault();
@@ -589,7 +705,12 @@
   // Arrow keys on the handle move the player too (Shift for bigger steps).
   bGrip.addEventListener("keydown", function (ev) {
     var step = ev.shiftKey ? 40 : 10;
-    var d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+    var d = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowUp: [0, -step],
+      ArrowDown: [0, step],
+    }[ev.key];
     if (!d) return;
     var r = panel.getBoundingClientRect();
     pos = { x: Math.round(r.left + d[0]), y: Math.round(r.top + d[1]) };
@@ -631,12 +752,14 @@
     list.forEach(function (v) {
       var o = document.createElement("option");
       o.value = v.name;
-      o.textContent = v.name.replace(/^(Microsoft|Google)\s+/, "") + " (" + v.lang + ")";
+      o.textContent =
+        v.name.replace(/^(Microsoft|Google)\s+/, "") + " (" + v.lang + ")";
       if (chosen && v.name === chosen.name) o.selected = true;
       voiceSel.appendChild(o);
     });
   }
-  if (typeof synth.addEventListener === "function") synth.addEventListener("voiceschanged", fillVoices);
+  if (typeof synth.addEventListener === "function")
+    synth.addEventListener("voiceschanged", fillVoices);
   else synth.onvoiceschanged = fillVoices;
 
   function paint() {
@@ -645,7 +768,9 @@
     launch.dir = dir;
     var bubble = state.active && playerHidden;
     launch.classList.toggle("sr-bubble", bubble);
-    launch.innerHTML = bubble ? ICON_SPEAK : ICON_SPEAK + "<span>" + t("start") + "</span>";
+    launch.innerHTML = bubble
+      ? ICON_SPEAK
+      : ICON_SPEAK + "<span>" + t("start") + "</span>";
     launch.setAttribute("aria-label", bubble ? t("show") : t("start"));
     launch.title = bubble ? t("show") : "";
     panel.classList.toggle("sr-collapsed", collapsed);
@@ -677,13 +802,20 @@
     segments.forEach(function (seg, i) {
       var on = state.active && state.seg === i;
       var label = on ? (state.paused ? t("resume") : t("pause")) : t("listen");
-      seg.btn.innerHTML = (on && !state.paused ? ICON_PAUSE : ICON_SPEAK) + "<span>" + label + "</span>";
+      seg.btn.innerHTML =
+        (on && !state.paused ? ICON_PAUSE : ICON_SPEAK) +
+        "<span>" +
+        label +
+        "</span>";
       seg.btn.setAttribute("aria-pressed", on ? "true" : "false");
       seg.btn.title = on ? label : t("here");
     });
     if (state.active) {
-      statusState.textContent = (state.paused ? t("paused") : t("reading")) + " ·";
-      statusLabel.textContent = segments[state.seg] ? segments[state.seg].label : "";
+      statusState.textContent =
+        (state.paused ? t("paused") : t("reading")) + " ·";
+      statusLabel.textContent = segments[state.seg]
+        ? segments[state.seg].label
+        : "";
     }
     launch.hidden = state.active && !playerHidden;
     panel.hidden = !state.active || playerHidden;
@@ -691,7 +823,15 @@
   }
 
   /* ---------------------------------------------------------------- engine */
-  var state = { active: false, paused: false, seg: -1, chunks: [], ci: 0, token: 0, utter: null };
+  var state = {
+    active: false,
+    paused: false,
+    seg: -1,
+    chunks: [],
+    ci: 0,
+    token: 0,
+    utter: null,
+  };
   var marked = null;
   var nowEl = null;
   var warned = {};
@@ -723,7 +863,11 @@
   }
 
   function showCard(card) {
-    if (!document.body.classList.contains("flip") || card.classList.contains("current")) return;
+    if (
+      !document.body.classList.contains("flip") ||
+      card.classList.contains("current")
+    )
+      return;
     var jump = document.getElementById("f-jump");
     var all = [].slice.call(document.querySelectorAll("main>.card"));
     if (jump && all.indexOf(card) >= 0) {
@@ -794,7 +938,12 @@
       })[0];
     }
     voice = voice || bestVoice(lang);
-    if (!voice && voicesFor(lang).length === 0 && synth.getVoices().length && !warned[lang]) {
+    if (
+      !voice &&
+      voicesFor(lang).length === 0 &&
+      synth.getVoices().length &&
+      !warned[lang]
+    ) {
       warned[lang] = true;
       note.textContent = t("noVoice");
       note.hidden = false;
@@ -842,7 +991,8 @@
     if (!state.active) return;
     var i = state.seg + step;
     if (step < 0) {
-      while (i > 0 && mode === "breakdown" && !isVisible(segments[i].anchor)) i--;
+      while (i > 0 && mode === "breakdown" && !isVisible(segments[i].anchor))
+        i--;
       i = Math.max(0, i);
     }
     play(i);
@@ -869,7 +1019,10 @@
   new MutationObserver(function () {
     fillVoices();
     paint();
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["lang"],
+  });
 
   synth.cancel(); // speech left over from a page that was just closed or reloaded
   fillVoices();

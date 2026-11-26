@@ -3525,7 +3525,8 @@
                     "ch:" + ch.id,
                     level(course, a, "ch:" + ch.id),
                     course,
-                  ) + mockSuggest(course, ch.id, level(course, a, "ch:" + ch.id))) +
+                  ) +
+                  mockSuggest(course, ch.id, level(course, a, "ch:" + ch.id))) +
             "</div>";
           if (!a.curated || ch.upcoming) return head;
           if (!open) return head;

@@ -187,7 +187,7 @@ def figures_by_section(ch) -> dict[int, list[str]]:
         with Image.open(path) as im:
             width, height = im.size
         out.setdefault(section, []).append(figure(f"figures/{image_name(page)}", caption, width, height, page,
-                                                 f"{os.path.relpath(deck, bd)}#page={page}"))
+                                                 f"{Path(os.path.relpath(deck, bd)).as_posix()}#page={page}"))
     return out
 
 

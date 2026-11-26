@@ -9,7 +9,12 @@
 (function () {
   "use strict";
 
-  if (typeof DATA === "undefined" || typeof openPanel !== "function" || !window.MM_QUIZ) return;
+  if (
+    typeof DATA === "undefined" ||
+    typeof openPanel !== "function" ||
+    !window.MM_QUIZ
+  )
+    return;
 
   function find(node, id) {
     if (node.id === id) return node;
@@ -25,7 +30,12 @@
     var qs = window.MM_QUIZ[id];
     if (!branch || !qs || !qs.length) return;
     branch.children = branch.children || [];
-    if (branch.children.some(function (c) { return c.quiz; })) return;
+    if (
+      branch.children.some(function (c) {
+        return c.quiz;
+      })
+    )
+      return;
     branch.children.push({
       id: id + "-quick-check",
       label: "✎ Quick check",
@@ -49,7 +59,8 @@
   // Stable shuffle: same order every time for the same question.
   function order(n, seed) {
     var h = 2166136261;
-    for (var i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+    for (var i = 0; i < seed.length; i++)
+      h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
     var idx = [];
     for (var k = 0; k < n; k++) idx.push(k);
     for (var j = n - 1; j > 0; j--) {
@@ -68,7 +79,8 @@
   function mark(button, kind) {
     var c = MARKS[kind][0];
     button.style.borderColor = c;
-    button.style.background = "color-mix(in srgb, " + c + " 18%, var(--surface))";
+    button.style.background =
+      "color-mix(in srgb, " + c + " 18%, var(--surface))";
     var m = document.createElement("span");
     m.className = "mmq-mark";
     m.style.color = c;
@@ -86,7 +98,14 @@
     var answered = 0;
     var right = 0;
     function updateScore() {
-      score.textContent = "Score: " + right + " / " + answered + " answered · " + node.quiz.length + " total";
+      score.textContent =
+        "Score: " +
+        right +
+        " / " +
+        answered +
+        " answered · " +
+        node.quiz.length +
+        " total";
     }
     updateScore();
     wrap.appendChild(score);
@@ -94,7 +113,12 @@
     node.quiz.forEach(function (item, qi) {
       var q = document.createElement("div");
       q.className = "mmq-q";
-      q.innerHTML = '<p class="mmq-stem"><span class="mmq-n">Q' + (qi + 1) + "</span> " + esc(item[0]) + "</p>";
+      q.innerHTML =
+        '<p class="mmq-stem"><span class="mmq-n">Q' +
+        (qi + 1) +
+        "</span> " +
+        esc(item[0]) +
+        "</p>";
       var opts = document.createElement("div");
       opts.className = "mmq-opts";
       var why = document.createElement("p");
@@ -115,7 +139,10 @@
             x.disabled = true;
             if (x.dataset.right) mark(x, "ok");
           });
-          why.innerHTML = (oi === 0 ? "<strong>Correct.</strong> " : "<strong>Not quite.</strong> ") + esc(item[2] || "");
+          why.innerHTML =
+            (oi === 0
+              ? "<strong>Correct.</strong> "
+              : "<strong>Not quite.</strong> ") + esc(item[2] || "");
           why.hidden = false;
           updateScore();
         });

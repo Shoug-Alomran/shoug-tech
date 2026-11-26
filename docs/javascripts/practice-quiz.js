@@ -109,7 +109,11 @@
   var remaining = (QUIZ.minutes || 25) * 60;
   var submitted = false;
   function fmtTime(s) {
-    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+    return (
+      String(Math.floor(s / 60)).padStart(2, "0") +
+      ":" +
+      String(s % 60).padStart(2, "0")
+    );
   }
   if (timerEl) {
     timerEl.textContent = fmtTime(remaining);
@@ -168,7 +172,14 @@
   function header(card, label, pts, tag) {
     var h = el("div", "mcq-prompt");
     h.innerHTML =
-      '<span class="num">' + label + "</span>" + "<span class=\"pq-pts\">" + pts + (pts === 1 ? " pt" : " pts") + "</span>" + (tag ? '<span class="tag">' + esc(tag) + "</span>" : "");
+      '<span class="num">' +
+      label +
+      "</span>" +
+      '<span class="pq-pts">' +
+      pts +
+      (pts === 1 ? " pt" : " pts") +
+      "</span>" +
+      (tag ? '<span class="tag">' + esc(tag) + "</span>" : "");
     card.appendChild(h);
   }
   function feedback(card) {
@@ -177,12 +188,16 @@
     return f;
   }
   function showFeedback(f, ok, html) {
-    f.className = "feedback-line show " + (ok === true ? "correct" : ok === false ? "incorrect" : "partial");
+    f.className =
+      "feedback-line show " +
+      (ok === true ? "correct" : ok === false ? "incorrect" : "partial");
     f.innerHTML = html;
   }
   function mark(card, ok) {
     card.classList.remove("pq-right", "pq-wrong", "pq-part");
-    card.classList.add(ok === true ? "pq-right" : ok === false ? "pq-wrong" : "pq-part");
+    card.classList.add(
+      ok === true ? "pq-right" : ok === false ? "pq-wrong" : "pq-part",
+    );
   }
 
   function renderMcq(it, label, host) {
@@ -193,7 +208,16 @@
     var opts = el("div", "options");
     it._opts.forEach(function (o, k) {
       var lab = el("label", "option");
-      lab.innerHTML = '<input type="radio" name="' + name + '" value="' + k + '"><span class="pq-letter">' + LET[k] + ")</span> <span>" + esc(o.t) + "</span>";
+      lab.innerHTML =
+        '<input type="radio" name="' +
+        name +
+        '" value="' +
+        k +
+        '"><span class="pq-letter">' +
+        LET[k] +
+        ")</span> <span>" +
+        esc(o.t) +
+        "</span>";
       opts.appendChild(lab);
     });
     card.appendChild(opts);
@@ -213,8 +237,25 @@
         var ok = p === it._correct;
         mark(card, ok);
         var why = esc(it.why || "");
-        if (!ok && p >= 0 && it._opts[p].w) why = "<b>Why not " + LET[p] + ":</b> " + esc(it._opts[p].w) + "<br>" + why;
-        showFeedback(fb, ok, (ok ? "<b>Correct.</b> " : "<b>Answer: " + LET[it._correct] + ") " + esc(it._opts[it._correct].t) + ".</b> ") + why);
+        if (!ok && p >= 0 && it._opts[p].w)
+          why =
+            "<b>Why not " +
+            LET[p] +
+            ":</b> " +
+            esc(it._opts[p].w) +
+            "<br>" +
+            why;
+        showFeedback(
+          fb,
+          ok,
+          (ok
+            ? "<b>Correct.</b> "
+            : "<b>Answer: " +
+              LET[it._correct] +
+              ") " +
+              esc(it._opts[it._correct].t) +
+              ".</b> ") + why,
+        );
         return ok ? 1 : 0;
       },
     };
@@ -228,7 +269,14 @@
     var opts = el("div", "options pq-tf-opts");
     ["True", "False"].forEach(function (t) {
       var lab = el("label", "option");
-      lab.innerHTML = '<input type="radio" name="' + name + '" value="' + t + '"><span>' + t + "</span>";
+      lab.innerHTML =
+        '<input type="radio" name="' +
+        name +
+        '" value="' +
+        t +
+        '"><span>' +
+        t +
+        "</span>";
       opts.appendChild(lab);
     });
     card.appendChild(opts);
@@ -243,11 +291,18 @@
           var v = l.querySelector("input").value;
           l.querySelector("input").disabled = true;
           if (v === want) l.classList.add("correct-mark");
-          else if (picked && picked.value === v) l.classList.add("wrong-mark", "wrong");
+          else if (picked && picked.value === v)
+            l.classList.add("wrong-mark", "wrong");
         });
         var ok = !!picked && picked.value === want;
         mark(card, ok);
-        showFeedback(fb, ok, (ok ? "<b>Correct.</b> " : "<b>It's " + want.toLowerCase() + ".</b> ") + esc(it.why || ""));
+        showFeedback(
+          fb,
+          ok,
+          (ok
+            ? "<b>Correct.</b> "
+            : "<b>It's " + want.toLowerCase() + ".</b> ") + esc(it.why || ""),
+        );
         return ok ? 1 : 0;
       },
     };
@@ -261,9 +316,11 @@
     header(card, label, max, it.tag);
     card.appendChild(el("div", "pq-q", esc(it.q)));
     var choices = shuffle(
-      pairs.map(function (p) {
-        return p[1];
-      }).concat(it.extra || []),
+      pairs
+        .map(function (p) {
+          return p[1];
+        })
+        .concat(it.extra || []),
       rng(hashStr(it.q + "|m")),
     );
     var grid = el("div", "pq-match-grid");
@@ -272,9 +329,13 @@
       row.appendChild(el("div", "pq-match-left", esc(p[0])));
       var sel = el("select", "pq-select");
       sel.setAttribute("aria-label", "Match for " + p[0]);
-      sel.innerHTML = '<option value="">Choose…</option>' + choices.map(function (c) {
-        return "<option>" + esc(c) + "</option>";
-      }).join("");
+      sel.innerHTML =
+        '<option value="">Choose…</option>' +
+        choices
+          .map(function (c) {
+            return "<option>" + esc(c) + "</option>";
+          })
+          .join("");
       row.appendChild(sel);
       var note = el("div", "pq-match-note");
       row.appendChild(note);
@@ -282,7 +343,10 @@
       return { sel: sel, row: row, note: note, want: p[1] };
     });
     card.appendChild(grid);
-    if (it.extra && it.extra.length) card.appendChild(el("div", "pq-hint", "One option on the right is not used."));
+    if (it.extra && it.extra.length)
+      card.appendChild(
+        el("div", "pq-hint", "One option on the right is not used."),
+      );
     var fb = feedback(card);
     host.appendChild(card);
     return {
@@ -298,7 +362,16 @@
         });
         var got = right * each;
         mark(card, right === rows.length ? true : right === 0 ? false : null);
-        showFeedback(fb, right === rows.length ? true : right === 0 ? false : null, "<b>" + right + " of " + rows.length + " matched.</b> " + esc(it.why || ""));
+        showFeedback(
+          fb,
+          right === rows.length ? true : right === 0 ? false : null,
+          "<b>" +
+            right +
+            " of " +
+            rows.length +
+            " matched.</b> " +
+            esc(it.why || ""),
+        );
         return got;
       },
     };
@@ -317,9 +390,13 @@
       var row = el("div", "pq-order-row");
       var sel = el("select", "pq-select pq-pos");
       sel.setAttribute("aria-label", "Position of " + text);
-      sel.innerHTML = '<option value="">#</option>' + items.map(function (_, i) {
-        return "<option>" + (i + 1) + "</option>";
-      }).join("");
+      sel.innerHTML =
+        '<option value="">#</option>' +
+        items
+          .map(function (_, i) {
+            return "<option>" + (i + 1) + "</option>";
+          })
+          .join("");
       row.appendChild(sel);
       row.appendChild(el("div", "pq-order-text", esc(text)));
       var note = el("div", "pq-match-note");
@@ -328,7 +405,9 @@
       return { sel: sel, row: row, note: note, want: items.indexOf(text) + 1 };
     });
     card.appendChild(list);
-    card.appendChild(el("div", "pq-hint", "Number the steps 1 to " + items.length + "."));
+    card.appendChild(
+      el("div", "pq-hint", "Number the steps 1 to " + items.length + "."),
+    );
     var fb = feedback(card);
     host.appendChild(card);
     return {
@@ -342,9 +421,15 @@
           r.row.classList.add(ok ? "correct-mark" : "wrong-mark");
           r.note.textContent = ok ? "✓" : "✗ " + r.want;
         });
-        var got = Math.round((max * right) / rows.length * 2) / 2;
+        var got = Math.round(((max * right) / rows.length) * 2) / 2;
         mark(card, right === rows.length ? true : right === 0 ? false : null);
-        showFeedback(fb, right === rows.length ? true : right === 0 ? false : null, "<b>Correct order:</b> " + items.map(esc).join(" → ") + (it.why ? "<br>" + esc(it.why) : ""));
+        showFeedback(
+          fb,
+          right === rows.length ? true : right === 0 ? false : null,
+          "<b>Correct order:</b> " +
+            items.map(esc).join(" → ") +
+            (it.why ? "<br>" + esc(it.why) : ""),
+        );
         return got;
       },
     };
@@ -364,7 +449,13 @@
     row.appendChild(input);
     if (it.unit) row.appendChild(el("span", "pq-unit", esc(it.unit)));
     card.appendChild(row);
-    card.appendChild(el("div", "pq-hint", "A number or the calculation itself (like 100/10). Small rounding differences are accepted."));
+    card.appendChild(
+      el(
+        "div",
+        "pq-hint",
+        "A number or the calculation itself (like 100/10). Small rounding differences are accepted.",
+      ),
+    );
     var fb = feedback(card);
     host.appendChild(card);
     return {
@@ -376,7 +467,16 @@
         var ok = !isNaN(v) && Math.abs(v - it.answer) <= tol + 1e-9;
         input.classList.add(ok ? "correct-mark" : "wrong-mark");
         mark(card, ok);
-        showFeedback(fb, ok, (ok ? "<b>Correct.</b> " : "<b>Answer: " + fmt(it.answer) + (it.unit ? " " + esc(it.unit) : "") + ".</b> ") + (it.work ? esc(it.work) : ""));
+        showFeedback(
+          fb,
+          ok,
+          (ok
+            ? "<b>Correct.</b> "
+            : "<b>Answer: " +
+              fmt(it.answer) +
+              (it.unit ? " " + esc(it.unit) : "") +
+              ".</b> ") + (it.work ? esc(it.work) : ""),
+        );
         return ok ? max : 0;
       },
     };
@@ -388,7 +488,17 @@
     var need = Math.min(it.need || rubric.length, rubric.length);
     var max = it.pts || need;
     var card = el("div", "written pq-item");
-    card.appendChild(el("div", "written-topic", esc(label) + (it.tag ? " · " + esc(it.tag) : "") + " · " + max + (max === 1 ? " pt" : " pts")));
+    card.appendChild(
+      el(
+        "div",
+        "written-topic",
+        esc(label) +
+          (it.tag ? " · " + esc(it.tag) : "") +
+          " · " +
+          max +
+          (max === 1 ? " pt" : " pts"),
+      ),
+    );
     card.appendChild(el("div", "written-label", esc(it.q)));
     var ta = el("textarea");
     ta.placeholder = "Your answer…";
@@ -396,7 +506,11 @@
     card.appendChild(ta);
     var status = el("div", "keyword-status");
     card.appendChild(status);
-    var key = el("div", "answer-key", '<div class="key-label">Model answer</div>' + esc(it.model));
+    var key = el(
+      "div",
+      "answer-key",
+      '<div class="key-label">Model answer</div>' + esc(it.model),
+    );
     card.appendChild(key);
     host.appendChild(card);
     var state = { hits: [], claimed: [] };
@@ -422,14 +536,29 @@
         rubric.forEach(function (_, i) {
           if (state.hits[i] || state.claimed[i]) n++;
         });
-        return Math.round((max * Math.min(n, need)) / need * 2) / 2;
+        return Math.round(((max * Math.min(n, need)) / need) * 2) / 2;
       },
     };
     function paint() {
       var got = api.score();
-      var n = state.hits.filter(Boolean).length + state.claimed.filter(Boolean).length;
+      var n =
+        state.hits.filter(Boolean).length +
+        state.claimed.filter(Boolean).length;
       status.innerHTML = "";
-      status.appendChild(el("div", "pq-sa-sum", (need < rubric.length ? "Gave " + Math.min(n, need) + " of the " + need + " needed" : "Covered " + n + " of " + rubric.length + " points") + " → " + got + " / " + max + " pts."));
+      status.appendChild(
+        el(
+          "div",
+          "pq-sa-sum",
+          (need < rubric.length
+            ? "Gave " + Math.min(n, need) + " of the " + need + " needed"
+            : "Covered " + n + " of " + rubric.length + " points") +
+            " → " +
+            got +
+            " / " +
+            max +
+            " pts.",
+        ),
+      );
       var chips = el("div", "pq-chips");
       var enough = n >= need;
       rubric.forEach(function (r, i) {
@@ -437,9 +566,14 @@
           chips.appendChild(el("span", "kw-chip pq-other", esc(r[0])));
           return;
         }
-        if (state.hits[i]) chips.appendChild(el("span", "kw-chip hit", "✓ " + esc(r[0])));
+        if (state.hits[i])
+          chips.appendChild(el("span", "kw-chip hit", "✓ " + esc(r[0])));
         else if (state.claimed[i]) {
-          var c = el("button", "kw-chip hit pq-claimed", "✓ " + esc(r[0]) + " (you marked)");
+          var c = el(
+            "button",
+            "kw-chip hit pq-claimed",
+            "✓ " + esc(r[0]) + " (you marked)",
+          );
           c.type = "button";
           c.title = "Undo";
           c.addEventListener("click", function () {
@@ -449,9 +583,14 @@
           });
           chips.appendChild(c);
         } else {
-          var b = el("button", "kw-chip miss pq-claim", esc(r[0]) + " · I covered this");
+          var b = el(
+            "button",
+            "kw-chip miss pq-claim",
+            esc(r[0]) + " · I covered this",
+          );
           b.type = "button";
-          b.title = "The check looks for key words. If your answer made this point in other words, claim it.";
+          b.title =
+            "The check looks for key words. If your answer made this point in other words, claim it.";
           b.addEventListener("click", function () {
             state.claimed[i] = true;
             paint();
@@ -469,9 +608,17 @@
 
   function renderScenario(it, label, host) {
     var card = el("div", "pq-scenario");
-    card.appendChild(el("div", "pq-case-label", esc(label) + " · Scenario" + (it.tag ? " · " + esc(it.tag) : "")));
+    card.appendChild(
+      el(
+        "div",
+        "pq-case-label",
+        esc(label) + " · Scenario" + (it.tag ? " · " + esc(it.tag) : ""),
+      ),
+    );
     if (it.title) card.appendChild(el("div", "pq-case-title", esc(it.title)));
-    card.appendChild(el("div", "pq-case-text", esc(it.text).replace(/\n/g, "<br>")));
+    card.appendChild(
+      el("div", "pq-case-text", esc(it.text).replace(/\n/g, "<br>")),
+    );
     host.appendChild(card);
     var parts = el("div", "pq-case-parts");
     card.appendChild(parts);
@@ -572,12 +719,22 @@
         return a + current(g);
       }, 0);
       sum += got;
-      breakdown.appendChild(el("span", null, "<b>" + fmt(got) + "/" + s.max + "</b>" + esc(s.title)));
+      breakdown.appendChild(
+        el(
+          "span",
+          null,
+          "<b>" + fmt(got) + "/" + s.max + "</b>" + esc(s.title),
+        ),
+      );
     });
     big.textContent = fmt(sum) + " / " + maxTotal;
     var pct = sum / maxTotal;
     sub.textContent =
-      (pct >= 0.85 ? "Excellent. " : pct >= 0.65 ? "Good, review the misses. " : "Worth another pass through the slides. ") +
+      (pct >= 0.85
+        ? "Excellent. "
+        : pct >= 0.65
+          ? "Good, review the misses. "
+          : "Worth another pass through the slides. ") +
       "Every question now shows the answer and why. For short answers, read the model answer and use “I covered this” for any point you made in other words.";
   }
   function grade(auto) {
@@ -587,7 +744,9 @@
       g.grade();
     });
     total();
-    if (auto) sub.textContent = "Time is up, so the quiz was submitted. " + sub.textContent;
+    if (auto)
+      sub.textContent =
+        "Time is up, so the quiz was submitted. " + sub.textContent;
     panel.classList.add("show");
     submitBtn.disabled = true;
     resetBtn.style.display = "inline-block";
