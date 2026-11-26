@@ -901,15 +901,28 @@ export default {
         return await handleCollect(request, env, origin);
       } catch (error) {
         console.error(error);
-        return new Response(null, { status: 204, headers: { "access-control-allow-origin": origin, vary: "Origin" } });
+        return new Response(null, {
+          status: 204,
+          headers: { "access-control-allow-origin": origin, vary: "Origin" },
+        });
       }
     }
     if (url.pathname === "/v1/analytics-query") {
       try {
-        return await handleAnalyticsQuery(request, env, origin, json, verifyIdToken);
+        return await handleAnalyticsQuery(
+          request,
+          env,
+          origin,
+          json,
+          verifyIdToken,
+        );
       } catch (error) {
         console.error(error);
-        return json({ error: "Analytics are temporarily unavailable." }, 500, origin);
+        return json(
+          { error: "Analytics are temporarily unavailable." },
+          500,
+          origin,
+        );
       }
     }
     const isCalendar = url.pathname === "/v1/calendar-assistant";

@@ -406,7 +406,8 @@
     var groups = {},
       planIds = {},
       needed = [],
-      open = [];
+      open = [],
+      electives = [];
     plan.courses.forEach(function (c) {
       planIds[AR.courseCode(c.id)] = true;
       if (c.group) (groups[c.group] || (groups[c.group] = [])).push(c);
@@ -425,19 +426,29 @@
         }),
         pick = taken
           .concat(
-            chosen.filter(function (c) {
-              return c && taken.indexOf(c) < 0;
+            chosen.filter(function (c, i) {
+              return c && taken.indexOf(c) < 0 && chosen.indexOf(c) === i;
             }),
           )
           .slice(0, limit);
       needed = needed.concat(pick);
-      if (pick.length < limit)
-        open.push({
+      var picked = pick.filter(function (c) {
+          return taken.indexOf(c) < 0;
+        }),
+        entry = {
           group: g,
           label: plan.meta[g] || "Elective group " + g,
           missing: limit - pick.length,
           hours: options[0].hours,
-        });
+          // Picked on a plan page or here, not taken yet: shown so they can
+          // be changed. Taken and picked courses leave the dropdown.
+          picked: picked,
+          used: pick.map(function (c) {
+            return c.id;
+          }),
+        };
+      if (entry.missing > 0) open.push(entry);
+      if (entry.missing > 0 || picked.length) electives.push(entry);
     });
     var done = [],
       now = [],
@@ -535,6 +546,7 @@
       ready: ready,
       waiting: waiting,
       open: open,
+      electives: electives,
       outside: outside.sort(),
       pace: pace,
       terms: terms,
@@ -585,14 +597,57 @@
       ? "/academic-plan-themes/" + match[1] + "/grid.html"
       : "/academic-plan-themes/se-cys/grid.html";
   }
+  // The major and track picked on the student's profile decide the plan.
+  // firebase-auth.js stores it as "shoug-account-plan" ("cs-dx") whenever the
+  // profile loads. With it, both plan pickers are set and hidden, and the plan
+  // name shows instead; without it (no profile yet, or IS with no track) the
+  // pickers stay so the student can choose.
+  function accountPlan() {
+    var plan = "";
+    try {
+      plan = localStorage.getItem("shoug-account-plan") || "";
+    } catch (e) {}
+    var select = $("plan") || $("progress-plan"),
+      value = plan + "/classic";
+    return plan &&
+      select &&
+      select.querySelector('option[value="' + value + '"]')
+      ? value
+      : "";
+  }
+  function applyAccountPlan() {
+    var value = accountPlan(),
+      progressSelect = $("progress-plan"),
+      importSelect = $("plan"),
+      name = $("progress-plan-name"),
+      importName = $("plan-name");
+    [progressSelect, importSelect].forEach(function (sel) {
+      if (!sel) return;
+      if (value && sel.querySelector('option[value="' + value + '"]'))
+        sel.value = value;
+      sel.hidden = !!value;
+    });
+    var shown = importSelect || progressSelect,
+      label =
+      value && shown
+        ? shown.options[shown.selectedIndex].textContent
+            .replace(/\s+/g, " ")
+            .trim()
+        : "";
+    [name, importName].forEach(function (el) {
+      if (!el) return;
+      el.hidden = !value;
+      if (value)
+        el.innerHTML =
+          esc(label) +
+          ' <a href="/community/profile/">Change major on your profile</a>';
+    });
+  }
   function renderProgress(record) {
     var card = $("progress-card"),
       select = $("progress-plan"),
       source = $("plan");
     if (!card || !select) return;
-    var hasCourses = Object.keys(record.courses || {}).length > 0;
-    card.hidden = !hasCourses;
-    if (!hasCourses) return;
     if (!select.options.length && source) select.innerHTML = source.innerHTML;
     var saved = "";
     try {
@@ -600,11 +655,15 @@
     } catch (e) {}
     if (saved && select.querySelector('option[value="' + saved + '"]'))
       select.value = saved;
+    applyAccountPlan();
+    var hasCourses = Object.keys(record.courses || {}).length > 0;
+    card.hidden = !hasCourses;
+    if (!hasCourses) return;
     var gridLink = $("progress-grid-link");
     if (gridLink) gridLink.href = gridPlanUrl(select.value);
     var body = $("progress-body"),
       value = select.value;
-    loadPlan(value)
+    return loadPlan(value)
       .then(function (plan) {
         if (select.value !== value) return;
         var p = progress(
@@ -690,43 +749,83 @@
                 .join("") +
               "</ul></details>"
             : "") +
-          (p.open.length
-            ? '<h3 class="ti-h">Electives to choose <span>' +
-              p.open.length +
-              '</span></h3><div class="ti-electives">' +
-              p.open
+          (p.electives.length
+            ? '<h3 class="ti-h">' +
+              (p.open.length
+                ? "Electives to choose <span>" + p.open.length + "</span>"
+                : "Your elective choices") +
+              '</h3><div class="ti-electives">' +
+              p.electives
                 .map(function (o) {
+                  var name = groupLabel(o.label),
+                    label = function (c) {
+                      return (
+                        AR.courseCode(c.id) +
+                        " · " +
+                        (c.name || "") +
+                        " · " +
+                        c.hours +
+                        " hrs"
+                      );
+                    };
                   return (
-                    '<label class="ti-elective"><span>' +
-                    esc(groupLabel(o.label)) +
+                    '<div class="ti-elective" data-group="' +
+                    esc(o.group) +
+                    '"><span>' +
+                    esc(name) +
                     (o.missing > 1 ? " (choose " + o.missing + ")" : "") +
                     "</span>" +
-                    '<select data-elective="' +
-                    esc(o.group) +
-                    '"><option value="">Choose a course</option>' +
-                    p.groups[o.group]
-                      .map(function (c) {
-                        return (
-                          '<option value="' +
-                          esc(c.id) +
-                          '">' +
-                          esc(
-                            AR.courseCode(c.id) +
-                              " · " +
-                              (c.name || "") +
-                              " · " +
-                              c.hours +
-                              " hrs",
-                          ) +
-                          "</option>"
-                        );
-                      })
-                      .join("") +
-                    '</select><small class="ti-elective-note"><span>Counted as ' +
-                    o.hours +
-                    ' hours until you choose.</span><a href="' +
-                    gridPlanUrl(value) +
-                    '">Choose on the grid plan</a></small></label>'
+                    (o.picked.length
+                      ? '<ul class="ti-picked">' +
+                        o.picked
+                          .map(function (c) {
+                            return (
+                              "<li><span>" +
+                              esc(label(c)) +
+                              '</span><button type="button" data-unpick="' +
+                              esc(o.group) +
+                              '" data-id="' +
+                              esc(c.id) +
+                              '" aria-label="Remove ' +
+                              esc(AR.courseCode(c.id)) +
+                              '">Remove</button></li>'
+                            );
+                          })
+                          .join("") +
+                        "</ul>"
+                      : "") +
+                    (o.missing > 0
+                      ? '<select data-elective="' +
+                        esc(o.group) +
+                        '" aria-label="' +
+                        esc(name) +
+                        '"><option value="">' +
+                        (o.picked.length
+                          ? "Choose another course"
+                          : "Choose a course") +
+                        "</option>" +
+                        p.groups[o.group]
+                          .filter(function (c) {
+                            return o.used.indexOf(c.id) < 0;
+                          })
+                          .map(function (c) {
+                            return (
+                              '<option value="' +
+                              esc(c.id) +
+                              '">' +
+                              esc(label(c)) +
+                              "</option>"
+                            );
+                          })
+                          .join("") +
+                        '</select><small class="ti-elective-note"><span>Counted as ' +
+                        o.missing * o.hours +
+                        (o.missing * o.hours === 1 ? " hour" : " hours") +
+                        " until you choose.</span><a href=\"" +
+                        gridPlanUrl(value) +
+                        '">Choose on the grid plan</a></small>'
+                      : "") +
+                    "</div>"
                   );
                 })
                 .join("") +
@@ -760,10 +859,10 @@
     renderProgress(lastRecord);
     if (lastOpts.save) lastOpts.save(plan);
   });
-  document.addEventListener("change", function (e) {
-    var sel =
-      e.target.closest && e.target.closest("#progress-body [data-elective]");
-    if (!sel || !sel.value || !lastRecord) return;
+  // Adds or removes one course in an elective group, in the plan page's own
+  // storage so both pages agree, then puts focus back in that group's card.
+  function updateChoice(g, add, remove) {
+    if (!lastRecord) return;
     loadPlan($("progress-plan").value).then(function (plan) {
       if (!plan.choicesKey) return;
       var choices = {};
@@ -771,21 +870,40 @@
         choices =
           JSON.parse(localStorage.getItem(plan.choicesKey) || "{}") || {};
       } catch (err) {}
-      var g = sel.dataset.elective,
-        limit = Number(plan.limits[g]) || 1;
+      var limit = Number(plan.limits[g]) || 1,
+        list = []
+          .concat(choices[g] || [])
+          .filter(function (id, i, all) {
+            return id && id !== remove && all.indexOf(id) === i;
+          });
+      if (add && list.indexOf(add) < 0) list.push(add);
+      list = list.slice(-limit);
       // Same shape as the plan page: one course id per group, or a list.
-      choices[g] =
-        limit === 1
-          ? sel.value
-          : []
-              .concat(choices[g] || [])
-              .concat(sel.value)
-              .slice(-limit);
+      choices[g] = limit === 1 ? list[0] || null : list;
       try {
         localStorage.setItem(plan.choicesKey, JSON.stringify(choices));
       } catch (err) {}
-      renderProgress(lastRecord);
+      var done = renderProgress(lastRecord);
+      if (done)
+        done.then(function () {
+          var card = document.querySelector(
+            '#progress-body .ti-elective[data-group="' + g + '"]',
+          );
+          var target =
+            card && card.querySelector("select, [data-unpick]");
+          if (target) target.focus();
+        });
     });
+  }
+  document.addEventListener("change", function (e) {
+    var sel =
+      e.target.closest && e.target.closest("#progress-body [data-elective]");
+    if (sel && sel.value) updateChoice(sel.dataset.elective, sel.value, "");
+  });
+  document.addEventListener("click", function (e) {
+    var btn =
+      e.target.closest && e.target.closest("#progress-body [data-unpick]");
+    if (btn) updateChoice(btn.dataset.unpick, "", btn.dataset.id);
   });
 
   function render(record, opts) {
@@ -816,6 +934,13 @@
     resizeTimer = setTimeout(function () {
       if (lastRecord) renderHistory(lastRecord);
     }, 150);
+  });
+
+  // The profile can arrive after the page has drawn.
+  applyAccountPlan();
+  document.addEventListener("shoug:account-plan", function () {
+    applyAccountPlan();
+    if (lastRecord) renderProgress(lastRecord);
   });
 
   window.ShougTranscriptInsights = {

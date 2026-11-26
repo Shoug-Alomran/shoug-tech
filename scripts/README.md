@@ -15,6 +15,7 @@ Run everything from the repo root, for example `python3 scripts/embed_resources.
 | `apply_cyber_red_theme.py`            | Keeps the cybersecurity track red                                                                                                           |
 | `install_breakdown_language.py`       | Adds translation to lesson documents                                                                                                        |
 | `install_slide_reader.py`             | Adds read-aloud (`slide-reader.js`) to annotated decks and breakdown lessons                                                                |
+| `install_annotated_study.py`          | SE423 annotated study tools (`annotated-study.js`): saved answers, review page, drills, explanations; data in `se423_annotated/study_extras.py` |
 | `build-course-manifest.js`            | Writes the course page list that progress tracking counts                                                                                   |
 | `build-search-index.js`               | Writes `docs/search-index.json`                                                                                                             |
 | `build-mock-exam-banks.js`            | Writes the Mock Exam question banks (`docs/academics/mock-exam/banks/`) from every course's quizzes and past papers                          |
@@ -143,7 +144,7 @@ Every course with annotated slides has `build_<course>_annotated_slides.py`. Bui
 | SE371                 | `build_se371_breakdowns.py`, `build_se371_slide_viewers.py`, `build_se371_resource_viewers.py`                                                        |
 | SE401                 | `build_se401_study_tools.py`                                                                                                                          |
 | SE411                 | `build_se411_slides.py`                                                                                                                               |
-| SE423                 | `build_se423_past_papers.py`, `build_se423_listing_vault.py`, `embed_se423_exams.py`                                                                  |
+| SE423                 | `build_se423_past_papers.py`, `build_se423_listing_vault.py`, `embed_se423_exams.py`, `install_annotated_study.py` (rerun after rebuilding a deck)     |
 
 ## Workshops and events
 

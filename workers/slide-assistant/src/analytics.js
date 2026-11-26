@@ -109,8 +109,9 @@ export function classify(path) {
   const parts = path.split("/").filter(Boolean);
   const section = parts.length ? parts[0].toLowerCase().slice(0, 40) : "home";
   const course =
-    parts.map((p) => p.toLowerCase()).find((p) => /^[a-z]{2,4}\d{3}$/.test(p)) ||
-    "";
+    parts
+      .map((p) => p.toLowerCase())
+      .find((p) => /^[a-z]{2,4}\d{3}$/.test(p)) || "";
   let kind = "";
   for (const k of KINDS) {
     if (parts.includes(k)) {
@@ -135,11 +136,16 @@ export function parseAgent(ua, touchPoints = 0) {
   else if (/iPad/i.test(s)) os = "iPadOS";
   else if (/Android/i.test(s)) os = "Android";
   else if (/CrOS/i.test(s)) os = "ChromeOS";
-  else if (/Mac OS X|Macintosh/i.test(s)) os = touchPoints > 1 ? "iPadOS" : "macOS";
+  else if (/Mac OS X|Macintosh/i.test(s))
+    os = touchPoints > 1 ? "iPadOS" : "macOS";
   else if (/Linux/i.test(s)) os = "Linux";
 
   let device = "desktop";
-  if (os === "iPadOS" || /Tablet|PlayBook|Silk/i.test(s) || (os === "Android" && !/Mobile/i.test(s)))
+  if (
+    os === "iPadOS" ||
+    /Tablet|PlayBook|Silk/i.test(s) ||
+    (os === "Android" && !/Mobile/i.test(s))
+  )
     device = "tablet";
   else if (/Mobi|iPhone|iPod|Android/i.test(s)) device = "mobile";
 
@@ -171,7 +177,8 @@ export function referrerHost(value) {
 export function riyadhClock(nowMs) {
   const d = new Date(nowMs + RIYADH_OFFSET_MS);
   return {
-    day: d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate(),
+    day:
+      d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate(),
     hour: d.getUTCHours(),
     weekday: d.getUTCDay(),
   };
@@ -305,7 +312,7 @@ export async function handleCollect(request, env, origin) {
 
 // ---------------------------------------------------------------- reports --
 
-const RANGES = { "1": 1, "7": 7, "30": 30, "90": 90 };
+const RANGES = { 1: 1, 7: 7, 30: 30, 90: 90 };
 const C = "SUM(_sample_interval)";
 
 // Analytics Engine documents no escape for quotes inside string literals, so
@@ -320,12 +327,24 @@ function quote(value) {
 export function cleanFilters(input) {
   const f = input && typeof input === "object" ? input : {};
   const out = {};
-  if (typeof f.course === "string" && /^[a-z]{2,4}\d{3}$/.test(f.course)) out.course = f.course;
-  if (typeof f.section === "string" && /^[a-z0-9-]{1,40}$/.test(f.section)) out.section = f.section;
-  if (typeof f.kind === "string" && /^[a-z0-9-]{1,40}$/.test(f.kind)) out.kind = f.kind;
-  if (typeof f.country === "string" && /^[A-Z0-9]{2}$/.test(f.country)) out.country = f.country;
-  if (typeof f.device === "string" && /^(desktop|mobile|tablet)$/.test(f.device)) out.device = f.device;
-  if (typeof f.path === "string" && /^\/[^'\\\u0000-\u001f]{0,299}$/.test(f.path)) out.path = f.path;
+  if (typeof f.course === "string" && /^[a-z]{2,4}\d{3}$/.test(f.course))
+    out.course = f.course;
+  if (typeof f.section === "string" && /^[a-z0-9-]{1,40}$/.test(f.section))
+    out.section = f.section;
+  if (typeof f.kind === "string" && /^[a-z0-9-]{1,40}$/.test(f.kind))
+    out.kind = f.kind;
+  if (typeof f.country === "string" && /^[A-Z0-9]{2}$/.test(f.country))
+    out.country = f.country;
+  if (
+    typeof f.device === "string" &&
+    /^(desktop|mobile|tablet)$/.test(f.device)
+  )
+    out.device = f.device;
+  if (
+    typeof f.path === "string" &&
+    /^\/[^'\\\u0000-\u001f]{0,299}$/.test(f.path)
+  )
+    out.path = f.path;
   return out;
 }
 
@@ -462,7 +481,12 @@ export function buildQueries(rangeKey, filters) {
       GROUP BY k, value ORDER BY n DESC LIMIT 30`,
     copies: top("blob2", "copy", "", 20),
     prints: top("blob2", "print", "", 20),
-    pwa: top("blob18", "pageview", " AND blob18 IN ('standalone', 'offline')", 5),
+    pwa: top(
+      "blob18",
+      "pageview",
+      " AND blob18 IN ('standalone', 'offline')",
+      5,
+    ),
     live: `SELECT blob2 AS k, ${C} AS n ${from}
       WHERE timestamp > NOW() - INTERVAL '30' MINUTE AND blob1 = 'pageview'${scope}
       GROUP BY k ORDER BY n DESC LIMIT 10`,
@@ -481,13 +505,19 @@ async function runSql(env, sql, fetcher) {
     },
   );
   const body = await response.text();
-  if (!response.ok) throw new Error(body.slice(0, 300) || `HTTP ${response.status}`);
+  if (!response.ok)
+    throw new Error(body.slice(0, 300) || `HTTP ${response.status}`);
   const parsed = JSON.parse(body);
   return parsed.data || [];
 }
 
 /** True when the token belongs to the account named in courseCommerce/ethics.adminUid. */
-export async function isAdmin(token, identity, fetcher = fetch, project = "shoug-tech") {
+export async function isAdmin(
+  token,
+  identity,
+  fetcher = fetch,
+  project = "shoug-tech",
+) {
   if (!identity?.uid || !identity.emailVerified) return false;
   const response = await fetcher(
     `https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents/courseCommerce/ethics?mask.fieldPaths=adminUid`,
@@ -498,13 +528,32 @@ export async function isAdmin(token, identity, fetcher = fetch, project = "shoug
   return doc?.fields?.adminUid?.stringValue === identity.uid;
 }
 
-export async function handleAnalyticsQuery(request, env, origin, json, verify, fetcher = fetch) {
-  const match = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
-  if (!match) return json({ error: "Sign in as the site administrator." }, 401, origin);
+export async function handleAnalyticsQuery(
+  request,
+  env,
+  origin,
+  json,
+  verify,
+  fetcher = fetch,
+) {
+  const match = (request.headers.get("authorization") || "").match(
+    /^Bearer\s+(.+)$/i,
+  );
+  if (!match)
+    return json({ error: "Sign in as the site administrator." }, 401, origin);
   const identity = await verify(match[1]);
-  if (!identity) return json({ error: "Your sign-in has expired. Reload the page." }, 401, origin);
+  if (!identity)
+    return json(
+      { error: "Your sign-in has expired. Reload the page." },
+      401,
+      origin,
+    );
   if (!(await isAdmin(match[1], identity, fetcher)))
-    return json({ error: "This account is not the site administrator." }, 403, origin);
+    return json(
+      { error: "This account is not the site administrator." },
+      403,
+      origin,
+    );
   if (!env.CF_ACCOUNT_ID || !env.CF_ANALYTICS_TOKEN)
     return json(
       {
@@ -518,14 +567,27 @@ export async function handleAnalyticsQuery(request, env, origin, json, verify, f
   try {
     input = await request.json();
   } catch {}
-  const { days, filters, queries } = buildQueries(String(input.range || "7"), input.filters);
+  const { days, filters, queries } = buildQueries(
+    String(input.range || "7"),
+    input.filters,
+  );
   const names = Object.keys(queries);
-  const settled = await Promise.allSettled(names.map((n) => runSql(env, queries[n], fetcher)));
+  const settled = await Promise.allSettled(
+    names.map((n) => runSql(env, queries[n], fetcher)),
+  );
   const data = {};
   const errors = {};
   settled.forEach((result, i) => {
     if (result.status === "fulfilled") data[names[i]] = result.value;
-    else errors[names[i]] = String(result.reason?.message || result.reason).slice(0, 300);
+    else
+      errors[names[i]] = String(result.reason?.message || result.reason).slice(
+        0,
+        300,
+      );
   });
-  return json({ days, filters, generatedAt: new Date().toISOString(), data, errors }, 200, origin);
+  return json(
+    { days, filters, generatedAt: new Date().toISOString(), data, errors },
+    200,
+    origin,
+  );
 }

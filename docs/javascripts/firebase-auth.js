@@ -4125,6 +4125,10 @@
       if (plan) localStorage.setItem(ACCOUNT_PLAN_KEY, plan);
       else localStorage.removeItem(ACCOUNT_PLAN_KEY);
     } catch (e) {}
+    // The transcript page sets its plan from this.
+    try {
+      document.dispatchEvent(new CustomEvent("shoug:account-plan"));
+    } catch (e) {}
     // The header can be drawn before the profile arrives.
     var href = planGridHref();
     document
