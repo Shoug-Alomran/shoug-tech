@@ -26,7 +26,7 @@ window.MOCK = {
     {
       q: "A project manager discovers a legal risk that affects several projects in the company and is outside the PM's authority to decide. What should the PM do?",
       opts: [
-        "Accept the risk and document it",
+        "Accept the risk and record it in the log",
         "Escalate the risk to senior management",
         "Transfer the risk to the project team",
         "Mitigate it within the project budget",
@@ -39,7 +39,7 @@ window.MOCK = {
     {
       q: "A small internal tool is built with a short charter and a single weekly review, while the company's large regulated projects use full documentation and formal gates. Which principle does this show?",
       opts: [
-        "Build quality into processes and deliverables",
+        "Build quality into processes",
         "Tailor based on context",
         "Navigate complexity",
         "Focus on value",
@@ -54,8 +54,8 @@ window.MOCK = {
       opts: [
         "Demonstrate leadership behaviors",
         "Effectively engage with stakeholders",
-        "Be a diligent, respectful, and caring steward",
-        "Optimize risk responses",
+        "Be a diligent, respectful steward",
+        "Optimize responses to risk",
       ],
       a: 2,
       why: "Stewardship means acting responsibly with integrity, care, trustworthiness and compliance.",
@@ -90,12 +90,7 @@ window.MOCK = {
     },
     {
       q: "The customer expects requirements to change often and wants to see working features every two weeks so they can give feedback. Which development approach fits best?",
-      opts: [
-        "Predictive",
-        "Adaptive",
-        "Hybrid",
-        "Single-delivery predictive with change control",
-      ],
+      opts: ["Predictive", "Adaptive", "Hybrid", "Phase-gated"],
       a: 1,
       why: "Adaptive approaches suit uncertain, volatile requirements: a clear vision first, then requirements refined from feedback in short iterations with demos.",
       near: "Hybrid fits when only some parts are uncertain or deliverables can be modularized; here the whole product is volatile.",
@@ -113,7 +108,7 @@ window.MOCK = {
       q: "A team builds a rough prototype, shows it to users, and reworks it several times to clarify what the requirements actually are. Which development style is this?",
       opts: [
         "Incremental: adding finished features one release at a time",
-        "Iterative: trying ideas repeatedly to clarify scope and approach",
+        "Iterative: repeating ideas to clarify scope and approach",
         "Predictive: defining all requirements before building",
         "Continuous delivery: releasing increments immediately",
       ],
@@ -128,7 +123,7 @@ window.MOCK = {
         "Accurate but not precise",
         "Precise but not accurate",
         "Both accurate and precise",
-        "Neither, because precise estimates are always accurate",
+        "Neither accurate nor precise",
       ],
       a: 1,
       why: "Precision is exactness and level of detail; accuracy is correctness, i.e. closeness to the actual result.",
@@ -138,10 +133,10 @@ window.MOCK = {
     {
       q: "Midway through the project, unplanned in-scope work appears that nobody had identified as a risk. Which reserve should normally pay for it?",
       opts: [
-        "Contingency reserve, controlled by the project manager",
-        "Management reserve, usually controlled by upper management",
-        "The cost baseline itself",
-        "The procurement budget",
+        "Contingency reserve, held by the project manager",
+        "Management reserve, held by upper management",
+        "The cost baseline, held by the project team",
+        "The procurement budget, held by purchasing",
       ],
       a: 1,
       why: "Management reserve covers unknown events and unplanned in-scope work; it sits above the cost baseline and is usually controlled by upper management, the sponsor, or the PMO.",
@@ -150,12 +145,7 @@ window.MOCK = {
     },
     {
       q: "The team prefers to finish the UI design before starting front-end coding because that is their best practice, although the two could overlap. Which dependency is this?",
-      opts: [
-        "Mandatory",
-        "Discretionary",
-        "External",
-        "Internal and unchangeable",
-      ],
+      opts: ["Mandatory", "Discretionary", "External", "Internal"],
       a: 1,
       why: "A discretionary dependency is based on best practices or preferences and may be modified.",
       near: "A mandatory dependency is contractually required or inherent in the work and usually cannot be changed.",
@@ -200,8 +190,8 @@ window.MOCK = {
       opts: [
         "Conceptual ambiguity",
         "Situational ambiguity",
-        "Volatility",
-        "A threat",
+        "High volatility",
+        "An identified threat",
       ],
       a: 1,
       why: "Situational ambiguity is when more than one outcome or option is possible.",
@@ -250,9 +240,9 @@ window.MOCK = {
     {
       q: "A developer receives conflicting instructions from the head of engineering and from the project manager for the same week. Which organizational structure, and which weakness, does this show?",
       opts: [
-        "Functional structure: functional siloing",
-        "Project structure: loyalty to the project over the firm",
-        "Matrix structure: dual hierarchy (two bosses)",
+        "Functional structure: departments in silos",
+        "Project structure: team loyal to project over firm",
+        "Matrix structure: dual hierarchy with two bosses",
         "Matrix structure: it maximizes scarce resources",
       ],
       a: 2,
@@ -321,10 +311,10 @@ window.MOCK = {
     {
       q: "The project faces a problem nobody has solved before, and the known best practices don't apply. What kind of leadership is needed?",
       opts: [
-        "Technical leadership driven by the leader's vision",
-        "Adaptive leadership driven by a sense of purpose and learning",
-        "Autocratic leadership to speed up decisions",
-        "No leadership; the team should self-organize",
+        "Technical leadership, driven by the leader's vision",
+        "Adaptive leadership, driven by shared purpose",
+        "Autocratic leadership, to speed up every decision",
+        "No leadership, since the team should self-organize",
       ],
       a: 1,
       why: "Adaptive leadership mobilizes people to solve problems that cannot be solved by known means, through learning, good questions and clarity of purpose.",

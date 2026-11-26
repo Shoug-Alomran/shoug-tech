@@ -26,6 +26,7 @@
  *
  *     node scripts/build-mock-exam-banks.js            # write every bank
  *     node scripts/build-mock-exam-banks.js --report   # also print where each page's questions went
+ *     node scripts/build-mock-exam-banks.js --report --repeats se423   # also list each dropped near-repeat
  *     node scripts/build-mock-exam-banks.js se423      # only these courses (index.json keeps the rest)
  */
 "use strict";
@@ -746,8 +747,56 @@ function scriptsOf(html, file) {
   return out;
 }
 
+// Practice quizzes built by scripts/build_se423_quizzes.py keep their questions as JSON
+// (options[0] is the right answer; scenarios hold their own parts).
+const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+function practiceQuiz(html) {
+  const m = /<script type="application\/json" id="quiz-data">([\s\S]*?)<\/script>/.exec(html);
+  if (!m) return null;
+  const data = JSON.parse(m[1].replace(/<\\\//g, "</"));
+  const esc = (t) => escapeHtml(t == null ? "" : t);
+  const out = [];
+  function one(it, scenario) {
+    const lead = scenario ? `<b>Scenario: ${esc(scenario.title || "")}</b><br>${esc(scenario.text).replace(/\n/g, "<br>")}<br><br>` : "";
+    const base = { _hint: [it.tag].filter(Boolean) };
+    if (scenario) { base.g = scenario.g; base.qc = esc(it.q); }
+    const q = lead + esc(it.q);
+    if (it.type === "mcq") return { ...base, t: "mcq", q, o: it.options.map(esc), a: 0, e: esc(it.why) };
+    if (it.type === "tf") return { ...base, t: "tf", q, o: ["True", "False"], a: it.a ? 0 : 1, e: esc(it.why) };
+    if (it.type === "match") return { ...base, t: "match", q, pairs: it.pairs.map((p) => [esc(p[0]), esc(p[1])]), e: esc(it.why) };
+    if (it.type === "order")
+      return { ...base, qc: base.qc || esc(it.q), t: "match", q: q + " Match each step to its position.", pairs: it.items.map((x, i) => [esc(x), ORDINALS[i]]), e: esc(it.why) };
+    if (it.type === "num") {
+      const n = { ...base, t: "num", q, a: it.answer, e: esc(it.work) };
+      if (it.unit) n.u = it.unit;
+      if (it.tol != null) n.tol = it.tol;
+      return n;
+    }
+    if (it.type === "short") {
+      const w = { ...base, t: "written", q, m: esc(it.model), k: it.rubric };
+      if (it.need && it.need < it.rubric.length) w.n = it.need;
+      return w;
+    }
+    return null;
+  }
+  let g = 0;
+  for (const sec of data.sections)
+    for (const it of sec.items) {
+      if (it.type === "scenario") {
+        const sc = { title: it.title, text: it.text, g: data.id + "-s" + ++g };
+        for (const part of it.parts) { const q = one(part, sc); if (q) out.push(q); }
+      } else {
+        const q = one(it, null);
+        if (q) out.push(q);
+      }
+    }
+  return out;
+}
+
 function extractPage(file) {
   const html = fs.readFileSync(file, "utf8");
+  const pq = practiceQuiz(html);
+  if (pq) return { html, found: pq, title: pageTitle(html, file) };
   const base = urlOf(file);
   const found = [];
   const keys = {};
@@ -771,6 +820,26 @@ const NEEDS_CONTEXT = /\b(?:following|below|above|shown|given|this|attached)\s+(
 function missingContext(q) {
   if (/<(?:pre|img|code)\b/i.test(q.q)) return false;
   return NEEDS_CONTEXT.test(textOf(q.q));
+}
+
+/* ------------------------------------------------------------ repeats */
+// Questions that share two thirds of their distinctive words ask the same thing.
+const REPEAT_STOP = new Set(("which what when where that this with from into each your their there these those about would could should does have " +
+  "following best most describe explain name give list state between other than they them then also only some such being " +
+  "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct").split(" "));
+function coreWords(q) {
+  const seen = new Set();
+  textOf(q.qc || q.q).toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).forEach((w) => {
+    if (w.length > 3 && !REPEAT_STOP.has(w)) seen.add(w.replace(/(ies)$/, "y").replace(/(es|s)$/, ""));
+  });
+  return [...seen];
+}
+function similarWords(a, b) {
+  if (a.length < 3 || b.length < 3) return false;
+  const set = new Set(a);
+  const both = b.filter((w) => set.has(w)).length;
+  // Strict, because this deletes: mock-exam.js separately keeps looser look-alikes out of one exam.
+  return both >= 3 && both / (a.length + b.length - both) >= 0.67;
 }
 
 /* ------------------------------------------------------------------- main */
@@ -925,6 +994,35 @@ function buildCourse({ track, course, exams }) {
     }
     report.push(`  ${String(added).padStart(4)}  ${path.relative(exams, file).split(path.sep).join("/")}  →  ${Object.entries(tally).map(([k, v]) => k + "×" + v).join(" ")}`);
   }
+  // The same question often sits on several pages (chapter quiz, mock midterm, past paper),
+  // worded a little differently. Keep the first copy so a mock exam never asks it twice.
+  // Words that appear in more than 10% of the course's questions (a template's "explain ... and
+  // include one important detail", or the course's own subject) don't tell two questions apart.
+  const df = new Map();
+  for (const q of questions) for (const w of coreWords(q)) df.set(w, (df.get(w) || 0) + 1);
+  const common = Math.max(6, questions.length * 0.1);
+  const distinctive = (q) => coreWords(q).filter((w) => df.get(w) <= common);
+  const kept = [];
+  const words = [];
+  const wordOwner = [];
+  let repeats = 0;
+  for (const q of questions) {
+    const w = distinctive(q);
+    const twin = q.g ? -1 : words.findIndex((o) => similarWords(o, w));
+    if (twin > -1) {
+      repeats++;
+      if (process.argv.includes("--repeats"))
+        report.push(`    repeat: ${textOf(q.qc || q.q).slice(0, 90)}
+       of: ${textOf(kept[wordOwner[twin]].qc || kept[wordOwner[twin]].q).slice(0, 90)}`);
+      continue;
+    }
+    kept.push(q);
+    if (!q.g) { words.push(w); wordOwner.push(kept.length - 1); }
+  }
+  questions.length = 0;
+  questions.push(...kept);
+  if (repeats) report.push(`  (${repeats} near-repeat questions dropped: the same question on another page)`);
+
   // Questions nothing placed: try their own words. Checked first against
   // questions whose chapter is known, and reported, so a weak course shows.
   if (chapters.length && !ethics) {

@@ -116,10 +116,23 @@
     return (s || "").trim().split(/\s+/).filter(Boolean).length;
   }
 
+  // Right answers are spread evenly over A–D; wrong options are ordered by the question text.
+  var slots = shuffled(
+    M.mcq.map(function (_, i) {
+      return i % 4;
+    }),
+    hash("mcq-slots|" + M.mcq.length) + 7,
+  );
   M.mcq.forEach(function (q, i) {
     n++;
     var id = "a" + i;
-    var order = shuffled([0, 1, 2, 3], hash(q.q) + 11);
+    var order = shuffled(
+      [0, 1, 2, 3].filter(function (o) {
+        return o !== q.a;
+      }),
+      hash(q.q) + 11,
+    );
+    order.splice(slots[i], 0, q.a);
     q.order = order;
     var html =
       '<div class="q-top"><span class="pts" data-pts>1 pt</span></div><p class="q-text"><span class="num">' +

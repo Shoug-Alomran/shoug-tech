@@ -144,7 +144,7 @@ Every course with annotated slides has `build_<course>_annotated_slides.py`. Bui
 | SE371                 | `build_se371_breakdowns.py`, `build_se371_slide_viewers.py`, `build_se371_resource_viewers.py`                                                        |
 | SE401                 | `build_se401_study_tools.py`                                                                                                                          |
 | SE411                 | `build_se411_slides.py`                                                                                                                               |
-| SE423                 | `build_se423_past_papers.py`, `build_se423_listing_vault.py`, `embed_se423_exams.py`                                                                     |
+| SE423                 | `build_se423_past_papers.py`, `build_se423_listing_vault.py`, `embed_se423_exams.py`, `build_se423_quizzes.py` (chapter quizzes, content in `se423_quizzes/`), `build_se423_breakdowns.py` (Team, Stakeholders, Old Ch 2 breakdowns, content in `se423_breakdowns/`; then `embed_slide_figures.py se423 --no-extract`) |
 
 ## Workshops and events
 

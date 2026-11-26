@@ -36,10 +36,11 @@
     ["multi", "Select all that apply", "Auto-marked, all or nothing"],
     ["fill", "Fill in the blank", "Auto-marked, small typos allowed"],
     ["match", "Matching", "Auto-marked, part marks per pair"],
-    ["written", "Written answer", "You mark it after"],
+    ["num", "Calculation", "Auto-marked, small rounding allowed"],
+    ["written", "Written answer", "Marked from key words; you can change the mark"],
   ];
   // Suggested minutes per question type, close to PSU exam pacing.
-  var PACE = { mcq: 1, tf: 0.6, multi: 1.5, fill: 1, match: 2, written: 4 };
+  var PACE = { mcq: 1, tf: 0.6, multi: 1.5, fill: 1, match: 2, num: 2, written: 4 };
   var LETTERS = "ABCDEFGHIJ";
 
   /* ------------------------------------------------------------ storage */
@@ -312,7 +313,7 @@
         setup.types = {};
         TYPES.forEach(function (t) {
           var has = typeCount(t[0]) > 0;
-          setup.types[t[0]] = has && (saved.types ? saved.types.indexOf(t[0]) > -1 : t[0] !== "written");
+          setup.types[t[0]] = has && (saved.types ? saved.types.indexOf(t[0]) > -1 : true);
         });
         if (!TYPES.some(function (t) { return setup.types[t[0]]; }))
           TYPES.forEach(function (t) { setup.types[t[0]] = typeCount(t[0]) > 0; });
@@ -640,22 +641,78 @@
     keys.forEach(function (k) {
       groups[k] = shuffle(groups[k]).sort(function (a, b) { return rank(a) - rank(b); });
     });
-    var out = [];
+    // Never two parts of the same scenario, and never two questions that ask nearly the same thing.
+    var out = [], usedGroups = {}, usedWords = [];
+    function clash(q) {
+      if (q.g && usedGroups[q.g]) return true;
+      var w = coreWords(q);
+      return usedWords.some(function (o) { return similar(o, w); });
+    }
     while (out.length < n && keys.length) {
       keys = keys.filter(function (k) { return groups[k].length; });
-      for (var i = 0; i < keys.length && out.length < n; i++) out.push(groups[keys[i]].shift());
+      for (var i = 0; i < keys.length && out.length < n; i++) {
+        var list = groups[keys[i]];
+        while (list.length) {
+          var q = list.shift();
+          if (clash(q)) continue;
+          out.push(q);
+          if (q.g) usedGroups[q.g] = 1;
+          usedWords.push(coreWords(q));
+          break;
+        }
+      }
     }
-    return shuffle(out.filter(Boolean));
+    return shuffle(out);
+  }
+
+  var STOP = {};
+  ("which what when where that this with from into each your their there these those about would could should does have " +
+    "following best most describe explain name give list state between other than they them then also only some such being " +
+    "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct").split(" ").forEach(function (w) { STOP[w] = 1; });
+  // The question plus its right answer, so "same concept, different wording" still counts as a repeat.
+  // Words in more than 10% of the bank's questions (templates, the course's subject) are ignored.
+  function commonWords() {
+    if (bank._common) return bank._common;
+    var df = {};
+    bank.questions.forEach(function (q) {
+      rawWords(q).forEach(function (w) { df[w] = (df[w] || 0) + 1; });
+    });
+    var limit = Math.max(6, bank.questions.length * 0.1), out = {};
+    Object.keys(df).forEach(function (w) { if (df[w] > limit) out[w] = 1; });
+    return (bank._common = out);
+  }
+  function coreWords(q) {
+    var common = commonWords();
+    return rawWords(q).filter(function (w) { return !common[w]; });
+  }
+  function rawWords(q) {
+    var seen = {};
+    var answer = q.o && typeof q.a === "number" && q.t !== "tf" ? " " + plain(q.o[q.a]) : "";
+    (plain(q.qc || q.q) + answer).toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).forEach(function (w) {
+      if (w.length > 3 && !STOP[w]) seen[w.replace(/(ies)$/, "y").replace(/(es|s)$/, "")] = 1;
+    });
+    return Object.keys(seen);
+  }
+  function similar(a, b) {
+    if (a.length < 3 || b.length < 3) return false;
+    var set = {}, both = 0;
+    a.forEach(function (w) { set[w] = 1; });
+    b.forEach(function (w) { if (set[w]) both++; });
+    // Stricter than the bank builder (which deletes at 0.5): here it only keeps two
+    // look-alike questions out of the same exam.
+    return both >= 3 && both / (a.length + b.length - both) >= 0.38;
   }
 
   // Options keep their order when one refers to another ("all of the above").
+  function fixedOrder(q) {
+    return q.o.some(function (o) {
+      return /\b(all|none|both|neither) of (the )?(above|these|them)\b|\b(both|only) [a-e] and [a-e]\b|\b[a-e] (and|&) [a-e]\b|^\s*(all|none|both)\s*$/i.test(plain(o));
+    });
+  }
   function optionOrder(q) {
     var idx = q.o.map(function (o, i) { return i; });
     if (q.t === "tf") return idx;
-    var fixed = q.o.some(function (o) {
-      return /\b(all|none|both|neither) of (the )?(above|these|them)\b|\b(both|only) [a-e] and [a-e]\b|\b[a-e] (and|&) [a-e]\b|^\s*(all|none|both)\s*$/i.test(plain(o));
-    });
-    return fixed ? idx : shuffle(idx);
+    return fixedOrder(q) ? idx : shuffle(idx);
   }
 
   function startExam() {
@@ -689,9 +746,18 @@
       limit: mins * 60,
       settings: all[bank.course],
     };
+    // The right answers land evenly on A–D across the exam, so the letter never gives one away.
+    var free = qs.filter(function (q) { return q.t === "mcq" && q.o && q.o.length > 1 && !fixedOrder(q); });
+    var off = Math.floor(Math.random() * 4);
+    var slots = shuffle(free.map(function (q, i) { return (i + off) % 4; }));
     qs.forEach(function (q) {
       if (q.o) exam.order[q.id] = optionOrder(q);
       if (q.pairs) exam.order[q.id] = shuffle(q.pairs.map(function (p, i) { return i; }));
+    });
+    free.forEach(function (q, i) {
+      var rest = shuffle(q.o.map(function (o, k) { return k; }).filter(function (k) { return k !== q.a; }));
+      rest.splice(slots[i] % q.o.length, 0, q.a);
+      exam.order[q.id] = rest;
     });
     persist();
     runExam();
@@ -850,6 +916,27 @@
       });
       card.appendChild(inp);
       setTimeout(function () { inp.focus(); }, 0);
+    } else if (q.t === "num") {
+      var row = el("div", "num-row");
+      var ni = el("input", "fill-input num-input");
+      ni.type = "text";
+      ni.autocomplete = "off";
+      ni.setAttribute("inputmode", "decimal");
+      ni.setAttribute("aria-label", "Your answer");
+      ni.placeholder = "A number, or the calculation (like 100/10)";
+      ni.value = ans || "";
+      ni.addEventListener("input", function () {
+        exam.answers[q.id] = ni.value;
+        persist();
+        renderNav();
+      });
+      ni.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") go(1);
+      });
+      row.appendChild(ni);
+      if (q.u) row.appendChild(el("span", "num-unit", q.u));
+      card.appendChild(row);
+      card.appendChild(el("p", "hint", "Small rounding differences are accepted."));
     } else {
       var ta = el("textarea", "written");
       ta.setAttribute("aria-label", "Your answer");
@@ -861,7 +948,7 @@
         renderNav();
       });
       card.appendChild(ta);
-      card.appendChild(el("p", "hint", "After you finish you'll see a model answer and mark this yourself: full, half or no marks."));
+      card.appendChild(el("p", "hint", "When you finish, this is marked from the key words in the model answer. You can change the mark if the check missed something you said in other words."));
     }
 
     var acts = el("div", "q-actions");
@@ -892,7 +979,7 @@
   }
 
   function typeName(q) {
-    return { mcq: "Multiple choice", tf: "True or false", multi: "Select all that apply", fill: "Fill in the blank", match: "Matching", written: "Written answer" }[q.t];
+    return { mcq: "Multiple choice", tf: "True or false", multi: "Select all that apply", fill: "Fill in the blank", match: "Matching", num: "Calculation", written: "Written answer" }[q.t];
   }
 
   function choose(q, oi) {
@@ -1016,6 +1103,79 @@
     });
   }
 
+  function numberOf(text) {
+    var t = String(text || "")
+      .replace(/,/g, "")
+      .replace(/[×xX]/g, "*")
+      .replace(/÷/g, "/")
+      .replace(/−/g, "-")
+      .replace(/\^/g, "**")
+      .replace(/%\s*$/, "")
+      .replace(/[a-zA-Z\s-]+$/g, "")
+      .replace(/^[a-zA-Z\s]+=\s*/, "")
+      .trim();
+    if (!t || !/^[0-9.+\-*/() ]+$/.test(t)) return NaN;
+    try {
+      var v = Function('"use strict";return (' + t + ")")();
+      return typeof v === "number" && isFinite(v) ? v : NaN;
+    } catch (e) {
+      return NaN;
+    }
+  }
+  function numRight(q, given) {
+    var v = numberOf(given);
+    var tol = q.tol != null ? q.tol : Math.abs(q.a) * 0.03;
+    return !isNaN(v) && Math.abs(v - q.a) <= tol + 1e-9;
+  }
+
+  // Written answers: the points the question asks for (q.k, from the quiz's rubric), or, for
+  // older questions, the distinctive words of the model answer. Returns the mark and what was found.
+  var KW_STOP = {};
+  ("about above after again against because been before being below between both could does doing during each every " +
+    "from further have having here into itself more most must only other over same should some such than that their theirs " +
+    "them then there these they this those through under until very what when where which while whom with would your " +
+    "also used uses using make makes made like just many much well need needs often usually example examples called mean means").split(" ").forEach(function (w) { KW_STOP[w] = 1; });
+  function keyPoints(q) {
+    if (q.k && q.k.length) return { list: q.k, need: Math.min(q.n || q.k.length, q.k.length), from: "rubric" };
+    var seen = {}, list = [];
+    norm(plain(q.m)).split(" ").forEach(function (w) {
+      if (w.length < 5 || KW_STOP[w] || /^\d+$/.test(w)) return;
+      var st = stem(w);
+      if (seen[st] || list.length >= 8) return;
+      seen[st] = 1;
+      list.push([w, [st]]);
+    });
+    return { list: list, need: Math.max(1, Math.min(list.length, Math.ceil(list.length * 0.5))), from: "model" };
+  }
+  function keywordMark(q, given) {
+    var kp = keyPoints(q);
+    var text = " " + norm(given).split(" ").map(stem).join(" ") + " ";
+    var raw = " " + norm(given) + " ";
+    var found = [], missed = [];
+    kp.list.forEach(function (pt) {
+      var hit = pt[1].some(function (k) {
+        var nk = norm(k);
+        if (!nk) return false;
+        var sk = nk.split(" ").map(stem).join(" ");
+        return raw.indexOf(nk) > -1 || text.indexOf(sk) > -1;
+      });
+      (hit ? found : missed).push(pt[0]);
+    });
+    var frac = kp.list.length ? Math.min(found.length, kp.need) / kp.need : 0;
+    var mark = !answered(given) ? 0 : frac >= 0.75 ? 1 : frac >= 0.34 ? 0.5 : 0;
+    return { mark: mark, found: found, missed: missed, need: kp.need, from: kp.from };
+  }
+  function autoMarkWritten(ex) {
+    ex.auto = ex.auto || {};
+    ex.ids.forEach(function (id) {
+      var q = bank.byId[id];
+      if (!q || q.t !== "written" || ex.marks[id] != null) return;
+      var r = keywordMark(q, ex.answers[id]);
+      ex.auto[id] = r;
+      ex.marks[id] = r.mark;
+    });
+  }
+
   // 1 right, 0 wrong, 0.5 half (written only), null not marked yet.
   function markOf(q, ex) {
     var a = ex.answers[q.id];
@@ -1032,6 +1192,7 @@
       return want === got ? 1 : 0;
     }
     if (q.t === "fill") return fillRight(q, a) ? 1 : 0;
+    if (q.t === "num") return numRight(q, a) ? 1 : 0;
     return a === q.a ? 1 : 0;
   }
 
@@ -1063,6 +1224,7 @@
     exam.finished = Date.now();
     exam.timeUp = !!timeUp;
     exam.attempt = exam.attempt || hash(exam.course + exam.started);
+    autoMarkWritten(exam);
     drop(K.active);
     record();
     document.title = exam.name + " mock exam results | SHOUG.TECH";
@@ -1183,6 +1345,7 @@
     if (q.t === "match") return q.pairs.map(function (p) { return plain(p[0]) + " → " + plain(p[1]); }).join("; ");
     if (q.o) return plain(q.o[q.a]);
     if (q.t === "fill") return q.a.join(" / ");
+    if (q.t === "num") return String(q.a) + (q.u ? " " + q.u : "");
     return plain(q.m);
   }
 
@@ -1432,13 +1595,38 @@
       c.appendChild(el("span", "lab", "Accepted"));
       c.appendChild(document.createTextNode(q.a.join(" / ")));
       card.appendChild(c);
+    } else if (q.t === "num") {
+      var yn = el("p", "rv-answer");
+      yn.appendChild(el("span", "lab", "You wrote"));
+      yn.appendChild(document.createTextNode(answered(a) ? a : "(nothing)"));
+      card.appendChild(yn);
+      var cn = el("p", "rv-answer");
+      cn.appendChild(el("span", "lab", "Answer"));
+      cn.appendChild(document.createTextNode(correctText(q)));
+      card.appendChild(cn);
     } else {
       card.appendChild(el("div", "label", "Your answer"));
       card.appendChild(el("div", "rv-yours", answered(a) ? a : "(nothing written)"));
       card.appendChild(el("div", "label", "Model answer"));
       card.appendChild(html("div", "rv-model", q.m));
+      var au = (exam.auto && exam.auto[q.id]) || (answered(a) || exam.done ? keywordMark(q, a) : null);
+      if (au) {
+        var kw = el("div", "kw-box");
+        kw.appendChild(el("div", "label", au.from === "rubric"
+          ? "Key points the question asks for: found " + Math.min(au.found.length, au.need) + " of " + au.need
+          : "Key words from the model answer: found " + au.found.length + " (" + au.need + " needed for full marks)"));
+        var chips = el("div", "kw-chips");
+        au.found.forEach(function (w) { chips.appendChild(el("span", "kw hit", "✓ " + w)); });
+        au.missed.forEach(function (w) { chips.appendChild(el("span", "kw miss", w)); });
+        kw.appendChild(chips);
+        card.appendChild(kw);
+      }
       var sm = el("div", "selfmark");
-      sm.appendChild(el("span", "label", "Your mark"));
+      var NAMES = { 1: "Full", 0.5: "Half", 0: "None" };
+      var changed = au && exam.marks[q.id] != null && exam.marks[q.id] !== au.mark;
+      sm.appendChild(el("span", "label", !au ? "Your mark" : changed
+        ? "Auto mark: " + NAMES[au.mark] + " · you changed it to " + NAMES[exam.marks[q.id]]
+        : "Auto mark: " + NAMES[au.mark] + " · change it if you disagree"));
       [[1, "Full"], [0.5, "Half"], [0, "None"]].forEach(function (o) {
         var b = el("button", "btn small", o[1]);
         b.type = "button";
