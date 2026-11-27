@@ -245,6 +245,40 @@ service cloud.firestore {
       allow update: if signedIn() && resource.data.uid is string && validHelpfulVote();
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
+    // Anonymous final grades (course-ratings.js). The grade document holds only
+    // the grade: no uid, name or time, so nobody reading the public list can
+    // tie it to a student. Each student's private marker (readable only by
+    // them) says which grade is theirs, so they can change or remove it, and
+    // creating the marker in the same write is what limits a student to one.
+    function gradeMarker(course, uid) {
+      return /databases/$(database)/documents/courseRatings/$(course)/gradeMarkers/$(uid);
+    }
+    function validGrade() {
+      return request.resource.data.keys().hasOnly(['grade'])
+        && request.resource.data.grade in ['A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'F'];
+    }
+    match /courseRatings/{course}/grades/{gradeId} {
+      allow read: if course.matches('[a-z]+[0-9]{3}');
+      allow create: if signedIn() && course.matches('[a-z]+[0-9]{3}') && validGrade()
+        && !exists(gradeMarker(course, request.auth.uid))
+        && getAfter(gradeMarker(course, request.auth.uid)).data.gradeId == gradeId;
+      allow update: if signedIn() && validGrade()
+        && get(gradeMarker(course, request.auth.uid)).data.gradeId == gradeId;
+      allow delete: if signedIn()
+        && get(gradeMarker(course, request.auth.uid)).data.gradeId == gradeId;
+    }
+    match /courseRatings/{course}/gradeMarkers/{uid} {
+      allow get: if owns(uid);
+      // Only together with the grade, or a student could drop the marker and
+      // post a second grade.
+      allow delete: if owns(uid)
+        && !existsAfter(/databases/$(database)/documents/courseRatings/$(course)/grades/$(resource.data.gradeId));
+      allow create: if owns(uid) && course.matches('[a-z]+[0-9]{3}')
+        && request.resource.data.keys().hasOnly(['gradeId'])
+        && request.resource.data.gradeId is string
+        && existsAfter(/databases/$(database)/documents/courseRatings/$(course)/grades/$(request.resource.data.gradeId));
+      allow list, update: if false;
+    }
     match /courseCommunity/{course}/posts/{postId} {
       allow read: if course.matches('[a-z]+[0-9]{3}');
       allow create: if validCommunityPost(course, request.auth.uid);

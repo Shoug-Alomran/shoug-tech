@@ -233,6 +233,8 @@
     ".crt-choices{display:flex;flex-wrap:wrap;gap:6px}",
     ".crt-choice{border:1px solid var(--crt-line);background:transparent;color:var(--text-main,#e2d9f3);font:500 12px/1 var(--font-mono,monospace);padding:8px 11px;cursor:pointer}",
     ".crt-choice:hover{border-color:var(--brand-purple,#b829ea)}",
+    ".crt-gbar{display:inline-block;height:6px;border-radius:0 3px 3px 0;background:var(--brand-purple,#b829ea);margin-right:8px;vertical-align:middle;min-width:2px}",
+    ".crt-anon{font-size:12px;opacity:.75;margin:6px 0 0}",
     ".crt-choice[aria-pressed=true]{border-color:var(--brand-purple,#b829ea);background:var(--brand-purple,#b829ea);color:#fff}",
     ".crt-choice:focus-visible,.crt-input:focus-visible{outline:none;border-color:var(--brand-purple,#b829ea);box-shadow:0 0 0 1px var(--brand-purple,#b829ea)}",
     ".crt-input{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--crt-line);border-radius:0;background:var(--bg-void,#05020a);color:var(--text-main,#e2d9f3);color-scheme:dark;font:400 14px/1.5 var(--font-sans,sans-serif);letter-spacing:normal;text-transform:none}",
@@ -531,10 +533,14 @@
       meta.insertBefore(tipsRow, before || null);
     }
 
+    // Final grades are posted anonymously (see saveGrade).
+    var GRADES = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"];
     var state = {
       fb: null,
       user: undefined,
       docs: [],
+      grades: [],
+      gradeMine: null,
       mine: null,
       draft: {},
       loaded: false,
@@ -1172,7 +1178,87 @@
             })
             .join("");
       }
+      html += gradesSummaryHtml();
       return html;
+    }
+
+    function gradesSummaryHtml() {
+      var counts = {};
+      state.grades.forEach(function (g) {
+        if (GRADES.indexOf(g) >= 0) counts[g] = (counts[g] || 0) + 1;
+      });
+      var total = state.grades.length;
+      if (!total) return "";
+      var max = Math.max.apply(
+        null,
+        GRADES.map(function (g) {
+          return counts[g] || 0;
+        }),
+      );
+      return (
+        '<div class="crt-group">' +
+        esc(L("Grades students got", "الدرجات التي حصل عليها الطلاب")) +
+        "</div>" +
+        GRADES.filter(function (g) {
+          return counts[g];
+        })
+          .map(function (g) {
+            var n = counts[g];
+            return (
+              '<div class="crt-row"><span class="crt-label">' +
+              esc(g) +
+              '</span><span class="crt-val"><span class="crt-gbar" style="width:' +
+              Math.round((n / max) * 80) +
+              'px"></span>' +
+              Math.round((n / total) * 100) +
+              "% · " +
+              n +
+              "</span></div>"
+            );
+          })
+          .join("") +
+        '<p class="crt-anon">' +
+        esc(
+          L(
+            total +
+              " anonymous grade" +
+              (total === 1 ? "" : "s") +
+              ". Grades aren't linked to anyone's name or account.",
+            total + " درجة مجهولة الهوية. لا ترتبط الدرجات باسم أحد أو حسابه.",
+          ),
+        ) +
+        "</p>"
+      );
+    }
+
+    function gradeHtml() {
+      var g = state.draft.grade || "";
+      return (
+        '<div class="crt-field"><span class="crt-field-label">' +
+        esc(L("Your final grade", "درجتك النهائية")) +
+        " <span>" +
+        esc(L("(optional · posted anonymously)", "(اختياري · تُنشر دون اسمك)")) +
+        '</span></span><div class="crt-choices">' +
+        GRADES.map(function (x) {
+          return (
+            '<button type="button" class="crt-choice" data-crt-grade="' +
+            x +
+            '" aria-pressed="' +
+            (g === x) +
+            '">' +
+            x +
+            "</button>"
+          );
+        }).join("") +
+        '</div><p class="crt-anon">' +
+        esc(
+          L(
+            "Your grade is saved without your name or account, and only counts toward the totals. You can change or remove it later.",
+            "تُحفظ درجتك دون اسمك أو حسابك، وتُحسب في الإجمالي فقط. يمكنك تغييرها أو حذفها لاحقًا.",
+          ),
+        ) +
+        "</p></div>"
+      );
     }
 
     function termHtml() {
@@ -1252,7 +1338,8 @@
           ),
         ) +
         "</p>" +
-        termHtml();
+        termHtml() +
+        gradeHtml();
       GROUPS.forEach(function (g) {
         var rows = cats.filter(function (c) {
           return c.group === g.id;
@@ -1378,6 +1465,7 @@
       ratingsRef(state.fb, course)
         .doc(state.user.uid)
         .set(data)
+        .then(saveGrade)
         .then(function () {
           state.status = [
             "Saved. Thanks for rating!",
@@ -1403,6 +1491,7 @@
       ratingsRef(state.fb, course)
         .doc(state.user.uid)
         .delete()
+        .then(removeGrade)
         .then(function () {
           state.draft = {};
           state.status = ["Your rating was removed.", "تم حذف تقييمك."];
@@ -1444,6 +1533,15 @@
       } else if (t.hasAttribute("data-crt-delete")) {
         remove();
       }
+    });
+    panel.addEventListener("click", function (e) {
+      var t = e.target.closest("[data-crt-grade]");
+      if (!t) return;
+      var g = t.getAttribute("data-crt-grade");
+      state.draft.grade = state.draft.grade === g ? "" : g;
+      state.status = null;
+      state.focus = '[data-crt-grade="' + g + '"]';
+      render();
     });
     panel.addEventListener("click", function (e) {
       var t = e.target.closest("[data-crt-term]");
@@ -1494,11 +1592,24 @@
             render();
           },
         );
+      gradesRef()
+        .limit(2000)
+        .onSnapshot(
+          function (snap) {
+            state.grades = snap.docs.map(function (d) {
+              return d.data().grade;
+            });
+            render();
+          },
+          function () {},
+        );
       fb.auth().onAuthStateChanged(function (user) {
         state.user = user || null;
         tipsState.user = user || null;
         state.status = null;
+        state.gradeMine = null;
         syncMine(true);
+        loadMyGrade();
         render();
         renderTips();
       });
@@ -1578,7 +1689,85 @@
           if (d.uid === uid) state.mine = d;
         });
       // Seed the form from the saved rating unless the student is mid-edit.
-      if (reset || !prev || !state.mine) state.draft = draftFrom(state.mine);
+      if (reset || !prev || !state.mine) {
+        state.draft = draftFrom(state.mine);
+        if (state.gradeMine) state.draft.grade = state.gradeMine.grade;
+      }
+    }
+
+    // Anonymous grade. grades/{id} holds only the grade; gradeMarkers/{uid},
+    // readable only by its owner, records which grade is theirs, and the rules
+    // allow one per student (firebase/firestore.rules).
+    function gradesRef() {
+      return state.fb
+        .firestore()
+        .collection("courseRatings")
+        .doc(course)
+        .collection("grades");
+    }
+    function markerRef() {
+      return state.fb
+        .firestore()
+        .collection("courseRatings")
+        .doc(course)
+        .collection("gradeMarkers")
+        .doc(state.user.uid);
+    }
+    function loadMyGrade() {
+      state.gradeMine = null;
+      if (!state.user) return;
+      var uid = state.user.uid;
+      markerRef()
+        .get()
+        .then(function (m) {
+          if (!m.exists || !m.data().gradeId) return null;
+          var id = m.data().gradeId;
+          return gradesRef()
+            .doc(id)
+            .get()
+            .then(function (g) {
+              return g.exists ? { id: id, grade: g.data().grade } : null;
+            });
+        })
+        .then(function (mine) {
+          if (!state.user || state.user.uid !== uid) return;
+          state.gradeMine = mine;
+          if (mine && !state.draft.grade) state.draft.grade = mine.grade;
+          render();
+        })
+        .catch(function () {});
+    }
+    function saveGrade() {
+      var want = state.draft.grade || "";
+      var mine = state.gradeMine;
+      if (!want && !mine) return Promise.resolve();
+      if (mine && want === mine.grade) return Promise.resolve();
+      if (mine && !want) return removeGrade();
+      if (mine) {
+        return gradesRef()
+          .doc(mine.id)
+          .set({ grade: want })
+          .then(function () {
+            state.gradeMine = { id: mine.id, grade: want };
+          });
+      }
+      var doc = gradesRef().doc();
+      var batch = state.fb.firestore().batch();
+      batch.set(doc, { grade: want });
+      batch.set(markerRef(), { gradeId: doc.id });
+      return batch.commit().then(function () {
+        state.gradeMine = { id: doc.id, grade: want };
+      });
+    }
+    function removeGrade() {
+      var mine = state.gradeMine;
+      if (!mine) return Promise.resolve();
+      var batch = state.fb.firestore().batch();
+      batch.delete(gradesRef().doc(mine.id));
+      batch.delete(markerRef());
+      return batch.commit().then(function () {
+        state.gradeMine = null;
+      });
     }
   }
 
