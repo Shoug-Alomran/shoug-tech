@@ -175,10 +175,20 @@ def git_tracked_paths() -> set[str] | None:
     return paths or None
 
 
+_EXACT_CASE_CACHE: dict[Path, Path | None] = {}
+
+
 def exact_case(target: Path) -> Path | None:
     """Resolve `target` walking each segment against the real directory
     listing, so casing differences surface on case-insensitive filesystems.
     Returns None when a segment cannot be read."""
+    try:
+        key = target.relative_to(SITE)
+    except ValueError:
+        return None
+    if key in _EXACT_CASE_CACHE:
+        return _EXACT_CASE_CACHE[key]
+
     current = SITE
     try:
         for part in target.relative_to(SITE).parts:
@@ -192,7 +202,9 @@ def exact_case(target: Path) -> Path | None:
                 return None
             current = current / match
     except (OSError, ValueError):
+        _EXACT_CASE_CACHE[key] = None
         return None
+    _EXACT_CASE_CACHE[key] = current
     return current
 
 
@@ -204,7 +216,12 @@ def is_internal(ref: str, base_url: str) -> tuple[bool, str, str]:
     if raw_scheme in NON_WEB_SCHEMES:
         return False, "", ""
 
-    resolved = urlsplit(urljoin(base_url, ref))
+    # Browsers normalize backslashes to slashes in special-scheme URLs such as
+    # http(s). Some generated HTML (notably copied Windows-authored breakdowns)
+    # uses `..\\styles\\file.css`; make the validator resolve those the same way.
+    ref_parts = urlsplit(ref)
+    browser_ref = ref_parts._replace(path=ref_parts.path.replace("\\", "/")).geturl()
+    resolved = urlsplit(urljoin(base_url, browser_ref))
     if resolved.scheme.lower() not in {"", "http", "https"}:
         return False, "", ""
 

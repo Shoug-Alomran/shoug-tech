@@ -78,10 +78,10 @@ def glossary_page(chapters):
     for chapter, terms in entries:
         rows = "".join(f'<article class="term"><b>{html.escape(t)}</b><span>{html.escape(d)}</span></article>' for t, d in sorted(terms, key=lambda x: x[0].casefold()))
         body.append(f'<section id="{chapter["id"]}"><h2>Chapter {chapter["num"]} · {html.escape(chapter["title"])}</h2><div class="terms">{rows}</div></section>')
-    return f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ECON102 Glossary</title>
-<style>body{{margin:0;background:#f7f5f0;color:#20212a;font:16px/1.6 Inter,system-ui,sans-serif}}main{{max-width:1050px;margin:auto;padding:24px}}h1,h2{{font-family:Georgia,serif}}.bar{{position:sticky;top:0;background:#f7f5f0;padding:12px;border-bottom:1px solid #ddd;z-index:2}}input{{width:min(600px,80vw);padding:12px;border:1px solid #bbb;border-radius:8px;font:inherit}}nav{{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}}nav a{{background:white;border:1px solid #ddd;border-radius:8px;padding:6px 10px;color:#4f328d;text-decoration:none}}small{{color:#666}}section{{padding-top:18px;margin:30px 0;border-top:2px solid #6b3fd1;scroll-margin-top:80px}}.terms{{columns:2 340px;gap:30px}}.term{{break-inside:avoid;padding:8px 0;border-bottom:1px solid #ddd}}.term b,.term span{{display:block}}.term span{{color:#50515c}}.empty{{display:none}}</style>
+    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ECON102 Glossary</title>
+<style>body{{margin:0;background:#f7f5f0;color:#20212a;font:16px/1.6 Inter,system-ui,sans-serif}}main{{max-width:1050px;margin:auto;padding:24px}}h1,h2{{font-family:Georgia,serif}}.bar{{position:sticky;top:0;background:#f7f5f0;padding:12px;border-bottom:1px solid #ddd;z-index:2}}input{{width:min(600px,80vw);padding:12px;border:1px solid #bbb;border-radius:8px;font:inherit}}nav{{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}}nav a{{background:white;border:1px solid #ddd;border-radius:8px;padding:6px 10px;color:#4f328d;text-decoration:none}}small{{color:#666}}section{{padding-top:18px;margin:30px 0;border-top:2px solid #6b3fd1;scroll-margin-top:80px}}.terms{{columns:2 340px;gap:30px}}.term{{break-inside:avoid;padding:8px 0;border-bottom:1px solid #ddd}}.term b,.term span{{display:block}}.term span{{color:#50515c}}.empty{{display:none}}</style></head><body>
 <div class="bar"><input id="q" type="search" placeholder="Search {total} course terms…"><button onclick="print()">Print</button></div><main><h1>ECON102 Course Glossary</h1><p>{total} distinct vocabulary terms across {len(chapters)} chapter study guides. Definitions are drawn from the course notes.</p><nav>{toc}</nav>{''.join(body)}<p class="empty" id="empty">No matching terms.</p></main>
-<script>let q=document.querySelector('#q'), terms=[...document.querySelectorAll('.term')];q.oninput=()=>{{let n=0;terms.forEach(e=>{{let ok=e.textContent.toLowerCase().includes(q.value.toLowerCase());e.hidden=!ok;n+=ok}});document.querySelectorAll('section').forEach(s=>s.hidden=!s.querySelector('.term:not([hidden])'));document.querySelector('#empty').style.display=n?'none':'block'}};</script></html>'''
+<script>let q=document.querySelector('#q'), terms=[...document.querySelectorAll('.term')];q.oninput=()=>{{let n=0;terms.forEach(e=>{{let ok=e.textContent.toLowerCase().includes(q.value.toLowerCase());e.hidden=!ok;n+=ok}});document.querySelectorAll('section').forEach(s=>s.hidden=!s.querySelector('.term:not([hidden])'));document.querySelector('#empty').style.display=n?'none':'block'}};</script></body></html>'''
 
 
 def listing_page(chapters):
@@ -96,7 +96,7 @@ def listing_page(chapters):
             items.append(f'<article class="card"><h3>{html.escape(l["t"])}</h3><ol>{lis}</ol></article>')
         cards.append(f'<section><h2>Chapter {c["n"]} · {html.escape(c["title"])}</h2><p>{html.escape(c["sub"])}</p><div class="grid">{"".join(items)}</div></section>')
     count = sum(len(c["lists"]) for c in payload)
-    return f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ECON102 Listing Vault</title><style>body{{margin:0;background:#f7f5f0;color:#20212a;font:16px/1.6 Inter,system-ui,sans-serif}}main{{max-width:1050px;margin:auto;padding:24px}}section{{padding-top:20px;margin:28px 0;border-top:2px solid #6b3fd1}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}}.card{{background:white;border:1px solid #ddd;border-radius:12px;padding:16px}}h1,h2,h3{{font-family:Georgia,serif}}li{{padding:3px 0}}</style><main><h1>ECON102 Listing Vault</h1><p>{count} chapter lists collected from the course study notes, grouped by chapter for quick review.</p>{''.join(cards)}</main></html>'''
+    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ECON102 Listing Vault</title><style>body{{margin:0;background:#f7f5f0;color:#20212a;font:16px/1.6 Inter,system-ui,sans-serif}}main{{max-width:1050px;margin:auto;padding:24px}}section{{padding-top:20px;margin:28px 0;border-top:2px solid #6b3fd1}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}}.card{{background:white;border:1px solid #ddd;border-radius:12px;padding:16px}}h1,h2,h3{{font-family:Georgia,serif}}li{{padding:3px 0}}</style></head><body><main><h1>ECON102 Listing Vault</h1><p>{count} chapter lists collected from the course study notes, grouped by chapter for quick review.</p>{''.join(cards)}</main></body></html>'''
 
 
 def write_wrapper(slug, label, child):
@@ -106,6 +106,30 @@ def write_wrapper(slug, label, child):
     template = template.replace("SE423", "ECON102").replace("Software Engineering", "Business")
     template = template.replace("/academics/software-engineering/se423/", "/academics/business/econ102/")
     template = template.replace("Glossary (All Chapters)", label)
+    legacy_resources = (
+        ("midterm-study-plan", "study-guides", "Study Guides"),
+        ("midterm-cheat-sheet", "cheat-sheets", "Cheat Sheets"),
+        ("final-exam-cheat-sheet", "cheat-sheets", "Cheat Sheets"),
+        ("summary-tables", "chapter-maps", "Chapter Maps"),
+        ("study-guide", "study-guides", "Study Guides"),
+        ("activity", "assignments", "Assignments"),
+        ("project", "group-work", "Group Work"),
+    )
+    for old, new, nav_label in legacy_resources:
+        old_url = f"/academics/business/econ102/extra-resources/{old}/"
+        new_url = f"/academics/business/econ102/extra-resources/{new}/"
+        pattern = re.compile(
+            rf'(<a\b[^>]*href=["\']{re.escape(old_url)}["\'][^>]*>).*?(</a>)',
+            re.S,
+        )
+        template = pattern.sub(
+            lambda match: match.group(1).replace(old_url, new_url)
+            + nav_label
+            + match.group(2),
+            template,
+            count=1,
+        )
+    template = template.replace('href="./glossary.html"', f'href="./{child}"')
     template = re.sub(r'<iframe(.*?)src=".*?"(.*?)></iframe>', rf'<iframe\1src="./{child}"\2></iframe>', template, count=1, flags=re.S)
     canonical = f"https://shoug-tech.com/academics/business/econ102/extra-resources/{slug}/"
     template = re.sub(r'<link\s+rel="canonical"\s+href="[^"]+"\s*/?>', f'<link rel="canonical" href="{canonical}" />', template, count=1, flags=re.S)
