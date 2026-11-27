@@ -110,6 +110,14 @@
         setTimeout(paint, 50);
       });
       paint();
+      // Match the menu's own links (font, size, spacing, capitals, colour).
+      var link = nav.querySelector("a");
+      if (link) {
+        var cs = getComputedStyle(link);
+        ["fontFamily", "fontSize", "fontWeight", "letterSpacing", "textTransform"].forEach(function (p) {
+          b.style[p] = cs[p];
+        });
+      }
       new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
       if (document.body) new MutationObserver(paint).observe(document.body, { attributes: true, attributeFilter: ["class"] });
       nav.appendChild(b);
