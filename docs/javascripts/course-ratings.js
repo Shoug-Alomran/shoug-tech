@@ -18,7 +18,7 @@
   window.__shougCourseRatings = true;
 
   var TRACKS =
-    "computer-science|software-engineering|cybersecurity|math|information-system|other-courses";
+    "computer-science|software-engineering|cybersecurity|math|information-system|business|other-courses";
   var COURSE_PATH = new RegExp(
     "^/academics/(?:" + TRACKS + ")/(?:english/)?([a-z]+\\d{3})/$",
   );

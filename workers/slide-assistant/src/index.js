@@ -931,7 +931,13 @@ export default {
       if (Number(request.headers.get("content-length") || 0) > 4096)
         return json({ error: "Request is too large." }, 413, origin);
       try {
-        return await handleFreeTime(request, env, origin, json, runTextGeneration);
+        return await handleFreeTime(
+          request,
+          env,
+          origin,
+          json,
+          runTextGeneration,
+        );
       } catch (error) {
         console.error(error);
         return json(

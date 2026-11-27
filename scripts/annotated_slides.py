@@ -1058,16 +1058,8 @@ def set_sections(page, data, url):
 
 
 def add_tab(page, active=False):
-    if 'href="%s" class="tab' % C.section in page or re.search(r'href="%s"\s+class="tab' % re.escape(C.section), page):
-        return page
-    m = re.search(r'(?P<indent>[ \t]*)<a\s+href="%s"\s+class="tab(?: active)?"[^>]*>\s*%s</a\s*>'
-                  % (re.escape(C.base + C.after[0]), re.escape(C.after[1])), page)
-    if not m:
-        return page
-    ind = m.group('indent')
-    tab = ('\n%s<a\n%s  href="%s"\n%s  class="tab%s"\n%s  data-en-text="Annotated Slides"\n%s  data-ar-text="%s"\n%s  >Annotated Slides</a\n%s>'
-           % (ind, ind, C.section, ind, ' active' if active else '', ind, ind, AR_LABEL, ind, ind))
-    return page[:m.end()] + tab + page[m.end():]
+    # Annotated decks are reached from the course Slides section.
+    return page
 
 
 def page_url(path):

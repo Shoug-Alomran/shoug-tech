@@ -15,14 +15,22 @@ function request(body) {
 }
 
 test("extractJson finds the object inside chatter", () => {
-  assert.deepEqual(extractJson('Sure! {"rules":[],"maxDays":3} done'), { rules: [], maxDays: 3 });
+  assert.deepEqual(extractJson('Sure! {"rules":[],"maxDays":3} done'), {
+    rules: [],
+    maxDays: 3,
+  });
   assert.equal(extractJson("no json here"), null);
 });
 
 test("cleanResult keeps valid rules and drops bad ones", () => {
   const out = cleanResult({
     rules: [
-      { days: [1, 3, 3], from: "17:00", to: "22:00", label: "Gym <b>evenings</b>" },
+      {
+        days: [1, 3, 3],
+        from: "17:00",
+        to: "22:00",
+        label: "Gym <b>evenings</b>",
+      },
       { days: [6], from: "09:00", to: "10:00" },
       { days: [0], from: "10:00", to: "09:00" },
       { days: [2], from: "nine", to: "10:00" },
@@ -31,7 +39,9 @@ test("cleanResult keeps valid rules and drops bad ones", () => {
     preferFewerGaps: true,
     notUnderstood: "cheap parking",
   });
-  assert.deepEqual(out.rules, [{ days: [1, 3], from: 1020, to: 1320, label: "Gym bevenings/b" }]);
+  assert.deepEqual(out.rules, [
+    { days: [1, 3], from: 1020, to: 1320, label: "Gym bevenings/b" },
+  ]);
   assert.equal(out.maxDays, null);
   assert.equal(out.preferGaps, true);
   assert.deepEqual(out.unknown, ["cheap parking"]);
@@ -39,10 +49,16 @@ test("cleanResult keeps valid rules and drops bad ones", () => {
 
 test("handleFreeTime sends only the text and returns cleaned rules", async () => {
   let sent;
-  const res = await handleFreeTime(request({ text: "  gym  monday evenings " }), {}, "", json, async (env, input) => {
-    sent = input;
-    return '{"rules":[{"days":[1],"from":"17:00","to":"22:00","label":"Gym Monday evenings"}],"maxDays":null}';
-  });
+  const res = await handleFreeTime(
+    request({ text: "  gym  monday evenings " }),
+    {},
+    "",
+    json,
+    async (env, input) => {
+      sent = input;
+      return '{"rules":[{"days":[1],"from":"17:00","to":"22:00","label":"Gym Monday evenings"}],"maxDays":null}';
+    },
+  );
   assert.equal(res.status, 200);
   assert.equal(sent.messages[1].content, "gym monday evenings");
   const body = await res.json();
@@ -50,6 +66,21 @@ test("handleFreeTime sends only the text and returns cleaned rules", async () =>
 });
 
 test("handleFreeTime rejects empty text and unreadable answers", async () => {
-  assert.equal((await handleFreeTime(request({ text: "" }), {}, "", json, async () => "")).status, 400);
-  assert.equal((await handleFreeTime(request({ text: "hi" }), {}, "", json, async () => "sorry")).status, 502);
+  assert.equal(
+    (await handleFreeTime(request({ text: "" }), {}, "", json, async () => ""))
+      .status,
+    400,
+  );
+  assert.equal(
+    (
+      await handleFreeTime(
+        request({ text: "hi" }),
+        {},
+        "",
+        json,
+        async () => "sorry",
+      )
+    ).status,
+    502,
+  );
 });

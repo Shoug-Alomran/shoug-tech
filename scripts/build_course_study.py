@@ -182,7 +182,8 @@ class Course:
 
     def mindmap_page(self, deck):
         text = nc.read(MAP_TEMPLATE)
-        block = re.compile(r"const DATA = \{.*?\n\s*\};(?=\n\n\s*// ─+\n\s*// STATE)", re.S)
+        # The template ends its data with "// @@END-DATA"; older copies used a "// STATE" banner.
+        block = re.compile(r"const DATA = \{.*?\n\s*\};(?=\n\s*// @@END-DATA|\n\n\s*// ─+\n\s*// STATE)", re.S)
         if not block.search(text):
             raise SystemExit("mind map template no longer matches")
         data = json.dumps(self.map_tree(deck), ensure_ascii=False, indent=2).replace("</", "<\\/")
@@ -309,7 +310,7 @@ class Course:
         t = nc.replace_block(r'<nav class="content-tabs">.*?</nav>', '<nav class="content-tabs">%s</nav>' % nc.tabs_html(self.c, active or path), t)
         t = nc.replace_block(r'<span class="current"[^>]*>.*?</span\s*>',
                              '<span class="current" data-en-text="%s" data-ar-text="%s">%s</span>' % (label, label_ar, label), t)
-        start = t.index('<div class="directory-container')
+        start = re.search(r'<div\s+class="directory-container', t).start()  # the template may be reformatted
         t = t[:start] + '<div class="directory-container">%s</div>' % body + t[hub.balanced_end(t, start, "div"):]
         nc.write(target, nc.stamp(t, data, self.url + path))
 

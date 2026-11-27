@@ -323,7 +323,7 @@ COURSES = [
     },
     {
         "code": "ECON101",
-        "url": "/academics/other-courses/econ101/",
+        "url": "/academics/business/econ101/",
         "section": "other-courses",
         "name": "Principles of Microeconomics",
         "name_ar": "مبادئ الاقتصاد الجزئي",
@@ -414,9 +414,7 @@ COURSES = [
 
 TABS = [
     ("", "Overview", "نظرة عامة"),
-    ("slide-breakdowns/", "Slide Breakdowns", "تفكيك الشرائح"),
     ("slides/", "Slides", "الشرائح"),
-    ("annotated-slides/", "Annotated Slides", "الشرائح المشروحة"),
     ("extra-resources/", "Study Material", "المواد الدراسية"),
     ("exams/", "Exams", "الاختبارات"),
 ]

@@ -58,14 +58,12 @@ EXTRA_CSS = """
 TABS = {
     'se322': [
         ('Overview', 'نظرة عامة', '/academics/software-engineering/se322/'),
-        ('Slide Breakdowns', 'تفكيك الشرائح', '/academics/software-engineering/se322/slide-breakdowns/'),
         ('Slides', 'الشرائح', '/academics/software-engineering/se322/slides/'),
         ('Study Material', 'المواد الدراسية', '/academics/software-engineering/se322/extra-resources/'),
         ('Exams', 'الاختبارات', '/academics/software-engineering/se322/exams/'),
     ],
     'se423': [
         ('Overview', 'نظرة عامة', '/academics/software-engineering/se423/'),
-        ('Slide Breakdowns', 'تفكيك الشرائح', '/academics/software-engineering/se423/slide-breakdowns/'),
         ('Slides', 'الشرائح', '/academics/software-engineering/se423/slides/'),
         ('Study Material', 'المواد الدراسية', '/academics/software-engineering/se423/extra-resources/'),
         ('Exams', 'الاختبارات', '/academics/software-engineering/se423/exams/'),

@@ -95,7 +95,7 @@ PAGES = {
                                             "required courses, prerequisites and electives for each computing major."),
 }
 
-DEPTS = {"information-system": "Information Systems", "other-courses": "General Education",
+DEPTS = {"information-system": "Information Systems", "business": "Business", "other-courses": "General Education",
          "math": "Math and Science"}
 SECTION_WORDS = {
     "slides": "lecture slides",

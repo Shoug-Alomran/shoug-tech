@@ -5,9 +5,11 @@
     var nav = document.querySelector("header.top nav.pillnav");
     if (!nav) return;
     var links = Array.from(nav.querySelectorAll('a[href^="#"]'));
-    var sections = links.map(function (link) {
-      return document.getElementById(decodeURIComponent(link.hash.slice(1)));
-    }).filter(Boolean);
+    var sections = links
+      .map(function (link) {
+        return document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      })
+      .filter(Boolean);
     if (!sections.length) return;
 
     var indicator = document.createElement("div");
@@ -34,25 +36,44 @@
         }
       });
       var remaining = sections.length - active - 1;
-      label.textContent = "SECTION " + (active + 1) + " / " + sections.length + " · " + remaining + " LEFT";
-      fill.style.width = ((active + 1) / sections.length * 100) + "%";
+      label.textContent =
+        "SECTION " +
+        (active + 1) +
+        " / " +
+        sections.length +
+        " · " +
+        remaining +
+        " LEFT";
+      fill.style.width = ((active + 1) / sections.length) * 100 + "%";
     }
-    var observer = new IntersectionObserver(function (entries) {
-      var visible = entries.filter(function (entry) { return entry.isIntersecting; });
-      if (!visible.length) return;
-      visible.sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
-      var index = sections.indexOf(visible[0].target);
-      if (index >= 0) update(index);
-    }, { rootMargin: "-18% 0px -68% 0px", threshold: 0 });
-    sections.forEach(function (section) { observer.observe(section); });
+    var observer = new IntersectionObserver(
+      function (entries) {
+        var visible = entries.filter(function (entry) {
+          return entry.isIntersecting;
+        });
+        if (!visible.length) return;
+        visible.sort(function (a, b) {
+          return a.boundingClientRect.top - b.boundingClientRect.top;
+        });
+        var index = sections.indexOf(visible[0].target);
+        if (index >= 0) update(index);
+      },
+      { rootMargin: "-18% 0px -68% 0px", threshold: 0 },
+    );
+    sections.forEach(function (section) {
+      observer.observe(section);
+    });
     links.forEach(function (link) {
       link.addEventListener("click", function () {
-        var index = sections.findIndex(function (section) { return "#" + section.id === link.hash; });
+        var index = sections.findIndex(function (section) {
+          return "#" + section.id === link.hash;
+        });
         if (index >= 0) update(index);
       });
     });
     update(0);
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

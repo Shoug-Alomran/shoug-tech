@@ -801,8 +801,7 @@
         solve: share.solve,
       };
     }
-    var
-      learnShare = Math.max(share.understand, isNew ? 0.4 : 0.15),
+    var learnShare = Math.max(share.understand, isNew ? 0.4 : 0.15),
       rest = 1 - learnShare,
       active = share.memorize + share.solve,
       memorize = active

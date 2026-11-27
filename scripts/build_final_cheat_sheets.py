@@ -385,6 +385,7 @@ TRACKS = {
     "software-engineering": "Software Engineering",
     "other-courses": "Other Courses",
     "information-system": "Information Systems",
+    "business": "Business",
 }
 # Template wrapper per track: the cybersecurity pages use the red cyber palette
 # (cyber-track.css + red --brand-purple), every other track uses the purple one.

@@ -16,13 +16,20 @@
 
   var KEY = "shoug-theme";
   var AUTO = "shoug-theme-auto";
-  var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)");
+  var mq =
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: light)");
 
   function get(k) {
-    try { return localStorage.getItem(k); } catch (e) { return null; }
+    try {
+      return localStorage.getItem(k);
+    } catch (e) {
+      return null;
+    }
   }
   function set(k, v) {
-    try { localStorage.setItem(k, v); } catch (e) {}
+    try {
+      localStorage.setItem(k, v);
+    } catch (e) {}
   }
   function following() {
     var auto = get(AUTO);
@@ -32,7 +39,9 @@
     var root = document.documentElement;
     var t = root.getAttribute("data-theme");
     if (t === "light" || t === "dark") return t === "light";
-    return !!document.body && document.body.classList.contains("shoug-light-mode");
+    return (
+      !!document.body && document.body.classList.contains("shoug-light-mode")
+    );
   }
   function headerButton() {
     return document.querySelector(".shoug-theme-btn, #shoug-theme-toggle");
@@ -45,7 +54,8 @@
     if (btn) return btn.click();
     var root = document.documentElement;
     if (root.hasAttribute("data-theme")) root.setAttribute("data-theme", mode);
-    if (document.body) document.body.classList.toggle("shoug-light-mode", mode === "light");
+    if (document.body)
+      document.body.classList.toggle("shoug-light-mode", mode === "light");
     set(KEY, mode);
   }
 
@@ -86,7 +96,10 @@
       b.className = "shoug-menu-theme";
       var paint = function () {
         b.textContent = "";
-        var icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        var icon = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg",
+        );
         icon.setAttribute("viewBox", "0 0 24 24");
         icon.setAttribute("fill", "none");
         icon.setAttribute("stroke", "currentColor");
@@ -106,7 +119,9 @@
         else show(next);
         // A button press is a choice: stop following the device.
         set(KEY, next);
-        try { localStorage.removeItem(AUTO); } catch (e) {}
+        try {
+          localStorage.removeItem(AUTO);
+        } catch (e) {}
         setTimeout(paint, 50);
       });
       paint();
@@ -114,15 +129,29 @@
       var link = nav.querySelector("a");
       if (link) {
         var cs = getComputedStyle(link);
-        ["fontFamily", "fontSize", "fontWeight", "letterSpacing", "textTransform"].forEach(function (p) {
+        [
+          "fontFamily",
+          "fontSize",
+          "fontWeight",
+          "letterSpacing",
+          "textTransform",
+        ].forEach(function (p) {
           b.style[p] = cs[p];
         });
       }
-      new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-      if (document.body) new MutationObserver(paint).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      new MutationObserver(paint).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+      if (document.body)
+        new MutationObserver(paint).observe(document.body, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
       nav.appendChild(b);
     });
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addMenuSwitch);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", addMenuSwitch);
   else addMenuSwitch();
 })();

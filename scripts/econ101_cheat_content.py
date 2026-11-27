@@ -10,7 +10,7 @@ body (HTML), clues [(clue, answer)], qs [(tag, ask, answer HTML)].
 """
 from __future__ import annotations
 
-BASE = "/academics/other-courses/econ101/"
+BASE = "/academics/business/econ101/"
 
 
 # ------------------------------------------------------------------ markup helpers

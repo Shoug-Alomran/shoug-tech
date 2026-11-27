@@ -37,6 +37,7 @@ DEPT_NAMES = {
     "math": "Math",
     "software-engineering": "Software Engineering",
     "information-system": "Information Systems",
+    "business": "Business",
     "other-courses": "Other Courses",
 }
 WRAPPER_TEMPLATE = SCRIPTS / "annotated_review_wrapper.html"

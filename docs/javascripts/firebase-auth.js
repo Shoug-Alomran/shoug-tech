@@ -2008,7 +2008,8 @@
           snap.forEach(function (doc) {
             var url = (doc.data().url || "")
               .replace(/^\/+/, "")
-              .replace(/other-courses(\/|%2F)stat101/gi, "math$1stat101"); // moved 2026-07-30
+              .replace(/other-courses(\/|%2F)stat101/gi, "math$1stat101")
+              .replace(/other-courses(\/|%2F)econ101/gi, "business$1econ101"); // moved 2026-07-30
             var parts = url.split("/").filter(Boolean);
             if (parts.length >= 3)
               seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
@@ -2610,7 +2611,7 @@
           position: "top",
           tag: "Step 4 of 4 | Subject Tracks",
           title: "Six Subject Tracks",
-          body: "Choose Computer Science, Software Engineering, Cybersecurity, Information Systems, Math, or Other Courses to find material for each course.",
+          body: "Choose Computer Science, Software Engineering, Cybersecurity, Information Systems, Math, Business, or Other Courses to find material for each course.",
         },
       ];
     } else if (context === "academics-subject") {
@@ -3334,7 +3335,9 @@
         },
         {
           target: function () {
-            return document.querySelector('.shoug-header-nav a[href="/about/"]');
+            return document.querySelector(
+              '.shoug-header-nav a[href="/about/"]',
+            );
           },
           position: "bottom",
           tag: "Step 7 of 8",
@@ -4417,6 +4420,12 @@
     // Removed in favor of only the deliberate hover-and-wait / click-into-
     // content triggers below, which can't ambush an in-flight tap.
     (function scheduleContextualGuidance() {
+      // This touch-first planner has its own guidance. The generic overlay
+      // can cover its controls after the first tap.
+      if (
+        location.pathname.replace(/\/$/, "") === "/academics/schedule-planner"
+      )
+        return;
       var started = false;
       var hoverTimer = null;
       var hoverTarget = null;

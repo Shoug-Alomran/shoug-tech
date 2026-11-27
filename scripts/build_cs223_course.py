@@ -104,7 +104,7 @@ ARROW = ('<div class="dir-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="cu
 # Same folder markup embed_resources.py writes, so sort_folder_rows sees a folder.
 from build_activity_and_project_pages import EXTRA_CSS, FOLDER as FOLDER_ICON  # noqa: E402
 
-TABS = [("", "Overview"), ("slide-breakdowns/", "Slide Breakdowns"), ("slides/", "Slides"),
+TABS = [("", "Overview"), ("slides/", "Slides"),
         ("extra-resources/", "Study Material"), ("exams/", "Exams")]
 
 

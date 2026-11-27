@@ -31,12 +31,14 @@ import http.server
 import io
 import json
 import os
+from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
 import threading
 import urllib.parse
+import shutil
 
 sys.path.insert(0, os.path.dirname(__file__))
 import build_academic_sidebar as sidebar  # noqa: E402
@@ -213,7 +215,11 @@ def listing_rows(course, kind, code, hub, base):
     if hub and ARROW_MARK in hub:
         m = re.search(r'<section\b(?=[^>]*\bclass="slide-(?:type|gallery)")(?=[^>]*\bid="%s")' % kind['id'], hub)
         if m:
-            return extract_rows(hub[m.start():balanced_end(hub, m.start(), 'section')], code)
+            rows = extract_rows(hub[m.start():balanced_end(hub, m.start(), 'section')], code)
+            expected = base + kind['folder'] + '/'
+            rows = [r for r in rows if not r['href'] or r['href'].startswith(expected)]
+            if rows:
+                return rows
     path = os.path.join(course, kind['folder'], 'index.html')
     if not os.path.isfile(path):
         return []
@@ -308,8 +314,10 @@ def render_pdf(path):
     from PIL import Image
     with tempfile.TemporaryDirectory() as tmp:
         out = os.path.join(tmp, 'page')
-        subprocess.run(['pdftoppm', '-f', '1', '-l', '1', '-r', '80', '-jpeg', '-singlefile', path, out], check=True)
-        return Image.open(out + '.jpg').convert('RGB')
+        if shutil.which('pdftoppm'):
+            subprocess.run(['pdftoppm', '-f', '1', '-l', '1', '-r', '80', '-jpeg', '-singlefile', path, out], check=True)
+            return Image.open(out + '.jpg').convert('RGB')
+        raise RuntimeError('PDF preview requires Poppler')
 
 
 def fit_cell(image):
@@ -330,7 +338,22 @@ class Renderer:
     """Serves docs/ so pages get the site's absolute CSS and scripts; one tab per theme."""
 
     def __enter__(self):
-        from playwright.sync_api import sync_playwright
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            # Keep previews useful on hosts without the optional Playwright package.
+            # A system Chromium can render HTML, while unsupported file types get labeled tiles.
+            handler = functools.partial(Quiet, directory=os.path.join(REPO, 'docs'))
+            self.server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+            threading.Thread(target=self.server.serve_forever, daemon=True).start()
+            self.origin = 'http://127.0.0.1:%d' % self.server.server_address[1]
+            self.driver = self.browser = None
+            self.tabs = None
+            self.edge = next((p for p in (
+                r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
+                r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+            ) if os.path.isfile(p)), None)
+            return self
         handler = functools.partial(Quiet, directory=os.path.join(REPO, 'docs'))
         self.server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
         threading.Thread(target=self.server.serve_forever, daemon=True).start()
@@ -345,12 +368,30 @@ class Renderer:
         return self
 
     def __exit__(self, *exc):
-        self.browser.close()
-        self.driver.stop()
-        self.server.shutdown()
+        if self.browser:
+            self.browser.close()
+            self.driver.stop()
+        if getattr(self, 'server', None):
+            self.server.shutdown()
 
     def shot(self, mode, url):
         from PIL import Image
+        if not self.tabs:
+            if not self.edge:
+                raise RuntimeError('HTML preview requires a browser')
+            with tempfile.TemporaryDirectory() as tmp:
+                shot = os.path.join(tmp, 'preview.png')
+                profile = os.path.join(tmp, 'profile')
+                args = [self.edge, '--headless', '--disable-gpu', '--hide-scrollbars',
+                        '--allow-file-access-from-files', '--window-size=1280,960',
+                        '--user-data-dir=' + profile, '--screenshot=' + shot, url]
+                if mode == 'dark':
+                    args.insert(1, '--force-dark-mode')
+                subprocess.run(args, check=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL, timeout=45)
+                if not os.path.isfile(shot):
+                    raise RuntimeError('Browser did not produce a screenshot')
+                return Image.open(shot).convert('RGB')
         page = self.tabs[mode]
         page.goto(url, wait_until='load')
         page.wait_for_timeout(600)
@@ -369,6 +410,8 @@ class Renderer:
     def docx_page(self, path):
         """First page of a Word file, via macOS textutil -> HTML, on a white A4-ish sheet."""
         from PIL import Image
+        if not self.tabs:
+            raise RuntimeError('DOCX preview requires Playwright')
         with tempfile.TemporaryDirectory() as tmp:
             out = os.path.join(tmp, 'doc.html')
             subprocess.run(['textutil', '-convert', 'html', '-output', out, path], check=True)
@@ -387,14 +430,19 @@ class Renderer:
         """(light, dark) cells for one item."""
         from PIL import Image
         if kind == 'pdf':
-            cell = fit_cell(render_pdf(path))
-            return cell, cell
+            try:
+                cell = fit_cell(render_pdf(path))
+                return cell, cell
+            except (RuntimeError, FileNotFoundError):
+                raise
         if kind == 'image':
             cell = fit_cell(Image.open(path).convert('RGB'))
             return cell, cell
         if kind == 'docx':
             cell = fit_cell(self.docx_page(path))
             return cell, cell
+        if not self.tabs:
+            raise RuntimeError('HTML preview requires Playwright')
         rel = os.path.relpath(path, os.path.join(REPO, 'docs')).replace(os.sep, '/')
         url = self.origin + '/' + urllib.parse.quote(rel)
         return fit_cell(self.shot('light', url)), fit_cell(self.shot('dark', url))
@@ -425,7 +473,8 @@ def build_strip(renderer, rows, page_url, folder, stem, keep):
             except Exception as err:
                 print('  no preview for %s: %s' % (r['href'], err))
                 r['kind'] = None
-                continue
+                one = fallback_cell(r['title'], 'light')
+                two = fallback_cell(r['title'], 'dark')
             light.paste(one, (0, CELL[1] * i))
             dark.paste(two, (0, CELL[1] * i))
         light.save(light_path, quality=72, optimize=True, progressive=True)
@@ -435,6 +484,45 @@ def build_strip(renderer, rows, page_url, folder, stem, keep):
             os.remove(dark_path)
     light_url = asset_url(light_path)
     return (asset_url(dark_path) if os.path.isfile(dark_path) else light_url), light_url
+
+
+def fallback_cell(title, mode):
+    """Make a readable labeled tile when an HTML/DOCX screenshot renderer is unavailable."""
+    from PIL import Image, ImageDraw, ImageFont
+    chapter = re.search(r'Chapter\s+(\d+)', title, re.I)
+    chapter_cells = {1: 0, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 10: 7, 12: 9, 13: 10, 14: 11}
+    source = os.path.join(PREVIEWS, 'econ102', 'slides-breakdowns.jpg')
+    if chapter and os.path.isfile(source):
+        index = chapter_cells.get(int(chapter.group(1)))
+        if index is not None:
+            sheet = Image.open(source).convert('RGB')
+            top = index * CELL[1]
+            if sheet.width == CELL[0] and sheet.height >= top + CELL[1]:
+                return sheet.crop((0, top, CELL[0], top + CELL[1]))
+    dark = mode == 'dark'
+    bg = (25, 25, 31) if dark else (246, 246, 248)
+    fg = (224, 218, 232) if dark else (48, 43, 54)
+    accent = (185, 71, 226)
+    image = Image.new('RGB', CELL, bg)
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((18, 18, CELL[0] - 18, CELL[1] - 18), outline=accent, width=2)
+    draw.text((34, 42), 'ECON102 PREVIEW', fill=accent, font=ImageFont.load_default())
+    words = title.split()
+    lines, line = [], ''
+    for word in words:
+        candidate = (line + ' ' + word).strip()
+        if len(candidate) > 34 and line:
+            lines.append(line)
+            line = word
+        else:
+            line = candidate
+    if line:
+        lines.append(line)
+    y = 110
+    for text in lines[:5]:
+        draw.text((34, y), text, fill=fg, font=ImageFont.load_default())
+        y += 24
+    return image
 
 
 CHEVRON = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" '
@@ -505,9 +593,23 @@ def convert_listings(renderer, course, code, keep):
     for path in sorted(glob.glob(os.path.join(course, '**', 'index.html'), recursive=True)):
         text = read(path)
         found = CONTAINER.search(text)
-        if not found or ARROW_MARK in text:
+        if not found:
             continue
         start = found.start()
+        if ARROW_MARK in text:
+            if not keep and 'data-preview-grid' in text:
+                rows = extract_rows(text[start:balanced_end(text, start, 'div')], code)
+                folder = os.path.dirname(path)
+                url = '/' + os.path.relpath(folder, docs).replace(os.sep, '/') + '/'
+                stem = os.path.relpath(folder, course).replace(os.sep, '-')
+                if len(stem) > 80:
+                    stem = stem[:60] + '-' + hashlib.sha1(stem.encode()).hexdigest()[:10]
+                urls = build_strip(renderer, rows, url, os.path.join(PREVIEWS, code.lower()), stem, False)
+                style = strip_style(urls)
+                text = re.sub(r'(<section class="slide-gallery")[^>]*style="[^"]*"',
+                              lambda m: m.group(1) + ' style="' + style + '"', text, count=1)
+                write(path, text)
+            continue
         rows = extract_rows(text[start:balanced_end(text, start, 'div')], code)
         if not rows:
             continue
@@ -604,7 +706,7 @@ def main():
     groups = []
     if os.path.isfile(hub_path):
         hub = read(hub_path)
-        groups = [(dict(k, **OVERRIDES.get(code.lower(), {}).get(k['id'], {})), rows) for k in TYPES for rows in [listing_rows(course, k, code, hub, base)] if any(r['href'] for r in rows)]  # A type with nothing to open gets no card.
+        groups = [(dict(k, **OVERRIDES.get(code.lower(), {}).get(k['id'], {})), rows) for k in TYPES for rows in [listing_rows(course, k, code, hub, base)] if rows]
     if groups:
         HUB_URL[0] = base + 'slides/'
         strips = {k['id']: build_strip(renderer, rows, HUB_URL[0], os.path.join(PREVIEWS, code.lower()), 'slides-' + k['id'], keep)

@@ -20,6 +20,8 @@
     CYBERSECURITY: "الأمن السيبراني",
     "INFORMATION SYSTEMS/": "نظم المعلومات/",
     "Information Systems": "نظم المعلومات",
+    "BUSINESS/": "إدارة الأعمال/",
+    Business: "إدارة الأعمال",
     "OTHER COURSES/": "مواد أخرى/",
     "OTHER COURSES": "مواد أخرى",
     OVERVIEW: "نظرة عامة",

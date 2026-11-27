@@ -22,7 +22,11 @@
   // English / Arabic. The choice is the site-wide "shoug-lang" (localStorage)
   // and <html lang dir>; every string below goes through L(english, arabic).
   function isAr() {
-    return String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+    return (
+      String(document.documentElement.lang || "")
+        .toLowerCase()
+        .indexOf("ar") === 0
+    );
   }
   function L(en, ar) {
     return isAr() ? ar : en;
@@ -30,18 +34,46 @@
   var DAY_NAMES, DAY_SHORT, DAY_TINY, TYPE, LEVEL;
   function setLanguageData() {
     DAY_NAMES = isAr()
-      ? ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
-      : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      ? [
+          "الأحد",
+          "الاثنين",
+          "الثلاثاء",
+          "الأربعاء",
+          "الخميس",
+          "الجمعة",
+          "السبت",
+        ]
+      : [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
     DAY_SHORT = isAr()
       ? ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"]
       : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    DAY_TINY = isAr() ? ["ح", "ن", "ث", "ر", "خ", "ج", "س"] : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    DAY_TINY = isAr()
+      ? ["ح", "ن", "ث", "ر", "خ", "ج", "س"]
+      : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     TYPE = isAr()
       ? { L: "محاضرة", B: "معمل", T: "تمارين", S: "مرسم", C: "تدريب تعاوني" }
       : { L: "Lecture", B: "Lab", T: "Tutorial", S: "Studio", C: "Co-op" };
     LEVEL = isAr()
-      ? { light: "خفيف", fine: "مناسب", heavy: "ثقيل", "very heavy": "ثقيل جدًا" }
-      : { light: "light", fine: "fine", heavy: "heavy", "very heavy": "very heavy" };
+      ? {
+          light: "خفيف",
+          fine: "مناسب",
+          heavy: "ثقيل",
+          "very heavy": "ثقيل جدًا",
+        }
+      : {
+          light: "light",
+          fine: "fine",
+          heavy: "heavy",
+          "very heavy": "very heavy",
+        };
   }
   setLanguageData();
   function dateLocale() {
@@ -51,9 +83,16 @@
   function daysText(days) {
     if (!days || !days.length || days.length >= 5) return "";
     if (days.length === 1) return DAY_NAMES[days[0]];
-    var run = days.every(function (d, i) { return !i || d === days[i - 1] + 1; });
-    if (run && days.length > 2) return DAY_SHORT[days[0]] + "–" + DAY_SHORT[days[days.length - 1]];
-    return days.map(function (d) { return DAY_SHORT[d]; }).join(L(", ", "، "));
+    var run = days.every(function (d, i) {
+      return !i || d === days[i - 1] + 1;
+    });
+    if (run && days.length > 2)
+      return DAY_SHORT[days[0]] + "–" + DAY_SHORT[days[days.length - 1]];
+    return days
+      .map(function (d) {
+        return DAY_SHORT[d];
+      })
+      .join(L(", ", "، "));
   }
   var COLORS = [
     "#8b5cf6",
@@ -130,18 +169,31 @@
       closed: s.closed !== false,
       finalClash: !!s.finalClash,
       // 12–1 is the university break, so it is never a free-time choice.
-      blocks: (s.blocks || []).filter(function (k) { return !/-12$/.test(k); }),
-      presets: (s.presets || []).filter(function (p) { return p !== "noon"; }),
+      blocks: (s.blocks || []).filter(function (k) {
+        return !/-12$/.test(k);
+      }),
+      presets: (s.presets || []).filter(function (p) {
+        return p !== "noon";
+      }),
       sort: s.sort || "days",
       freeText: s.freeText || "",
       pinned: s.pinned || {}, // code -> section group the student chose
       showPassed: !!s.showPassed,
-      textRules: s.textRules || { rules: [], maxDays: null, preferGaps: false, unknown: [] },
+      textRules: s.textRules || {
+        rules: [],
+        maxDays: null,
+        preferGaps: false,
+        unknown: [],
+      },
       // One entry per schedule (term + campus + sections), oldest kept.
       saved: (s.saved || []).filter(function (x, i, all) {
-        return all.findIndex(function (y) {
-          return y.key === x.key && y.term === x.term && y.campus === x.campus;
-        }) === i;
+        return (
+          all.findIndex(function (y) {
+            return (
+              y.key === x.key && y.term === x.term && y.campus === x.campus
+            );
+          }) === i
+        );
       }),
     };
   }
@@ -242,9 +294,17 @@
       })
       .catch(function (err) {
         console.error(err);
-        $("updated").textContent = L("Timetable unavailable", "الجدول غير متاح");
+        $("updated").textContent = L(
+          "Timetable unavailable",
+          "الجدول غير متاح",
+        );
         $("notice").innerHTML =
-          '<div class="notice">' + L("<b>The timetable couldn't load.</b> Check your connection and refresh. If it keeps happening, the data may not have been published yet.", "<b>تعذّر تحميل الجدول.</b> تحقق من الاتصال وحدّث الصفحة. إذا تكرر ذلك فربما لم تُنشر البيانات بعد.") + "</div>";
+          '<div class="notice">' +
+          L(
+            "<b>The timetable couldn't load.</b> Check your connection and refresh. If it keeps happening, the data may not have been published yet.",
+            "<b>تعذّر تحميل الجدول.</b> تحقق من الاتصال وحدّث الصفحة. إذا تكرر ذلك فربما لم تُنشر البيانات بعد.",
+          ) +
+          "</div>";
       });
   }
 
@@ -253,7 +313,11 @@
     var y = t.label.match(/(\d{4})\s*\/\s*(\d{4})/) || [];
     var years = y[1] ? " " + y[1] + "/" + y[2].slice(2) : "";
     if (isAr())
-      return ({ 1: "الفصل الأول", 2: "الفصل الثاني", 3: "الفصل الصيفي" }[t.value.slice(-1)] || "الفصل") + years;
+      return (
+        ({ 1: "الفصل الأول", 2: "الفصل الثاني", 3: "الفصل الصيفي" }[
+          t.value.slice(-1)
+        ] || "الفصل") + years
+      );
     var n =
       { 1: "First", 2: "Second", 3: "Summer" }[t.value.slice(-1)] || "Term";
     return n + " term" + years;
@@ -266,8 +330,14 @@
       L("Last update: ", "آخر تحديث: ") +
       d.toLocaleDateString(dateLocale(), { day: "numeric", month: "short" }) +
       (isAr() ? "، " : ", ") +
-      d.toLocaleTimeString(dateLocale(), { hour: "2-digit", minute: "2-digit" });
-    $("updated").title = L("From PSU Edugate. Refreshed automatically every few hours.", "من بوابة جامعة الأمير سلطان (Edugate)، ويُحدَّث تلقائيًا كل بضع ساعات.");
+      d.toLocaleTimeString(dateLocale(), {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    $("updated").title = L(
+      "From PSU Edugate. Refreshed automatically every few hours.",
+      "من بوابة جامعة الأمير سلطان (Edugate)، ويُحدَّث تلقائيًا كل بضع ساعات.",
+    );
   }
 
   function loadTerm() {
@@ -286,7 +356,10 @@
           return !byCourse[c];
         });
         if (missing.length)
-          toast(missing.join(", ") + L(" isn't offered this term", " غير مطروحة هذا الفصل"));
+          toast(
+            missing.join(", ") +
+              L(" isn't offered this term", " غير مطروحة هذا الفصل"),
+          );
         state.picked = state.picked.filter(function (c) {
           return byCourse[c];
         });
@@ -296,7 +369,10 @@
         regenerate();
       })
       .catch(function () {
-        $("updated").textContent = L("No timetable for this campus yet", "لا يوجد جدول لهذا المقر بعد");
+        $("updated").textContent = L(
+          "No timetable for this campus yet",
+          "لا يوجد جدول لهذا المقر بعد",
+        );
         term = null;
         byCourse = {};
         renderList();
@@ -432,10 +508,17 @@
       if (!o.usable.length) {
         var r = o.reasons,
           why = [];
-        if (r.blocked) why.push(r.blocked + L(" clash with your free time", " تتعارض مع وقت فراغك"));
+        if (r.blocked)
+          why.push(
+            r.blocked + L(" clash with your free time", " تتعارض مع وقت فراغك"),
+          );
         if (r.closed) why.push(r.closed + L(" closed", " مغلقة"));
-        if (r.excluded) why.push(r.excluded + L(" you turned off", " أُوقفت يدويًا"));
-        leftOut.push({ code: code, reason: why.join(L(", ", "، ")) || L("no sections", "لا توجد شعب") });
+        if (r.excluded)
+          why.push(r.excluded + L(" you turned off", " أُوقفت يدويًا"));
+        leftOut.push({
+          code: code,
+          reason: why.join(L(", ", "، ")) || L("no sections", "لا توجد شعب"),
+        });
       } else lists.push(o.usable);
     });
     lists.sort(function (a, b) {
@@ -479,7 +562,9 @@
     results.beforeMaxDays = results.length;
     var maxDays = state.textRules.maxDays;
     if (maxDays) {
-      var kept = results.filter(function (r) { return r.metrics.days <= maxDays; });
+      var kept = results.filter(function (r) {
+        return r.metrics.days <= maxDays;
+      });
       kept.capped = results.capped;
       kept.beforeMaxDays = results.length;
       results = kept;
@@ -498,7 +583,9 @@
 
   function isSaved(key) {
     return state.saved.some(function (s) {
-      return s.key === key && s.term === state.term && s.campus === state.campus;
+      return (
+        s.key === key && s.term === state.term && s.campus === state.campus
+      );
     });
   }
 
@@ -596,7 +683,11 @@
     if (r && r.difficulty) out = { value: r.difficulty, rated: true, n: r.n };
     else {
       var lvl = +(code.match(/\d/) || ["1"])[0];
-      out = { value: [2.2, 2.3, 2.7, 3, 3.3, 3.4][Math.min(lvl, 5)], rated: false, n: 0 };
+      out = {
+        value: [2.2, 2.3, 2.7, 3, 3.3, 3.4][Math.min(lvl, 5)],
+        rated: false,
+        n: 0,
+      };
     }
     out.base = out.value;
     var me = personal(code);
@@ -612,8 +703,22 @@
   // picked course up or down, using finished courses that are related to it.
 
   var grades = {}; // "CS331" -> { letter, points }
-  var POINTS = { "A+": 4, A: 3.75, "B+": 3.5, B: 3, "C+": 2.5, C: 2, "D+": 1.5, D: 1, F: 0, DN: 0 };
-  var GENERIC = "introduction intro fundamentals fundamental basics basic overview review part chapter concepts concept principles using with from into their your what that this and the for are management advanced applications application methods method topics systems system data software computer computing course study case managing working understanding development including other".split(" ");
+  var POINTS = {
+    "A+": 4,
+    A: 3.75,
+    "B+": 3.5,
+    B: 3,
+    "C+": 2.5,
+    C: 2,
+    "D+": 1.5,
+    D: 1,
+    F: 0,
+    DN: 0,
+  };
+  var GENERIC =
+    "introduction intro fundamentals fundamental basics basic overview review part chapter concepts concept principles using with from into their your what that this and the for are management advanced applications application methods method topics systems system data software computer computing course study case managing working understanding development including other".split(
+      " ",
+    );
 
   function loadGrades() {
     withFirebase(function (fb) {
@@ -622,14 +727,21 @@
         grades = {};
         if (!user || !window.ShougPrivate) return render();
         window.ShougPrivate.ready(user.uid)
-          .then(function (ref) { return ref.get(); })
+          .then(function (ref) {
+            return ref.get();
+          })
           .then(function (snap) {
-            var record = (snap && snap.exists && snap.data().academicRecord) || {};
+            var record =
+              (snap && snap.exists && snap.data().academicRecord) || {};
             var courses = record.courses || {};
             Object.keys(courses).forEach(function (raw) {
               var c = courses[raw] || {};
-              if (c.finished === false || POINTS[c.letter] === undefined) return;
-              grades[raw.replace(/\s+/g, "").toUpperCase()] = { letter: c.letter, points: POINTS[c.letter] };
+              if (c.finished === false || POINTS[c.letter] === undefined)
+                return;
+              grades[raw.replace(/\s+/g, "").toUpperCase()] = {
+                letter: c.letter,
+                points: POINTS[c.letter],
+              };
             });
             if (state.sort === "load") sortResults();
             render();
@@ -642,9 +754,13 @@
   function topicWords(entry) {
     var out = {};
     ((entry && entry.chapters) || []).forEach(function (title) {
-      title.toLowerCase().split(/[^a-z0-9+#]+/).forEach(function (w) {
-        if (w.length >= 4 && GENERIC.indexOf(w) < 0) out[w.slice(0, 6)] = true;
-      });
+      title
+        .toLowerCase()
+        .split(/[^a-z0-9+#]+/)
+        .forEach(function (w) {
+          if (w.length >= 4 && GENERIC.indexOf(w) < 0)
+            out[w.slice(0, 6)] = true;
+        });
     });
     return out;
   }
@@ -652,12 +768,19 @@
   /** Courses passed: "completed" in any plan grid, or a grade of D or better (W, F, DN don't count). */
   function passedCourses() {
     var out = {};
-    Object.keys(grades).forEach(function (c) { if (grades[c].points >= 1) out[c] = true; });
+    Object.keys(grades).forEach(function (c) {
+      if (grades[c].points >= 1) out[c] = true;
+    });
     Object.keys(PLAN_GRID_KEYS).forEach(function (k) {
       var saved = null;
-      try { saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[k]) || "null"); } catch (e) {}
+      try {
+        saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[k]) || "null");
+      } catch (e) {}
       var map = (saved && saved.statusMap) || {};
-      Object.keys(map).forEach(function (c) { if (map[c] === "completed") out[c.replace(/\s+/g, "").toUpperCase()] = true; });
+      Object.keys(map).forEach(function (c) {
+        if (map[c] === "completed")
+          out[c.replace(/\s+/g, "").toUpperCase()] = true;
+      });
     });
     return out;
   }
@@ -670,29 +793,72 @@
     var prefix = code.replace(/\d.*$/, "");
     var direct = e.pre || [];
     var second = [];
-    direct.forEach(function (p) { ((catalog[p] && catalog[p].pre) || []).forEach(function (q) { second.push(q); }); });
+    direct.forEach(function (p) {
+      ((catalog[p] && catalog[p].pre) || []).forEach(function (q) {
+        second.push(q);
+      });
+    });
     var mine = topicWords(e);
     var scored = graded
-      .filter(function (g) { return g !== code; })
-      .map(function (g) {
-        var weight = 0, why = [];
-        if (direct.indexOf(g) > -1) { weight += 3; why.push("prerequisite"); }
-        else if (second.indexOf(g) > -1) { weight += 1.5; why.push("builds toward it"); }
-        if (g.replace(/\d.*$/, "") === prefix) { weight += 1; if (!why.length) why.push("same subject"); }
-        var theirs = topicWords(catalog[g]);
-        var shared = Object.keys(mine).filter(function (w) { return theirs[w]; }).length;
-        if (shared >= 2) { weight += 2; if (why.indexOf("prerequisite") < 0) why.push("similar topics"); }
-        return { code: g, letter: grades[g].letter, points: grades[g].points, weight: weight, why: why[0] || "" };
+      .filter(function (g) {
+        return g !== code;
       })
-      .filter(function (x) { return x.weight >= 1.5; })
-      .sort(function (a, b) { return b.weight - a.weight; })
+      .map(function (g) {
+        var weight = 0,
+          why = [];
+        if (direct.indexOf(g) > -1) {
+          weight += 3;
+          why.push("prerequisite");
+        } else if (second.indexOf(g) > -1) {
+          weight += 1.5;
+          why.push("builds toward it");
+        }
+        if (g.replace(/\d.*$/, "") === prefix) {
+          weight += 1;
+          if (!why.length) why.push("same subject");
+        }
+        var theirs = topicWords(catalog[g]);
+        var shared = Object.keys(mine).filter(function (w) {
+          return theirs[w];
+        }).length;
+        if (shared >= 2) {
+          weight += 2;
+          if (why.indexOf("prerequisite") < 0) why.push("similar topics");
+        }
+        return {
+          code: g,
+          letter: grades[g].letter,
+          points: grades[g].points,
+          weight: weight,
+          why: why[0] || "",
+        };
+      })
+      .filter(function (x) {
+        return x.weight >= 1.5;
+      })
+      .sort(function (a, b) {
+        return b.weight - a.weight;
+      })
       .slice(0, 4);
     if (!scored.length) return null;
-    var total = 0, sum = 0;
-    scored.forEach(function (x) { total += x.weight; sum += x.weight * x.points; });
+    var total = 0,
+      sum = 0;
+    scored.forEach(function (x) {
+      total += x.weight;
+      sum += x.weight * x.points;
+    });
     var avg = sum / total;
     // A strong record in related courses makes a course lighter for you, a weak one heavier.
-    var shift = avg >= 3.75 ? -0.6 : avg >= 3.25 ? -0.3 : avg >= 2.5 ? 0 : avg >= 2 ? 0.4 : 0.8;
+    var shift =
+      avg >= 3.75
+        ? -0.6
+        : avg >= 3.25
+          ? -0.3
+          : avg >= 2.5
+            ? 0
+            : avg >= 2
+              ? 0.4
+              : 0.8;
     return { avg: avg, shift: shift, related: scored };
   }
 
@@ -712,8 +878,14 @@
     });
     var parts = [
       [L("Courses and difficulty", "المواد وصعوبتها"), (weighted / 18) * 45],
-      [L("Long days (over 6 hours)", "أيام طويلة (أكثر من 6 ساعات)"), m.longDays * 2.5],
-      [L("Gaps between classes", "الفراغات بين المحاضرات"), (m.gaps / 60) * 1.5],
+      [
+        L("Long days (over 6 hours)", "أيام طويلة (أكثر من 6 ساعات)"),
+        m.longDays * 2.5,
+      ],
+      [
+        L("Gaps between classes", "الفراغات بين المحاضرات"),
+        (m.gaps / 60) * 1.5,
+      ],
       [L("Days starting before 9", "أيام تبدأ قبل 9"), m.eights * 0.8],
       [L("Days on campus", "أيام الحضور"), m.days >= 5 ? 3 : 0],
       [
@@ -890,7 +1062,8 @@
   }
   function nameOf(code) {
     var c = catalog[code];
-    var ar = (term && term.courses[code] && term.courses[code].ar) || (c && c.ar);
+    var ar =
+      (term && term.courses[code] && term.courses[code].ar) || (c && c.ar);
     return (isAr() ? ar || (c && c.en) : (c && c.en) || ar) || code;
   }
 
@@ -901,46 +1074,105 @@
   // picker is: major, then track/minor chips, then a prep-year tick.
   var majors = {}; // key -> { key, ar, en, college, main, prep, aliases[], tracks[] }
   var MAJOR_EN = {
-    SE: "Software Engineering", CS: "Computer Science", IS: "Information Systems",
-    FINANCE: "Finance", ACC: "Accounting", MKT: "Marketing", AVM: "Aviation Management", HRM: "Human Resource Management",
-    "PROD.MNGT": "Engineering Management (Production)", EE: "Electrical Engineering", CEE: "Civil & Environmental Engineering",
-    ISE: "Industrial & Systems Engineering", ME: "Mechanical Engineering", LAW: "Law", LAM: "Language & Media",
-    ASDS: "Applied Statistics & Data Science", ETRA: "Translation", ARCH: "Architecture", ID: "Interior Design",
-    "PYP-MBBS": "Medicine & Surgery", "PYP-AL": "Applied Linguistics", "PYP-ACTS": "Actuarial Science",
+    SE: "Software Engineering",
+    CS: "Computer Science",
+    IS: "Information Systems",
+    FINANCE: "Finance",
+    ACC: "Accounting",
+    MKT: "Marketing",
+    AVM: "Aviation Management",
+    HRM: "Human Resource Management",
+    "PROD.MNGT": "Engineering Management (Production)",
+    EE: "Electrical Engineering",
+    CEE: "Civil & Environmental Engineering",
+    ISE: "Industrial & Systems Engineering",
+    ME: "Mechanical Engineering",
+    LAW: "Law",
+    LAM: "Language & Media",
+    ASDS: "Applied Statistics & Data Science",
+    ETRA: "Translation",
+    ARCH: "Architecture",
+    ID: "Interior Design",
+    "PYP-MBBS": "Medicine & Surgery",
+    "PYP-AL": "Applied Linguistics",
+    "PYP-ACTS": "Actuarial Science",
   };
   var TRACK_EN = {
-    CYS: "Cybersecurity", "AI&DS": "AI & Data Science", DX: "Digital Transformation",
-    ACC: "Accounting", AVM: "Aviation Management", FIN: "Finance", MKT: "Marketing", ID: "Interior Design", ARCH: "Architecture",
+    CYS: "Cybersecurity",
+    "AI&DS": "AI & Data Science",
+    DX: "Digital Transformation",
+    ACC: "Accounting",
+    AVM: "Aviation Management",
+    FIN: "Finance",
+    MKT: "Marketing",
+    ID: "Interior Design",
+    ARCH: "Architecture",
   };
   var COLLEGE_EN = {
-    "علوم الحاسب والمعلومات": "Computer & Information Sciences", "إدارة الأعمال": "Business Administration",
-    "الهندسة": "Engineering", "القانون": "Law", "العلوم والدراسات الإنسانية": "Humanities & Sciences",
-    "العمارة والتصميم": "Architecture & Design", "عمادة السنة التحضيرية": "Preparatory Year", "البنات": "Women's Campus",
+    "علوم الحاسب والمعلومات": "Computer & Information Sciences",
+    "إدارة الأعمال": "Business Administration",
+    الهندسة: "Engineering",
+    القانون: "Law",
+    "العلوم والدراسات الإنسانية": "Humanities & Sciences",
+    "العمارة والتصميم": "Architecture & Design",
+    "عمادة السنة التحضيرية": "Preparatory Year",
+    البنات: "Women's Campus",
   };
-  var COLLEGE_ORDER = ["علوم الحاسب والمعلومات", "إدارة الأعمال", "الهندسة", "القانون", "العلوم والدراسات الإنسانية", "العمارة والتصميم", "عمادة السنة التحضيرية"];
+  var COLLEGE_ORDER = [
+    "علوم الحاسب والمعلومات",
+    "إدارة الأعمال",
+    "الهندسة",
+    "القانون",
+    "العلوم والدراسات الإنسانية",
+    "العمارة والتصميم",
+    "عمادة السنة التحضيرية",
+  ];
 
   function arabicKey(name) {
     // "تحضيري هندسة برمجيات" and "هندسة البرمجيات" → "هندسة برمجيات"
     return String(name)
-      .replace(/\(.*\)/, "").replace(/-+/g, " ").replace(/^\s*تحضيري\s+/, "")
-      .replace(/ـ/g, "").trim().split(/\s+/)
-      .map(function (w) { return w.replace(/^وال/, "و").replace(/^(ال|لل)/, ""); })
+      .replace(/\(.*\)/, "")
+      .replace(/-+/g, " ")
+      .replace(/^\s*تحضيري\s+/, "")
+      .replace(/ـ/g, "")
+      .trim()
+      .split(/\s+/)
+      .map(function (w) {
+        return w.replace(/^وال/, "و").replace(/^(ال|لل)/, "");
+      })
       .join(" ");
   }
-  function cleanCollege(c) { return String(c || "").replace(/ـ/g, "").trim(); }
+  function cleanCollege(c) {
+    return String(c || "")
+      .replace(/ـ/g, "")
+      .trim();
+  }
 
   function buildMajors(depts) {
     majors = {};
     depts.forEach(function (d) {
       var key = arabicKey(d.name);
-      var m = (majors[key] = majors[key] || { key: key, ar: "", college: "", main: null, prep: null, aliases: [], tracks: [] });
+      var m = (majors[key] = majors[key] || {
+        key: key,
+        ar: "",
+        college: "",
+        main: null,
+        prep: null,
+        aliases: [],
+        tracks: [],
+      });
       var paren = String(d.name).match(/\((.*)\)/);
       if (/^PYP/.test(d.code)) {
         m.prep = d.code;
         if (!m.ar) m.ar = String(d.name).replace(/^\s*تحضيري\s+/, "");
       } else if (paren) {
         var suffix = d.code.split(/[-_]/).pop();
-        m.tracks.push({ code: d.code, ar: paren[1].replace(/تخصص فرعي\s*/, "").trim(), en: TRACK_EN[suffix] || suffix, minor: /تخصص فرعي/.test(paren[1]) });
+        m.tracks.push({
+          code: d.code,
+          ar: paren[1].replace(/تخصص فرعي\s*/, "").trim(),
+          en: TRACK_EN[suffix] || suffix,
+          minor: /تخصص فرعي/.test(paren[1]),
+        });
       } else if (!m.main && !/--$/.test(d.code) && !/^\d+$/.test(d.code)) {
         m.main = d.code;
         m.ar = String(d.name).replace(/-+$/, "");
@@ -950,16 +1182,36 @@
     Object.keys(majors).forEach(function (k) {
       var m = majors[k];
       if (!m.main && m.aliases.length) m.main = m.aliases.shift();
-      if (!m.college) m.college = cleanCollege((depts.filter(function (d) { return d.code === (m.main || m.prep); })[0] || {}).college);
+      if (!m.college)
+        m.college = cleanCollege(
+          (
+            depts.filter(function (d) {
+              return d.code === (m.main || m.prep);
+            })[0] || {}
+          ).college,
+        );
       m.en = MAJOR_EN[m.main] || MAJOR_EN[m.prep] || null;
     });
   }
 
   function majorOf(code) {
     if (!code) return null;
-    return Object.keys(majors).map(function (k) { return majors[k]; }).filter(function (m) {
-      return m.main === code || m.prep === code || m.aliases.indexOf(code) > -1 || m.tracks.some(function (t) { return t.code === code; });
-    })[0] || null;
+    return (
+      Object.keys(majors)
+        .map(function (k) {
+          return majors[k];
+        })
+        .filter(function (m) {
+          return (
+            m.main === code ||
+            m.prep === code ||
+            m.aliases.indexOf(code) > -1 ||
+            m.tracks.some(function (t) {
+              return t.code === code;
+            })
+          );
+        })[0] || null
+    );
   }
 
   /** The Edugate department codes the current choice covers (a major includes its leftover duplicates). */
@@ -969,34 +1221,100 @@
     return [state.dept];
   }
 
-  function majorName(m) { return isAr() || !m.en ? m.ar : m.en; }
+  function majorName(m) {
+    return isAr() || !m.en ? m.ar : m.en;
+  }
 
   function renderMajor() {
-    var list = Object.keys(majors).map(function (k) { return majors[k]; });
+    var list = Object.keys(majors).map(function (k) {
+      return majors[k];
+    });
     var current = majorOf(state.dept);
     var groups = {};
-    list.forEach(function (m) { (groups[m.college] = groups[m.college] || []).push(m); });
-    var order = COLLEGE_ORDER.filter(function (c) { return groups[c]; }).concat(Object.keys(groups).filter(function (c) { return COLLEGE_ORDER.indexOf(c) < 0; }));
-    $("major").innerHTML = '<option value="">' + L("All majors", "كل التخصصات") + "</option>" + order.map(function (c) {
-      var label = isAr() ? c : COLLEGE_EN[c] || c;
-      return '<optgroup label="' + esc(label) + '">' + groups[c]
-        .sort(function (a, b) { return majorName(a).localeCompare(majorName(b), isAr() ? "ar" : "en"); })
-        .map(function (m) { return '<option value="' + esc(m.key) + '"' + (current === m ? " selected" : "") + ">" + esc(majorName(m)) + "</option>"; })
-        .join("") + "</optgroup>";
-    }).join("");
+    list.forEach(function (m) {
+      (groups[m.college] = groups[m.college] || []).push(m);
+    });
+    var order = COLLEGE_ORDER.filter(function (c) {
+      return groups[c];
+    }).concat(
+      Object.keys(groups).filter(function (c) {
+        return COLLEGE_ORDER.indexOf(c) < 0;
+      }),
+    );
+    $("major").innerHTML =
+      '<option value="">' +
+      L("All majors", "كل التخصصات") +
+      "</option>" +
+      order
+        .map(function (c) {
+          var label = isAr() ? c : COLLEGE_EN[c] || c;
+          return (
+            '<optgroup label="' +
+            esc(label) +
+            '">' +
+            groups[c]
+              .sort(function (a, b) {
+                return majorName(a).localeCompare(
+                  majorName(b),
+                  isAr() ? "ar" : "en",
+                );
+              })
+              .map(function (m) {
+                return (
+                  '<option value="' +
+                  esc(m.key) +
+                  '"' +
+                  (current === m ? " selected" : "") +
+                  ">" +
+                  esc(majorName(m)) +
+                  "</option>"
+                );
+              })
+              .join("") +
+            "</optgroup>"
+          );
+        })
+        .join("");
     var extra = $("major-extra");
-    if (!current) { extra.hidden = true; return; }
+    if (!current) {
+      extra.hidden = true;
+      return;
+    }
     var inPrep = state.dept === current.prep && !!current.main;
     var hasTracks = current.tracks.length > 0;
     extra.hidden = !hasTracks && !(current.prep && current.main);
-    var minors = hasTracks && current.tracks.every(function (t) { return t.minor; });
-    $("major-tracks-label").textContent = minors ? L("Minor", "التخصص الفرعي") : L("Track", "المسار");
+    var minors =
+      hasTracks &&
+      current.tracks.every(function (t) {
+        return t.minor;
+      });
+    $("major-tracks-label").textContent = minors
+      ? L("Minor", "التخصص الفرعي")
+      : L("Track", "المسار");
     $("major-tracks-wrap").hidden = !hasTracks || inPrep;
     $("major-tracks").innerHTML = hasTracks
-      ? ['<button type="button" class="chip" data-track="" aria-pressed="' + (state.dept === current.main || current.aliases.indexOf(state.dept) > -1) + '">' + (minors ? L("No minor", "بدون") : L("General", "عام")) + "</button>"]
-          .concat(current.tracks.map(function (t) {
-            return '<button type="button" class="chip" data-track="' + esc(t.code) + '" aria-pressed="' + (state.dept === t.code) + '">' + esc(isAr() ? t.ar : t.en) + "</button>";
-          })).join("")
+      ? [
+          '<button type="button" class="chip" data-track="" aria-pressed="' +
+            (state.dept === current.main ||
+              current.aliases.indexOf(state.dept) > -1) +
+            '">' +
+            (minors ? L("No minor", "بدون") : L("General", "عام")) +
+            "</button>",
+        ]
+          .concat(
+            current.tracks.map(function (t) {
+              return (
+                '<button type="button" class="chip" data-track="' +
+                esc(t.code) +
+                '" aria-pressed="' +
+                (state.dept === t.code) +
+                '">' +
+                esc(isAr() ? t.ar : t.en) +
+                "</button>"
+              );
+            }),
+          )
+          .join("")
       : "";
     $("major-prep-row").hidden = !(current.prep && current.main);
     $("major-prep").checked = inPrep;
@@ -1015,7 +1333,8 @@
     $("opt-closed").checked = state.closed;
     $("opt-final-clash").checked = state.finalClash;
     $("sort").value = state.sort;
-    $("picked-count").textContent = state.picked.length + L(" picked", " مختارة");
+    $("picked-count").textContent =
+      state.picked.length + L(" picked", " مختارة");
   }
 
   function renderList() {
@@ -1031,12 +1350,20 @@
     var hiddenPassed = 0;
     var codes = Object.keys(term.courses).filter(function (code) {
       if (passed[code] && !state.showPassed && state.picked.indexOf(code) < 0) {
-        if (!state.dept || deptCodes().some(function (x) { return term.courses[code].d.indexOf(x) > -1; })) hiddenPassed++;
+        if (
+          !state.dept ||
+          deptCodes().some(function (x) {
+            return term.courses[code].d.indexOf(x) > -1;
+          })
+        )
+          hiddenPassed++;
         return false;
       }
       if (!state.dept) return true;
       var codes = deptCodes();
-      return term.courses[code].d.some(function (x) { return codes.indexOf(x) > -1; });
+      return term.courses[code].d.some(function (x) {
+        return codes.indexOf(x) > -1;
+      });
     });
     // "SE", "cys", "se4", "CS 210": match course codes only. SE ranks above
     // SEC (exact letters first). Anything else, or a code-like query with no
@@ -1114,7 +1441,11 @@
         var ar = term.courses[code].ar;
         var en = catalog[code] && catalog[code].en;
         // Arabic first in Arabic mode, English first otherwise.
-        if (isAr()) { var swap = en; en = ar; ar = swap || ""; }
+        if (isAr()) {
+          var swap = en;
+          en = ar;
+          ar = swap || "";
+        }
         return (
           '<div class="course' +
           (on ? " on" : "") +
@@ -1136,15 +1467,20 @@
           "</span></span></span>" +
           '<span class="meta">' +
           hoursOf(code) +
-          (passed[code] ? '<span class="pill good">' + L("passed", "مجتازة") + "</span><br>" : "") +
-          L(" h", " س") + "<br>" +
+          (passed[code]
+            ? '<span class="pill good">' + L("passed", "مجتازة") + "</span><br>"
+            : "") +
+          L(" h", " س") +
+          "<br>" +
           (open
             ? open + "/" + keys.length + L(" open", " متاحة")
             : '<span class="pill bad">' + L("closed", "مغلقة") + "</span>") +
           (on
             ? '<br><button class="btn ghost" type="button" data-sections="' +
               code +
-              '" style="padding:4px 8px;font-size:.7rem;margin-top:4px">' + L("Sections", "الشعب") + "</button>"
+              '" style="padding:4px 8px;font-size:.7rem;margin-top:4px">' +
+              L("Sections", "الشعب") +
+              "</button>"
             : "") +
           "</span></div>"
         );
@@ -1154,13 +1490,34 @@
       html +=
         '<div class="more">' +
         (rest.length - LIMIT) +
-        L(" more. Search to narrow down.", " أخرى. ابحث لتضييق النتائج.") + "</div>";
-    if (!html) html = '<div class="more">' + L("No courses match.", "لا توجد مواد مطابقة.") + "</div>";
+        L(" more. Search to narrow down.", " أخرى. ابحث لتضييق النتائج.") +
+        "</div>";
+    if (!html)
+      html =
+        '<div class="more">' +
+        L("No courses match.", "لا توجد مواد مطابقة.") +
+        "</div>";
     if (hiddenPassed || state.showPassed)
-      html += '<div class="more">' + (state.showPassed
-        ? L("Showing courses you've passed. ", "تظهر المواد التي اجتزتها. ") + '<button type="button" class="linkish" data-passed="hide">' + L("Hide them", "إخفاؤها") + "</button>"
-        : L(hiddenPassed + " course" + (hiddenPassed > 1 ? "s" : "") + " you've passed " + (hiddenPassed > 1 ? "are" : "is") + " hidden. ", "تم إخفاء " + hiddenPassed + " من المواد التي اجتزتها. ") +
-          '<button type="button" class="linkish" data-passed="show">' + L("Show", "إظهار") + "</button>") + "</div>";
+      html +=
+        '<div class="more">' +
+        (state.showPassed
+          ? L("Showing courses you've passed. ", "تظهر المواد التي اجتزتها. ") +
+            '<button type="button" class="linkish" data-passed="hide">' +
+            L("Hide them", "إخفاؤها") +
+            "</button>"
+          : L(
+              hiddenPassed +
+                " course" +
+                (hiddenPassed > 1 ? "s" : "") +
+                " you've passed " +
+                (hiddenPassed > 1 ? "are" : "is") +
+                " hidden. ",
+              "تم إخفاء " + hiddenPassed + " من المواد التي اجتزتها. ",
+            ) +
+            '<button type="button" class="linkish" data-passed="show">' +
+            L("Show", "إظهار") +
+            "</button>") +
+        "</div>";
     list.innerHTML = html;
   }
 
@@ -1192,19 +1549,43 @@
                   return p.join(" + ");
                 })
                 .join(", ") +
-              L(". Drop one, or allow more sections.", ". احذف إحداها أو اسمح بشعب أكثر.")
-            : L("Try allowing closed sections or freeing fewer hours.", "جرّب السماح بالشعب المغلقة أو تقليل ساعات الفراغ.")),
+              L(
+                ". Drop one, or allow more sections.",
+                ". احذف إحداها أو اسمح بشعب أكثر.",
+              )
+            : L(
+                "Try allowing closed sections or freeing fewer hours.",
+                "جرّب السماح بالشعب المغلقة أو تقليل ساعات الفراغ.",
+              )),
       );
     }
     if (results.capped)
       notes.push(
         L("Showing the first ", "نعرض أول ") +
           MAX_RESULTS.toLocaleString() +
-          L(" schedules. Free some hours to narrow them down.", " جدول. حدّد أوقات فراغ لتضييقها."),
+          L(
+            " schedules. Free some hours to narrow them down.",
+            " جدول. حدّد أوقات فراغ لتضييقها.",
+          ),
       );
     if (state.textRules.maxDays && results.beforeMaxDays && !results.length)
-      notes.push(L("<b>No schedule fits in " + state.textRules.maxDays + " day" + (state.textRules.maxDays > 1 ? "s" : "") + ".</b> ", "<b>لا يوجد جدول في " + state.textRules.maxDays + " أيام أو أقل.</b> ") +
-        results.beforeMaxDays.toLocaleString() + L(" schedules need more days. Remove the day limit under Free time to see them.", " جدول تحتاج أيامًا أكثر. احذف حد الأيام من وقت الفراغ لعرضها."));
+      notes.push(
+        L(
+          "<b>No schedule fits in " +
+            state.textRules.maxDays +
+            " day" +
+            (state.textRules.maxDays > 1 ? "s" : "") +
+            ".</b> ",
+          "<b>لا يوجد جدول في " +
+            state.textRules.maxDays +
+            " أيام أو أقل.</b> ",
+        ) +
+          results.beforeMaxDays.toLocaleString() +
+          L(
+            " schedules need more days. Remove the day limit under Free time to see them.",
+            " جدول تحتاج أيامًا أكثر. احذف حد الأيام من وقت الفراغ لعرضها.",
+          ),
+      );
     $("notice").innerHTML = notes.length
       ? '<div class="notice">' + notes.join("<br>") + "</div>"
       : "";
@@ -1215,13 +1596,18 @@
     $("meter").hidden = !sched;
     if (!sched) $("breakdown").classList.remove("open");
     $("count").textContent = results.length
-      ? L("Schedule ", "الجدول ") + (current + 1) + L(" of ", " من ") + results.length.toLocaleString()
+      ? L("Schedule ", "الجدول ") +
+        (current + 1) +
+        L(" of ", " من ") +
+        results.length.toLocaleString()
       : "–";
     $("prev").disabled = current <= 0;
     $("next").disabled = current >= results.length - 1;
     var savedKey = sched && keyOf(sched);
     var alreadySaved = !!savedKey && isSaved(savedKey);
-    $("save").textContent = alreadySaved ? L("★ Saved", "★ محفوظ") : L("☆ Save", "☆ حفظ");
+    $("save").textContent = alreadySaved
+      ? L("★ Saved", "★ محفوظ")
+      : L("☆ Save", "☆ حفظ");
     $("save").setAttribute("aria-pressed", String(alreadySaved));
 
     renderFreeRules();
@@ -1263,13 +1649,18 @@
     if (week.hidden) return;
     var meetings = [];
     (sched || []).forEach(function (o) {
-      o.meetings.forEach(function (m) { meetings.push({ o: o, m: m }); });
+      o.meetings.forEach(function (m) {
+        meetings.push({ o: o, m: m });
+      });
     });
     var days = [0, 1, 2, 3, 4];
-    meetings.forEach(function (x) { if (days.indexOf(x.m.d) < 0) days.push(x.m.d); });
+    meetings.forEach(function (x) {
+      if (days.indexOf(x.m.d) < 0) days.push(x.m.d);
+    });
     days.sort();
     // Always show 8 AM–5 PM so every common hour can be tapped free.
-    var startH = 8, endH = 17;
+    var startH = 8,
+      endH = 17;
     meetings.forEach(function (x) {
       startH = Math.min(startH, Math.floor(x.m.s / 60));
       endH = Math.max(endH, Math.ceil(x.m.e / 60));
@@ -1280,43 +1671,132 @@
       endH = Math.max(endH, h + 1);
     });
     var blocked = blockedSet();
-    var hourPx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hour")) || 64;
+    var hourPx =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--hour"),
+      ) || 64;
     var closeExams = {};
     if (sched) {
       var ex = sched.metrics.exams;
       for (var i = 1; i < ex.length; i++)
-        if ((ex[i].t - ex[i - 1].t) / 36e5 < 24) closeExams[ex[i].code] = closeExams[ex[i - 1].code] = true;
+        if ((ex[i].t - ex[i - 1].t) / 36e5 < 24)
+          closeExams[ex[i].code] = closeExams[ex[i - 1].code] = true;
     }
 
     week.className = "week" + (days.length > 5 ? " has-weekend" : "");
     week.dataset.start = startH;
-    var html = '<div class="head"></div>' + days.map(function (d) {
-      return '<div class="head">' + (innerWidth < 800 ? DAY_SHORT[d] : DAY_NAMES[d]) + "</div>";
-    }).join("");
+    var html =
+      '<div class="head"></div>' +
+      days
+        .map(function (d) {
+          return (
+            '<div class="head">' +
+            (innerWidth < 800 ? DAY_SHORT[d] : DAY_NAMES[d]) +
+            "</div>"
+          );
+        })
+        .join("");
     html += '<div class="times">';
-    for (var h = startH; h < endH; h++) html += '<div class="time">' + clock(h * 60).replace(":00", "") + "</div>";
+    for (var h = startH; h < endH; h++)
+      html +=
+        '<div class="time">' + clock(h * 60).replace(":00", "") + "</div>";
     html += "</div>";
     days.forEach(function (d) {
       html += '<div class="col" data-day="' + d + '">';
       for (var h = startH; h < endH; h++) {
         if (h === BREAK_HOUR) {
-          html += '<div class="slot break" title="' + L("University-wide break: no classes 12–1", "استراحة لكل الجامعة: لا محاضرات من 12 إلى 1") + '"><span>' + L("Break", "استراحة") + "</span></div>";
+          html +=
+            '<div class="slot break" title="' +
+            L(
+              "University-wide break: no classes 12–1",
+              "استراحة لكل الجامعة: لا محاضرات من 12 إلى 1",
+            ) +
+            '"><span>' +
+            L("Break", "استراحة") +
+            "</span></div>";
           continue;
         }
         var on = !!blocked[d + "-" + h];
-        html += '<div class="slot' + (on ? " blocked" : "") + '" data-slot="' + d + "-" + h + '" role="button" tabindex="0" aria-pressed="' + on + '" aria-label="' + L("Keep ", "اجعل ") + DAY_NAMES[d] + " " + clock(h * 60) + L(" free", " وقت فراغ") + '"></div>';
+        html +=
+          '<div class="slot' +
+          (on ? " blocked" : "") +
+          '" data-slot="' +
+          d +
+          "-" +
+          h +
+          '" role="button" tabindex="0" aria-pressed="' +
+          on +
+          '" aria-label="' +
+          L("Keep ", "اجعل ") +
+          DAY_NAMES[d] +
+          " " +
+          clock(h * 60) +
+          L(" free", " وقت فراغ") +
+          '"></div>';
       }
-      meetings.filter(function (x) { return x.m.d === d; }).forEach(function (x) {
-        var top = ((x.m.s - startH * 60) / 60) * hourPx + 2;
-        var height = Math.max(24, ((x.m.e - x.m.s) / 60) * hourPx - 4);
-        var tip = x.o.code + " " + TYPE[x.m.t] + " · CRN " + x.m.crn + " · " + clock(x.m.s) + "–" + clock(x.m.e) + " · " + (x.m.room || L("room TBA", "القاعة لم تحدد")) + " · " + x.m.i + (x.m.o ? "" : L(" · CLOSED", " · مغلقة")) + L("\nTap to see the other sections", "\nاضغط لعرض الشعب الأخرى");
-        html += '<div class="block' + (height < 70 ? " short" : "") + (state.pinned[x.o.code] ? " pinned" : "") + (x.m.o ? "" : " is-closed") + '" style="--c:' + colorOf(x.o.code) + ";top:" + top + "px;height:" + height + 'px" data-code="' + x.o.code + '" role="button" tabindex="0" title="' + esc(tip) + '">' +
-          '<div class="bc"><span class="bcode">' + x.o.code + '</span><span class="tag">' + (TYPE[x.m.t] || x.m.t) + "</span></div>" +
-          '<div class="who" dir="auto">' + (x.m.o ? "" : '<b class="closed">' + L("Closed · ", "مغلقة · ") + "</b>") + esc(x.m.i) + "</div>" +
-          '<div class="room">' + esc(x.m.room || "") + "</div>" +
-          (closeExams[x.o.code] ? '<span class="xdot" title="' + L("Final exam close to another", "اختبار نهائي قريب من اختبار آخر") + '"></span>' : "") +
-          "</div>";
-      });
+      meetings
+        .filter(function (x) {
+          return x.m.d === d;
+        })
+        .forEach(function (x) {
+          var top = ((x.m.s - startH * 60) / 60) * hourPx + 2;
+          var height = Math.max(24, ((x.m.e - x.m.s) / 60) * hourPx - 4);
+          var tip =
+            x.o.code +
+            " " +
+            TYPE[x.m.t] +
+            " · CRN " +
+            x.m.crn +
+            " · " +
+            clock(x.m.s) +
+            "–" +
+            clock(x.m.e) +
+            " · " +
+            (x.m.room || L("room TBA", "القاعة لم تحدد")) +
+            " · " +
+            x.m.i +
+            (x.m.o ? "" : L(" · CLOSED", " · مغلقة")) +
+            L("\nTap to see the other sections", "\nاضغط لعرض الشعب الأخرى");
+          html +=
+            '<div class="block' +
+            (height < 70 ? " short" : "") +
+            (state.pinned[x.o.code] ? " pinned" : "") +
+            (x.m.o ? "" : " is-closed") +
+            '" style="--c:' +
+            colorOf(x.o.code) +
+            ";top:" +
+            top +
+            "px;height:" +
+            height +
+            'px" data-code="' +
+            x.o.code +
+            '" role="button" tabindex="0" title="' +
+            esc(tip) +
+            '">' +
+            '<div class="bc"><span class="bcode">' +
+            x.o.code +
+            '</span><span class="tag">' +
+            (TYPE[x.m.t] || x.m.t) +
+            "</span></div>" +
+            '<div class="who" dir="auto">' +
+            (x.m.o
+              ? ""
+              : '<b class="closed">' + L("Closed · ", "مغلقة · ") + "</b>") +
+            esc(x.m.i) +
+            "</div>" +
+            '<div class="room">' +
+            esc(x.m.room || "") +
+            "</div>" +
+            (closeExams[x.o.code]
+              ? '<span class="xdot" title="' +
+                L(
+                  "Final exam close to another",
+                  "اختبار نهائي قريب من اختبار آخر",
+                ) +
+                '"></span>'
+              : "") +
+            "</div>";
+        });
       html += "</div>";
     });
     week.innerHTML = html;
@@ -1350,9 +1830,20 @@
       (l.rated === l.total
         ? L("based on student ratings", "بناءً على تقييمات الطلاب")
         : l.rated
-          ? L("partly an estimate: " + (l.total - l.rated) + " course" + (l.total - l.rated > 1 ? "s have" : " has") + " no ratings yet",
-              "تقدير جزئي: " + (l.total - l.rated) + " من المواد بلا تقييمات بعد")
-          : L("an estimate: these courses have no ratings yet", "تقدير: لا توجد تقييمات لهذه المواد بعد")) +
+          ? L(
+              "partly an estimate: " +
+                (l.total - l.rated) +
+                " course" +
+                (l.total - l.rated > 1 ? "s have" : " has") +
+                " no ratings yet",
+              "تقدير جزئي: " +
+                (l.total - l.rated) +
+                " من المواد بلا تقييمات بعد",
+            )
+          : L(
+              "an estimate: these courses have no ratings yet",
+              "تقدير: لا توجد تقييمات لهذه المواد بعد",
+            )) +
       (l.personal ? L(" · adjusted to your grades", " · معدّل حسب درجاتك") : "");
     $("breakdown").innerHTML =
       "<table>" +
@@ -1363,35 +1854,86 @@
           );
         })
         .join("") +
-      "<tr><td><b>" + L("Total (out of 100)", "المجموع (من 100)") + "</b></td><td><b>" +
+      "<tr><td><b>" +
+      L("Total (out of 100)", "المجموع (من 100)") +
+      "</b></td><td><b>" +
       l.score.toFixed(0) +
       "</b></td></tr></table>" +
-      '<p class="hint" style="margin-bottom:4px">' + L("Difficulty per course (out of 5):", "صعوبة كل مادة (من 5):") + "</p><table>" +
+      '<p class="hint" style="margin-bottom:4px">' +
+      L("Difficulty per course (out of 5):", "صعوبة كل مادة (من 5):") +
+      "</p><table>" +
       sched
         .map(function (o) {
           var d = difficulty(o.code);
-          var source = d.rated ? d.n + L(" rating" + (d.n > 1 ? "s" : ""), " تقييم") : L("guess from course level", "تقدير من مستوى المادة");
-          var WHY = { prerequisite: L("prerequisite", "متطلب سابق"), "builds toward it": L("builds toward it", "تمهّد لها"), "same subject": L("same subject", "نفس المجال"), "similar topics": L("similar topics", "مواضيع مشابهة") };
+          var source = d.rated
+            ? d.n + L(" rating" + (d.n > 1 ? "s" : ""), " تقييم")
+            : L("guess from course level", "تقدير من مستوى المادة");
+          var WHY = {
+            prerequisite: L("prerequisite", "متطلب سابق"),
+            "builds toward it": L("builds toward it", "تمهّد لها"),
+            "same subject": L("same subject", "نفس المجال"),
+            "similar topics": L("similar topics", "مواضيع مشابهة"),
+          };
           var mine = d.personal
-            ? "<br><span class=\"hint\">" + L("For you: ", "بالنسبة لك: ") + (d.personal.shift < 0 ? L("easier", "أسهل") : d.personal.shift > 0 ? L("harder", "أصعب") : L("about average", "متوسطة تقريبًا")) +
-              L(", from ", "، بناءً على ") + d.personal.related.map(function (r) { return r.code + " " + r.letter + (r.why ? " (" + (WHY[r.why] || r.why) + ")" : ""); }).join(L(", ", "، ")) + "</span>"
+            ? '<br><span class="hint">' +
+              L("For you: ", "بالنسبة لك: ") +
+              (d.personal.shift < 0
+                ? L("easier", "أسهل")
+                : d.personal.shift > 0
+                  ? L("harder", "أصعب")
+                  : L("about average", "متوسطة تقريبًا")) +
+              L(", from ", "، بناءً على ") +
+              d.personal.related
+                .map(function (r) {
+                  return (
+                    r.code +
+                    " " +
+                    r.letter +
+                    (r.why ? " (" + (WHY[r.why] || r.why) + ")" : "")
+                  );
+                })
+                .join(L(", ", "، ")) +
+              "</span>"
             : "";
-          return "<tr><td>" + o.code + " <span class=\"hint\">" + source + "</span>" + mine + "</td><td>" +
-            (d.personal && d.personal.shift ? d.base.toFixed(1) + " → " : "") + d.value.toFixed(1) + "</td></tr>";
+          return (
+            "<tr><td>" +
+            o.code +
+            ' <span class="hint">' +
+            source +
+            "</span>" +
+            mine +
+            "</td><td>" +
+            (d.personal && d.personal.shift ? d.base.toFixed(1) + " → " : "") +
+            d.value.toFixed(1) +
+            "</td></tr>"
+          );
         })
         .join("") +
       "</table>" +
       (Object.keys(grades).length
         ? ""
-        : '<p class="hint">' + L("Sign in and add your grades (on course pages or in the calendar) to see how heavy this would be for you.", "سجّل الدخول وأضف درجاتك (في صفحات المواد أو التقويم) لترى مدى ثقل الجدول بالنسبة لك.") + "</p>") +
-      '<p class="hint">' + L("Rate courses you've finished on their course page to make this better for everyone.", "قيّم المواد التي أنهيتها في صفحاتها ليصبح هذا التقدير أدق للجميع.") + "</p>";
+        : '<p class="hint">' +
+          L(
+            "Sign in and add your grades (on course pages or in the calendar) to see how heavy this would be for you.",
+            "سجّل الدخول وأضف درجاتك (في صفحات المواد أو التقويم) لترى مدى ثقل الجدول بالنسبة لك.",
+          ) +
+          "</p>") +
+      '<p class="hint">' +
+      L(
+        "Rate courses you've finished on their course page to make this better for everyone.",
+        "قيّم المواد التي أنهيتها في صفحاتها ليصبح هذا التقدير أدق للجميع.",
+      ) +
+      "</p>";
   }
 
   function renderSelected(sched) {
     var sel = $("sel");
     var hours = 0;
     if (!state.picked.length) {
-      sel.innerHTML = '<p class="hint">' + L("Your sections show here.", "ستظهر شعبك هنا.") + "</p>";
+      sel.innerHTML =
+        '<p class="hint">' +
+        L("Your sections show here.", "ستظهر شعبك هنا.") +
+        "</p>";
     } else {
       var byCode = {};
       (sched || []).forEach(function (o) {
@@ -1404,33 +1946,55 @@
           return (
             '<div class="item" style="--c:' +
             colorOf(code) +
-            '"><button type="button" class="item-open" data-open="' + code + '" title="' + L("See " + code + " sections", "عرض شعب " + code) + '"><span class="code">' +
+            '"><button type="button" class="item-open" data-open="' +
+            code +
+            '" title="' +
+            L("See " + code + " sections", "عرض شعب " + code) +
+            '"><span class="code">' +
             code +
             "</span> " +
-            (state.pinned[code] ? '<span class="pill" title="' + L("You picked this section", "شعبة مثبّتة") + '">📌</span> ' : "") +
+            (state.pinned[code]
+              ? '<span class="pill" title="' +
+                L("You picked this section", "شعبة مثبّتة") +
+                '">📌</span> '
+              : "") +
             (o
               ? '<span class="crn">' +
                 o.crns.join(" · ") +
                 "</span>" +
-                (o.open ? "" : ' <span class="pill bad">' + L("closed", "مغلقة") + "</span>")
-              : '<span class="pill warn">' + L("not placed", "غير موضوعة") + "</span>") +
+                (o.open
+                  ? ""
+                  : ' <span class="pill bad">' +
+                    L("closed", "مغلقة") +
+                    "</span>")
+              : '<span class="pill warn">' +
+                L("not placed", "غير موضوعة") +
+                "</span>") +
             '</button><button type="button" data-unpick="' +
             code +
-            '" aria-label="' + L("Remove ", "حذف ") +
+            '" aria-label="' +
+            L("Remove ", "حذف ") +
             code +
             '">✕</button></div>'
           );
         })
         .join("");
     }
-    $("hours").textContent = state.picked.length + L(" courses · ", " مواد · ") + hours + L(" h", " س");
+    $("hours").textContent =
+      state.picked.length +
+      L(" courses · ", " مواد · ") +
+      hours +
+      L(" h", " س");
     $("copy").disabled = !sched;
   }
 
   function renderFinals(sched) {
     var box = $("finals");
     if (!sched) {
-      box.innerHTML = '<p class="hint">' + L("Finals show here.", "ستظهر الاختبارات النهائية هنا.") + "</p>";
+      box.innerHTML =
+        '<p class="hint">' +
+        L("Finals show here.", "ستظهر الاختبارات النهائية هنا.") +
+        "</p>";
       return;
     }
     var ex = sched.metrics.exams;
@@ -1463,20 +2027,34 @@
         })
         .join("") +
       (noExam.length
-        ? '<p class="hint">' + L("No final listed for ", "لا يوجد اختبار نهائي مدرج لـ ") + noExam.join(", ") + ".</p>"
+        ? '<p class="hint">' +
+          L("No final listed for ", "لا يوجد اختبار نهائي مدرج لـ ") +
+          noExam.join(", ") +
+          ".</p>"
         : "");
   }
 
   function savedLabel(s) {
     if (s.days != null && s.start != null)
-      return s.days + L(" days · ", " أيام · ") + L("", "يبدأ ") + clock(s.start).replace(":00", "") + L(" start", "");
+      return (
+        s.days +
+        L(" days · ", " أيام · ") +
+        L("", "يبدأ ") +
+        clock(s.start).replace(":00", "") +
+        L(" start", "")
+      );
     // Older saves only kept an English label like "4 days · 9:00AM start".
-    var m = String(s.label || "").match(/^(\d+) days · (\d{1,2}):(\d{2})\s*(AM|PM)/);
+    var m = String(s.label || "").match(
+      /^(\d+) days · (\d{1,2}):(\d{2})\s*(AM|PM)/,
+    );
     if (m) {
       var h = (+m[2] % 12) + (m[4] === "PM" ? 12 : 0);
       return savedLabel({ days: +m[1], start: h * 60 + +m[3] });
     }
-    return String(s.label || "").split(" · ").slice(0, 2).join(" · ");
+    return String(s.label || "")
+      .split(" · ")
+      .slice(0, 2)
+      .join(" · ");
   }
 
   function renderSaved() {
@@ -1491,17 +2069,32 @@
               '<div class="saved-item"><button type="button" class="saved-open" data-load="' +
               esc(s.key) +
               '">' +
-              "<span>" + esc(savedLabel(s)) + "</span>" +
+              "<span>" +
+              esc(savedLabel(s)) +
+              "</span>" +
               '<span class="saved-secs">' +
-              esc(s.sections || s.key.split(",").join(" · ").replace(/:/g, L(" sec ", " شعبة "))) +
+              esc(
+                s.sections ||
+                  s.key
+                    .split(",")
+                    .join(" · ")
+                    .replace(/:/g, L(" sec ", " شعبة ")),
+              ) +
               "</span>" +
               '</button><button class="saved-del" type="button" data-unsave="' +
               esc(s.key) +
-              '" aria-label="' + L("Delete saved schedule", "حذف الجدول المحفوظ") + '">✕</button></div>'
+              '" aria-label="' +
+              L("Delete saved schedule", "حذف الجدول المحفوظ") +
+              '">✕</button></div>'
             );
           })
           .join("")
-      : '<p class="hint">' + L("Press ☆ Save on a schedule to keep it here.", "اضغط ☆ حفظ على أي جدول ليُحفظ هنا.") + "</p>";
+      : '<p class="hint">' +
+        L(
+          "Press ☆ Save on a schedule to keep it here.",
+          "اضغط ☆ حفظ على أي جدول ليُحفظ هنا.",
+        ) +
+        "</p>";
   }
 
   // ── Section dialog ─────────────────────────────────────────────────────
@@ -1532,99 +2125,306 @@
 
   /** How one section of `code` sits with the rest of the current schedule. */
   function fitOf(code, opt) {
-    var others = (results[current] || []).filter(function (o) { return o.code !== code; });
+    var others = (results[current] || []).filter(function (o) {
+      return o.code !== code;
+    });
     var blocked = blockedSet();
-    var clashes = others.filter(function (o) { return overlaps(o.mask, opt.mask); }).map(function (o) { return o.code; });
-    var finals = opt.exam ? others.filter(function (o) { return o.exam === opt.exam; }).map(function (o) { return o.code; }) : [];
+    var clashes = others
+      .filter(function (o) {
+        return overlaps(o.mask, opt.mask);
+      })
+      .map(function (o) {
+        return o.code;
+      });
+    var finals = opt.exam
+      ? others
+          .filter(function (o) {
+            return o.exam === opt.exam;
+          })
+          .map(function (o) {
+            return o.code;
+          })
+      : [];
     var free = opt.meetings.some(function (m) {
-      for (var h = Math.floor(m.s / 60); h * 60 < m.e; h++) if (blocked[m.d + "-" + h]) return true;
+      for (var h = Math.floor(m.s / 60); h * 60 < m.e; h++)
+        if (blocked[m.d + "-" + h]) return true;
       return false;
     });
-    return { clashes: clashes, finals: finals, free: free, ok: !clashes.length && (state.finalClash || !finals.length) };
+    return {
+      clashes: clashes,
+      finals: finals,
+      free: free,
+      ok: !clashes.length && (state.finalClash || !finals.length),
+    };
   }
 
   function pickerCard(code, opt, fit) {
-    var first = opt.meetings.filter(function (m) { return m.t === "L"; })[0] || opt.meetings[0];
+    var first =
+      opt.meetings.filter(function (m) {
+        return m.t === "L";
+      })[0] || opt.meetings[0];
     var days = {};
-    opt.meetings.forEach(function (m) { days[m.d] = true; });
+    opt.meetings.forEach(function (m) {
+      days[m.d] = true;
+    });
     var rooms = {};
     opt.meetings.forEach(function (m) {
       var k = (m.room || L("Room TBA", "القاعة لم تحدد")) + "|" + TYPE[m.t];
       (rooms[k] = rooms[k] || []).push(DAY_SHORT[m.d]);
     });
     var status = [];
-    if (!opt.open) status.push('<span class="pill bad">' + L("Closed", "مغلقة") + "</span>");
-    fit.clashes.forEach(function (c) { status.push('<span class="pill bad">⚠ ' + L("Clashes with ", "تتعارض مع ") + c + "</span>"); });
-    fit.finals.forEach(function (c) { status.push('<span class="pill bad">' + L("Final at the same time as ", "النهائي في نفس وقت ") + c + "</span>"); });
-    if (fit.free) status.push('<span class="pill warn">' + L("In your free time", "في وقت فراغك") + "</span>");
-    if (opt.open && fit.ok && !fit.free) status.push('<span class="pill good">' + L("Fits your schedule", "تناسب جدولك") + "</span>");
+    if (!opt.open)
+      status.push('<span class="pill bad">' + L("Closed", "مغلقة") + "</span>");
+    fit.clashes.forEach(function (c) {
+      status.push(
+        '<span class="pill bad">⚠ ' +
+          L("Clashes with ", "تتعارض مع ") +
+          c +
+          "</span>",
+      );
+    });
+    fit.finals.forEach(function (c) {
+      status.push(
+        '<span class="pill bad">' +
+          L("Final at the same time as ", "النهائي في نفس وقت ") +
+          c +
+          "</span>",
+      );
+    });
+    if (fit.free)
+      status.push(
+        '<span class="pill warn">' +
+          L("In your free time", "في وقت فراغك") +
+          "</span>",
+      );
+    if (opt.open && fit.ok && !fit.free)
+      status.push(
+        '<span class="pill good">' +
+          L("Fits your schedule", "تناسب جدولك") +
+          "</span>",
+      );
     var checked = picker.choice === opt.g;
-    return '<label class="pcard' + (fit.ok ? "" : " bad") + (checked ? " on" : "") + '" data-g="' + opt.g + '">' +
+    return (
+      '<label class="pcard' +
+      (fit.ok ? "" : " bad") +
+      (checked ? " on" : "") +
+      '" data-g="' +
+      opt.g +
+      '">' +
       '<span class="ptime">' +
-      (first ? "<b>" + clock(first.s).replace(/ (AM|PM|ص|م)$/, "<small>$1</small>") + "</b><span>" + L("to ", "إلى ") + clock(first.e) + "</span>" : "<b>" + L("TBA", "لم يحدد") + "</b>") +
-      '<span class="pdays">' + [0, 1, 2, 3, 4].map(function (d) { return '<i class="' + (days[d] ? "on" : "") + '">' + DAY_TINY[d] + "</i>"; }).join("") + "</span>" +
+      (first
+        ? "<b>" +
+          clock(first.s).replace(/ (AM|PM|ص|م)$/, "<small>$1</small>") +
+          "</b><span>" +
+          L("to ", "إلى ") +
+          clock(first.e) +
+          "</span>"
+        : "<b>" + L("TBA", "لم يحدد") + "</b>") +
+      '<span class="pdays">' +
+      [0, 1, 2, 3, 4]
+        .map(function (d) {
+          return (
+            '<i class="' + (days[d] ? "on" : "") + '">' + DAY_TINY[d] + "</i>"
+          );
+        })
+        .join("") +
       "</span>" +
-      '<span class="pinfo"><b class="pwho" dir="auto">' + esc(opt.instructor || L("Instructor TBA", "المحاضر لم يحدد")) + "</b>" +
-      '<span class="prooms">' + Object.keys(rooms).map(function (k) {
-        var p = k.split("|");
-        return "<span>" + esc(p[0]) + " <em>" + p[1] + " · " + rooms[k].join(" ") + "</em></span>";
-      }).join("") + "</span>" +
-      '<span class="pmeta">' + L("Section ", "الشعبة ") + opt.g + " · CRN " + opt.crns.join(", ") + (opt.exam ? L(" · Final ", " · النهائي ") + examLabel(opt.exam) : "") + "</span>" +
-      '<span class="pstatus">' + status.join("") + "</span></span>" +
-      '<input type="radio" name="pick-section" value="' + opt.g + '"' + (checked ? " checked" : "") + ' aria-label="' + L("Section ", "الشعبة ") + opt.g + '">' +
-      "</label>";
+      "</span>" +
+      '<span class="pinfo"><b class="pwho" dir="auto">' +
+      esc(opt.instructor || L("Instructor TBA", "المحاضر لم يحدد")) +
+      "</b>" +
+      '<span class="prooms">' +
+      Object.keys(rooms)
+        .map(function (k) {
+          var p = k.split("|");
+          return (
+            "<span>" +
+            esc(p[0]) +
+            " <em>" +
+            p[1] +
+            " · " +
+            rooms[k].join(" ") +
+            "</em></span>"
+          );
+        })
+        .join("") +
+      "</span>" +
+      '<span class="pmeta">' +
+      L("Section ", "الشعبة ") +
+      opt.g +
+      " · CRN " +
+      opt.crns.join(", ") +
+      (opt.exam ? L(" · Final ", " · النهائي ") + examLabel(opt.exam) : "") +
+      "</span>" +
+      '<span class="pstatus">' +
+      status.join("") +
+      "</span></span>" +
+      '<input type="radio" name="pick-section" value="' +
+      opt.g +
+      '"' +
+      (checked ? " checked" : "") +
+      ' aria-label="' +
+      L("Section ", "الشعبة ") +
+      opt.g +
+      '">' +
+      "</label>"
+    );
   }
 
   function renderPicker() {
     var code = picker.code;
     var o = buildOptions(code, blockedSet());
-    var list = o.all.map(function (opt) { return { opt: opt, fit: fitOf(code, opt) }; });
-    if (picker.sort === "open") list = list.filter(function (x) { return x.opt.open; });
-    var startOf = function (x) { var m = x.opt.meetings[0]; return m ? m.s : 9999; };
-    list.sort(picker.sort === "early"
-      ? function (a, b) { return startOf(a) - startOf(b); }
-      : function (a, b) {
-          var score = function (x) { return (x.fit.ok ? 0 : 4) + (x.opt.open ? 0 : 2) + (x.fit.free ? 1 : 0); };
-          return score(a) - score(b) || startOf(a) - startOf(b);
-        });
-    var fits = list.filter(function (x) { return x.fit.ok && x.opt.open; }).length;
-    $("sections-count").textContent = L(o.all.length + " section" + (o.all.length > 1 ? "s" : "") + " · " + fits + " fit", o.all.length + " شعب · " + fits + " مناسبة");
-    document.querySelectorAll("[data-psort]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.psort === picker.sort)); });
+    var list = o.all.map(function (opt) {
+      return { opt: opt, fit: fitOf(code, opt) };
+    });
+    if (picker.sort === "open")
+      list = list.filter(function (x) {
+        return x.opt.open;
+      });
+    var startOf = function (x) {
+      var m = x.opt.meetings[0];
+      return m ? m.s : 9999;
+    };
+    list.sort(
+      picker.sort === "early"
+        ? function (a, b) {
+            return startOf(a) - startOf(b);
+          }
+        : function (a, b) {
+            var score = function (x) {
+              return (
+                (x.fit.ok ? 0 : 4) + (x.opt.open ? 0 : 2) + (x.fit.free ? 1 : 0)
+              );
+            };
+            return score(a) - score(b) || startOf(a) - startOf(b);
+          },
+    );
+    var fits = list.filter(function (x) {
+      return x.fit.ok && x.opt.open;
+    }).length;
+    $("sections-count").textContent = L(
+      o.all.length +
+        " section" +
+        (o.all.length > 1 ? "s" : "") +
+        " · " +
+        fits +
+        " fit",
+      o.all.length + " شعب · " + fits + " مناسبة",
+    );
+    document.querySelectorAll("[data-psort]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.psort === picker.sort));
+    });
     $("sections-body").innerHTML =
-      '<label class="pcard any' + (picker.choice ? "" : " on") + '" data-g=""><span class="pinfo"><b>' + L("Any section", "أي شعبة") + '</b><span class="pmeta">' + L("Let the planner choose, so you see every schedule that works.", "دع المخطط يختار لترى كل الجداول الممكنة.") + "</span></span>" +
-      '<input type="radio" name="pick-section" value=""' + (picker.choice ? "" : " checked") + ' aria-label="' + L("Any section", "أي شعبة") + '"></label>' +
-      (list.length ? list.map(function (x) { return pickerCard(code, x.opt, x.fit); }).join("") : '<p class="hint">' + L("No open sections. Switch to Best fit to see closed ones.", "لا توجد شعب متاحة. اختر «الأنسب» لرؤية الشعب المغلقة.") + "</p>");
-    var shown = picker.choice && o.all.filter(function (x) { return x.g === picker.choice; })[0];
-    var placed = (results[current] || []).filter(function (x) { return x.code === code; })[0];
+      '<label class="pcard any' +
+      (picker.choice ? "" : " on") +
+      '" data-g=""><span class="pinfo"><b>' +
+      L("Any section", "أي شعبة") +
+      '</b><span class="pmeta">' +
+      L(
+        "Let the planner choose, so you see every schedule that works.",
+        "دع المخطط يختار لترى كل الجداول الممكنة.",
+      ) +
+      "</span></span>" +
+      '<input type="radio" name="pick-section" value=""' +
+      (picker.choice ? "" : " checked") +
+      ' aria-label="' +
+      L("Any section", "أي شعبة") +
+      '"></label>' +
+      (list.length
+        ? list
+            .map(function (x) {
+              return pickerCard(code, x.opt, x.fit);
+            })
+            .join("")
+        : '<p class="hint">' +
+          L(
+            "No open sections. Switch to Best fit to see closed ones.",
+            "لا توجد شعب متاحة. اختر «الأنسب» لرؤية الشعب المغلقة.",
+          ) +
+          "</p>");
+    var shown =
+      picker.choice &&
+      o.all.filter(function (x) {
+        return x.g === picker.choice;
+      })[0];
+    var placed = (results[current] || []).filter(function (x) {
+      return x.code === code;
+    })[0];
     renderPreview(code, shown || placed || null);
   }
 
   /** Mini week: your other courses in grey, this section in colour, clashes in red. */
   function renderPreview(code, opt) {
-    var others = (results[current] || []).filter(function (o) { return o.code !== code; });
+    var others = (results[current] || []).filter(function (o) {
+      return o.code !== code;
+    });
     var items = [];
-    others.forEach(function (o) { o.meetings.forEach(function (m) { items.push({ code: o.code, m: m, kind: "other" }); }); });
+    others.forEach(function (o) {
+      o.meetings.forEach(function (m) {
+        items.push({ code: o.code, m: m, kind: "other" });
+      });
+    });
     (opt ? opt.meetings : []).forEach(function (m) {
-      var clash = others.some(function (o) { return o.meetings.some(function (n) { return n.d === m.d && n.s < m.e && m.s < n.e; }); });
+      var clash = others.some(function (o) {
+        return o.meetings.some(function (n) {
+          return n.d === m.d && n.s < m.e && m.s < n.e;
+        });
+      });
       items.push({ code: code, m: m, kind: clash ? "clash" : "this" });
     });
-    var startH = 8, endH = 15;
-    items.forEach(function (x) { startH = Math.min(startH, Math.floor(x.m.s / 60)); endH = Math.max(endH, Math.ceil(x.m.e / 60)); });
+    var startH = 8,
+      endH = 15;
+    items.forEach(function (x) {
+      startH = Math.min(startH, Math.floor(x.m.s / 60));
+      endH = Math.max(endH, Math.ceil(x.m.e / 60));
+    });
     var px = 34;
-    var html = '<div class="pw" style="--rows:' + (endH - startH) + ";--px:" + px + 'px"><div></div>' +
-      [0, 1, 2, 3, 4].map(function (d) { return "<b>" + DAY_SHORT[d] + "</b>"; }).join("");
+    var html =
+      '<div class="pw" style="--rows:' +
+      (endH - startH) +
+      ";--px:" +
+      px +
+      'px"><div></div>' +
+      [0, 1, 2, 3, 4]
+        .map(function (d) {
+          return "<b>" + DAY_SHORT[d] + "</b>";
+        })
+        .join("");
     html += '<div class="pw-times">';
-    for (var h = startH; h < endH; h++) html += "<span>" + clock(h * 60).replace(":00", "") + "</span>";
+    for (var h = startH; h < endH; h++)
+      html += "<span>" + clock(h * 60).replace(":00", "") + "</span>";
     html += "</div>";
     [0, 1, 2, 3, 4].forEach(function (d) {
       html += '<div class="pw-col">';
-      items.filter(function (x) { return x.m.d === d; }).forEach(function (x) {
-        html += '<span class="pw-b ' + x.kind + '" style="top:' + ((x.m.s - startH * 60) / 60) * px + "px;height:" + Math.max(14, ((x.m.e - x.m.s) / 60) * px - 2) + 'px">' + x.code + "</span>";
-      });
+      items
+        .filter(function (x) {
+          return x.m.d === d;
+        })
+        .forEach(function (x) {
+          html +=
+            '<span class="pw-b ' +
+            x.kind +
+            '" style="top:' +
+            ((x.m.s - startH * 60) / 60) * px +
+            "px;height:" +
+            Math.max(14, ((x.m.e - x.m.s) / 60) * px - 2) +
+            'px">' +
+            x.code +
+            "</span>";
+        });
       html += "</div>";
     });
-    $("sections-preview").innerHTML = html + "</div>" +
-      (opt ? "" : '<p class="hint">' + L("Hover a section to see where it lands.", "مرّر على أي شعبة لترى موقعها.") + "</p>");
+    $("sections-preview").innerHTML =
+      html +
+      "</div>" +
+      (opt
+        ? ""
+        : '<p class="hint">' +
+          L(
+            "Hover a section to see where it lands.",
+            "مرّر على أي شعبة لترى موقعها.",
+          ) +
+          "</p>");
   }
 
   function openSections(code) {
@@ -1632,10 +2432,14 @@
     picker.sort = "fit";
     picker.choice = state.pinned[code] || null;
     var e = catalog[code] || {};
-    $("sections-hours").textContent = hoursOf(code) + L(" credit hours", " ساعات معتمدة");
+    $("sections-hours").textContent =
+      hoursOf(code) + L(" credit hours", " ساعات معتمدة");
     $("sections-title").textContent = code;
-    var other = isAr() ? e.en : term && term.courses[code] && term.courses[code].ar;
-    $("sections-sub").textContent = nameOf(code) + (other && other !== nameOf(code) ? " · " + other : "");
+    var other = isAr()
+      ? e.en
+      : term && term.courses[code] && term.courses[code].ar;
+    $("sections-sub").textContent =
+      nameOf(code) + (other && other !== nameOf(code) ? " · " + other : "");
     renderPicker();
     $("sections-dialog").showModal();
   }
@@ -1771,13 +2575,26 @@
       persist();
       $("sections-dialog").close();
       regenerate(true);
-      if (picker.choice && !results.length) toast(L("No schedule works with that section. Pick another or choose Any section", "لا يوجد جدول مع هذه الشعبة. اختر غيرها أو «أي شعبة»"));
+      if (picker.choice && !results.length)
+        toast(
+          L(
+            "No schedule works with that section. Pick another or choose Any section",
+            "لا يوجد جدول مع هذه الشعبة. اختر غيرها أو «أي شعبة»",
+          ),
+        );
       else if (picker.choice) {
-        toast(L(code + " section " + picker.choice + " pinned", "تم تثبيت " + code + " الشعبة " + picker.choice));
+        toast(
+          L(
+            code + " section " + picker.choice + " pinned",
+            "تم تثبيت " + code + " الشعبة " + picker.choice,
+          ),
+        );
         if (window.Murshid) window.Murshid.react("celebrate", 2000);
       }
     });
-    $("sections-close").addEventListener("click", function () { $("sections-dialog").close(); });
+    $("sections-close").addEventListener("click", function () {
+      $("sections-dialog").close();
+    });
     $("sections-remove").addEventListener("click", function () {
       $("sections-dialog").close();
       delete state.pinned[picker.code];
@@ -1791,12 +2608,21 @@
     $("sections-body").addEventListener("mouseover", function (e) {
       var card = e.target.closest(".pcard[data-g]");
       if (!card || !card.dataset.g) return;
-      var opt = buildOptions(picker.code, blockedSet()).all.filter(function (x) { return x.g === card.dataset.g; })[0];
+      var opt = buildOptions(picker.code, blockedSet()).all.filter(
+        function (x) {
+          return x.g === card.dataset.g;
+        },
+      )[0];
       if (opt) renderPreview(picker.code, opt);
     });
-    $("sections-body").addEventListener("mouseleave", function () { renderPicker(); });
+    $("sections-body").addEventListener("mouseleave", function () {
+      renderPicker();
+    });
     document.querySelectorAll("[data-psort]").forEach(function (b) {
-      b.addEventListener("click", function () { picker.sort = b.dataset.psort; renderPicker(); });
+      b.addEventListener("click", function () {
+        picker.sort = b.dataset.psort;
+        renderPicker();
+      });
     });
 
     document.querySelectorAll("[data-preset]").forEach(function (b) {
@@ -1810,10 +2636,17 @@
       });
     });
     // Free time: tap or drag over empty hours; tap a class to free its hour.
-    var paintValue = null, painted = false;
+    var paintValue = null,
+      painted = false;
     var hourAt = function (col, clientY) {
-      var hourPx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hour")) || 64;
-      return +$("week").dataset.start + Math.floor((clientY - col.getBoundingClientRect().top) / hourPx);
+      var hourPx =
+        parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue("--hour"),
+        ) || 64;
+      return (
+        +$("week").dataset.start +
+        Math.floor((clientY - col.getBoundingClientRect().top) / hourPx)
+      );
     };
     var label = function (key) {
       var p = key.split("-");
@@ -1830,14 +2663,26 @@
     $("week").addEventListener("pointerover", function (e) {
       if (paintValue === null) return;
       var slot = e.target.closest("[data-slot]");
-      if (slot && slot.classList.contains("blocked") !== paintValue) { paintSlot(slot, paintValue); painted = true; }
+      if (slot && slot.classList.contains("blocked") !== paintValue) {
+        paintSlot(slot, paintValue);
+        painted = true;
+      }
     });
     window.addEventListener("pointerup", function () {
       if (paintValue === null) return;
       var v = paintValue;
       paintValue = null;
       persist();
-      toast(v ? (painted ? L("Hours kept free", "تم حجز الساعات كوقت فراغ") : L("Kept free. Tap again to undo", "أصبحت وقت فراغ. اضغط مرة أخرى للتراجع")) : L("Free time removed", "أُزيل وقت الفراغ"));
+      toast(
+        v
+          ? painted
+            ? L("Hours kept free", "تم حجز الساعات كوقت فراغ")
+            : L(
+                "Kept free. Tap again to undo",
+                "أصبحت وقت فراغ. اضغط مرة أخرى للتراجع",
+              )
+          : L("Free time removed", "أُزيل وقت الفراغ"),
+      );
       regenerate(true);
     });
     $("week").addEventListener("click", function (e) {
@@ -1862,7 +2707,12 @@
       state.blocks = [];
       state.presets = [];
       state.freeText = "";
-      state.textRules = { rules: [], maxDays: null, preferGaps: false, unknown: [] };
+      state.textRules = {
+        rules: [],
+        maxDays: null,
+        preferGaps: false,
+        unknown: [],
+      };
       $("free-text").value = "";
       persist();
       regenerate(true);
@@ -1923,7 +2773,12 @@
       if (!sched) return;
       var key = keyOf(sched);
       if (isSaved(key)) {
-        toast(L("Already saved. Remove it from Saved schedules with ✕", "محفوظ مسبقًا. احذفه من الجداول المحفوظة بـ ✕"));
+        toast(
+          L(
+            "Already saved. Remove it from Saved schedules with ✕",
+            "محفوظ مسبقًا. احذفه من الجداول المحفوظة بـ ✕",
+          ),
+        );
         return;
       }
       var m = sched.metrics;
@@ -1936,12 +2791,21 @@
         label: m.days + " days · " + Math.round(m.avgStart / 60) + " start",
         sections: sched
           .slice()
-          .sort(function (x, y) { return x.code.localeCompare(y.code); })
-          .map(function (o) { return o.code + " " + o.crns.join("/"); })
+          .sort(function (x, y) {
+            return x.code.localeCompare(y.code);
+          })
+          .map(function (o) {
+            return o.code + " " + o.crns.join("/");
+          })
           .join(" · "),
       });
       toast(L("Saved", "تم الحفظ"));
-      if (window.Murshid) window.Murshid.react("love", 2600, L("Saved! Good choice.", "تم الحفظ! اختيار موفق."));
+      if (window.Murshid)
+        window.Murshid.react(
+          "love",
+          2600,
+          L("Saved! Good choice.", "تم الحفظ! اختيار موفق."),
+        );
       persist();
       render();
     });
@@ -1977,7 +2841,10 @@
         render();
       } else
         toast(
-          L("That schedule no longer fits: a section may have closed or clash with your free time", "هذا الجدول لم يعد مناسبًا: ربما أُغلقت شعبة أو تعارضت مع وقت فراغك"),
+          L(
+            "That schedule no longer fits: a section may have closed or clash with your free time",
+            "هذا الجدول لم يعد مناسبًا: ربما أُغلقت شعبة أو تعارضت مع وقت فراغك",
+          ),
         );
     });
 
@@ -1995,40 +2862,84 @@
     text = String(text || "").trim();
     state.freeText = text;
     if (!text) {
-      state.textRules = { rules: [], maxDays: null, preferGaps: false, unknown: [] };
+      state.textRules = {
+        rules: [],
+        maxDays: null,
+        preferGaps: false,
+        unknown: [],
+      };
       persist();
       return regenerate(true);
     }
-    var local = window.ShougFreeTime ? window.ShougFreeTime.parse(text) : { rules: [], unknown: [text] };
+    var local = window.ShougFreeTime
+      ? window.ShougFreeTime.parse(text)
+      : { rules: [], unknown: [text] };
     var finish = function (result, how) {
       if (window.Murshid) window.Murshid.settle();
       state.textRules = result;
       if (result.preferGaps && state.sort !== "gaps") state.sort = "gaps";
       persist();
       regenerate(true);
-      var n = result.rules.length + (result.maxDays ? 1 : 0) + (result.preferGaps ? 1 : 0);
-      toast(n ? L("Applied " + n + " rule" + (n > 1 ? "s" : ""), "تم تطبيق " + n + " قواعد") : L("I couldn't find any times in that", "لم أجد أوقاتًا في هذا النص"));
+      var n =
+        result.rules.length +
+        (result.maxDays ? 1 : 0) +
+        (result.preferGaps ? 1 : 0);
+      toast(
+        n
+          ? L(
+              "Applied " + n + " rule" + (n > 1 ? "s" : ""),
+              "تم تطبيق " + n + " قواعد",
+            )
+          : L("I couldn't find any times in that", "لم أجد أوقاتًا في هذا النص"),
+      );
       if (window.Murshid) window.Murshid.react(n ? "celebrate" : "sad", 2000);
     };
-    if (!local.unknown.length && (local.rules.length || local.maxDays || local.preferGaps)) return finish(local);
+    if (
+      !local.unknown.length &&
+      (local.rules.length || local.maxDays || local.preferGaps)
+    )
+      return finish(local);
     var btn = $("free-apply");
-    if (window.Murshid) window.Murshid.react("think", 0, L("Let me read that…", "دعني أقرأ ذلك…"));
+    if (window.Murshid)
+      window.Murshid.react(
+        "think",
+        0,
+        L("Let me read that…", "دعني أقرأ ذلك…"),
+      );
     btn.disabled = true;
     btn.textContent = L("Reading…", "جارٍ القراءة…");
     var controller = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (controller) controller.abort(); }, 9000);
+    var timer = setTimeout(function () {
+      if (controller) controller.abort();
+    }, 9000);
     fetch(FREE_TIME_AI, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ text: text }),
       signal: controller ? controller.signal : undefined,
     })
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function (ai) {
-        var useful = ai && Array.isArray(ai.rules) && (ai.rules.length || ai.maxDays || ai.preferGaps);
-        finish(useful ? { rules: ai.rules, maxDays: ai.maxDays || null, preferGaps: !!ai.preferGaps, unknown: ai.unknown || [] } : local);
+      .then(function (r) {
+        return r.ok ? r.json() : Promise.reject(r.status);
       })
-      .catch(function () { finish(local); })
+      .then(function (ai) {
+        var useful =
+          ai &&
+          Array.isArray(ai.rules) &&
+          (ai.rules.length || ai.maxDays || ai.preferGaps);
+        finish(
+          useful
+            ? {
+                rules: ai.rules,
+                maxDays: ai.maxDays || null,
+                preferGaps: !!ai.preferGaps,
+                unknown: ai.unknown || [],
+              }
+            : local,
+        );
+      })
+      .catch(function () {
+        finish(local);
+      })
       .then(function () {
         clearTimeout(timer);
         btn.disabled = false;
@@ -2038,24 +2949,77 @@
 
   /** A free-time rule in the current language (rules keep their meaning, not their words). */
   function ruleLabel(r) {
-    var clock = function (m) { return clockFull(m).replace(":00", ""); };
+    var clock = function (m) {
+      return clockFull(m).replace(":00", "");
+    };
     var on = daysText(r.days);
-    var except = r.except && r.except.length ? r.except.map(function (d) { return DAY_NAMES[d]; }).join(L(" and ", " و")) : "";
+    var except =
+      r.except && r.except.length
+        ? r.except
+            .map(function (d) {
+              return DAY_NAMES[d];
+            })
+            .join(L(" and ", " و"))
+        : "";
     var base;
     switch (r.kind) {
       case "dayoff":
-        return r.days.length >= 5 ? L("Every day off", "كل الأيام إجازة")
-          : L(r.days.map(function (d) { return DAY_NAMES[d]; }).join(" and ") + " off", "إجازة يوم " + r.days.map(function (d) { return DAY_NAMES[d]; }).join(" و"));
-      case "before": base = L("No classes before ", "لا محاضرات قبل ") + clock(r.to); break;
-      case "after": base = L("No classes after ", "لا محاضرات بعد ") + clock(r.from); break;
-      case "hour": base = L("No " + clock(r.from) + " classes", "لا محاضرات الساعة " + clock(r.from)); break;
-      case "morning": base = L("No morning classes", "لا محاضرات صباحية"); break;
-      case "early": base = L("No early classes (before 9 AM)", "لا محاضرات مبكرة (قبل 9 ص)"); break;
-      case "afternoon": base = L("No afternoon classes", "لا محاضرات بعد الظهر"); break;
-      case "evening": base = L("No evening classes", "لا محاضرات مسائية"); break;
-      case "only": base = L("Classes only ", "المحاضرات فقط من ") + clock(r.window[0]) + L("–", " إلى ") + clock(r.window[1]); break;
-      case "range": base = L("Free ", "وقت فراغ ") + clock(r.from) + "–" + clock(r.to); break;
-      default: base = isAr() ? L("", "وقت فراغ ") + clock(r.from) + "–" + clock(r.to) : r.label || "Free " + clock(r.from) + "–" + clock(r.to);
+        return r.days.length >= 5
+          ? L("Every day off", "كل الأيام إجازة")
+          : L(
+              r.days
+                .map(function (d) {
+                  return DAY_NAMES[d];
+                })
+                .join(" and ") + " off",
+              "إجازة يوم " +
+                r.days
+                  .map(function (d) {
+                    return DAY_NAMES[d];
+                  })
+                  .join(" و"),
+            );
+      case "before":
+        base = L("No classes before ", "لا محاضرات قبل ") + clock(r.to);
+        break;
+      case "after":
+        base = L("No classes after ", "لا محاضرات بعد ") + clock(r.from);
+        break;
+      case "hour":
+        base = L(
+          "No " + clock(r.from) + " classes",
+          "لا محاضرات الساعة " + clock(r.from),
+        );
+        break;
+      case "morning":
+        base = L("No morning classes", "لا محاضرات صباحية");
+        break;
+      case "early":
+        base = L(
+          "No early classes (before 9 AM)",
+          "لا محاضرات مبكرة (قبل 9 ص)",
+        );
+        break;
+      case "afternoon":
+        base = L("No afternoon classes", "لا محاضرات بعد الظهر");
+        break;
+      case "evening":
+        base = L("No evening classes", "لا محاضرات مسائية");
+        break;
+      case "only":
+        base =
+          L("Classes only ", "المحاضرات فقط من ") +
+          clock(r.window[0]) +
+          L("–", " إلى ") +
+          clock(r.window[1]);
+        break;
+      case "range":
+        base = L("Free ", "وقت فراغ ") + clock(r.from) + "–" + clock(r.to);
+        break;
+      default:
+        base = isAr()
+          ? L("", "وقت فراغ ") + clock(r.from) + "–" + clock(r.to)
+          : r.label || "Free " + clock(r.from) + "–" + clock(r.to);
     }
     if (except) return base + L(" except ", " ما عدا ") + except;
     return base + (on ? L(" on ", " يوم ") + on : "");
@@ -2065,21 +3029,87 @@
     var t = state.textRules;
     var chips = t.rules.map(function (r, i) {
       var label = ruleLabel(r);
-      return '<span class="rule">' + esc(label) + '<button type="button" data-rule="' + i + '" aria-label="' + L("Remove: ", "حذف: ") + esc(label) + '">✕</button></span>';
+      return (
+        '<span class="rule">' +
+        esc(label) +
+        '<button type="button" data-rule="' +
+        i +
+        '" aria-label="' +
+        L("Remove: ", "حذف: ") +
+        esc(label) +
+        '">✕</button></span>'
+      );
     });
-    if (t.maxDays) chips.push('<span class="rule">' + L("At most " + t.maxDays + " day" + (t.maxDays > 1 ? "s" : "") + " on campus", "حضور " + t.maxDays + " أيام كحد أقصى") + '<button type="button" data-rule="maxDays" aria-label="' + L("Remove day limit", "حذف حد الأيام") + '">✕</button></span>');
-    if (t.preferGaps) chips.push('<span class="rule">' + L("Fewest gaps first", "أقل فراغات أولًا") + '<button type="button" data-rule="gaps" aria-label="' + L("Remove", "حذف") + '">✕</button></span>');
+    if (t.maxDays)
+      chips.push(
+        '<span class="rule">' +
+          L(
+            "At most " +
+              t.maxDays +
+              " day" +
+              (t.maxDays > 1 ? "s" : "") +
+              " on campus",
+            "حضور " + t.maxDays + " أيام كحد أقصى",
+          ) +
+          '<button type="button" data-rule="maxDays" aria-label="' +
+          L("Remove day limit", "حذف حد الأيام") +
+          '">✕</button></span>',
+      );
+    if (t.preferGaps)
+      chips.push(
+        '<span class="rule">' +
+          L("Fewest gaps first", "أقل فراغات أولًا") +
+          '<button type="button" data-rule="gaps" aria-label="' +
+          L("Remove", "حذف") +
+          '">✕</button></span>',
+      );
     $("free-rules").innerHTML =
-      (chips.length ? '<div class="label" style="margin:10px 0 6px">' + L("Understood", "فهمت") + '</div><div class="rules">' + chips.join("") + "</div>" : "") +
-      (t.unknown && t.unknown.length ? '<p class="hint">' + L("Couldn't use: “", "لم أستطع استخدام: «") + esc(t.unknown.join(L("”, “", "»، «"))) + L("”. Try saying it with days and times.", "». جرّب كتابته بالأيام والأوقات.") + "</p>" : "");
+      (chips.length
+        ? '<div class="label" style="margin:10px 0 6px">' +
+          L("Understood", "فهمت") +
+          '</div><div class="rules">' +
+          chips.join("") +
+          "</div>"
+        : "") +
+      (t.unknown && t.unknown.length
+        ? '<p class="hint">' +
+          L("Couldn't use: “", "لم أستطع استخدام: «") +
+          esc(t.unknown.join(L("”, “", "»، «"))) +
+          L(
+            "”. Try saying it with days and times.",
+            "». جرّب كتابته بالأيام والأوقات.",
+          ) +
+          "</p>"
+        : "");
   }
 
   var TYPE_EN = { L: "", B: "Lab", T: "Tutorial", S: "Studio", C: "Co-op" };
-  var WEEKDAY = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-  function hhmm(mins) { return String(Math.floor(mins / 60)).padStart(2, "0") + ":" + String(mins % 60).padStart(2, "0"); }
-  function newId() { return "sp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  var WEEKDAY = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  function hhmm(mins) {
+    return (
+      String(Math.floor(mins / 60)).padStart(2, "0") +
+      ":" +
+      String(mins % 60).padStart(2, "0")
+    );
+  }
+  function newId() {
+    return (
+      "sp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+    );
+  }
   function codeOfTitle(t) {
-    var m = String(t || "").toUpperCase().replace(/\s+/g, "").match(/[A-Z]{2,6}\d{3}/);
+    var m = String(t || "")
+      .toUpperCase()
+      .replace(/\s+/g, "")
+      .match(/[A-Z]{2,6}\d{3}/);
     return m ? m[0] : "";
   }
 
@@ -2092,33 +3122,134 @@
   function addToCalendar() {
     var sched = results[current];
     if (!sched) return;
+    var btn = $("to-calendar");
+    var requestDone = false;
+    var firebaseTimer = null;
+    function resumeAfterAuth() {
+      if (requestDone) return;
+      var fb = window.__shoug_fb;
+      if (!fb || !fb.auth) {
+        window.addEventListener("shoug:fb", resumeAfterAuth, { once: true });
+        if (!firebaseTimer)
+          firebaseTimer = setTimeout(function () {
+            requestDone = true;
+            btn.disabled = false;
+            toast(
+              L(
+                "Sign-in is unavailable. Check your connection and try again.",
+                "Sign-in is unavailable. Check your connection and try again.",
+              ),
+            );
+          }, 15000);
+        return;
+      }
+      clearTimeout(firebaseTimer);
+      var auth = fb.auth();
+      if (auth.currentUser) {
+        requestDone = true;
+        btn.disabled = false;
+        addToCalendar();
+        return;
+      }
+      var unsubscribe;
+      var timer = setTimeout(function () {
+        requestDone = true;
+        if (unsubscribe) unsubscribe();
+        btn.disabled = false;
+        toast(
+          L(
+            "Sign-in is taking too long. Try again.",
+            "Sign-in is taking too long. Try again.",
+          ),
+        );
+      }, 15000);
+      unsubscribe = auth.onAuthStateChanged(function (restoredUser) {
+        if (requestDone) return;
+        requestDone = true;
+        clearTimeout(timer);
+        if (unsubscribe) unsubscribe();
+        btn.disabled = false;
+        if (restoredUser) {
+          addToCalendar();
+          return;
+        }
+        toast(
+          L(
+            "Sign in to add this schedule to your calendar",
+            "سجّل الدخول لإضافة الجدول إلى تقويمك",
+          ),
+        );
+        if (typeof window.__shougOpenAuthModal === "function")
+          window.__shougOpenAuthModal();
+        else {
+          var signIn = document.querySelector("#shoug-fb-user");
+          if (signIn && signIn.tagName === "BUTTON") signIn.click();
+        }
+      });
+    }
     var fb = window.__shoug_fb;
     var user = fb && fb.auth && fb.auth().currentUser;
+    if (!fb || !fb.auth || (!user && !window.ShougPrivate)) {
+      btn.disabled = true;
+      resumeAfterAuth();
+      return;
+    }
     if (!user || !window.ShougPrivate) {
-      toast(L("Sign in to add this schedule to your calendar", "سجّل الدخول لإضافة الجدول إلى تقويمك"));
-      var signIn = document.querySelector("#shoug-fb-user");
-      if (signIn && signIn.tagName === "BUTTON") signIn.click();
+      btn.disabled = true;
+      resumeAfterAuth();
       return;
     }
     // Edugate "20262" → the calendar's term "262" (Second Semester 2026).
     var calTerm = state.term.slice(2, 4) + state.term.slice(4);
-    var termLabel = termName({ value: state.term, label: (term && term.termLabel) || "" });
-    var codes = sched.map(function (o) { return o.code; });
+    var termLabel = termName({
+      value: state.term,
+      label: (term && term.termLabel) || "",
+    });
+    var codes = sched.map(function (o) {
+      return o.code;
+    });
     var btn = $("to-calendar");
     btn.disabled = true;
     window.ShougPrivate.ready(user.uid)
       .then(function (ref) {
         return ref.get().then(function (snap) {
           var data = (snap && snap.exists && snap.data()) || {};
-          var classes = Array.isArray(data.calendarClassSchedules) ? data.calendarClassSchedules.filter(Boolean) : [];
+          var classes = Array.isArray(data.calendarClassSchedules)
+            ? data.calendarClassSchedules.filter(Boolean)
+            : [];
           var mine = classes.filter(function (c) {
-            return c.termId === calTerm && c.source !== "schedule-planner" && codes.indexOf(codeOfTitle(c.title)) > -1;
+            return (
+              c.termId === calTerm &&
+              c.source !== "schedule-planner" &&
+              codes.indexOf(codeOfTitle(c.title)) > -1
+            );
           });
           if (mine.length) {
-            var list = mine.map(function (c) { return codeOfTitle(c.title); }).filter(function (c, i, a) { return a.indexOf(c) === i; }).join(", ");
-            if (!window.confirm(L(
-              "Your calendar already has classes for " + list + " in " + termLabel + ". Replace them with this schedule?",
-              "تقويمك فيه محاضرات لـ " + list + " في " + termLabel + ". هل تريد استبدالها بهذا الجدول؟"))) return null;
+            var list = mine
+              .map(function (c) {
+                return codeOfTitle(c.title);
+              })
+              .filter(function (c, i, a) {
+                return a.indexOf(c) === i;
+              })
+              .join(", ");
+            if (
+              !window.confirm(
+                L(
+                  "Your calendar already has classes for " +
+                    list +
+                    " in " +
+                    termLabel +
+                    ". Replace them with this schedule?",
+                  "تقويمك فيه محاضرات لـ " +
+                    list +
+                    " في " +
+                    termLabel +
+                    ". هل تريد استبدالها بهذا الجدول؟",
+                ),
+              )
+            )
+              return null;
           }
           var kept = classes.filter(function (c) {
             if (c.termId !== calTerm) return true;
@@ -2131,7 +3262,8 @@
             o.meetings.forEach(function (m) {
               var k = m.crn + "|" + m.s + "|" + m.e + "|" + m.room;
               var slot = (slots[k] = slots[k] || { m: m, days: [] });
-              if (slot.days.indexOf(WEEKDAY[m.d]) < 0) slot.days.push(WEEKDAY[m.d]);
+              if (slot.days.indexOf(WEEKDAY[m.d]) < 0)
+                slot.days.push(WEEKDAY[m.d]);
             });
             Object.keys(slots).forEach(function (k) {
               var x = slots[k];
@@ -2152,47 +3284,111 @@
               added++;
             });
           });
-          var exams = data.exams && typeof data.exams === "object" ? data.exams : {};
+          var exams =
+            data.exams && typeof data.exams === "object" ? data.exams : {};
           var examPayload = {};
           var del = fb.firestore.FieldValue.delete();
           Object.keys(exams).forEach(function (id) {
             var e = exams[id] || {};
-            if (e.source === "schedule-planner" && e.termId === calTerm) examPayload[id] = del;
+            if (e.source === "schedule-planner" && e.termId === calTerm)
+              examPayload[id] = del;
           });
           var finals = 0;
           sched.forEach(function (o) {
             if (!o.exam) return;
-            var date = o.exam.slice(0, 10), start = o.exam.slice(11, 16);
+            var date = o.exam.slice(0, 10),
+              start = o.exam.slice(11, 16);
             var already = Object.keys(exams).some(function (id) {
               var e = exams[id] || {};
-              return e.source !== "schedule-planner" && codeOfTitle(e.course) === o.code && /final/i.test(e.type || "") && e.date === date;
+              return (
+                e.source !== "schedule-planner" &&
+                codeOfTitle(e.course) === o.code &&
+                /final/i.test(e.type || "") &&
+                e.date === date
+              );
             });
             if (already) return;
-            examPayload[newId()] = { course: o.code, type: "final", date: date, start: start, end: "", location: "", source: "schedule-planner", termId: calTerm };
+            examPayload[newId()] = {
+              course: o.code,
+              type: "final",
+              date: date,
+              start: start,
+              end: "",
+              location: "",
+              source: "schedule-planner",
+              termId: calTerm,
+            };
             finals++;
           });
-          return ref.set({
-            calendarClassSchedules: kept,
-            exams: examPayload,
-            updatedAt: fb.firestore.FieldValue.serverTimestamp(),
-          }, { merge: true }).then(function () { return { added: added, finals: finals }; });
+          return ref
+            .set(
+              {
+                calendarClassSchedules: kept,
+                exams: examPayload,
+                updatedAt: fb.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            )
+            .then(function () {
+              return { added: added, finals: finals };
+            });
         });
       })
       .then(function (done) {
         if (!done) return;
-        $("notice").innerHTML = '<div class="notice">' +
-          L("<b>Added to your calendar:</b> " + done.added + " class times and " + done.finals + " final" + (done.finals === 1 ? "" : "s") + " in " + termLabel + ". ",
-            "<b>أُضيف إلى تقويمك:</b> " + done.added + " مواعيد محاضرات و" + done.finals + " اختبارات نهائية في " + termLabel + ". ") +
-          L("Your calendar shows one semester at a time, so it opens on " + termLabel + ". ", "التقويم يعرض فصلًا واحدًا في كل مرة، لذا سيفتح على " + termLabel + ". ") +
-          '<a href="/account/calendar/?term=' + calTerm + '">' + L("Open calendar", "افتح التقويم") + "</a></div>";
+        $("notice").innerHTML =
+          '<div class="notice">' +
+          L(
+            "<b>Added to your calendar:</b> " +
+              done.added +
+              " class times and " +
+              done.finals +
+              " final" +
+              (done.finals === 1 ? "" : "s") +
+              " in " +
+              termLabel +
+              ". ",
+            "<b>أُضيف إلى تقويمك:</b> " +
+              done.added +
+              " مواعيد محاضرات و" +
+              done.finals +
+              " اختبارات نهائية في " +
+              termLabel +
+              ". ",
+          ) +
+          L(
+            "Your calendar shows one semester at a time, so it opens on " +
+              termLabel +
+              ". ",
+            "التقويم يعرض فصلًا واحدًا في كل مرة، لذا سيفتح على " +
+              termLabel +
+              ". ",
+          ) +
+          '<a href="/account/calendar/?term=' +
+          calTerm +
+          '">' +
+          L("Open calendar", "افتح التقويم") +
+          "</a></div>";
         toast(L("Added to your calendar", "أُضيف إلى تقويمك"));
-        if (window.Murshid) window.Murshid.react("love", 2600, L("It's in your calendar now!", "صار في تقويمك الآن!"));
+        if (window.Murshid)
+          window.Murshid.react(
+            "love",
+            2600,
+            L("It's in your calendar now!", "صار في تقويمك الآن!"),
+          );
       })
       .catch(function (err) {
         console.error(err);
-        toast(L("Couldn't reach your calendar. Try again.", "تعذّر الوصول إلى تقويمك. حاول مرة أخرى."));
+        toast(
+          L(
+            "Couldn't reach your calendar. Try again.",
+            "تعذّر الوصول إلى تقويمك. حاول مرة أخرى.",
+          ),
+        );
       })
-      .then(function () { btn.disabled = false; });
+      .then(function () {
+        btn.disabled = false;
+      });
   }
 
   function paintSlot(slot, on) {
@@ -2258,10 +3454,14 @@
   window.SchedulePlanner = api;
 
   var PLAN_GRID_KEYS = {
-    "cs-ai": "shoug_academic_plan_grid_cs_ai_v1", "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
-    "cs-dx": "shoug_academic_plan_grid_cs_dx_v1", cs: "shoug_academic_plan_grid_cs_v1",
-    "is-ai": "shoug_academic_plan_grid_is_ai_v1", "se-ai": "shoug_academic_plan_grid_se_ai_v1",
-    "se-dx": "shoug_academic_plan_grid_se_dx_v1", "se-cys": "shoug_academic_plan_grid_v4",
+    "cs-ai": "shoug_academic_plan_grid_cs_ai_v1",
+    "cs-cys": "shoug_academic_plan_grid_cs_cys_v1",
+    "cs-dx": "shoug_academic_plan_grid_cs_dx_v1",
+    cs: "shoug_academic_plan_grid_cs_v1",
+    "is-ai": "shoug_academic_plan_grid_is_ai_v1",
+    "se-ai": "shoug_academic_plan_grid_se_ai_v1",
+    "se-dx": "shoug_academic_plan_grid_se_dx_v1",
+    "se-cys": "shoug_academic_plan_grid_v4",
     se: "shoug_academic_plan_grid_se_v1",
   };
   /** Same choice as the account header: the account's plan, else the grid they've filled in. */
@@ -2273,18 +3473,25 @@
         plan = null;
         var best = 0;
         Object.keys(PLAN_GRID_KEYS).forEach(function (k) {
-          var saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[k]) || "null");
-          if (saved && (saved.updatedAt || 1) > best) { best = saved.updatedAt || 1; plan = k; }
+          var saved = JSON.parse(
+            localStorage.getItem(PLAN_GRID_KEYS[k]) || "null",
+          );
+          if (saved && (saved.updatedAt || 1) > best) {
+            best = saved.updatedAt || 1;
+            plan = k;
+          }
         });
       }
     } catch (e) {}
-    if (plan) $("tab-plan").href = "/academic-plan-themes/" + plan + "/grid.html";
+    if (plan)
+      $("tab-plan").href = "/academic-plan-themes/" + plan + "/grid.html";
     withFirebase(function (fb) {
       if (!fb || !fb.auth) return;
       fb.auth().onAuthStateChanged(function (user) {
         var tab = $("tab-profile");
         tab.hidden = !user;
-        if (user) tab.href = "/community/profile/?u=" + encodeURIComponent(user.uid);
+        if (user)
+          tab.href = "/community/profile/?u=" + encodeURIComponent(user.uid);
       });
     });
   }
@@ -2297,22 +3504,38 @@
       el.textContent = ar ? el.dataset.ar : el.dataset.en;
     });
     document.querySelectorAll("[data-ar-placeholder]").forEach(function (el) {
-      if (el.dataset.enPlaceholder == null) el.dataset.enPlaceholder = el.getAttribute("placeholder") || "";
-      el.setAttribute("placeholder", ar ? el.dataset.arPlaceholder : el.dataset.enPlaceholder);
+      if (el.dataset.enPlaceholder == null)
+        el.dataset.enPlaceholder = el.getAttribute("placeholder") || "";
+      el.setAttribute(
+        "placeholder",
+        ar ? el.dataset.arPlaceholder : el.dataset.enPlaceholder,
+      );
     });
     document.querySelectorAll("[data-ar-aria]").forEach(function (el) {
-      if (el.dataset.enAria == null) el.dataset.enAria = el.getAttribute("aria-label") || "";
+      if (el.dataset.enAria == null)
+        el.dataset.enAria = el.getAttribute("aria-label") || "";
       el.setAttribute("aria-label", ar ? el.dataset.arAria : el.dataset.enAria);
     });
-    document.title = L("Schedule Planner | SHOUG.TECH", "مخطط الجدول | SHOUG.TECH");
+    document.title = L(
+      "Schedule Planner | SHOUG.TECH",
+      "مخطط الجدول | SHOUG.TECH",
+    );
     $("lang-toggle").textContent = ar ? "EN" : "عربي";
-    var signIn = document.querySelector("#shoug-fb-user.shoug-auth-btn, #shoug-fb-user[data-account-loader]");
-    if (signIn && /^(Sign In|تسجيل الدخول)$/.test(signIn.textContent.trim())) signIn.textContent = L("Sign In", "تسجيل الدخول");
-    $("lang-toggle").setAttribute("aria-label", ar ? "Switch to English" : "التبديل إلى العربية");
+    var signIn = document.querySelector(
+      "#shoug-fb-user.shoug-auth-btn, #shoug-fb-user[data-account-loader]",
+    );
+    if (signIn && /^(Sign In|تسجيل الدخول)$/.test(signIn.textContent.trim()))
+      signIn.textContent = L("Sign In", "تسجيل الدخول");
+    $("lang-toggle").setAttribute(
+      "aria-label",
+      ar ? "Switch to English" : "التبديل إلى العربية",
+    );
   }
 
-  var MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-  var SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  var MOON_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  var SUN_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
   /** Same icons as the site header: a sun in dark mode (switch to light), a moon in light mode. */
   function syncThemeIcon() {
     var dark = document.documentElement.getAttribute("data-theme") === "dark";
@@ -2320,11 +3543,15 @@
   }
 
   function setLanguage(lang) {
-    try { localStorage.setItem("shoug-lang", lang); } catch (e) {}
+    try {
+      localStorage.setItem("shoug-lang", lang);
+    } catch (e) {}
     document.documentElement.lang = lang === "ar" ? "ar-SA" : "en";
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     applyLanguage();
-    window.dispatchEvent(new CustomEvent("shoug:language-change", { detail: { lang: lang } }));
+    window.dispatchEvent(
+      new CustomEvent("shoug:language-change", { detail: { lang: lang } }),
+    );
   }
 
   function applyLanguage() {
@@ -2334,7 +3561,9 @@
     if (term) {
       var current = $("term").value;
       Array.prototype.forEach.call($("term").options, function (o) {
-        var t = (index.terms || []).filter(function (x) { return x.value === o.value; })[0];
+        var t = (index.terms || []).filter(function (x) {
+          return x.value === o.value;
+        })[0];
         if (t) o.textContent = termName(t);
       });
       $("term").value = current;
@@ -2349,7 +3578,8 @@
     var stored = null;
     try {
       var q = new URLSearchParams(location.search).get("lang");
-      stored = q === "ar" || q === "en" ? q : localStorage.getItem("shoug-lang");
+      stored =
+        q === "ar" || q === "en" ? q : localStorage.getItem("shoug-lang");
     } catch (e) {}
     if (stored === "ar" || stored === "en") {
       document.documentElement.lang = stored === "ar" ? "ar-SA" : "en";
@@ -2357,18 +3587,93 @@
     }
     setLanguageData();
     translateStatic();
-    $("lang-toggle").addEventListener("click", function () { setLanguage(isAr() ? "en" : "ar"); });
+    $("lang-toggle").addEventListener("click", function () {
+      setLanguage(isAr() ? "en" : "ar");
+    });
+    // This page has a compact, planner-specific header. Connect its account
+    // control while Firebase resolves and toggle the signed-in user menu.
+    document.addEventListener(
+      "click",
+      function (event) {
+        var account =
+          event.target.closest && event.target.closest("#shoug-fb-user");
+        var insideMenu =
+          event.target.closest && event.target.closest(".shoug-user-dropdown");
+        if (event.target.closest && event.target.closest("#shoug-signout")) {
+          document.body.classList.remove("profile-open");
+          document.dispatchEvent(
+            new CustomEvent("shoug:profile-toggle", {
+              detail: { open: false },
+            }),
+          );
+          return;
+        }
+        if (account && account.hasAttribute("data-account-loader")) {
+          if (typeof window.__shougOpenAuthModal === "function") {
+            window.__shougOpenAuthModal();
+          } else {
+            window.addEventListener(
+              "shoug:fb",
+              function () {
+                if (typeof window.__shougOpenAuthModal === "function")
+                  window.__shougOpenAuthModal();
+              },
+              { once: true },
+            );
+          }
+          return;
+        }
+        if (
+          account &&
+          !insideMenu &&
+          account.classList.contains("shoug-user-btn")
+        ) {
+          var open = !document.body.classList.contains("profile-open");
+          document.body.classList.toggle("profile-open", open);
+          account.setAttribute("aria-expanded", String(open));
+          document.dispatchEvent(
+            new CustomEvent("shoug:profile-toggle", { detail: { open: open } }),
+          );
+        } else if (
+          !insideMenu &&
+          document.body.classList.contains("profile-open")
+        ) {
+          document.body.classList.remove("profile-open");
+          var avatar = document.getElementById("shoug-fb-user");
+          if (avatar) avatar.setAttribute("aria-expanded", "false");
+          document.dispatchEvent(
+            new CustomEvent("shoug:profile-toggle", {
+              detail: { open: false },
+            }),
+          );
+        }
+      },
+      true,
+    );
     syncThemeIcon();
     if (window.MutationObserver)
-      new MutationObserver(syncThemeIcon).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+      new MutationObserver(syncThemeIcon).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
     // firebase-auth.js rebuilds the sign-in button; relabel it when it does.
     if (window.MutationObserver)
       new MutationObserver(function () {
         var b = document.querySelector("#shoug-fb-user.shoug-auth-btn");
-        if (b && isAr() && b.textContent.trim() === "Sign In") b.textContent = "تسجيل الدخول";
-      }).observe(document.querySelector(".topbar-end"), { childList: true, subtree: true, characterData: true });
+        if (b && isAr() && b.textContent.trim() === "Sign In")
+          b.textContent = "تسجيل الدخول";
+      }).observe(document.querySelector(".topbar-end"), {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
     window.addEventListener("storage", function (e) {
-      if (e.key === "shoug-lang" && (e.newValue === "ar" || e.newValue === "en") && (e.newValue === "ar") !== isAr()) setLanguage(e.newValue);
+      if (
+        e.key === "shoug-lang" &&
+        (e.newValue === "ar" || e.newValue === "en") &&
+        (e.newValue === "ar") !== isAr()
+      )
+        setLanguage(e.newValue);
     });
     bind();
     setupTabs();

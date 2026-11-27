@@ -44,7 +44,8 @@ def all_decks(course_dir):
     for dirpath, _dirnames, filenames in os.walk(root):
         for name in sorted(filenames):
             if name.lower().endswith('.pdf'):
-                out.append(os.path.relpath(os.path.join(dirpath, name), root))
+                # Forward slashes, so Windows paths match the keys in course-slide-index.json.
+                out.append(os.path.relpath(os.path.join(dirpath, name), root).replace(os.sep, '/'))
     return sorted(out)
 
 

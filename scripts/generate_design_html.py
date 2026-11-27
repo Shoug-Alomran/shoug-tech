@@ -3351,7 +3351,11 @@ def enhance_homepage(text: str) -> str:
 
 def section_nav(sections: dict[str, str], class_name: str, active: str = "Overview") -> str:
     links = []
+    if class_name == "tab" and active.casefold() in {"slide breakdowns", "annotated slides"}:
+        active = "Slides"
     for label, url in sections.items():
+        if class_name == "tab" and label.casefold() in {"slide breakdowns", "annotated slides"}:
+            continue
         active_class = " active" if label == active else ""
         display_label = display_section_label(label)
         content = f"[ {display_label.upper()} ]" if class_name == "sub-nav-item" else display_label

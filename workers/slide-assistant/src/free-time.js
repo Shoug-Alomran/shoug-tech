@@ -77,7 +77,9 @@ export function cleanResult(raw) {
   if (Number.isInteger(n) && n >= 1 && n <= 5) out.maxDays = n;
   out.preferGaps = raw.preferFewerGaps === true;
   if (typeof raw.notUnderstood === "string" && raw.notUnderstood.trim())
-    out.unknown.push(raw.notUnderstood.replace(/[<>]/g, "").trim().slice(0, 120));
+    out.unknown.push(
+      raw.notUnderstood.replace(/[<>]/g, "").trim().slice(0, 120),
+    );
   return out;
 }
 
@@ -86,7 +88,11 @@ export async function handleFreeTime(request, env, origin, json, generate) {
     const key = request.headers.get("cf-connecting-ip") || "unknown";
     const result = await env.AI_RATE_LIMIT.limit({ key });
     if (!result.success)
-      return json({ error: "Too many requests. Please wait a minute and try again." }, 429, origin);
+      return json(
+        { error: "Too many requests. Please wait a minute and try again." },
+        429,
+        origin,
+      );
   }
   let body;
   try {
@@ -95,8 +101,11 @@ export async function handleFreeTime(request, env, origin, json, generate) {
     return json({ error: "Invalid JSON." }, 400, origin);
   }
   const text =
-    typeof body.text === "string" ? body.text.replace(/\s+/g, " ").trim().slice(0, MAX_TEXT) : "";
-  if (!text) return json({ error: "Describe when you want to be free." }, 400, origin);
+    typeof body.text === "string"
+      ? body.text.replace(/\s+/g, " ").trim().slice(0, MAX_TEXT)
+      : "";
+  if (!text)
+    return json({ error: "Describe when you want to be free." }, 400, origin);
   const answer = await generate(env, {
     messages: [
       { role: "system", content: SYSTEM },
@@ -106,6 +115,11 @@ export async function handleFreeTime(request, env, origin, json, generate) {
     max_tokens: 500,
   });
   const parsed = extractJson(answer);
-  if (!parsed) return json({ error: "Couldn't read that. Try simpler phrases." }, 502, origin);
+  if (!parsed)
+    return json(
+      { error: "Couldn't read that. Try simpler phrases." },
+      502,
+      origin,
+    );
   return json(cleanResult(parsed), 200, origin);
 }

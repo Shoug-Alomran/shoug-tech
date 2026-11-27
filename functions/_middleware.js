@@ -37,7 +37,8 @@ const ANALYTICS_TAG =
 // this shipped ("shoug-theme-v2") resets saved themes once, because older
 // scripts saved the theme on page load even when nobody had chosen one.
 const THEME_BOOT = `<script>(function(){try{var s=localStorage,k="shoug-theme",a="shoug-theme-auto",v="shoug-theme-v2",m=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark",saved=s.getItem(k),auto=s.getItem(a);if(!s.getItem(v)){s.setItem(v,"1");saved=null;}if(!saved||saved===auto){s.setItem(k,m);s.setItem(a,m);}else if(auto!==null){s.removeItem(a);}}catch(e){}})();</script>`;
-const THEME_TAG = '<script defer src="/javascripts/site-theme.js?v=1"></script>';
+const THEME_TAG =
+  '<script defer src="/javascripts/site-theme.js?v=1"></script>';
 // The administrator's "Admin" header tab (docs/javascripts/admin-nav.js).
 const ADMIN_NAV_TAG =
   '<script defer src="/javascripts/admin-nav.js?v=1"></script>';

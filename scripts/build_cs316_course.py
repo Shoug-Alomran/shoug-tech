@@ -138,9 +138,7 @@ WEIGHTS = [
 
 TABS = [
     ("", "Overview", "نظرة عامة"),
-    ("slide-breakdowns/", "Slide Breakdowns", "تفكيك الشرائح"),
     ("slides/", "Slides", "الشرائح"),
-    ("annotated-slides/", "Annotated Slides", "الشرائح المشروحة"),
     ("extra-resources/", "Study Material", "المواد الدراسية"),
     ("exams/", "Exams", "الاختبارات"),
 ]

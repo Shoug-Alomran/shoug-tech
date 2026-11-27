@@ -12,7 +12,7 @@ sheet picks its chapters.
 
     python3 scripts/build_econ101_cheat_sheets.py
 
-Writes docs/academics/other-courses/econ101/extra-resources/cheat-sheets/
+Writes docs/academics/business/econ101/extra-resources/cheat-sheets/
 {major-1,major-2,final}/<name>-cheat-sheet.html (the wrappers already iframe them).
 """
 from __future__ import annotations
@@ -27,7 +27,7 @@ import econ101_cheat_content as content  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / "docs/academics/computer-science/cs331/extra-resources/major-1-cheat-sheet/major-1-cheat-sheet.html"
-OUT = ROOT / "docs/academics/other-courses/econ101/extra-resources/cheat-sheets"
+OUT = ROOT / "docs/academics/business/econ101/extra-resources/cheat-sheets"
 SITE = "https://shoug-tech.com"
 esc = html.escape
 
@@ -82,7 +82,7 @@ LEGEND = (
 
 def build(sheet, t):
     panels = [sheet["plan"]] + [content.CHAPTERS[c] for c in sheet["chapters"]] + [sheet["practice"]]
-    url = f"{SITE}/academics/other-courses/econ101/extra-resources/cheat-sheets/{sheet['slug']}/"
+    url = f"{SITE}/academics/business/econ101/extra-resources/cheat-sheets/{sheet['slug']}/"
     body = (
         '<body><header class="topbar"><div class="wrap topbar-row">'
         f'<a class="brand" href="#top">ECON101 <span>{esc(sheet["brand"])}</span></a>'
