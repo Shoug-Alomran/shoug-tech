@@ -545,6 +545,8 @@ RESOURCE_CATEGORIES = [
     ("study-guides", "Study Guides"),
     ("mindmaps", "Mind Maps"),
     ("cheat-sheets", "Cheat Sheets"),
+    ("listing-vault", "Listing Vault"),
+    ("glossary", "Glossary"),
 ]
 
 
@@ -601,12 +603,15 @@ def build_resource_indexes():
             continue
         rows = resource_rows(category_dir)
         category_url = URL + "extra-resources/" + slug + "/"
+        if slug in {"listing-vault", "glossary"}:
+            rows = [(category_url + ("listing-vault.html" if slug == "listing-vault" else "glossary.html"),
+                     label, "HTML")]
         child_links[category_url] = [
             {"url": href, "attrs": "", "label": title} for href, title, _kind in rows
         ]
         categories.append((slug, label, len(rows)))
         index = os.path.join(category_dir, "index.html")
-        if slug not in {"mindmaps", "cheat-sheets"}:
+        if slug not in {"mindmaps", "cheat-sheets", "listing-vault", "glossary"}:
             page = shell
             page = re.sub(r"<title>.*?</title>", "<title>ECON102 | %s</title>" % label, page, count=1, flags=re.S)
             page = page.replace("https://shoug-tech.com" + URL + "extra-resources/",
@@ -657,6 +662,7 @@ def main():
         build_preview_strip()
     course = build_study()
     build_breakdown_strip(course)
+    run([sys.executable, "scripts/build_econ102_study_tools.py"])
     build_resource_indexes()
     run([sys.executable, "scripts/build_slide_hub.py", "business/econ102", "--keep-previews"])
     update_business_hub()

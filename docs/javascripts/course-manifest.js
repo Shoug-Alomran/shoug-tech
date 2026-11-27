@@ -731,6 +731,24 @@ var COURSE_PAGES = [
     "courseTitle": "ECON102 // Principles of Macroeconomics"
   },
   {
+    "url": "/academics/business/econ102/extra-resources/glossary/",
+    "title": "ECON102 | ECON102 Glossary",
+    "track": "business",
+    "course": "econ102",
+    "section": "extra-resources",
+    "courseUrl": "/academics/business/econ102/",
+    "courseTitle": "ECON102 // Principles of Macroeconomics"
+  },
+  {
+    "url": "/academics/business/econ102/extra-resources/listing-vault/",
+    "title": "ECON102 | ECON102 Listing Vault",
+    "track": "business",
+    "course": "econ102",
+    "section": "extra-resources",
+    "courseUrl": "/academics/business/econ102/",
+    "courseTitle": "ECON102 // Principles of Macroeconomics"
+  },
+  {
     "url": "/academics/business/econ102/extra-resources/mindmaps/01-what-is-economics/",
     "title": "ECON102 | Chapter 1 Mind Map: What Is Economics?",
     "track": "business",
@@ -19255,7 +19273,7 @@ var COURSE_PAGES = [
 ];
 var COURSE_MANIFEST = {
   "econ101": 58,
-  "econ102": 60,
+  "econ102": 62,
   "cs101": 19,
   "cs102": 25,
   "cs210": 50,
@@ -19295,7 +19313,7 @@ var COURSE_MANIFEST = {
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "business/econ101": 58,
-  "business/econ102": 60,
+  "business/econ102": 62,
   "computer-science/cs101": 19,
   "computer-science/cs102": 25,
   "computer-science/cs210": 50,

@@ -12,14 +12,23 @@ SE423 = ROOT / "docs/academics/software-engineering/se423/extra-resources/glossa
 
 
 def sections(text):
-    return re.split(r"(?m)^\s*@([a-z]+)\s*$", text)
+    meta, key = {}, None
+    for line in text.splitlines():
+        directive = re.match(r"^\s*@([a-z]+)(?:\s+(.*?))?\s*$", line)
+        if directive:
+            key = directive.group(1)
+            meta.setdefault(key, [])
+            if directive.group(2):
+                meta[key].append(directive.group(2))
+        elif key:
+            meta[key].append(line)
+    return {key: "\n".join(value).strip() for key, value in meta.items()}
 
 
 def parse_notes():
     chapters = []
     for path in sorted(NOTES.glob("*.md")):
-        parts = sections(path.read_text(encoding="utf-8"))
-        meta = {parts[i]: parts[i + 1].strip() for i in range(1, len(parts) - 1, 2)}
+        meta = sections(path.read_text(encoding="utf-8"))
         head = meta.get("head", "")
         num_match = re.search(r"\d+", head)
         if not num_match:
@@ -54,9 +63,9 @@ def parse_notes():
 
 def glossary_page(chapters):
     entries = []
-    seen = set()
     for chapter in chapters:
         terms = []
+        seen = set()
         for term, definition in chapter["vocab"]:
             key = term.casefold()
             if key not in seen:
