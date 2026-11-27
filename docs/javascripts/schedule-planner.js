@@ -2183,7 +2183,8 @@
         $("notice").innerHTML = '<div class="notice">' +
           L("<b>Added to your calendar:</b> " + done.added + " class times and " + done.finals + " final" + (done.finals === 1 ? "" : "s") + " in " + termLabel + ". ",
             "<b>أُضيف إلى تقويمك:</b> " + done.added + " مواعيد محاضرات و" + done.finals + " اختبارات نهائية في " + termLabel + ". ") +
-          '<a href="/account/calendar/">' + L("Open calendar", "افتح التقويم") + "</a></div>";
+          L("Your calendar shows one semester at a time, so it opens on " + termLabel + ". ", "التقويم يعرض فصلًا واحدًا في كل مرة، لذا سيفتح على " + termLabel + ". ") +
+          '<a href="/account/calendar/?term=' + calTerm + '">' + L("Open calendar", "افتح التقويم") + "</a></div>";
         toast(L("Added to your calendar", "أُضيف إلى تقويمك"));
         if (window.Murshid) window.Murshid.react("love", 2600, L("It's in your calendar now!", "صار في تقويمك الآن!"));
       })

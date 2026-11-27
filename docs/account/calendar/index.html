@@ -6854,6 +6854,17 @@
           duplicateExamIds = [],
           selectedSemester = loadSemesterScope();
         var viewFilters = loadViewFilters();
+        // Opened for a semester that hasn't started (or has ended): show its first month.
+        (function jumpToUrlSemester() {
+          var t = urlSemester();
+          if (!t) return;
+          var p = academicPeriods().find(function (x) {
+            return x.term === t;
+          });
+          var today = key(new Date());
+          if (p && (today < p.start || today > p.end))
+            currentMonth = fromKey(p.start);
+        })();
         var STUDY_TEMPLATES = {
           "review-slides": {
             title: "Review slides",
@@ -7021,7 +7032,29 @@
         }
         // Nothing saved yet means a first visit: open on the current term.
         // A saved "" means the student chose "All semesters".
+        // ?term=262 (e.g. from the schedule planner's "Open calendar") picks
+        // that semester, so classes added for next term are visible at once.
+        function urlSemester() {
+          try {
+            var t = new URLSearchParams(location.search).get("term") || "";
+            if (!/^\d{3}$/.test(t)) return "";
+            return academicPeriods().some(function (p) {
+              return p.term === t;
+            })
+              ? t
+              : "";
+          } catch (e) {
+            return "";
+          }
+        }
         function loadSemesterScope() {
+          var fromUrl = urlSemester();
+          if (fromUrl) {
+            try {
+              localStorage.setItem("calendar-semester-scope", fromUrl);
+            } catch (e) {}
+            return fromUrl;
+          }
           var saved = null;
           try {
             saved = localStorage.getItem("calendar-semester-scope");
