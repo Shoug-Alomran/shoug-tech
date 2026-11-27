@@ -2574,72 +2574,43 @@
     var steps;
 
     if (context === "academics-index") {
-      // The 4 subject-track cards on /academics/
+      // The six-track hub and its current planning and study tools.
       steps = [
         {
-          target: null,
-          position: "center",
-          tag: "Academics Hub",
-          title: "Browse by Subject Track",
-          body: "Start here for course content. Pick a track, then choose a course.",
-        },
-        {
           target: function () {
-            return (
-              document.querySelector(".hub-grid") ||
-              document.querySelector(".track-card")
-            );
+            return document.querySelector(".hero");
           },
           position: "bottom",
-          tag: "Step 1 of 5 · Track Cards",
-          title: "Four Subject Tracks",
-          body: "Each card is a subject track. The badge shows how many courses are inside.",
+          tag: "Step 1 of 4 | Academics Hub",
+          title: "Course Content and Study Tools",
+          body: "Browse course notes, slides, breakdowns, quizzes, and exams. This hub also links to your planning and revision tools.",
         },
         {
           target: function () {
-            return document.querySelector(
-              'a.track-card[href="/academics/computer-science/"]',
-            );
+            return document.querySelector(".planner-banner");
           },
           position: "bottom",
-          tag: "Step 2 of 5 · Computer Science",
-          title: "Computer Science Track",
-          body: "<strong>CS</strong> has the core computing courses: data, systems, databases, networks, and more.",
+          tag: "Step 2 of 4 | Schedule Planner",
+          title: "Plan Around Your Week",
+          body: "Choose courses and campus, set free-time preferences, then compare clash-free schedules. Murshid can suggest courses, and you can save a schedule or copy section numbers.",
         },
         {
           target: function () {
-            return document.querySelector(
-              'a.track-card[href="/academics/software-engineering/"]',
-            );
+            return document.querySelector(".hero-cta");
           },
           position: "bottom",
-          tag: "Step 3 of 5 · Software Engineering",
-          title: "Software Engineering Track",
-          body: "<strong>SE</strong> covers requirements, architecture, design, testing, and practice.",
+          tag: "Step 3 of 4 | Revision Tools",
+          title: "Build a Pack or Take a Mock Exam",
+          body: "Make a printable course checklist from its study materials, or build a timed mock exam from quizzes and past papers and review your results by chapter.",
         },
         {
           target: function () {
-            return (
-              document.querySelector(
-                'a.track-card[href="/academics/cybersecurity/"]',
-              ) || document.querySelector("a.track-card.cyber")
-            );
+            return document.querySelector(".hub-grid");
           },
           position: "top",
-          tag: "Step 4 of 5 · Cybersecurity",
-          title: "Cybersecurity Track",
-          body: "<strong>CYS</strong> is the hands-on security track: labs, tools, and CTF-style work.",
-        },
-        {
-          target: function () {
-            return document.querySelector(
-              'a.track-card[href="/academics/other-courses/"]',
-            );
-          },
-          position: "top",
-          tag: "Step 5 of 5 · Other Courses",
-          title: "Other Courses",
-          body: "<strong>Other Courses</strong> holds writing, ethics, physics, science, and shared requirements.",
+          tag: "Step 4 of 4 | Subject Tracks",
+          title: "Six Subject Tracks",
+          body: "Choose Computer Science, Software Engineering, Cybersecurity, Information Systems, Math, or Other Courses to find material for each course.",
         },
       ];
     } else if (context === "academics-subject") {
@@ -3295,15 +3266,8 @@
         },
       ];
     } else {
-      // Home page / general — full site tour
+      // Home page and general site tour.
       steps = [
-        {
-          target: null,
-          position: "center",
-          tag: "Welcome",
-          title: "Welcome to SHOUG.TECH",
-          body: "A quick tour of where everything lives.",
-        },
         {
           target: function () {
             return document.querySelector(
@@ -3311,18 +3275,29 @@
             );
           },
           position: "bottom",
-          tag: "Step 1 of 7 · Academics",
-          title: "Course Content",
-          body: "<strong>Academics</strong> is where course notes, slides, and quizzes live.",
+          tag: "Step 1 of 8",
+          title: "Academics and Study Tools",
+          body: "Explore six academic tracks with course notes, slides, breakdowns, quizzes, and exams. The hub also has printable study packs and timed mock exams.",
+        },
+        {
+          target: function () {
+            return document.querySelector(
+              '.employer-links a[href="/academics/schedule-planner/"]',
+            );
+          },
+          position: "bottom",
+          tag: "Step 2 of 8",
+          title: "Plan Your PSU Schedule",
+          body: "Choose courses, set free-time preferences, compare clash-free schedules, and ask Murshid for course suggestions. Save a schedule or copy its section numbers.",
         },
         {
           target: function () {
             return document.querySelector('.shoug-header-nav a[href="/work/"]');
           },
           position: "bottom",
-          tag: "Step 2 of 7 · Work",
-          title: "Projects & Portfolio",
-          body: "<strong>Work</strong> shows projects and case studies.",
+          tag: "Step 3 of 8",
+          title: "Projects and Services",
+          body: "Browse project case studies and professional work, with a CV and recommendations for recruiters and Blueprint Studio services for clients.",
         },
         {
           target: function () {
@@ -3331,9 +3306,9 @@
             );
           },
           position: "bottom",
-          tag: "Step 3 of 7 · Workshops",
-          title: "Workshops",
-          body: "<strong>Workshops</strong> are guided hands-on sessions.",
+          tag: "Step 4 of 8",
+          title: "Workshops and Events",
+          body: "Explore six documented workshops and events, with teaching materials, labs, event websites, rules, and reflections.",
         },
         {
           target: function () {
@@ -3342,20 +3317,29 @@
             );
           },
           position: "bottom",
-          tag: "Step 4 of 7 · Resources",
-          title: "Study Resources",
-          body: "<strong>Resources</strong> has tools, references, guides, and links.",
+          tag: "Step 5 of 8",
+          title: "Curated Resources",
+          body: "Find learning references, development tools, cybersecurity and OSINT resources, DevOps, operations, and creative links by category.",
         },
         {
           target: function () {
             return document.querySelector(
-              '.shoug-header-nav a[href="/about/"]',
+              '.explore-item[href="/academic-plan-themes/academic-plan/"]',
             );
           },
           position: "bottom",
-          tag: "Step 5 of 7 · About",
-          title: "About This Site",
-          body: "<strong>About</strong> explains who built the site and how to reach out.",
+          tag: "Step 6 of 8",
+          title: "Explore Your Academic Plan",
+          body: "Choose a degree track and explore it as a checklist, roadmap, course stacks, searchable catalog, or interactive Registrar Grid.",
+        },
+        {
+          target: function () {
+            return document.querySelector('.shoug-header-nav a[href="/about/"]');
+          },
+          position: "bottom",
+          tag: "Step 7 of 8",
+          title: "About and Ask Shoug",
+          body: "Read about Shoug's roles and experience, or ask the site assistant about published projects, studies, and workshops.",
         },
         {
           target: function () {
@@ -3366,16 +3350,9 @@
             );
           },
           position: "bottom",
-          tag: "Step 6 of 7 · Account",
-          title: "Sign In to Track Progress",
-          body: "Sign in to save progress, bookmarks, and notes.",
-        },
-        {
-          target: null,
-          position: "center",
-          tag: "Step 7 of 7 · Dashboard",
-          title: "Your Dashboard",
-          body: "Your avatar opens Profile, Bookmarks, Progress, and Community.",
+          tag: "Step 8 of 8",
+          title: "Your Study Workspace",
+          body: "Sign in to save progress, bookmarks, and notes. Your profile menu also opens your calendar, transcript, course progress, and student community.",
         },
       ];
     }
