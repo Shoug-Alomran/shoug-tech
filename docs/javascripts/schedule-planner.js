@@ -1624,7 +1624,10 @@
       $("sections-dialog").close();
       regenerate(true);
       if (picker.choice && !results.length) toast(L("No schedule works with that section. Pick another or choose Any section", "لا يوجد جدول مع هذه الشعبة. اختر غيرها أو «أي شعبة»"));
-      else if (picker.choice) toast(L(code + " section " + picker.choice + " pinned", "تم تثبيت " + code + " الشعبة " + picker.choice));
+      else if (picker.choice) {
+        toast(L(code + " section " + picker.choice + " pinned", "تم تثبيت " + code + " الشعبة " + picker.choice));
+        if (window.Murshid) window.Murshid.react("celebrate", 2000);
+      }
     });
     $("sections-close").addEventListener("click", function () { $("sections-dialog").close(); });
     $("sections-remove").addEventListener("click", function () {
@@ -1789,6 +1792,7 @@
           .join(" · "),
       });
       toast(L("Saved", "تم الحفظ"));
+      if (window.Murshid) window.Murshid.react("love", 2600, L("Saved! Good choice.", "تم الحفظ! اختيار موفق."));
       persist();
       render();
     });
@@ -1848,15 +1852,18 @@
     }
     var local = window.ShougFreeTime ? window.ShougFreeTime.parse(text) : { rules: [], unknown: [text] };
     var finish = function (result, how) {
+      if (window.Murshid) window.Murshid.settle();
       state.textRules = result;
       if (result.preferGaps && state.sort !== "gaps") state.sort = "gaps";
       persist();
       regenerate(true);
       var n = result.rules.length + (result.maxDays ? 1 : 0) + (result.preferGaps ? 1 : 0);
       toast(n ? L("Applied " + n + " rule" + (n > 1 ? "s" : ""), "تم تطبيق " + n + " قواعد") : L("I couldn't find any times in that", "لم أجد أوقاتًا في هذا النص"));
+      if (window.Murshid) window.Murshid.react(n ? "celebrate" : "sad", 2000);
     };
     if (!local.unknown.length && (local.rules.length || local.maxDays || local.preferGaps)) return finish(local);
     var btn = $("free-apply");
+    if (window.Murshid) window.Murshid.react("think", 0, L("Let me read that…", "دعني أقرأ ذلك…"));
     btn.disabled = true;
     btn.textContent = L("Reading…", "جارٍ القراءة…");
     var controller = window.AbortController ? new AbortController() : null;
@@ -2034,6 +2041,14 @@
     $("lang-toggle").setAttribute("aria-label", ar ? "Switch to English" : "التبديل إلى العربية");
   }
 
+  var MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  var SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  /** Same icons as the site header: a sun in dark mode (switch to light), a moon in light mode. */
+  function syncThemeIcon() {
+    var dark = document.documentElement.getAttribute("data-theme") === "dark";
+    $("theme-ico").innerHTML = dark ? SUN_SVG : MOON_SVG;
+  }
+
   function setLanguage(lang) {
     try { localStorage.setItem("shoug-lang", lang); } catch (e) {}
     document.documentElement.lang = lang === "ar" ? "ar-SA" : "en";
@@ -2074,6 +2089,9 @@
     setLanguageData();
     translateStatic();
     $("lang-toggle").addEventListener("click", function () { setLanguage(isAr() ? "en" : "ar"); });
+    syncThemeIcon();
+    if (window.MutationObserver)
+      new MutationObserver(syncThemeIcon).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     // firebase-auth.js rebuilds the sign-in button; relabel it when it does.
     if (window.MutationObserver)
       new MutationObserver(function () {

@@ -39,9 +39,12 @@ PAPERS = {
 }
 
 
-def past(paper, label, related=False):
+def past(paper, label, related=False, question=None):
     assert paper in PAPERS, paper
-    return {'paper': paper, 'label': label, 'related': related}
+    item = {'paper': paper, 'label': label, 'related': related}
+    if question:
+        item['question'] = question
+    return item
 
 
 def see(deck, n, label):

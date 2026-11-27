@@ -709,10 +709,21 @@ def deck_slides(mod):
         elif ann.get('refs') or any(k in ann for k in MARK_WRAP):
             body = overlay(body, ann, p['n'])
         weight = ann.get('weight', 2 if ann.get('exam') or ann.get('past') else 1)
-        out.append(make(p['n'], ann.get('title', p['title']), body, kind=kind, sub=ann.get('sub'), cols=cols,
+        title = ann.get('title', p['title'])
+        exam = list(ann.get('exam', ()))
+        # CYS401 has study notes on many slides but practice questions only on a
+        # subset. Add a low-friction retrieval check wherever notes can serve
+        # as a model answer, while keeping the authored exam questions intact.
+        useful_notes = [note for note in ann.get('notes', ())
+                        if note.strip().lower() not in ('getting started.', 'recap.', 'overview.', 'introduction.')]
+        if C.code == 'CYS401' and useful_notes:
+            from cys401_annotated.common import short
+            answer = ' '.join(unmark(note) for note in useful_notes)
+            exam.append(short('Without looking at the notes, explain "%s" in your own words. Give one example or explain why it matters.' % unmark(title), answer))
+        out.append(make(p['n'], title, body, kind=kind, sub=ann.get('sub'), cols=cols,
                         card=ann.get('card'), fig=ann.get('fig'), chart=ann.get('chart'), notes=ann.get('notes', ()),
                         prof=ann.get('prof', ()), tips=ann.get('tips', ()), seen=ann.get('seen', ()),
-                        exam=ann.get('exam', ()), past=ann.get('past', ()), weight=weight))
+                        exam=exam, past=ann.get('past', ()), weight=weight))
     return out
 
 
@@ -780,7 +791,10 @@ def exam_items(s):
     out = []
     for p in s['past']:
         title, href, _ = paper_ref(p['paper'])
-        out.append({'kind': 'past', 'ref': title, 'href': href, 'label': ('Related question: ' if p['related'] else '') + p['label']})
+        item = {'kind': 'past', 'ref': title, 'href': href, 'label': ('Related question: ' if p['related'] else '') + p['label']}
+        if p.get('question'):
+            item['question'] = p['question']
+        out.append(item)
     titles = [entry[0] for entry in C.paper_list.values()]
     for q in s['exam']:
         named = [t for t in titles if t in (q.get('why') or '')]

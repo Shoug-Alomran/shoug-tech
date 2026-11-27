@@ -466,8 +466,16 @@ def exam_html(n, exams, pick=False):
         if q.get('href'):
             ref = '<a href="%s" target="_top">%s</a>' % (e(q['href']), ref)
         tag = ('<span class="tag past">Past exam · %s</span>' % ref) if past else '<span class="tag predict">Prediction</span>'
-        if not q.get('q'):  # a past-paper pointer without the question text
-            cards.append('<article class="q past ptr"><header>%s</header><p>%s</p></article>' % (tag, rich(q.get('label', ''))))
+        if not q.get('q'):  # a past-paper pointer, optionally with its full question
+            question = q.get('question')
+            if question:
+                items = ''.join('<li>%s</li>' % rich(item) for item in question.get('items', ()))
+                choices = ''.join('<li>%s</li>' % rich(choice) for choice in question.get('choices', ()))
+                body = '<p>%s</p><ol>%s</ol><p><b>Options</b></p><ul>%s</ul>' % (
+                    rich(question['prompt']), items, choices)
+                cards.append('<article class="q past"><header>%s</header>%s</article>' % (tag, body))
+            else:
+                cards.append('<article class="q past ptr"><header>%s</header><p>%s</p></article>' % (tag, rich(q.get('label', ''))))
             continue
         k += 1
         if pick:

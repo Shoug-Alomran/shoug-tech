@@ -40,7 +40,8 @@
 
   // Murshid is Shoug in game mode: a 32×32 pixel avatar with long black
   // side-swept hair, plum cat-eye glasses, gold earrings and necklace and a
-  // purple V-neck. One character per pixel; "." is transparent.
+  // purple V-neck. One character per pixel; "." is transparent. Eyes, mouth
+  // and extras are layers, so she can react (see MOODS and react()).
   var PIXEL_ROWS = [
     "................................",
     "...........KKKKKKKKKK...........",
@@ -57,15 +58,15 @@
     "....KKKKGSSSSSSSSSSSSSSGKKKK....",
     "....KKKKGGGGGGGSSGGGGGGGKKKK....",
     "....KhKKGEEELLGGGGLLEEEGKKhK....",
-    "....KKhKGLLWELGSSGLWELLGKhKK....",
-    "....KhKKGLLEELGSSGLEELLGKKhK....",
+    "....KKhKGLLLLLGSSGLLLLLGKhKK....",
+    "....KhKKGLLLLLGSSGLLLLLGKKhK....",
     "....KKhKSGGGGGGSSGGGGGGSKhKK....",
-    "....KhKKSBBSSSSSSSSSSBBSKKhK....",
-    "....KKhYSSSSSSSssSSSSSSSYhKK....",
-    "....KhKYSSSSSMSSSSMSSSSSYKhK....",
-    "....KKhYsSSSSSMMmMSSSSSsYhKK....",
-    "....KhKKKsSSSSSSSSSSSSsKKKhK....",
-    "....KKhKKKsSSSSSSSSSSsKKKhKK....",
+    "....KhKYSSSSSSSssSSSSSSSYKhK....",
+    "....KKhYSSSSSSSSSSSSSSSSYhKK....",
+    "....KhKYsSSSSSSSSSSSSSSsYKhK....",
+    "....KKhKKsSSSSSSSSSSSSsKKhKK....",
+    "....KhKKKKKsSSSSSSSSsKKKKKhK....",
+    "....KKhKKKK..sSSSSs..KKKKhKK....",
     "....KhKKKKK..sSSSSs..KKKKKhK....",
     "...KKKhKKPPPPYSSSSYPPPPKKhKKK...",
     "..KKKhKKPPpPPPYSSYPPPpPPKKhKKK..",
@@ -75,31 +76,78 @@
     "..PPPPpPPPPPQQQQQQQQPPPPPpPPPP..",
     "..PPPPPPPPPQQQQQQQQQQPPPPPPPPP..",
   ];
-  var PIXEL_COLORS = { K: "#15111b", H: "#4d4163", h: "#2c2439", S: "#f2c6a4", s: "#dca684", G: "#5a1f52", L: "#f1e6ff", E: "#1a1220", W: "#ffffff", B: "#f59bb0", M: "#d2466e", m: "#f79ab4", P: "#8b2fc9", p: "#6a1fa0", Q: "#a955e0", Y: "#f4c542" };
-  var PIXEL_CLASS = { B: "cheek" };
+  var PIXEL_COLORS = { K: "#15111b", H: "#4d4163", h: "#2c2439", S: "#f2c6a4", s: "#dca684", G: "#5a1f52", L: "#f1e6ff", E: "#1a1220", W: "#ffffff", B: "#f59bb0", M: "#d2466e", m: "#f79ab4", P: "#8b2fc9", p: "#6a1fa0", Q: "#a955e0", Y: "#f4c542", R: "#ff4f86", D: "#7cc8ff", T: "#8b7d9e" };
+  // [row, column, colour] cells drawn on top of the face.
+  var PIXEL_LAYERS = {
+    "e-open": [[15,11,"E"],[15,12,"E"],[16,11,"E"],[16,12,"E"],[15,19,"E"],[15,20,"E"],[16,19,"E"],[16,20,"E"],[15,11,"W"],[15,19,"W"]],
+    "e-happy": [[16,10,"E"],[15,11,"E"],[16,12,"E"],[16,19,"E"],[15,20,"E"],[16,21,"E"]],
+    "e-wink": [[15,11,"E"],[15,12,"E"],[16,11,"E"],[16,12,"E"],[15,11,"W"],[16,19,"E"],[16,20,"E"],[16,21,"E"]],
+    "m-smile": [[19,13,"M"],[19,18,"M"],[20,14,"M"],[20,15,"M"],[20,16,"M"],[20,17,"M"],[20,16,"m"]],
+    "m-grin": [[19,13,"M"],[19,14,"W"],[19,15,"W"],[19,16,"W"],[19,17,"W"],[19,18,"M"],[20,14,"M"],[20,15,"M"],[20,16,"M"],[20,17,"M"]],
+    "m-frown": [[19,14,"M"],[19,15,"M"],[19,16,"M"],[19,17,"M"],[20,13,"M"],[20,18,"M"]],
+    "m-o": [[19,15,"M"],[19,16,"M"],[20,15,"M"],[20,16,"M"]],
+    "m-flat": [[20,14,"M"],[20,15,"M"],[20,16,"M"],[20,17,"M"]],
+    "x-blush": [[18,9,"B"],[18,10,"B"],[18,21,"B"],[18,22,"B"]],
+    "x-sparkle": [[9,2,"Y"],[10,1,"Y"],[10,2,"Y"],[10,3,"Y"],[11,2,"Y"],[3,28,"Y"],[4,27,"Y"],[4,28,"Y"],[4,29,"Y"],[5,28,"Y"]],
+    "x-heart": [[1,27,"R"],[1,29,"R"],[2,26,"R"],[2,27,"R"],[2,28,"R"],[2,29,"R"],[2,30,"R"],[3,27,"R"],[3,28,"R"],[3,29,"R"],[4,28,"R"]],
+    "x-sweat": [[9,29,"D"],[10,28,"D"],[10,29,"D"],[11,28,"D"],[11,29,"D"]],
+    "x-alert": [[0,28,"K"],[0,29,"K"],[0,30,"K"],[1,28,"K"],[1,29,"K"],[1,30,"K"],[2,28,"K"],[2,29,"K"],[2,30,"K"],[3,28,"K"],[3,29,"K"],[3,30,"K"],[4,28,"K"],[4,29,"K"],[4,30,"K"],[0,29,"Y"],[1,29,"Y"],[2,29,"Y"],[3,29,"Y"],[6,28,"K"],[6,29,"K"],[6,30,"K"],[7,28,"K"],[7,29,"K"],[7,30,"K"],[8,28,"K"],[8,29,"K"],[8,30,"K"],[7,29,"Y"]],
+    "x-think": [[2,25,"T"],[2,26,"T"],[3,25,"T"],[3,26,"T"],[2,28,"T"],[2,29,"T"],[3,28,"T"],[3,29,"T"],[2,31,"T"],[3,31,"T"]],
+  };
+  var MOODS = {
+    happy: ["e-open", "m-smile", "x-blush"],
+    alarm: ["e-open", "m-o", "x-alert"],
+    think: ["e-open", "m-flat", "x-think"],
+    sad: ["e-open", "m-frown", "x-sweat"],
+    love: ["e-wink", "m-grin", "x-heart", "x-blush"],
+    celebrate: ["e-happy", "m-grin", "x-sparkle", "x-blush"],
+  };
 
-  function pixelAvatar() {
-    var out = "";
-    PIXEL_ROWS.forEach(function (row, y) {
-      for (var x = 0; x < row.length; ) {
-        var c = row[x], run = 1;
-        while (x + run < row.length && row[x + run] === c) run++;
-        if (c !== ".") out += '<rect x="' + x + '" y="' + y + '" width="' + run + '" height="1" fill="' + PIXEL_COLORS[c] + '"' + (PIXEL_CLASS[c] ? ' class="' + PIXEL_CLASS[c] + '"' : "") + "/>";
-        x += run;
+  function rects(cells) {
+    var byRow = {}, out = "";
+    cells.forEach(function (c) { (byRow[c[0]] = byRow[c[0]] || []).push(c); });
+    Object.keys(byRow).forEach(function (y) {
+      var row = byRow[y].sort(function (p, q) { return p[1] - q[1]; });
+      for (var i = 0; i < row.length; ) {
+        var run = 1;
+        while (i + run < row.length && row[i + run][1] === row[i][1] + run && row[i + run][2] === row[i][2]) run++;
+        out += '<rect x="' + row[i][1] + '" y="' + y + '" width="' + run + '" height="1" fill="' + PIXEL_COLORS[row[i][2]] + '"/>';
+        i += run;
       }
     });
-    // Blink: lens-coloured lids over the pupils, with a lash line.
-    var lids = '<g class="lid">' +
-      '<rect x="11" y="15" width="2" height="2" fill="' + PIXEL_COLORS.L + '"/><rect x="19" y="15" width="2" height="2" fill="' + PIXEL_COLORS.L + '"/>' +
-      '<rect x="10" y="16" width="3" height="1" fill="' + PIXEL_COLORS.E + '"/><rect x="19" y="16" width="3" height="1" fill="' + PIXEL_COLORS.E + '"/></g>';
-    // Mood marks: "!" when something needs attention, "…" while thinking.
-    var alert = '<g class="alert"><rect x="28" y="0" width="3" height="5" fill="#1b1720"/><rect x="29" y="0" width="1" height="4" fill="#ffcc33"/><rect x="28" y="6" width="3" height="3" fill="#1b1720"/><rect x="29" y="7" width="1" height="1" fill="#ffcc33"/></g>';
-    var think = '<g class="think"><rect x="25" y="1" width="2" height="2" fill="#8b7d9e"/><rect x="28" y="1" width="2" height="2" fill="#8b7d9e"/><rect x="31" y="1" width="1" height="2" fill="#8b7d9e"/></g>';
-    // Sparkle beside her when she's happy.
-    var sparkle = '<g class="cheek"><rect x="2" y="9" width="1" height="3" fill="#f4c542"/><rect x="1" y="10" width="3" height="1" fill="#f4c542"/></g>';
-    return '<svg class="ms-me" viewBox="0 0 32 32" shape-rendering="crispEdges" aria-hidden="true" focusable="false">' + out + sparkle + lids + alert + think + "</svg>";
+    return out;
   }
-  var AVATAR = pixelAvatar();
+
+  function pixelAvatar(mood) {
+    var base = [];
+    PIXEL_ROWS.forEach(function (row, y) {
+      for (var x = 0; x < row.length; x++) if (row[x] !== ".") base.push([y, x, row[x]]);
+    });
+    var layers = Object.keys(PIXEL_LAYERS).map(function (name) {
+      var extra = name === "e-open"
+        ? // blink: lens-coloured lids over the pupils, with a lash line
+          '<g class="lid">' + rects([[15, 11, "L"], [15, 12, "L"], [15, 19, "L"], [15, 20, "L"], [16, 10, "E"], [16, 11, "E"], [16, 12, "E"], [16, 19, "E"], [16, 20, "E"], [16, 21, "E"]]) + "</g>"
+        : "";
+      return '<g class="ly ly-' + name + '">' + rects(PIXEL_LAYERS[name]) + extra + "</g>";
+    }).join("");
+    return '<svg class="ms-me mood-' + (mood || "happy") + '" viewBox="0 0 32 32" shape-rendering="crispEdges" aria-hidden="true" focusable="false">' + rects(base) + layers + "</svg>";
+  }
+  var AVATAR = pixelAvatar("happy");
+
+  // Which layers each mood shows, as CSS, generated from MOODS so they never drift apart.
+  (function moodStyles() {
+    var css = ".ms-me .ly{display:none}";
+    Object.keys(MOODS).forEach(function (m) {
+      css += MOODS[m].map(function (l) { return ".ms-me.mood-" + m + " .ly-" + l; }).join(",") + "{display:inline}";
+    });
+    var style = document.createElement("style");
+    style.textContent = css;
+    document.head.appendChild(style);
+  })();
+
+  function setMood(mood) {
+    document.querySelectorAll("svg.ms-me").forEach(function (svg) { svg.setAttribute("class", "ms-me mood-" + mood); });
+  }
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var esc = function (s) {
@@ -236,46 +284,74 @@
     var and = L(" and ", " و");
     var comma = L(", ", "، ");
 
-    ctx.leftOut.forEach(function (l) {
-      add(warn, "⚠", L(l.code + " has no section that fits", "لا توجد شعبة مناسبة لـ " + l.code),
-        L("All its sections are filtered out: ", "كل شعبها مستبعدة: ") + esc(l.reason) + ".", [["sections", l.code, L("Choose sections", "اختيار الشعب")]]);
-    });
-    (ctx.clashingPairs || []).forEach(function (p) {
-      add(warn, "⚠", L(p[0] + " and " + p[1] + " always clash", p[0] + " و" + p[1] + " تتعارضان دائمًا"),
-        L("Every section of one overlaps every section of the other (or their finals are at the same time). You'll need to drop one.",
-          "كل شعب إحداهما تتعارض مع كل شعب الأخرى (أو اختباراتهما النهائية في نفس الوقت). يجب حذف إحداهما."));
-    });
+    // Lists read naturally in both languages: "A, B and C" / "A، B وC".
+    var listOf = function (items) {
+      if (items.length < 2) return items.join("");
+      return items.slice(0, -1).join(comma) + and + items[items.length - 1];
+    };
 
-    // Prerequisites and standing.
+    // Sections: nothing fits, all closed, one left. One card each, listing the courses.
+    if (ctx.leftOut.length)
+      add(warn, "⚠", L("No section fits: ", "لا توجد شعبة مناسبة: ") + listOf(ctx.leftOut.map(function (l) { return l.code; })),
+        "<ul>" + ctx.leftOut.map(function (l) { return "<li><b>" + l.code + "</b>: " + esc(l.reason) + "</li>"; }).join("") + "</ul>",
+        ctx.leftOut.map(function (l) { return ["sections", l.code, L("Sections: ", "شعب ") + l.code]; }));
+    (ctx.clashingPairs || []).length &&
+      add(warn, "⚠", L("Courses that always clash", "مواد تتعارض دائمًا"),
+        "<ul>" + ctx.clashingPairs.map(function (p) { return "<li>" + p[0] + and + p[1] + "</li>"; }).join("") + "</ul>" +
+        L("Every section of one overlaps every section of the other (or their finals are at the same time). Drop one from each pair.",
+          "كل شعب إحداهما تتعارض مع كل شعب الأخرى (أو نهائياتهما في نفس الوقت). احذف مادة من كل زوج."));
+    var closedAll = [], oneLeft = [];
+    picked.forEach(function (code) {
+      var o = ctx.options[code];
+      if (!o) return;
+      var open = o.all.filter(function (x) { return x.open; }).length;
+      if (!open) closedAll.push(code);
+      else if (open === 1 && o.all.length > 1) oneLeft.push(code);
+    });
+    if (closedAll.length)
+      add(warn, "⚠", L("Every section is closed: ", "كل الشعب مغلقة: ") + listOf(closedAll),
+        L("Watch for seats opening, or ask the department about extra sections.", "راقب توفر المقاعد أو اسأل القسم عن شعب إضافية."));
+    if (oneLeft.length)
+      add(info, "•", L("Only one open section left: ", "شعبة واحدة متاحة فقط: ") + listOf(oneLeft), L("Register for these early.", "سجّلها مبكرًا."));
+
+    // Prerequisites, grouped by the prerequisite rather than repeated per course.
     if (picked.length && !rec.known)
       add(info, "?", L("I can't check prerequisites yet", "لا أستطيع التحقق من المتطلبات السابقة بعد"),
         L('I don\'t know which courses you\'ve finished. Mark them in your <a href="/academic-plan-themes/academic-plan/">academic plan</a>, or type them under <b>What to take</b>.',
           'لا أعرف المواد التي أنهيتها. حدّدها في <a href="/academic-plan-themes/academic-plan/">الخطة الدراسية</a> أو اكتبها في تبويب <b>ماذا أسجّل</b>.'));
+    var together = {}, missing = {}, pending = {}, shortHours = [], offPlan = [];
     picked.forEach(function (code) {
       var e = cat[code];
       if (!e) return;
       (e.pre || []).forEach(function (p) {
-        if (picked.indexOf(p) > -1)
-          add(warn, "⚠", L(code + " needs " + p + " first", code + " تتطلب " + p + " أولًا"),
-            L("You've picked both. " + p + " is a prerequisite of " + code + ", so they normally can't be taken in the same term.",
-              "اخترت الاثنتين. " + p + " متطلب سابق لـ " + code + "، لذلك لا يمكن عادةً أخذهما في نفس الفصل."),
-            [["drop", code, L("Remove ", "حذف ") + code]]);
-        else if (rec.known && !rec.done[p] && !rec.current[p])
-          add(warn, "⚠", L(code + " needs " + p, code + " تتطلب " + p),
-            L(p + " isn't marked as finished in your record. Registration will refuse " + code + " without it.",
-              p + " غير مسجّلة كمادة منتهية في سجلك، ولن يقبل التسجيل " + code + " بدونها."),
-            [["drop", code, L("Remove ", "حذف ") + code]]);
-        else if (rec.current[p])
-          add(info, "•", L(code + " depends on passing " + p, code + " تعتمد على النجاح في " + p),
-            L("You're taking " + p + " now, so this only works if you pass it.", p + " مسجّلة هذا الفصل، فهذا ينجح فقط إذا اجتزتها."));
+        var bucket = picked.indexOf(p) > -1 ? together : rec.known && !rec.done[p] && !rec.current[p] ? missing : rec.current[p] ? pending : null;
+        if (bucket) (bucket[p] = bucket[p] || []).push(code);
       });
-      if (e.minHours && rec.known && rec.hoursWithCurrent < e.minHours)
-        add(warn, "⚠", L(code + " needs " + e.minHours + " credit hours", code + " تتطلب إنهاء " + e.minHours + " ساعة معتمدة"),
-          L("You'll have about " + rec.hoursWithCurrent + " by the end of this term, going by your record.", "حسب سجلك سيكون لديك نحو " + rec.hoursWithCurrent + " ساعة بنهاية هذا الفصل."));
-      if (rec.plan && e.plans && e.plans[rec.plan] == null)
-        add(info, "•", L(code + " isn't in your " + planLabel(rec.plan) + " plan", code + " ليست ضمن خطة " + planLabel(rec.plan)),
-          L("Check with your advisor that it counts toward your degree.", "تأكد مع المرشد الأكاديمي أنها تُحتسب في خطتك."));
+      if (e.minHours && rec.known && rec.hoursWithCurrent < e.minHours) shortHours.push(code + " (" + e.minHours + L(" h", " س") + ")");
+      if (rec.plan && e.plans && e.plans[rec.plan] == null) offPlan.push(code);
     });
+    Object.keys(together).forEach(function (p) {
+      add(warn, "⚠", L(p + " is a prerequisite of " + listOf(together[p]), p + " متطلب سابق لـ " + listOf(together[p])),
+        L("You've picked them in the same term. Take " + p + " first, then " + listOf(together[p]) + ".",
+          "اخترتها في نفس الفصل. خذ " + p + " أولًا ثم " + listOf(together[p]) + "."),
+        together[p].map(function (c) { return ["drop", c, L("Remove ", "حذف ") + c]; }));
+    });
+    Object.keys(missing).forEach(function (p) {
+      add(warn, "⚠", L(p + " isn't finished yet", p + " لم تُنهَ بعد"),
+        L("It's required for " + listOf(missing[p]) + ", so registration will refuse " + (missing[p].length > 1 ? "them" : "it") + " without it.",
+          "وهي مطلوبة لـ " + listOf(missing[p]) + "، ولن يقبل التسجيل بدونها."),
+        missing[p].map(function (c) { return ["drop", c, L("Remove ", "حذف ") + c]; }));
+    });
+    Object.keys(pending).forEach(function (p) {
+      add(info, "•", L(listOf(pending[p]) + " depend" + (pending[p].length > 1 ? "" : "s") + " on passing " + p, listOf(pending[p]) + " تعتمد على النجاح في " + p),
+        L("You're taking " + p + " now, so this only works if you pass it.", p + " مسجّلة هذا الفصل، فهذا ينجح فقط إذا اجتزتها."));
+    });
+    if (shortHours.length)
+      add(warn, "⚠", L("Not enough credit hours yet: ", "الساعات المنجزة غير كافية: ") + listOf(shortHours),
+        L("You'll have about " + rec.hoursWithCurrent + " hours by the end of this term, going by your record.", "حسب سجلك سيكون لديك نحو " + rec.hoursWithCurrent + " ساعة بنهاية هذا الفصل."));
+    if (offPlan.length)
+      add(info, "•", L("Not in your " + planLabel(rec.plan) + " plan: ", "ليست ضمن خطة " + planLabel(rec.plan) + ": ") + listOf(offPlan),
+        L("Check with your advisor that " + (offPlan.length > 1 ? "they count" : "it counts") + " toward your degree.", "تأكد مع المرشد الأكاديمي أنها تُحتسب في خطتك."));
 
     // Credit hours.
     var hours = picked.reduce(function (a, c) { return a + ctx.hoursOf(c); }, 0);
@@ -286,39 +362,57 @@
       add(info, "•", L("Only " + hours + " credit hours", hours + " ساعات معتمدة فقط"),
         L("If you need full-time status (scholarships, rewards, graduation timing), check the minimum with the registrar.", "إذا كنت تحتاج للانتظام الكامل (منحة أو مكافأة أو موعد التخرج) فتحقق من الحد الأدنى مع القبول والتسجيل."));
 
-    // Scarcity.
-    picked.forEach(function (code) {
-      var o = ctx.options[code];
-      if (!o) return;
-      var open = o.all.filter(function (x) { return x.open; }).length;
-      if (!open)
-        add(warn, "⚠", L("Every " + code + " section is closed", "كل شعب " + code + " مغلقة"),
-          L("Watch for seats opening, or ask the department about extra sections.", "راقب توفر المقاعد أو اسأل القسم عن شعب إضافية."));
-      else if (open === 1 && o.all.length > 1)
-        add(info, "•", L("Only one " + code + " section is still open", "شعبة واحدة فقط من " + code + " ما زالت متاحة"), L("Register for it early.", "سجّلها مبكرًا."));
-    });
-
     // Difficulty from ratings.
     var heavy = picked.filter(function (c) { var d = ctx.difficulty(c); return d.rated && d.value >= 3.8; });
     if (heavy.length >= 2)
-      add(warn, "⚠", L("Two or more heavy courses: ", "مادتان ثقيلتان أو أكثر: ") + heavy.join(comma),
+      add(warn, "⚠", L("Heavy courses together: ", "مواد ثقيلة معًا: ") + listOf(heavy),
         L("Students rate these as demanding. Pair them with lighter courses, or spread them across terms if your plan allows.", "يقيّمها الطلاب على أنها متعبة. اجمعها مع مواد أخف أو وزّعها على فصول إن سمحت خطتك."));
 
-    // Relations between picked courses.
+    // How the picked courses connect: one card per shared foundation, then
+    // clusters of courses with overlapping topics (not one card per pair).
+    var foundations = {};
+    picked.forEach(function (code) {
+      ((cat[code] && cat[code].pre) || []).forEach(function (p) {
+        if (picked.indexOf(p) < 0) (foundations[p] = foundations[p] || []).push(code);
+      });
+    });
+    var linked = {};
+    Object.keys(foundations).forEach(function (p) {
+      var group = foundations[p];
+      if (group.length < 2) return;
+      group.forEach(function (a) { group.forEach(function (b) { linked[a + "|" + b] = true; }); });
+      add(good, "↔", L(listOf(group) + (group.length > 2 ? " all" : "") + " build on " + p, listOf(group) + " مبنية على " + p),
+        L("Same foundation, so revising " + p + " once helps " + (group.length > 2 ? "all of them" : "both") + ".",
+          "نفس الأساس، فمراجعة " + p + " مرة واحدة تفيد فيها كلها."));
+    });
+    var parent = {};
+    var root = function (x) { while (parent[x] && parent[x] !== x) x = parent[x]; return x; };
+    var topics = {};
     for (var i = 0; i < picked.length; i++)
       for (var j = i + 1; j < picked.length; j++) {
-        var a = picked[i], b = picked[j], ea = cat[a], eb = cat[b];
-        if (!ea || !eb) continue;
-        var wa = words(ea), wb = words(eb);
-        var shared = Object.keys(wa).filter(function (s) { return wb[s]; }).map(function (s) { return wa[s]; });
-        var sharedPre = (ea.pre || []).filter(function (p) { return (eb.pre || []).indexOf(p) > -1; });
-        if (shared.length >= 2)
-          add(good, "↔", L(a + " and " + b + " overlap", a + " و" + b + " متداخلتان"),
-            L("Both cover " + shared.slice(0, 4).join(", ") + ". Studying one will help with the other.", "كلتاهما تغطي مواضيع مثل " + shared.slice(0, 4).join("، ") + "، فمذاكرة إحداهما تساعد في الأخرى."));
-        else if (sharedPre.length)
-          add(good, "↔", L(a + " and " + b + " build on " + sharedPre.join(", "), a + " و" + b + " مبنيتان على " + sharedPre.join("، ")),
-            L("Same foundation, so revising it once helps both.", "نفس الأساس، فمراجعته مرة واحدة تفيد في الاثنتين."));
+        var a = picked[i], b = picked[j];
+        if (!cat[a] || !cat[b] || linked[a + "|" + b]) continue;
+        var wa = words(cat[a]), wb = words(cat[b]);
+        var shared = Object.keys(wa).filter(function (k) { return wb[k]; }).map(function (k) { return wa[k]; });
+        if (shared.length < 2) continue;
+        parent[a] = parent[a] || a;
+        parent[b] = parent[b] || b;
+        parent[root(b)] = root(a);
+        (topics[a + "|" + b] = shared);
       }
+    var clusters = {};
+    Object.keys(parent).forEach(function (c) { (clusters[root(c)] = clusters[root(c)] || []).push(c); });
+    Object.keys(clusters).forEach(function (r) {
+      var group = clusters[r].sort();
+      var words_ = [];
+      Object.keys(topics).forEach(function (k) {
+        var pair = k.split("|");
+        if (group.indexOf(pair[0]) > -1) topics[k].forEach(function (w) { if (words_.indexOf(w) < 0) words_.push(w); });
+      });
+      add(good, "↔", L(listOf(group) + " overlap", listOf(group) + " متداخلة"),
+        L("Shared topics: ", "مواضيع مشتركة: ") + '<span dir="ltr">' + esc(words_.slice(0, 5).join(", ")) + "</span>. " +
+          L("Studying one will help with the other" + (group.length > 2 ? "s" : "") + ".", "مذاكرة إحداها تساعد في الأخرى."));
+    });
 
     // Schedule shape.
     var m = ctx.metrics;
@@ -419,7 +513,7 @@
   function mount() {
     var fab = document.createElement("button");
     fab.type = "button";
-    fab.className = "ms-fab ms-happy";
+    fab.className = "ms-fab";
     fab.innerHTML = AVATAR + '<span class="ms-dot" hidden></span>';
     var bubble = document.createElement("div");
     bubble.className = "ms-bubble";
@@ -588,8 +682,18 @@
     var fab = $(".ms-fab");
     if (!fab) return;
     var a = advice();
-    var mood = a.warn.length ? "ms-alarm" : ctx.picked.length ? (ctx.results ? "ms-happy" : "ms-think") : "ms-happy";
-    fab.className = "ms-fab " + mood;
+    // Resting mood: worried when something needs attention, sad when nothing fits, happy otherwise.
+    baseMood = a.warn.length ? "alarm" : ctx.picked.length && !ctx.results ? "sad" : "happy";
+    var found = ctx.picked.length && ctx.results && !prevResults;
+    var count = ctx.results;
+    prevResults = ctx.results;
+    if (!reacting) setMood(baseMood);
+    if (found && !a.warn.length) {
+      react("celebrate", 2600, L("Found " + count.toLocaleString() + " schedule" + (count > 1 ? "s" : "") + " that work!", "وجدت " + count.toLocaleString() + " جدول مناسب!"));
+      lastBubble = "";
+      renderPanel();
+      return;
+    }
     var dot = $(".ms-dot", fab);
     dot.hidden = !a.warn.length;
     dot.textContent = a.warn.length;
@@ -603,6 +707,31 @@
     renderPanel();
   }
 
+  var baseMood = "happy", prevResults = 0, reacting = null;
+
+  /** A short reaction (e.g. "love" after saving), then back to the resting mood. */
+  function react(mood, ms, msg) {
+    if (!MOODS[mood]) return;
+    clearTimeout(reacting);
+    setMood(mood);
+    var fab = $(".ms-fab");
+    if (fab) {
+      fab.classList.remove("ms-pop");
+      void fab.offsetWidth;
+      fab.classList.add("ms-pop");
+    }
+    if (msg) say(msg);
+    reacting = ms === 0 ? true : setTimeout(function () {
+      reacting = null;
+      setMood(baseMood);
+    }, ms || 2200);
+  }
+  function settle() {
+    clearTimeout(reacting);
+    reacting = null;
+    setMood(baseMood);
+  }
+
   /** Called by the planner when the language changes. */
   function relabel() {
     chrome();
@@ -611,7 +740,7 @@
     renderPanel();
   }
 
-  window.Murshid = { update: update, open: open, relabel: relabel };
+  window.Murshid = { update: update, open: open, relabel: relabel, react: react, settle: settle };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
 })();
