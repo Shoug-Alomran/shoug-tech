@@ -63,6 +63,7 @@
     Mindmap: "الخريطة الذهنية",
     Mindmaps: "الخرائط الذهنية",
     Academics: "الدراسة",
+    "Schedule Planner": "مخطط الجدول",
     "Computer Science": "علوم الحاسب",
     "Software Engineering": "هندسة البرمجيات",
     Cybersecurity: "الأمن السيبراني",

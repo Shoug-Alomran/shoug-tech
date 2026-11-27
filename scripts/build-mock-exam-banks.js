@@ -73,29 +73,78 @@ const ETHICS_CHAPTERS = [
   "Chapter 11 · Cyber Law in Saudi Arabia",
 ];
 const ETHICS_RULES = [
-  [9, ["ethical hacking"]], [7, ["business ethics"]],
-  [6, ["social media"]], [5, ["cloud", "cyberspace", "privacy policies"]],
-  [3, ["systems analysis", "software engineering", "ethical security issues", "sa and sd"]],
+  [9, ["ethical hacking"]],
+  [7, ["business ethics"]],
+  [6, ["social media"]],
+  [5, ["cloud", "cyberspace", "privacy policies"]],
+  [
+    3,
+    [
+      "systems analysis",
+      "software engineering",
+      "ethical security issues",
+      "sa and sd",
+    ],
+  ],
   [2, ["professional", "acm", "ieee", "whistle"]],
   [4, ["network security"]],
-  [8, ["social engineering", "phishing", "smishing", "vishing", "impersonation", "dumpster", "fraud"]],
-  [10, ["intellectual property", "patent", "trademark", "trade secret", "chapter 10"]],
+  [
+    8,
+    [
+      "social engineering",
+      "phishing",
+      "smishing",
+      "vishing",
+      "impersonation",
+      "dumpster",
+      "fraud",
+    ],
+  ],
+  [
+    10,
+    [
+      "intellectual property",
+      "patent",
+      "trademark",
+      "trade secret",
+      "chapter 10",
+    ],
+  ],
   [11, ["cyber law"]],
-  [1, ["kant", "utilitarian", "social contract", "divine command", "virtue ethics", "ethical theories", "moral theories"]],
+  [
+    1,
+    [
+      "kant",
+      "utilitarian",
+      "social contract",
+      "divine command",
+      "virtue ethics",
+      "ethical theories",
+      "moral theories",
+    ],
+  ],
   [0, ["moral systems", "introduction to ethics", "ethical concepts"]],
 ];
 function ethicsChapter(text) {
   const v = String(text).toLowerCase().replace(/-/g, " ");
   if (v.includes("moral systems")) return 0;
-  for (const [i, terms] of ETHICS_RULES) if (terms.some((t) => v.includes(t))) return i;
+  for (const [i, terms] of ETHICS_RULES)
+    if (terms.some((t) => v.includes(t))) return i;
   return -1;
 }
 
 const args = process.argv.slice(2);
 const REPORT = args.includes("--report");
-const ONLY = new Set(args.filter((a) => !a.startsWith("--")).map((a) => a.toLowerCase()));
+const ONLY = new Set(
+  args.filter((a) => !a.startsWith("--")).map((a) => a.toLowerCase()),
+);
 const ethicsArg = args.find((a) => a.startsWith("--ethics-src="));
-const ETHICS_SRC = path.resolve(ROOT, ethicsArg ? ethicsArg.slice("--ethics-src=".length) : ".private-courses/ethics");
+const ETHICS_SRC = path.resolve(
+  ROOT,
+  ethicsArg
+    ? ethicsArg.slice("--ethics-src=".length)
+    : ".private-courses/ethics",
+);
 
 /* ------------------------------------------------------------------ files */
 
@@ -117,7 +166,12 @@ function walkHtml(dir, out = []) {
   for (const name of list(dir)) {
     const full = path.join(dir, name);
     if (isDir(full)) walkHtml(full, out);
-    else if (name.endsWith(".html") && name !== "index.html" && !SKIP_FILES.test(full)) out.push(full);
+    else if (
+      name.endsWith(".html") &&
+      name !== "index.html" &&
+      !SKIP_FILES.test(full)
+    )
+      out.push(full);
   }
   return out;
 }
@@ -130,41 +184,89 @@ function urlOf(file) {
 // The page a student opens: the folder when its index.html wraps this file.
 function pageUrl(file) {
   const dir = path.dirname(file);
-  const others = list(dir).filter((n) => n.endsWith(".html") && n !== "index.html");
-  if (fs.existsSync(path.join(dir, "index.html")) && others.length === 1) return urlOf(dir) + "/";
+  const others = list(dir).filter(
+    (n) => n.endsWith(".html") && n !== "index.html",
+  );
+  if (fs.existsSync(path.join(dir, "index.html")) && others.length === 1)
+    return urlOf(dir) + "/";
   return urlOf(file).replace(/\.html$/, "");
 }
 
 /* --------------------------------------------------------------- text/html */
 
-const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", ndash: "–", mdash: "—", rarr: "→", larr: "←", hellip: "…", times: "×", le: "≤", ge: "≥", ne: "≠" };
+const ENTITIES = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+  ndash: "–",
+  mdash: "—",
+  rarr: "→",
+  larr: "←",
+  hellip: "…",
+  times: "×",
+  le: "≤",
+  ge: "≥",
+  ne: "≠",
+};
 function decode(s) {
   return String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => {
     if (e[0] === "#") {
-      const n = e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+      const n =
+        e[1] === "x" || e[1] === "X"
+          ? parseInt(e.slice(2), 16)
+          : parseInt(e.slice(1), 10);
       return Number.isFinite(n) ? String.fromCodePoint(n) : m;
     }
     return ENTITIES[e.toLowerCase()] ?? m;
   });
 }
 function escapeHtml(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
-const KEEP = new Set(["b", "strong", "i", "em", "u", "code", "sub", "sup", "br", "pre", "mark", "small", "img"]);
-const LOOKS_HTML = /<\/?(?:b|strong|i|em|u|code|sub|sup|br|pre|span|p|div|mark|small|img|ul|ol|li)\b[^>]*>|&(?:#\d+|#x[0-9a-f]+|[a-z]+);/i;
+const KEEP = new Set([
+  "b",
+  "strong",
+  "i",
+  "em",
+  "u",
+  "code",
+  "sub",
+  "sup",
+  "br",
+  "pre",
+  "mark",
+  "small",
+  "img",
+]);
+const LOOKS_HTML =
+  /<\/?(?:b|strong|i|em|u|code|sub|sup|br|pre|span|p|div|mark|small|img|ul|ol|li)\b[^>]*>|&(?:#\d+|#x[0-9a-f]+|[a-z]+);/i;
 
 /** Plain text or HTML in, a small safe HTML subset out. */
 function cleanHtml(value, base) {
   if (value == null) return "";
-  if (Array.isArray(value)) return value.map((v) => cleanHtml(v, base)).filter(Boolean).join("<br>");
+  if (Array.isArray(value))
+    return value
+      .map((v) => cleanHtml(v, base))
+      .filter(Boolean)
+      .join("<br>");
   let s = String(value);
   // A few pages store prose with hyphens for spaces ("True.-Merge-Sort-always-...").
-  if (!/\s/.test(s) && (s.match(/-/g) || []).length >= 4) s = s.replace(/-/g, " ");
+  if (!/\s/.test(s) && (s.match(/-/g) || []).length >= 4)
+    s = s.replace(/-/g, " ");
   if (!LOOKS_HTML.test(s)) return escapeHtml(s.replace(/\s+/g, " ").trim());
-  s = s.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, "").replace(/<!--[\s\S]*?-->/g, "");
+  s = s
+    .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
   s = s.replace(/<(\/?)([a-z0-9]+)\b([^>]*)>/gi, (m, close, tag, attrs) => {
     tag = tag.toLowerCase();
-    if (tag === "p" || tag === "div" || tag === "li" || tag === "tr") return close ? " " : " ";
+    if (tag === "p" || tag === "div" || tag === "li" || tag === "tr")
+      return close ? " " : " ";
     if (!KEEP.has(tag)) return "";
     if (tag === "br") return "<br>";
     if (tag === "img") {
@@ -172,16 +274,26 @@ function cleanHtml(value, base) {
       const alt = /\balt\s*=\s*["']([^"']*)["']/i.exec(attrs);
       if (!src || close) return "";
       const url = resolveUrl(src[1], base);
-      return url ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt ? alt[1] : "")}">` : "";
+      return url
+        ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt ? alt[1] : "")}">`
+        : "";
     }
     return `<${close}${tag}>`;
   });
   // Re-escape stray "<" that aren't one of the tags we kept.
-  s = s.replace(/<(?!\/?(?:b|strong|i|em|u|code|sub|sup|br|pre|mark|small|img)\b)/gi, "&lt;");
-  return s.replace(/\s+/g, " ").replace(/\s*<br>\s*/g, "<br>").trim();
+  s = s.replace(
+    /<(?!\/?(?:b|strong|i|em|u|code|sub|sup|br|pre|mark|small|img)\b)/gi,
+    "&lt;",
+  );
+  return s
+    .replace(/\s+/g, " ")
+    .replace(/\s*<br>\s*/g, "<br>")
+    .trim();
 }
 function textOf(html) {
-  return decode(String(html).replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+  return decode(String(html).replace(/<[^>]*>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
 }
 function resolveUrl(src, base) {
   if (!src || /^data:/i.test(src)) return "";
@@ -193,14 +305,30 @@ function resolveUrl(src, base) {
 
 /* ------------------------------------------------------------ html parser */
 
-const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
+const VOID = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "source",
+  "track",
+  "wbr",
+]);
 const RAW = new Set(["script", "style", "textarea"]);
 
 function parseHtml(src) {
   const root = { tag: "#root", attrs: {}, children: [], parent: null };
   let cur = root;
-  const re = /<!--[\s\S]*?-->|<!\w[^>]*>|<\/([a-zA-Z][\w-]*)\s*>|<([a-zA-Z][\w-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*(\/?)>/g;
-  let last = 0, m;
+  const re =
+    /<!--[\s\S]*?-->|<!\w[^>]*>|<\/([a-zA-Z][\w-]*)\s*>|<([a-zA-Z][\w-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*(\/?)>/g;
+  let last = 0,
+    m;
   while ((m = re.exec(src))) {
     if (m.index > last) cur.children.push({ text: src.slice(last, m.index) });
     last = re.lastIndex;
@@ -216,7 +344,8 @@ function parseHtml(src) {
     const attrs = {};
     const ar = /([^\s=>\/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
     let a;
-    while ((a = ar.exec(m[3] || ""))) attrs[a[1].toLowerCase()] = decode(a[2] ?? a[3] ?? a[4] ?? "");
+    while ((a = ar.exec(m[3] || "")))
+      attrs[a[1].toLowerCase()] = decode(a[2] ?? a[3] ?? a[4] ?? "");
     const el = { tag, attrs, children: [], parent: cur };
     cur.children.push(el);
     if (RAW.has(tag)) {
@@ -252,8 +381,13 @@ function innerHtml(el) {
     if (!c.tag) out += c.text;
     else if (c.tag === "script" || c.tag === "style") continue;
     else {
-      const attrs = c.tag === "img" ? ` src="${escapeHtml(c.attrs.src || "")}" alt="${escapeHtml(c.attrs.alt || "")}"` : "";
-      out += VOID.has(c.tag) ? `<${c.tag}${attrs}>` : `<${c.tag}>${innerHtml(c)}</${c.tag}>`;
+      const attrs =
+        c.tag === "img"
+          ? ` src="${escapeHtml(c.attrs.src || "")}" alt="${escapeHtml(c.attrs.alt || "")}"`
+          : "";
+      out += VOID.has(c.tag)
+        ? `<${c.tag}${attrs}>`
+        : `<${c.tag}>${innerHtml(c)}</${c.tag}>`;
     }
   }
   return out;
@@ -270,17 +404,32 @@ function closest(el, test) {
 /* -------------------------------------------------------------- js data */
 
 function matchBracket(s, i) {
-  let depth = 0, q = null;
+  let depth = 0,
+    q = null;
   for (let j = i; j < s.length; j++) {
     const c = s[j];
     if (q) {
-      if (c === "\\") { j++; continue; }
+      if (c === "\\") {
+        j++;
+        continue;
+      }
       if (c === q) q = null;
       continue;
     }
-    if (c === '"' || c === "'" || c === "`") { q = c; continue; }
-    if (c === "/" && s[j + 1] === "/") { j = s.indexOf("\n", j); if (j < 0) return -1; continue; }
-    if (c === "/" && s[j + 1] === "*") { j = s.indexOf("*/", j + 2) + 1; if (j <= 0) return -1; continue; }
+    if (c === '"' || c === "'" || c === "`") {
+      q = c;
+      continue;
+    }
+    if (c === "/" && s[j + 1] === "/") {
+      j = s.indexOf("\n", j);
+      if (j < 0) return -1;
+      continue;
+    }
+    if (c === "/" && s[j + 1] === "*") {
+      j = s.indexOf("*/", j + 2) + 1;
+      if (j <= 0) return -1;
+      continue;
+    }
     if (c === "[" || c === "{" || c === "(") depth++;
     else if (c === "]" || c === "}" || c === ")") {
       depth--;
@@ -292,13 +441,19 @@ function matchBracket(s, i) {
 /** Every `name = [ ... ]` / `name = { ... }` literal in a script that evaluates on its own. */
 function literals(script) {
   const out = [];
-  const re = /(?:(?:const|let|var)\s+([A-Za-z_$][\w$]*)|((?:window\.)?[A-Z_$][\w$]*))\s*=\s*([\[{])/g;
+  const re =
+    /(?:(?:const|let|var)\s+([A-Za-z_$][\w$]*)|((?:window\.)?[A-Z_$][\w$]*))\s*=\s*([\[{])/g;
   let m;
   while ((m = re.exec(script))) {
-    const st = re.lastIndex - 1, en = matchBracket(script, st);
+    const st = re.lastIndex - 1,
+      en = matchBracket(script, st);
     if (en < 0) continue;
     try {
-      const v = vm.runInNewContext("(" + script.slice(st, en + 1) + ")", {}, { timeout: 250 });
+      const v = vm.runInNewContext(
+        "(" + script.slice(st, en + 1) + ")",
+        {},
+        { timeout: 250 },
+      );
       out.push({ name: m[1] || m[2], value: v });
       re.lastIndex = en + 1;
     } catch (_) {
@@ -310,17 +465,49 @@ function literals(script) {
 
 const Q_KEYS = ["q", "question", "prompt", "stem", "text", "statement"];
 const O_KEYS = ["options", "opts", "o", "choices"];
-const A_KEYS = ["correct", "answer", "ans", "a", "c", "key", "accept", "accepted"];
+const A_KEYS = [
+  "correct",
+  "answer",
+  "ans",
+  "a",
+  "c",
+  "key",
+  "accept",
+  "accepted",
+];
 const E_KEYS = ["why", "explain", "explanation", "exp", "ex", "e", "rationale"];
-const M_KEYS = ["modelAnswer", "modelAns", "model", "mockAnswer", "sampleAnswer", "solution"];
-const T_KEYS = ["ch", "chapter", "topic", "tag", "section", "src", "s", "source"];
+const M_KEYS = [
+  "modelAnswer",
+  "modelAns",
+  "model",
+  "mockAnswer",
+  "sampleAnswer",
+  "solution",
+];
+const T_KEYS = [
+  "ch",
+  "chapter",
+  "topic",
+  "tag",
+  "section",
+  "src",
+  "s",
+  "source",
+];
 function pick(o, keys) {
-  for (const k of keys) if (o[k] !== undefined && o[k] !== null && o[k] !== "") return o[k];
+  for (const k of keys)
+    if (o[k] !== undefined && o[k] !== null && o[k] !== "") return o[k];
   return undefined;
 }
 function looksLikeQuestions(arr) {
-  const objs = arr.filter((x) => x && typeof x === "object" && !Array.isArray(x));
-  return objs.length > 0 && objs.filter((o) => typeof pick(o, Q_KEYS) === "string").length >= Math.max(1, objs.length * 0.6);
+  const objs = arr.filter(
+    (x) => x && typeof x === "object" && !Array.isArray(x),
+  );
+  return (
+    objs.length > 0 &&
+    objs.filter((o) => typeof pick(o, Q_KEYS) === "string").length >=
+      Math.max(1, objs.length * 0.6)
+  );
 }
 function questionArrays(v, out, depth = 0, ctx = {}) {
   if (depth > 6 || !v || typeof v !== "object") return out;
@@ -333,19 +520,38 @@ function questionArrays(v, out, depth = 0, ctx = {}) {
     return out;
   }
   // A section object ({title, qs: [...]}) passes its title down as the topic.
-  const title = typeof v.title === "string" ? v.title : typeof v.name === "string" ? v.name : ctx.topic;
-  for (const k of Object.keys(v)) questionArrays(v[k], out, depth + 1, { topic: title, ch: v.ch ?? ctx.ch });
+  const title =
+    typeof v.title === "string"
+      ? v.title
+      : typeof v.name === "string"
+        ? v.name
+        : ctx.topic;
+  for (const k of Object.keys(v))
+    questionArrays(v[k], out, depth + 1, { topic: title, ch: v.ch ?? ctx.ch });
   return out;
 }
 /** `{ q1: {ans: "B", explanation}, q2: "C" }` answer keys, by radio name. */
 function answerKeys(v, out) {
   if (!v || typeof v !== "object" || Array.isArray(v)) return out;
   const keys = Object.keys(v);
-  if (keys.length && keys.filter((k) => /^q[_-]?\d+[a-z]?$/i.test(k)).length >= keys.length * 0.6) {
+  if (
+    keys.length &&
+    keys.filter((k) => /^q[_-]?\d+[a-z]?$/i.test(k)).length >= keys.length * 0.6
+  ) {
     for (const k of keys) {
       const x = v[k];
-      if (typeof x === "string" || typeof x === "number" || typeof x === "boolean") out[k.toLowerCase()] = { ans: x };
-      else if (x && typeof x === "object") out[k.toLowerCase()] = { ans: pick(x, A_KEYS), explain: pick(x, E_KEYS), model: pick(x, M_KEYS) };
+      if (
+        typeof x === "string" ||
+        typeof x === "number" ||
+        typeof x === "boolean"
+      )
+        out[k.toLowerCase()] = { ans: x };
+      else if (x && typeof x === "object")
+        out[k.toLowerCase()] = {
+          ans: pick(x, A_KEYS),
+          explain: pick(x, E_KEYS),
+          model: pick(x, M_KEYS),
+        };
     }
   }
   return out;
@@ -357,21 +563,30 @@ const LETTERS = "abcdefghijklmnopqrstuvwxyz";
 function optionText(o) {
   if (o == null) return "";
   if (typeof o === "string" || typeof o === "number") return String(o);
-  if (Array.isArray(o)) return o.length >= 2 ? String(o[1]) : String(o[0] ?? "");
-  if (typeof o === "object") return String(pick(o, ["t", "text", "label", "option", "value", "html"]) ?? "");
+  if (Array.isArray(o))
+    return o.length >= 2 ? String(o[1]) : String(o[0] ?? "");
+  if (typeof o === "object")
+    return String(
+      pick(o, ["t", "text", "label", "option", "value", "html"]) ?? "",
+    );
   return "";
 }
 function optionKey(o, i) {
   if (Array.isArray(o) && o.length >= 2) return String(o[0]).toLowerCase();
-  if (o && typeof o === "object" && !Array.isArray(o) && (o.id || o.key)) return String(o.id || o.key).toLowerCase();
+  if (o && typeof o === "object" && !Array.isArray(o) && (o.id || o.key))
+    return String(o.id || o.key).toLowerCase();
   return LETTERS[i];
 }
 function stripMarker(s) {
-  return String(s).replace(/^\s*(?:\(?[a-h]\)|[a-h][.)]|\(?(?:i|ii|iii|iv|v|vi)\)|(?:i|ii|iii|iv|v|vi)\.)\s+/i, "");
+  return String(s).replace(
+    /^\s*(?:\(?[a-h]\)|[a-h][.)]|\(?(?:i|ii|iii|iv|v|vi)\)|(?:i|ii|iii|iv|v|vi)\.)\s+/i,
+    "",
+  );
 }
 /** Index of the correct option from whatever the page stored. */
 function answerIndex(ans, opts, keys) {
-  if (typeof ans === "number" && Number.isInteger(ans)) return ans >= 0 && ans < opts.length ? ans : -1;
+  if (typeof ans === "number" && Number.isInteger(ans))
+    return ans >= 0 && ans < opts.length ? ans : -1;
   if (typeof ans === "boolean") {
     const t = opts.findIndex((o) => /^\s*true\s*$/i.test(textOf(o)));
     const f = opts.findIndex((o) => /^\s*false\s*$/i.test(textOf(o)));
@@ -379,12 +594,15 @@ function answerIndex(ans, opts, keys) {
   }
   if (typeof ans !== "string") return -1;
   const a = ans.trim();
-  if (/^\d+$/.test(a) && +a < opts.length && !opts.some((o) => textOf(o) === a)) return +a;
+  if (/^\d+$/.test(a) && +a < opts.length && !opts.some((o) => textOf(o) === a))
+    return +a;
   const low = a.toLowerCase();
   let i = keys.indexOf(low);
   if (i >= 0) return i;
-  if (/^[a-h]$/i.test(a)) return LETTERS.indexOf(low) < opts.length ? LETTERS.indexOf(low) : -1;
-  if (low === "true" || low === "false" || low === "t" || low === "f") return answerIndex(low[0] === "t", opts, keys);
+  if (/^[a-h]$/i.test(a))
+    return LETTERS.indexOf(low) < opts.length ? LETTERS.indexOf(low) : -1;
+  if (low === "true" || low === "false" || low === "t" || low === "f")
+    return answerIndex(low[0] === "t", opts, keys);
   const plain = textOf(a).toLowerCase();
   i = opts.findIndex((o) => textOf(o).toLowerCase() === plain);
   if (i >= 0) return i;
@@ -408,7 +626,9 @@ function normalize(raw, ctx, base) {
   let ans = pick(raw, A_KEYS);
   const explainRaw = pick(raw, E_KEYS);
   const model = pick(raw, M_KEYS);
-  const hint = [pick(raw, T_KEYS), ctx.topic, ctx.ch].filter((x) => x != null && x !== "").map(String);
+  const hint = [pick(raw, T_KEYS), ctx.topic, ctx.ch]
+    .filter((x) => x != null && x !== "")
+    .map(String);
   const q = { q: cleanHtml(qText, base) };
   if (raw.figure || raw.image || raw.img) {
     const f = raw.figure || raw.image || raw.img;
@@ -422,11 +642,24 @@ function normalize(raw, ctx, base) {
   // Matching: pairs of term -> definition, in any of the usual shapes.
   if (/^match/.test(type) || (Array.isArray(raw.pairs) && !rawOpts)) {
     const pairs = (raw.pairs || raw.matches || [])
-      .map((pr) => (Array.isArray(pr) ? pr : pr && typeof pr === "object" ? [pr.term ?? pr.left ?? pr.a ?? pr.q, pr.def ?? pr.right ?? pr.b ?? pr.answer] : null))
+      .map((pr) =>
+        Array.isArray(pr)
+          ? pr
+          : pr && typeof pr === "object"
+            ? [
+                pr.term ?? pr.left ?? pr.a ?? pr.q,
+                pr.def ?? pr.right ?? pr.b ?? pr.answer,
+              ]
+            : null,
+      )
       .filter((pr) => pr && pr[0] != null && pr[1] != null)
       .map((pr) => [cleanHtml(pr[0], base), cleanHtml(pr[1], base)])
       .filter((pr) => textOf(pr[0]) && textOf(pr[1]));
-    if (pairs.length < 2 || new Set(pairs.map((pr) => textOf(pr[1]))).size !== pairs.length) return null;
+    if (
+      pairs.length < 2 ||
+      new Set(pairs.map((pr) => textOf(pr[1]))).size !== pairs.length
+    )
+      return null;
     q.t = "match";
     q.pairs = pairs;
     const e = typeof explainRaw === "string" ? cleanHtml(explainRaw, base) : "";
@@ -435,15 +668,24 @@ function normalize(raw, ctx, base) {
     return q;
   }
 
-  let opts = null, keys = null;
+  let opts = null,
+    keys = null;
   if (Array.isArray(rawOpts)) {
     opts = rawOpts.map((o) => cleanHtml(stripMarker(optionText(o)), base));
     keys = rawOpts.map(optionKey);
   } else if (rawOpts && typeof rawOpts === "object") {
     keys = Object.keys(rawOpts).map((k) => k.toLowerCase());
-    opts = Object.values(rawOpts).map((o) => cleanHtml(stripMarker(optionText(o)), base));
+    opts = Object.values(rawOpts).map((o) =>
+      cleanHtml(stripMarker(optionText(o)), base),
+    );
   }
-  if (!opts && (type === "tf" || type === "true-false" || type === "truefalse" || typeof ans === "boolean")) {
+  if (
+    !opts &&
+    (type === "tf" ||
+      type === "true-false" ||
+      type === "truefalse" ||
+      typeof ans === "boolean")
+  ) {
     opts = ["True", "False"];
     keys = ["true", "false"];
     type = "tf";
@@ -452,31 +694,62 @@ function normalize(raw, ctx, base) {
   let explain = explainRaw;
   if (Array.isArray(explainRaw)) explain = undefined; // per-option reasons; picked below
 
-  if (opts && opts.length >= 2 && !/^(fill|short|essay|written|long)/.test(type)) {
+  if (
+    opts &&
+    opts.length >= 2 &&
+    !/^(fill|short|essay|written|long)/.test(type)
+  ) {
     if (opts.some((o) => !o)) return null;
-    if (type === "multi" || type === "multiple" || type === "checkbox" || Array.isArray(ans)) {
-      const list = (Array.isArray(ans) ? ans : [ans]).map((x) => answerIndex(x, opts, keys));
+    if (
+      type === "multi" ||
+      type === "multiple" ||
+      type === "checkbox" ||
+      Array.isArray(ans)
+    ) {
+      const list = (Array.isArray(ans) ? ans : [ans]).map((x) =>
+        answerIndex(x, opts, keys),
+      );
       if (!list.length || list.some((i) => i < 0)) return null;
       q.t = list.length > 1 ? "multi" : "mcq";
-      q.a = list.length > 1 ? [...new Set(list)].sort((a, b) => a - b) : list[0];
+      q.a =
+        list.length > 1 ? [...new Set(list)].sort((a, b) => a - b) : list[0];
     } else {
       const i = answerIndex(ans, opts, keys);
       if (i < 0) return null;
-      q.t = opts.length === 2 && opts.every((o) => /^(true|false)$/i.test(textOf(o))) ? "tf" : "mcq";
+      q.t =
+        opts.length === 2 &&
+        opts.every((o) => /^(true|false)$/i.test(textOf(o)))
+          ? "tf"
+          : "mcq";
       q.a = i;
       if (Array.isArray(explainRaw) && explainRaw[i]) explain = explainRaw[i];
-      if (!explain && Array.isArray(rawOpts) && rawOpts[i] && typeof rawOpts[i] === "object" && rawOpts[i].why) explain = rawOpts[i].why;
+      if (
+        !explain &&
+        Array.isArray(rawOpts) &&
+        rawOpts[i] &&
+        typeof rawOpts[i] === "object" &&
+        rawOpts[i].why
+      )
+        explain = rawOpts[i].why;
     }
     q.o = opts;
-  } else if (/^fill/.test(type) || (type === "" && Array.isArray(raw.accept || raw.accepted))) {
+  } else if (
+    /^fill/.test(type) ||
+    (type === "" && Array.isArray(raw.accept || raw.accepted))
+  ) {
     let acc = raw.accept || raw.accepted || raw.kw || ans;
-    acc = (Array.isArray(acc) ? acc : [acc]).filter((x) => typeof x === "string" && x.trim()).map((x) => textOf(x));
-    if (typeof ans === "string" && !acc.includes(textOf(ans))) acc.unshift(textOf(ans));
+    acc = (Array.isArray(acc) ? acc : [acc])
+      .filter((x) => typeof x === "string" && x.trim())
+      .map((x) => textOf(x));
+    if (typeof ans === "string" && !acc.includes(textOf(ans)))
+      acc.unshift(textOf(ans));
     if (!acc.length) return null;
     q.t = "fill";
     q.a = [...new Set(acc)];
   } else {
-    const m = model || (typeof ans === "string" && textOf(ans).length > 20 ? ans : undefined);
+    const m =
+      model ||
+      (typeof ans === "string" && textOf(ans).length > 20 ? ans : undefined);
     if (!m) return null;
     q.t = "written";
     q.m = cleanHtml(m, base);
@@ -489,18 +762,43 @@ function normalize(raw, ctx, base) {
 
 /* ----------------------------------------------------------- markup quizzes */
 
-const QTEXT_CLS = /(^|\s)(q-text|question-text|q-stem|stem|prompt|q-prompt|q-title|question-title|mcq-prompt|written-label)(\s|$)/;
-const EXPLAIN_CLS = /(^|\s)(explanation|explain|why|feedback|answer-explanation|rationale)(\s|$)/;
-const MODEL_CLS = /(^|\s)(model-answer|model-answer-content|sample-answer|model|answer-key)(\s|$)/;
-const NOISE_CLS = /(^|\s)(question-number|q-num|num|number|marks|points|q-pts|question-points|tag|badge|chip|past-exam-badge|past-exam-tag|generated-tag|ch-tag|n|ol|option-circle|option-marker|q-number|key-label)(\s|$)/;
+const QTEXT_CLS =
+  /(^|\s)(q-text|question-text|q-stem|stem|prompt|q-prompt|q-title|question-title|mcq-prompt|written-label)(\s|$)/;
+const EXPLAIN_CLS =
+  /(^|\s)(explanation|explain|why|feedback|answer-explanation|rationale)(\s|$)/;
+const MODEL_CLS =
+  /(^|\s)(model-answer|model-answer-content|sample-answer|model|answer-key)(\s|$)/;
+const NOISE_CLS =
+  /(^|\s)(question-number|q-num|num|number|marks|points|q-pts|question-points|tag|badge|chip|past-exam-badge|past-exam-tag|generated-tag|ch-tag|n|ol|option-circle|option-marker|q-number|key-label)(\s|$)/;
 
 function cleanText(el, dropOptions) {
   const copy = (function clone(n) {
     if (!n.tag) return { text: n.text };
-    if (n.tag === "input" || n.tag === "button" || n.tag === "textarea" || n.tag === "script" || n.tag === "style") return null;
+    if (
+      n.tag === "input" ||
+      n.tag === "button" ||
+      n.tag === "textarea" ||
+      n.tag === "script" ||
+      n.tag === "style"
+    )
+      return null;
     if (hasCls(n, NOISE_CLS)) return null;
-    if (dropOptions && (hasCls(n, EXPLAIN_CLS) || hasCls(n, MODEL_CLS) || n.tag === "label" || hasCls(n, /(^|\s)(options?|opts|choices|options-list|mcq-options|tf-options)(\s|$)/))) return null;
-    return { tag: n.tag, attrs: n.attrs, children: n.children.map(clone).filter(Boolean) };
+    if (
+      dropOptions &&
+      (hasCls(n, EXPLAIN_CLS) ||
+        hasCls(n, MODEL_CLS) ||
+        n.tag === "label" ||
+        hasCls(
+          n,
+          /(^|\s)(options?|opts|choices|options-list|mcq-options|tf-options)(\s|$)/,
+        ))
+    )
+      return null;
+    return {
+      tag: n.tag,
+      attrs: n.attrs,
+      children: n.children.map(clone).filter(Boolean),
+    };
   })(el);
   return copy ? innerHtml(copy) : "";
 }
@@ -509,8 +807,14 @@ function stripExplainLabel(h) {
   do {
     prev = h;
     h = h
-      .replace(/^\s*(?:<(strong|b)>\s*)?(?:explanation|why|answer explanation)\s*:?\s*(?:<\/\1>)?\s*:?\s*/i, "")
-      .replace(/^\s*<(strong|b)>\s*correct answer\s*:?[^<]*<\/\1>\s*(?:<br>)?\s*[-–:.]?\s*/i, "")
+      .replace(
+        /^\s*(?:<(strong|b)>\s*)?(?:explanation|why|answer explanation)\s*:?\s*(?:<\/\1>)?\s*:?\s*/i,
+        "",
+      )
+      .replace(
+        /^\s*<(strong|b)>\s*correct answer\s*:?[^<]*<\/\1>\s*(?:<br>)?\s*[-–:.]?\s*/i,
+        "",
+      )
       .replace(/^\s*correct answer\s*:\s*\(?[a-h]\)?(?=[\s.:-])[.:\s-]*/i, "")
       .replace(/^\s*<br>\s*/i, "");
   } while (h !== prev);
@@ -520,29 +824,47 @@ function explanationOf(box, base) {
   for (const n of nodes(box)) {
     if (hasCls(n, EXPLAIN_CLS)) {
       // Headings and blocks become spaces first, so the label is at the start.
-      const h = stripExplainLabel(cleanHtml(cleanText(n, false).replace(/<\/?h\d>/gi, " "), base));
+      const h = stripExplainLabel(
+        cleanHtml(cleanText(n, false).replace(/<\/?h\d>/gi, " "), base),
+      );
       if (textOf(h)) return h;
     }
   }
   return "";
 }
 function correctMarker(box, stop) {
-  const own = box.attrs["data-correct"] ?? box.attrs["data-answer"] ?? box.attrs["data-ans"];
+  const own =
+    box.attrs["data-correct"] ??
+    box.attrs["data-answer"] ??
+    box.attrs["data-ans"];
   if (own != null && own !== "") return own;
   for (const n of nodes(box)) {
     if (stop && stop(n)) continue;
-    const v = n.attrs["data-correct"] ?? n.attrs["data-answer"] ?? n.attrs["data-ans"];
+    const v =
+      n.attrs["data-correct"] ?? n.attrs["data-answer"] ?? n.attrs["data-ans"];
     if (v != null && v !== "" && n.tag !== "input") return v;
   }
   return null;
 }
 function questionTextOf(box) {
-  for (const n of nodes(box)) if (hasCls(n, QTEXT_CLS)) return cleanText(n, true);
+  for (const n of nodes(box))
+    if (hasCls(n, QTEXT_CLS)) return cleanText(n, true);
   // First paragraph or header that isn't an option, explanation or badge.
   for (const n of nodes(box)) {
     if (!/^(p|h3|h4|legend|div|span)$/.test(n.tag)) continue;
-    if (closest(n, (x) => x.tag === "label" || hasCls(x, EXPLAIN_CLS) || hasCls(x, MODEL_CLS) || hasCls(x, /(^|\s)(options?|opts|choices)(\s|$)/))) continue;
-    if (n.tag !== "p" && !hasCls(n, /question-header|q-head|card-head/)) continue;
+    if (
+      closest(
+        n,
+        (x) =>
+          x.tag === "label" ||
+          hasCls(x, EXPLAIN_CLS) ||
+          hasCls(x, MODEL_CLS) ||
+          hasCls(x, /(^|\s)(options?|opts|choices)(\s|$)/),
+      )
+    )
+      continue;
+    if (n.tag !== "p" && !hasCls(n, /question-header|q-head|card-head/))
+      continue;
     const h = cleanText(n, true);
     if (textOf(h).length >= 8) return h;
   }
@@ -551,7 +873,12 @@ function questionTextOf(box) {
 
 function markupQuestions(html, keys, base) {
   const root = parseHtml(html);
-  const radios = [...nodes(root)].filter((n) => n.tag === "input" && /^(radio|checkbox)$/i.test(n.attrs.type || "") && n.attrs.name);
+  const radios = [...nodes(root)].filter(
+    (n) =>
+      n.tag === "input" &&
+      /^(radio|checkbox)$/i.test(n.attrs.type || "") &&
+      n.attrs.name,
+  );
   const groups = new Map();
   for (const r of radios) {
     if (!groups.has(r.attrs.name)) groups.set(r.attrs.name, []);
@@ -565,80 +892,172 @@ function markupQuestions(html, keys, base) {
     let box = inputs[0].parent;
     while (box && !inputs.every((i) => contains(box, i))) box = box.parent;
     let qHtml = "";
-    for (let n = box, hops = 0; n && n.tag !== "#root" && hops < 6; n = n.parent, hops++) {
+    for (
+      let n = box, hops = 0;
+      n && n.tag !== "#root" && hops < 6;
+      n = n.parent, hops++
+    ) {
       const other = radios.some((r) => r.attrs.name !== name && contains(n, r));
       if (other) break;
       box = n;
       qHtml = questionTextOf(n);
-      if (qHtml && (correctMarker(n) != null || keys[name.toLowerCase()] || inputs.some((i) => i.attrs["data-correct"]))) break;
+      if (
+        qHtml &&
+        (correctMarker(n) != null ||
+          keys[name.toLowerCase()] ||
+          inputs.some((i) => i.attrs["data-correct"]))
+      )
+        break;
     }
     if (!box || used.has(box) || !qHtml) continue;
     used.add(box);
-    const opts = [], vals = [];
+    const opts = [],
+      vals = [];
     for (const inp of inputs) {
-      const label = closest(inp, (x) => x.tag === "label") || (inp.attrs.id && [...nodes(box)].find((x) => x.tag === "label" && x.attrs.for === inp.attrs.id)) || inp.parent;
-      opts.push(cleanHtml(stripMarker(textOf(cleanText(label, false)) ? cleanText(label, false) : ""), base));
+      const label =
+        closest(inp, (x) => x.tag === "label") ||
+        (inp.attrs.id &&
+          [...nodes(box)].find(
+            (x) => x.tag === "label" && x.attrs.for === inp.attrs.id,
+          )) ||
+        inp.parent;
+      opts.push(
+        cleanHtml(
+          stripMarker(
+            textOf(cleanText(label, false)) ? cleanText(label, false) : "",
+          ),
+          base,
+        ),
+      );
       vals.push(String(inp.attrs.value ?? "").toLowerCase());
     }
     const key = keys[name.toLowerCase()];
     // Some pages mark the right input itself: <input ... data-correct="true">.
-    const flagged = inputs.filter((i) => /^(true|1|yes|correct)$/i.test(i.attrs["data-correct"] || i.attrs["data-answer"] || ""));
-    const marker = flagged.length ? flagged.map((i) => String(i.attrs.value ?? "")).join(",") : correctMarker(box, (n) => n.tag === "input");
+    const flagged = inputs.filter((i) =>
+      /^(true|1|yes|correct)$/i.test(
+        i.attrs["data-correct"] || i.attrs["data-answer"] || "",
+      ),
+    );
+    const marker = flagged.length
+      ? flagged.map((i) => String(i.attrs.value ?? "")).join(",")
+      : correctMarker(box, (n) => n.tag === "input");
     const ans = marker != null ? marker : key && key.ans;
     if (ans == null) continue;
     const isMulti = inputs[0].attrs.type.toLowerCase() === "checkbox";
-    const parts = isMulti ? String(ans).split(/[\s,|]+/).filter(Boolean) : [String(ans)];
+    const parts = isMulti
+      ? String(ans)
+          .split(/[\s,|]+/)
+          .filter(Boolean)
+      : [String(ans)];
     const idx = parts.map((p) => {
       const v = vals.indexOf(p.toLowerCase());
       return v >= 0 ? v : answerIndex(p, opts, vals);
     });
     if (idx.some((i) => i < 0) || opts.some((o) => !textOf(o))) continue;
     const q = { q: cleanHtml(qHtml, base), o: opts };
-    if (idx.length > 1) { q.t = "multi"; q.a = idx.sort((a, b) => a - b); }
-    else { q.a = idx[0]; q.t = opts.length === 2 && opts.every((o) => /^(true|false)$/i.test(textOf(o))) ? "tf" : "mcq"; }
+    if (idx.length > 1) {
+      q.t = "multi";
+      q.a = idx.sort((a, b) => a - b);
+    } else {
+      q.a = idx[0];
+      q.t =
+        opts.length === 2 &&
+        opts.every((o) => /^(true|false)$/i.test(textOf(o)))
+          ? "tf"
+          : "mcq";
+    }
     // The explanation can sit just outside the prompt's box (CS331 papers).
     let e = "";
-    for (let n = box, hops = 0; n && n.tag !== "#root" && hops < 3 && !e; n = n.parent, hops++) {
-      if (hops && radios.some((r) => r.attrs.name !== name && contains(n, r))) break;
+    for (
+      let n = box, hops = 0;
+      n && n.tag !== "#root" && hops < 3 && !e;
+      n = n.parent, hops++
+    ) {
+      if (hops && radios.some((r) => r.attrs.name !== name && contains(n, r)))
+        break;
       e = explanationOf(n, base);
     }
     if (!e && key && key.explain) e = cleanHtml(key.explain, base);
     if (e) q.e = e;
-    if (/past/i.test(cls(box)) || [...nodes(box)].some((n) => hasCls(n, /past-exam/))) q.p = 1;
-    q._hint = [box.attrs["data-ch"], box.attrs["data-chapter"], box.attrs["data-topic"]].filter(Boolean).concat(
-      [...nodes(box)].filter((n) => hasCls(n, /(^|\s)ch-tag(\s|$)/)).map((n) => textOf(innerHtml(n))),
-    );
+    if (
+      /past/i.test(cls(box)) ||
+      [...nodes(box)].some((n) => hasCls(n, /past-exam/))
+    )
+      q.p = 1;
+    q._hint = [
+      box.attrs["data-ch"],
+      box.attrs["data-chapter"],
+      box.attrs["data-topic"],
+    ]
+      .filter(Boolean)
+      .concat(
+        [...nodes(box)]
+          .filter((n) => hasCls(n, /(^|\s)ch-tag(\s|$)/))
+          .map((n) => textOf(innerHtml(n))),
+      );
     out.push(q);
   }
   // Written questions: a textarea next to a model answer.
   for (const ta of [...nodes(root)].filter((n) => n.tag === "textarea")) {
-    let box = ta.parent, modelEl = null;
-    for (let hops = 0; box && box.tag !== "#root" && hops < 4; box = box.parent, hops++) {
-      if (radios.some((r) => contains(box, r))) { box = null; break; }
+    let box = ta.parent,
+      modelEl = null;
+    for (
+      let hops = 0;
+      box && box.tag !== "#root" && hops < 4;
+      box = box.parent, hops++
+    ) {
+      if (radios.some((r) => contains(box, r))) {
+        box = null;
+        break;
+      }
       modelEl = [...nodes(box)].find((n) => hasCls(n, MODEL_CLS));
       if (modelEl) break;
     }
     if (!box || !modelEl || used.has(box)) continue;
-    const content = [...nodes(modelEl)].find((n) => hasCls(n, /model-answer-content/)) || modelEl;
-    const model = cleanHtml(cleanText(content, false).replace(/^\s*<h\d>[\s\S]*?<\/h\d>/i, ""), base);
+    const content =
+      [...nodes(modelEl)].find((n) => hasCls(n, /model-answer-content/)) ||
+      modelEl;
+    const model = cleanHtml(
+      cleanText(content, false).replace(/^\s*<h\d>[\s\S]*?<\/h\d>/i, ""),
+      base,
+    );
     const qHtml = questionTextOf(box);
     if (!textOf(model) || !qHtml) continue;
     used.add(box);
     // A shared scenario above several written parts belongs to each part's question.
     let scenario = "";
-    for (let n = box.parent, hops = 0; n && n.tag !== "#root" && hops < 2 && !scenario; n = n.parent, hops++) {
-      const sc = [...nodes(n)].find((x) => hasCls(x, /(^|\s)(scenario-box|scenario|case-study|passage)(\s|$)/) && !contains(box, x));
+    for (
+      let n = box.parent, hops = 0;
+      n && n.tag !== "#root" && hops < 2 && !scenario;
+      n = n.parent, hops++
+    ) {
+      const sc = [...nodes(n)].find(
+        (x) =>
+          hasCls(x, /(^|\s)(scenario-box|scenario|case-study|passage)(\s|$)/) &&
+          !contains(box, x),
+      );
       if (sc) scenario = cleanText(sc, false);
     }
-    const qFull = scenario ? cleanHtml(scenario, base) + "<br><br>" + cleanHtml(qHtml, base) : cleanHtml(qHtml, base);
-    out.push({ t: "written", q: qFull, m: model, _hint: [box.attrs["data-ch"]].filter(Boolean) });
+    const qFull = scenario
+      ? cleanHtml(scenario, base) + "<br><br>" + cleanHtml(qHtml, base)
+      : cleanHtml(qHtml, base);
+    out.push({
+      t: "written",
+      q: qFull,
+      m: model,
+      _hint: [box.attrs["data-ch"]].filter(Boolean),
+    });
   }
   return out;
 }
 
 /* --------------------------------------------------------------- chapters */
 
-const STOP = new Set("a an and the of in on to for with by from vs quiz quizzes chapter chapters ch lecture lectures topic topics practice exam exams test part section question questions intro introduction basics overview final midterm major paper mock review set bank version".split(" "));
+const STOP = new Set(
+  "a an and the of in on to for with by from vs quiz quizzes chapter chapters ch lecture lectures topic topics practice exam exams test part section question questions intro introduction basics overview final midterm major paper mock review set bank version".split(
+    " ",
+  ),
+);
 function tokens(s) {
   return String(s)
     .toLowerCase()
@@ -649,14 +1068,23 @@ function tokens(s) {
 }
 function loadChapters(course) {
   if (course === ETHICS_COURSE) {
-    const chapters = ETHICS_CHAPTERS.map((title, i) => ({ id: "e" + i, title, num: "", kind: "", tok: new Set(tokens(title)), link: "" }));
+    const chapters = ETHICS_CHAPTERS.map((title, i) => ({
+      id: "e" + i,
+      title,
+      num: "",
+      kind: "",
+      tok: new Set(tokens(title)),
+      link: "",
+    }));
     return { chapters, scopes: [], items: [], name: "ETHCS 303", ethics: true };
   }
   const file = path.join(ANALYSIS, course + "-final.json");
   if (!fs.existsSync(file)) return { chapters: [], scopes: [], name: "" };
   const d = JSON.parse(fs.readFileSync(file, "utf8"));
   const chapters = (d.chapters || []).map((c) => {
-    const m = /^(Ch|Chapter|Lecture|Topic|L)\.?\s*([\d.]+)/i.exec(c.title || "");
+    const m = /^(Ch|Chapter|Lecture|Topic|L)\.?\s*([\d.]+)/i.exec(
+      c.title || "",
+    );
     return {
       id: c.id,
       title: c.title,
@@ -668,11 +1096,20 @@ function loadChapters(course) {
   });
   // Named concepts per chapter (curated courses): "Tuckman's stages" -> ch3.
   const items = (d.items || [])
-    .filter((it) => it.chapter && it.name && chapters.some((c) => c.id === it.chapter))
+    .filter(
+      (it) =>
+        it.chapter && it.name && chapters.some((c) => c.id === it.chapter),
+    )
     .map((it) => ({ chapter: it.chapter, phrase: phraseOf(it.name) }))
     .filter((it) => it.phrase.split(" ").length >= 2 || it.phrase.length >= 7);
   const scopes = (d.exam_scopes || [])
-    .map((s) => ({ label: s.label, type: s.type, chapters: (s.chapters || []).filter((id) => chapters.some((c) => c.id === id)) }))
+    .map((s) => ({
+      label: s.label,
+      type: s.type,
+      chapters: (s.chapters || []).filter((id) =>
+        chapters.some((c) => c.id === id),
+      ),
+    }))
     .filter((s) => s.chapters.length);
   return { chapters, scopes, items, name: d.course || "" };
 }
@@ -683,16 +1120,22 @@ function byNumber(chapters, n) {
 }
 /** Chapter named in a hint like "Ch 3", "Ch.1 · Components", "L1 · Block 2", 4, "Lecture 2". */
 function chapterFromHint(chapters, hint) {
-  if (typeof hint === "number" || /^\s*\d+(\.\d+)?\s*$/.test(hint)) return byNumber(chapters, String(hint).trim());
-  const m = /\b(?:ch(?:apter)?|lecture|lec|topic|l)\.?\s*(\d+(?:\.\d+)?)/i.exec(hint);
-  if (m) return byNumber(chapters, m[1]) || byNumber(chapters, m[1].split(".")[0]);
+  if (typeof hint === "number" || /^\s*\d+(\.\d+)?\s*$/.test(hint))
+    return byNumber(chapters, String(hint).trim());
+  const m = /\b(?:ch(?:apter)?|lecture|lec|topic|l)\.?\s*(\d+(?:\.\d+)?)/i.exec(
+    hint,
+  );
+  if (m)
+    return byNumber(chapters, m[1]) || byNumber(chapters, m[1].split(".")[0]);
   return null;
 }
 function chapterFromWords(chapters, text) {
   const t = tokens(text);
   if (!t.length) return null;
   const words = new Set(t);
-  let best = null, bestScore = 0, tie = false;
+  let best = null,
+    bestScore = 0,
+    tie = false;
   for (const c of chapters) {
     const hit = [...words].filter((w) => c.tok.has(w)).length;
     // The chapter title must hold most of the words ("development approach"
@@ -701,23 +1144,39 @@ function chapterFromWords(chapters, text) {
     // a page about "algorithm analysis and asymptotic notation".
     if (hit / words.size < 0.6) continue;
     const score = hit / (words.size + c.tok.size - hit);
-    if (score > bestScore) { best = c; bestScore = score; tie = false; }
-    else if (score === bestScore) tie = true;
+    if (score > bestScore) {
+      best = c;
+      bestScore = score;
+      tie = false;
+    } else if (score === bestScore) tie = true;
   }
   return best && !tie ? best : null;
 }
 /** Chapter a page is about, when it's about exactly one. */
 function pageChapter(chapters, file, title) {
-  const slug = path.basename(path.dirname(file)) + " " + path.basename(file, ".html");
-  const multi = /chapters?[-\s]+\d+[-\s]+(?:and|to|&)?[-\s]*\d+|midterm|final|major|exam-\d|paper|comprehensive|semester|\d{3}\b|quiz-\d/i;
+  const slug =
+    path.basename(path.dirname(file)) + " " + path.basename(file, ".html");
+  const multi =
+    /chapters?[-\s]+\d+[-\s]+(?:and|to|&)?[-\s]*\d+|midterm|final|major|exam-\d|paper|comprehensive|semester|\d{3}\b|quiz-\d/i;
   const name = path.basename(file, ".html");
-  const m = /(?:^|[-_ ])(?:chapter|ch|lecture|lec|topic)[-_ ]?(\d+(?:[-_.]\d+)?)(?=$|[-_ ])/i.exec(name) || /(?:^|[-_ ])(?:chapter|ch|lecture|lec|topic)[-_ ]?(\d+)(?=$|[-_ ])/i.exec(slug);
+  const m =
+    /(?:^|[-_ ])(?:chapter|ch|lecture|lec|topic)[-_ ]?(\d+(?:[-_.]\d+)?)(?=$|[-_ ])/i.exec(
+      name,
+    ) ||
+    /(?:^|[-_ ])(?:chapter|ch|lecture|lec|topic)[-_ ]?(\d+)(?=$|[-_ ])/i.exec(
+      slug,
+    );
   if (m && !/chapters?-\d+-(?:and|to)?-?\d+/i.test(slug)) {
-    const c = byNumber(chapters, m[1].replace(/[-_]/, ".")) || byNumber(chapters, m[1].split(/[-_.]/)[0]);
+    const c =
+      byNumber(chapters, m[1].replace(/[-_]/, ".")) ||
+      byNumber(chapters, m[1].split(/[-_.]/)[0]);
     if (c) return c;
   }
   if (multi.test(slug)) return null;
-  return chapterFromWords(chapters, name.replace(/^\d+-/, "")) || chapterFromWords(chapters, title || "");
+  return (
+    chapterFromWords(chapters, name.replace(/^\d+-/, "")) ||
+    chapterFromWords(chapters, title || "")
+  );
 }
 
 /* --------------------------------------------------------------- per page */
@@ -727,8 +1186,12 @@ function pageTitle(html, file) {
   const t = /<title>([\s\S]*?)<\/title>/i.exec(html);
   let s = textOf(h1 ? h1[1] : t ? t[1] : "");
   if (!s || s.length > 90) s = textOf(t ? t[1] : "");
-  s = s.replace(/\s*[|·—–-]\s*SHOUG\.TECH.*$/i, "").replace(/^SHOUG\.TECH\s*(?:\/\/|\||·)\s*/i, "").trim();
-  if (!s) s = path.basename(file, ".html").replace(/^\d+-/, "").replace(/-/g, " ");
+  s = s
+    .replace(/\s*[|·—–-]\s*SHOUG\.TECH.*$/i, "")
+    .replace(/^SHOUG\.TECH\s*(?:\/\/|\||·)\s*/i, "")
+    .trim();
+  if (!s)
+    s = path.basename(file, ".html").replace(/^\d+-/, "").replace(/-/g, " ");
   return s.slice(0, 90);
 }
 function scriptsOf(html, file) {
@@ -738,34 +1201,90 @@ function scriptsOf(html, file) {
   while ((m = re.exec(html))) {
     if (/ld\+json/i.test(m[1])) continue;
     const src = /\bsrc\s*=\s*["']([^"']+)["']/i.exec(m[1]);
-    if (!src) { out.push(m[2]); continue; }
+    if (!src) {
+      out.push(m[2]);
+      continue;
+    }
     // Local data files beside the page (e.g. final-242-bank.js), not site-wide scripts.
     if (/^(https?:)?\/\//i.test(src[1]) || src[1].startsWith("/")) continue;
     const local = path.resolve(path.dirname(file), src[1].split("?")[0]);
-    if (local.startsWith(path.dirname(path.dirname(file))) && fs.existsSync(local)) out.push(fs.readFileSync(local, "utf8"));
+    if (
+      local.startsWith(path.dirname(path.dirname(file))) &&
+      fs.existsSync(local)
+    )
+      out.push(fs.readFileSync(local, "utf8"));
   }
   return out;
 }
 
 // Practice quizzes built by scripts/build_se423_quizzes.py keep their questions as JSON
 // (options[0] is the right answer; scenarios hold their own parts).
-const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+const ORDINALS = [
+  "1st",
+  "2nd",
+  "3rd",
+  "4th",
+  "5th",
+  "6th",
+  "7th",
+  "8th",
+  "9th",
+  "10th",
+];
 function practiceQuiz(html) {
-  const m = /<script type="application\/json" id="quiz-data">([\s\S]*?)<\/script>/.exec(html);
+  const m =
+    /<script type="application\/json" id="quiz-data">([\s\S]*?)<\/script>/.exec(
+      html,
+    );
   if (!m) return null;
   const data = JSON.parse(m[1].replace(/<\\\//g, "</"));
   const esc = (t) => escapeHtml(t == null ? "" : t);
   const out = [];
   function one(it, scenario) {
-    const lead = scenario ? `<b>Scenario: ${esc(scenario.title || "")}</b><br>${esc(scenario.text).replace(/\n/g, "<br>")}<br><br>` : "";
+    const lead = scenario
+      ? `<b>Scenario: ${esc(scenario.title || "")}</b><br>${esc(scenario.text).replace(/\n/g, "<br>")}<br><br>`
+      : "";
     const base = { _hint: [it.tag].filter(Boolean) };
-    if (scenario) { base.g = scenario.g; base.qc = esc(it.q); }
+    if (scenario) {
+      base.g = scenario.g;
+      base.qc = esc(it.q);
+    }
     const q = lead + esc(it.q);
-    if (it.type === "mcq") return { ...base, t: "mcq", q, o: it.options.map(esc), a: 0, e: esc(it.why) };
-    if (it.type === "tf") return { ...base, t: "tf", q, o: ["True", "False"], a: it.a ? 0 : 1, e: esc(it.why) };
-    if (it.type === "match") return { ...base, t: "match", q, pairs: it.pairs.map((p) => [esc(p[0]), esc(p[1])]), e: esc(it.why) };
+    if (it.type === "mcq")
+      return {
+        ...base,
+        t: "mcq",
+        q,
+        o: it.options.map(esc),
+        a: 0,
+        e: esc(it.why),
+      };
+    if (it.type === "tf")
+      return {
+        ...base,
+        t: "tf",
+        q,
+        o: ["True", "False"],
+        a: it.a ? 0 : 1,
+        e: esc(it.why),
+      };
+    if (it.type === "match")
+      return {
+        ...base,
+        t: "match",
+        q,
+        pairs: it.pairs.map((p) => [esc(p[0]), esc(p[1])]),
+        e: esc(it.why),
+      };
     if (it.type === "order")
-      return { ...base, qc: base.qc || esc(it.q), t: "match", q: q + " Match each step to its position.", pairs: it.items.map((x, i) => [esc(x), ORDINALS[i]]), e: esc(it.why) };
+      return {
+        ...base,
+        qc: base.qc || esc(it.q),
+        t: "match",
+        q: q + " Match each step to its position.",
+        pairs: it.items.map((x, i) => [esc(x), ORDINALS[i]]),
+        e: esc(it.why),
+      };
     if (it.type === "num") {
       const n = { ...base, t: "num", q, a: it.answer, e: esc(it.work) };
       if (it.unit) n.u = it.unit;
@@ -784,7 +1303,10 @@ function practiceQuiz(html) {
     for (const it of sec.items) {
       if (it.type === "scenario") {
         const sc = { title: it.title, text: it.text, g: data.id + "-s" + ++g };
-        for (const part of it.parts) { const q = one(part, sc); if (q) out.push(q); }
+        for (const part of it.parts) {
+          const q = one(part, sc);
+          if (q) out.push(q);
+        }
       } else {
         const q = one(it, null);
         if (q) out.push(q);
@@ -816,7 +1338,8 @@ function extractPage(file) {
 }
 
 // "What does the following code do?" with the code left behind on the page.
-const NEEDS_CONTEXT = /\b(?:following|below|above|shown|given|this|attached)\s+(?:code|figure|diagram|table|graph|program|snippet|output|class|method|function|query|queries|schema|relations?|tree|network|image|picture|chart|er diagram|erd|scenario|case|data ?set|pseudo-?code|algorithm)\b|\b(?:in|from|see|use|using) the (?:figure|diagram|table|code|graph|image|chart|scenario)\b|\bfig(?:ure)?\.?\s*\d/i;
+const NEEDS_CONTEXT =
+  /\b(?:following|below|above|shown|given|this|attached)\s+(?:code|figure|diagram|table|graph|program|snippet|output|class|method|function|query|queries|schema|relations?|tree|network|image|picture|chart|er diagram|erd|scenario|case|data ?set|pseudo-?code|algorithm)\b|\b(?:in|from|see|use|using) the (?:figure|diagram|table|code|graph|image|chart|scenario)\b|\bfig(?:ure)?\.?\s*\d/i;
 function missingContext(q) {
   if (/<(?:pre|img|code)\b/i.test(q.q)) return false;
   return NEEDS_CONTEXT.test(textOf(q.q));
@@ -824,14 +1347,23 @@ function missingContext(q) {
 
 /* ------------------------------------------------------------ repeats */
 // Questions that share two thirds of their distinctive words ask the same thing.
-const REPEAT_STOP = new Set(("which what when where that this with from into each your their there these those about would could should does have " +
-  "following best most describe explain name give list state between other than they them then also only some such being " +
-  "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct").split(" "));
+const REPEAT_STOP = new Set(
+  (
+    "which what when where that this with from into each your their there these those about would could should does have " +
+    "following best most describe explain name give list state between other than they them then also only some such being " +
+    "used using under over more less after before true false project team order match position step steps stage stages phase phases process right correct"
+  ).split(" "),
+);
 function coreWords(q) {
   const seen = new Set();
-  textOf(q.qc || q.q).toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).forEach((w) => {
-    if (w.length > 3 && !REPEAT_STOP.has(w)) seen.add(w.replace(/(ies)$/, "y").replace(/(es|s)$/, ""));
-  });
+  textOf(q.qc || q.q)
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .split(/\s+/)
+    .forEach((w) => {
+      if (w.length > 3 && !REPEAT_STOP.has(w))
+        seen.add(w.replace(/(ies)$/, "y").replace(/(es|s)$/, ""));
+    });
   return [...seen];
 }
 function similarWords(a, b) {
@@ -886,9 +1418,18 @@ function textMatcher(chapters, items) {
   const df = {};
   for (const c of chapters) for (const w of c.tok) df[w] = (df[w] || 0) + 1;
   // Words that name most chapters ("software", "security") say nothing.
-  const usable = (w) => df[w] && df[w] <= Math.max(1, Math.floor(chapters.length / 4));
+  const usable = (w) =>
+    df[w] && df[w] <= Math.max(1, Math.floor(chapters.length / 4));
   return function (q) {
-    const text = textOf(q.q + " " + (q.o || []).join(" ") + " " + (q.pairs || []).flat().join(" ") + " " + (q.m || ""));
+    const text = textOf(
+      q.q +
+        " " +
+        (q.o || []).join(" ") +
+        " " +
+        (q.pairs || []).flat().join(" ") +
+        " " +
+        (q.m || ""),
+    );
     const words = new Set(tokens(text));
     const flat = " " + tokens(text).join(" ") + " ";
     const score = {};
@@ -897,7 +1438,9 @@ function textMatcher(chapters, items) {
       for (const w of c.tok) if (usable(w) && words.has(w)) sc += 1 / df[w];
       if (sc) score[c.id] = sc;
     }
-    for (const it of items) if (flat.includes(it.phrase)) score[it.chapter] = (score[it.chapter] || 0) + 2;
+    for (const it of items)
+      if (flat.includes(it.phrase))
+        score[it.chapter] = (score[it.chapter] || 0) + 2;
     const ranked = Object.entries(score).sort((a, b) => b[1] - a[1]);
     if (!ranked.length) return null;
     const [best, second] = [ranked[0][1], ranked[1] ? ranked[1][1] : 0];
@@ -929,12 +1472,16 @@ function folderPresets(exams, scopes, sources, questions) {
     const re = /href="([^"]+)"/g;
     let m;
     while ((m = re.exec(html))) links.add(m[1].replace(/index\.html$/, ""));
-    const srcs = new Set(sources.map((s, i) => (links.has(s.url) ? i : -1)).filter((i) => i >= 0));
+    const srcs = new Set(
+      sources.map((s, i) => (links.has(s.url) ? i : -1)).filter((i) => i >= 0),
+    );
     if (!srcs.size) continue;
     const counts = {};
-    for (const q of questions) if (srcs.has(q.s) && q.c) counts[q.c] = (counts[q.c] || 0) + 1;
+    for (const q of questions)
+      if (srcs.has(q.s) && q.c) counts[q.c] = (counts[q.c] || 0) + 1;
     const ids = Object.keys(counts).filter((id) => counts[id] >= 2);
-    if (ids.length >= 2) out.push({ label, type, chapters: ids, fromPapers: true });
+    if (ids.length >= 2)
+      out.push({ label, type, chapters: ids, fromPapers: true });
   }
   return out;
 }
@@ -958,32 +1505,59 @@ function buildCourse({ track, course, exams }) {
     let pageCh;
     if (ethics) {
       // Topic quizzes take the page's chapter; mixed papers go question by question.
-      const mixed = /quiz-\d|major|final|practice|bank|section/i.test(path.basename(path.dirname(file)));
-      const i = mixed ? -1 : ethicsChapter(path.basename(path.dirname(file)) + " " + page.title);
+      const mixed = /quiz-\d|major|final|practice|bank|section/i.test(
+        path.basename(path.dirname(file)),
+      );
+      const i = mixed
+        ? -1
+        : ethicsChapter(path.basename(path.dirname(file)) + " " + page.title);
       pageCh = i >= 0 ? chapters[i] : null;
     } else pageCh = pageChapter(chapters, file, page.title);
-    const srcIndex = sources.push({ title: page.title, url: pageUrl(file) }) - 1;
+    const srcIndex =
+      sources.push({ title: page.title, url: pageUrl(file) }) - 1;
     const tally = {};
     let added = 0;
     for (const q of page.found) {
-      if (missingContext(q)) { dropped++; continue; }
+      if (missingContext(q)) {
+        dropped++;
+        continue;
+      }
       if (q.t === "tf") {
-        q.o = q.o.map((o) => (/^\s*true\s*$/i.test(textOf(o)) ? "True" : "False"));
-        q.q = q.q.replace(/^\s*(?:true\s*(?:or|\/)\s*false|t\s*\/\s*f)\s*[:.)-]\s*/i, "");
+        q.o = q.o.map((o) =>
+          /^\s*true\s*$/i.test(textOf(o)) ? "True" : "False",
+        );
+        q.q = q.q.replace(
+          /^\s*(?:true\s*(?:or|\/)\s*false|t\s*\/\s*f)\s*[:.)-]\s*/i,
+          "",
+        );
       }
       if (q.e) q.e = stripExplainLabel(q.e);
       if (q.e === "") delete q.e;
-      const keyText = textOf(q.q).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + "|" + (q.o ? q.o.map((o) => textOf(o).toLowerCase()).join("|") : q.pairs ? q.pairs.map((pr) => textOf(pr[0]).toLowerCase()).join("|") : "");
+      const keyText =
+        textOf(q.q)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim() +
+        "|" +
+        (q.o
+          ? q.o.map((o) => textOf(o).toLowerCase()).join("|")
+          : q.pairs
+            ? q.pairs.map((pr) => textOf(pr[0]).toLowerCase()).join("|")
+            : "");
       if (seen.has(keyText)) continue;
       seen.add(keyText);
       let ch = null;
-      for (const h of q._hint || []) if ((ch = chapterFromHint(chapters, h))) break;
+      for (const h of q._hint || [])
+        if ((ch = chapterFromHint(chapters, h))) break;
       if (!ch) ch = pageCh;
       if (!ch && ethics) {
         const i = ethicsChapter((q._hint || []).join(" ") + " " + textOf(q.q));
         if (i >= 0) ch = chapters[i];
       }
-      if (!ch) for (const h of q._hint || []) if (typeof h === "string" && (ch = chapterFromWords(chapters, h))) break;
+      if (!ch)
+        for (const h of q._hint || [])
+          if (typeof h === "string" && (ch = chapterFromWords(chapters, h)))
+            break;
       delete q._hint;
       q.id = hash(course + "|" + keyText);
       q.c = ch ? ch.id : null;
@@ -992,14 +1566,21 @@ function buildCourse({ track, course, exams }) {
       tally[q.c || "—"] = (tally[q.c || "—"] || 0) + 1;
       added++;
     }
-    report.push(`  ${String(added).padStart(4)}  ${path.relative(exams, file).split(path.sep).join("/")}  →  ${Object.entries(tally).map(([k, v]) => k + "×" + v).join(" ")}`);
+    report.push(
+      `  ${String(added).padStart(4)}  ${path.relative(exams, file).split(path.sep).join("/")}  →  ${Object.entries(
+        tally,
+      )
+        .map(([k, v]) => k + "×" + v)
+        .join(" ")}`,
+    );
   }
   // The same question often sits on several pages (chapter quiz, mock midterm, past paper),
   // worded a little differently. Keep the first copy so a mock exam never asks it twice.
   // Words that appear in more than 10% of the course's questions (a template's "explain ... and
   // include one important detail", or the course's own subject) don't tell two questions apart.
   const df = new Map();
-  for (const q of questions) for (const w of coreWords(q)) df.set(w, (df.get(w) || 0) + 1);
+  for (const q of questions)
+    for (const w of coreWords(q)) df.set(w, (df.get(w) || 0) + 1);
   const common = Math.max(6, questions.length * 0.1);
   const distinctive = (q) => coreWords(q).filter((w) => df.get(w) <= common);
   const kept = [];
@@ -1017,22 +1598,33 @@ function buildCourse({ track, course, exams }) {
       continue;
     }
     kept.push(q);
-    if (!q.g) { words.push(w); wordOwner.push(kept.length - 1); }
+    if (!q.g) {
+      words.push(w);
+      wordOwner.push(kept.length - 1);
+    }
   }
   questions.length = 0;
   questions.push(...kept);
-  if (repeats) report.push(`  (${repeats} near-repeat questions dropped: the same question on another page)`);
+  if (repeats)
+    report.push(
+      `  (${repeats} near-repeat questions dropped: the same question on another page)`,
+    );
 
   // Questions nothing placed: try their own words. Checked first against
   // questions whose chapter is known, and reported, so a weak course shows.
   if (chapters.length && !ethics) {
     const guess = textMatcher(chapters, items || []);
-    let tried = 0, right = 0, known = 0;
+    let tried = 0,
+      right = 0,
+      known = 0;
     for (const q of questions) {
       if (!q.c) continue;
       known++;
       const g = guess(q);
-      if (g) { tried++; if (g.id === q.c) right++; }
+      if (g) {
+        tried++;
+        if (g.id === q.c) right++;
+      }
     }
     const precise = tried >= 10 ? right / tried : 0;
     let placed = 0;
@@ -1040,23 +1632,46 @@ function buildCourse({ track, course, exams }) {
       for (const q of questions) {
         if (q.c) continue;
         const g = guess(q);
-        if (g) { q.c = g.id; placed++; }
+        if (g) {
+          q.c = g.id;
+          placed++;
+        }
       }
     }
-    report.push(`  text matcher: ${right}/${tried} right on ${known} known questions (${Math.round(precise * 100)}%)` +
-      (precise >= 0.85 ? `, placed ${placed} more` : ", too unsure to use here"));
+    report.push(
+      `  text matcher: ${right}/${tried} right on ${known} known questions (${Math.round(precise * 100)}%)` +
+        (precise >= 0.85
+          ? `, placed ${placed} more`
+          : ", too unsure to use here"),
+    );
   }
-  const allScopes = scopes.concat(folderPresets(exams, scopes, sources, questions));
+  const allScopes = scopes.concat(
+    folderPresets(exams, scopes, sources, questions),
+  );
   // Keep only chapters that have questions, in course order.
   const usedCh = new Set(questions.map((q) => q.c).filter(Boolean));
-  if (dropped) report.push(`  (${dropped} questions dropped: they point at a figure or code the page shows outside the question)`);
+  if (dropped)
+    report.push(
+      `  (${dropped} questions dropped: they point at a figure or code the page shows outside the question)`,
+    );
   return {
     bank: {
       course,
       name: displayName(course, name),
       page: `/academics/${track}/${course}/`,
-      chapters: chapters.filter((c) => usedCh.has(c.id)).map((c) => (c.link ? { id: c.id, title: c.title, link: c.link } : { id: c.id, title: c.title })),
-      scopes: allScopes.map((s) => ({ ...s, chapters: s.chapters.filter((id) => usedCh.has(id)) })).filter((s) => s.chapters.length),
+      chapters: chapters
+        .filter((c) => usedCh.has(c.id))
+        .map((c) =>
+          c.link
+            ? { id: c.id, title: c.title, link: c.link }
+            : { id: c.id, title: c.title },
+        ),
+      scopes: allScopes
+        .map((s) => ({
+          ...s,
+          chapters: s.chapters.filter((id) => usedCh.has(id)),
+        }))
+        .filter((s) => s.chapters.length),
       sources,
       questions,
     },
@@ -1068,8 +1683,16 @@ function summary(bank, extra) {
   const types = {};
   bank.questions.forEach((q) => (types[q.t] = (types[q.t] || 0) + 1));
   const tagged = bank.questions.filter((q) => q.c).length;
-  console.log(`${bank.name.padEnd(9)} ${String(bank.questions.length).padStart(5)} questions, ${Math.round((100 * tagged) / bank.questions.length)}% tagged to a chapter, ${bank.sources.length} pages${extra || ""}`);
-  return { course: bank.course, name: bank.name, count: bank.questions.length, tagged, types };
+  console.log(
+    `${bank.name.padEnd(9)} ${String(bank.questions.length).padStart(5)} questions, ${Math.round((100 * tagged) / bank.questions.length)}% tagged to a chapter, ${bank.sources.length} pages${extra || ""}`,
+  );
+  return {
+    course: bank.course,
+    name: bank.name,
+    count: bank.questions.length,
+    tagged,
+    types,
+  };
 }
 
 /** ETHCS303 from the private source; its bank stays private. Returns questions added. */
@@ -1081,28 +1704,40 @@ function buildEthics(previous, update) {
   update((index) => index.filter((c) => c.course !== ETHICS_COURSE));
   if (!isDir(exams)) {
     if (kept) update((index) => index.concat([kept]));
-    console.log(`ETHCS 303: private source not found at ${path.relative(ROOT, ETHICS_SRC) || "."}; ` + (kept ? "kept the existing index entry" : "not listed"));
+    console.log(
+      `ETHCS 303: private source not found at ${path.relative(ROOT, ETHICS_SRC) || "."}; ` +
+        (kept ? "kept the existing index entry" : "not listed"),
+    );
     return 0;
   }
   SITE_ROOT = ETHICS_SRC;
   let built;
   try {
-    built = buildCourse({ track: "other-courses", course: ETHICS_COURSE, exams });
+    built = buildCourse({
+      track: "other-courses",
+      course: ETHICS_COURSE,
+      exams,
+    });
   } finally {
     SITE_ROOT = DOCS;
   }
   const { bank, report } = built;
   if (bank.questions.length < MIN_QUESTIONS) {
-    console.log(`ETHCS 303: only ${bank.questions.length} questions found, not listed`);
+    console.log(
+      `ETHCS 303: only ${bank.questions.length} questions found, not listed`,
+    );
     return 0;
   }
   const file = path.join(ETHICS_SRC, ETHICS_REL, "mock-exam-bank.json");
   fs.writeFileSync(file, JSON.stringify(bank) + "\n");
-  const entry = Object.assign(summary(bank, " (private: served by the course-access Worker)"), {
-    track: "other-courses",
-    locked: true,
-    bank: ETHICS_BANK_URL,
-  });
+  const entry = Object.assign(
+    summary(bank, " (private: served by the course-access Worker)"),
+    {
+      track: "other-courses",
+      locked: true,
+      bank: ETHICS_BANK_URL,
+    },
+  );
   update((index) => index.concat([entry]));
   if (REPORT) console.log(report.join("\n"));
   return bank.questions.length;
@@ -1111,7 +1746,9 @@ function buildEthics(previous, update) {
 function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const indexFile = path.join(OUT, "index.json");
-  const previous = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, "utf8")).courses || [] : [];
+  const previous = fs.existsSync(indexFile)
+    ? JSON.parse(fs.readFileSync(indexFile, "utf8")).courses || []
+    : [];
   let index = ONLY.size ? previous.slice() : [];
   let total = 0;
   for (const dir of courseDirs()) {
@@ -1121,7 +1758,10 @@ function main() {
     const file = path.join(OUT, dir.course + ".json");
     if (bank.questions.length < MIN_QUESTIONS) {
       if (fs.existsSync(file)) fs.unlinkSync(file);
-      if (REPORT && bank.questions.length) console.log(`${dir.course}: only ${bank.questions.length} questions, skipped`);
+      if (REPORT && bank.questions.length)
+        console.log(
+          `${dir.course}: only ${bank.questions.length} questions, skipped`,
+        );
       continue;
     }
     fs.writeFileSync(file, JSON.stringify(bank) + "\n");
@@ -1129,10 +1769,20 @@ function main() {
     total += bank.questions.length;
     if (REPORT) console.log(report.join("\n"));
   }
-  if (!ONLY.size || ONLY.has(ETHICS_COURSE)) total += buildEthics(previous, (fn) => (index = fn(index)));
+  if (!ONLY.size || ONLY.has(ETHICS_COURSE))
+    total += buildEthics(previous, (fn) => (index = fn(index)));
   index.sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
-  fs.writeFileSync(indexFile, JSON.stringify({ generated: new Date().toISOString().slice(0, 10), courses: index }, null, 1) + "\n");
-  console.log(`Mock exam banks: ${index.length} courses${ONLY.size ? "" : ", " + total + " questions"}`);
+  fs.writeFileSync(
+    indexFile,
+    JSON.stringify(
+      { generated: new Date().toISOString().slice(0, 10), courses: index },
+      null,
+      1,
+    ) + "\n",
+  );
+  console.log(
+    `Mock exam banks: ${index.length} courses${ONLY.size ? "" : ", " + total + " questions"}`,
+  );
 }
 
 main();

@@ -1,5 +1,6 @@
 import { translateRequest } from "./translation.js";
 import { handleAbout } from "./about.js";
+import { handleFreeTime } from "./free-time.js";
 import { extractTranscript } from "./transcript.js";
 import { extractSchedule } from "./schedule.js";
 import { verifyIdToken } from "./firebase-token.js";
@@ -920,6 +921,21 @@ export default {
         console.error(error);
         return json(
           { error: "Analytics are temporarily unavailable." },
+          500,
+          origin,
+        );
+      }
+    }
+    // Schedule planner: free time written in plain words.
+    if (url.pathname === "/v1/free-time") {
+      if (Number(request.headers.get("content-length") || 0) > 4096)
+        return json({ error: "Request is too large." }, 413, origin);
+      try {
+        return await handleFreeTime(request, env, origin, json, runTextGeneration);
+      } catch (error) {
+        console.error(error);
+        return json(
+          { error: "The assistant is temporarily unavailable." },
           500,
           origin,
         );

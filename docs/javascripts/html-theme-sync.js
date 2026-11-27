@@ -529,6 +529,8 @@
 
   function installSearch() {
     if (!document.body) return;
+    // Pages with their own search (e.g. the schedule planner) opt out.
+    if (document.documentElement.hasAttribute("data-no-page-search")) return;
 
     var existing = document.querySelector(".sg-page-search");
     if (existing) {

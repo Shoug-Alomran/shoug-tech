@@ -525,6 +525,8 @@
     "Not said": "لم يحدد",
     "Closed book": "كتاب مغلق",
     "Open book": "كتاب مفتوح",
+    "Open book exam: focus on understanding and practice, not memorizing.":
+      "اختبار بكتاب مفتوح: ركّزي على الفهم والتدريب لا على الحفظ.",
     "Cheat sheet allowed": "ورقة ملخص مسموحة",
     "What it covers": "ما يشمله",
     "Topics to focus on or skip (optional)":
@@ -805,6 +807,16 @@
     Dec: "ديسمبر",
   };
   var PATTERNS = [
+    [
+      /^Every ([A-Z]+ \d+) exam is open book, so the plan puts memorizing time into understanding and practice instead\.$/,
+      function (c) {
+        return (
+          "جميع اختبارات " +
+          c +
+          " بنظام الكتاب المفتوح، لذا تخصص الخطة وقت الحفظ للفهم والتدريب بدلًا منه."
+        );
+      },
+    ],
     [
       /^Practice · (Solve|Code|Diagrams|Scenarios|Timed exam)$/,
       function (k) {

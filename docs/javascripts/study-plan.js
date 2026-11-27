@@ -183,6 +183,12 @@
     open: "Open book",
     sheet: "Cheat sheet allowed",
   };
+  // Courses whose instructor has said every exam is open book. Used until the
+  // student picks something else for an exam's Book field.
+  var COURSE_BOOK = { "SE 371": "open" };
+  function bookFor(course, f) {
+    return (f && f.book) || COURSE_BOOK[course] || "";
+  }
 
   var index = null,
     files = {},
@@ -574,7 +580,11 @@
   function formatFor(course, exam, sid) {
     var all = plan().formats || {},
       keys = formatKeys(course, exam, sid);
-    for (var n = 0; n < keys.length; n++) if (all[keys[n]]) return all[keys[n]];
+    for (var n = 0; n < keys.length; n++)
+      if (all[keys[n]])
+        return all[keys[n]].book || !COURSE_BOOK[course]
+          ? all[keys[n]]
+          : Object.assign({}, all[keys[n]], { book: COURSE_BOOK[course] });
     return null;
   }
   function formatInfo(id) {
@@ -780,8 +790,18 @@
   // Time left after a chapter's retest, divided by what the chapter needs. A
   // new chapter still gets real time for first understanding it, however
   // problem-heavy it is. Pieces too small to be a session stay in learning.
-  function splitChapter(course, a, ch, minutes, isNew, types) {
-    var share = contentShares(course, a, ch, types),
+  // Open book: nothing to learn by heart, so that time goes to understanding
+  // and practice instead.
+  function splitChapter(course, a, ch, minutes, isNew, types, openBook) {
+    var share = contentShares(course, a, ch, types);
+    if (openBook) {
+      share = {
+        understand: share.understand + share.memorize,
+        memorize: 0,
+        solve: share.solve,
+      };
+    }
+    var
       learnShare = Math.max(share.understand, isNew ? 0.4 : 0.15),
       rest = 1 - learnShare,
       active = share.memorize + share.solve,
@@ -805,9 +825,12 @@
       reviews = {},
       fmt = formatFor(course, exam, sid),
       fTypes = (fmt && fmt.types) || [],
+      openBook = bookFor(course, fmt) === "open",
       fmtLine = fTypes.length
         ? "Exam format: " + formatSummary(fmt) + ". "
-        : "",
+        : openBook
+          ? "Open book exam: focus on understanding and practice, not memorizing. "
+          : "",
       heldForReview = null;
     var orderedChapters = a.chapters
       .filter(function (c) {
@@ -850,6 +873,7 @@
           Math.ceil(left) - retest,
           isNew,
           fTypes,
+          openBook,
         ),
         method = isNew ? METHOD_NEW : METHOD_KNOWN,
         name = course + " " + noun + " · " + chapterName(ch),
@@ -3035,7 +3059,7 @@
             '<option value="' +
             k +
             '"' +
-            (((f && f.book) || "") === k ? " selected" : "") +
+            (bookFor(course, f) === k ? " selected" : "") +
             ">" +
             BOOK[k] +
             "</option>"
@@ -3579,6 +3603,12 @@
   }
   function styleHtml(a) {
     var parts = [];
+    if (COURSE_BOOK[C.courseLabel(a.course)] === "open")
+      parts.push(
+        '<section class="sp-box"><h3>Open book</h3><p class="sp-muted">Every ' +
+          esc(C.courseLabel(a.course)) +
+          " exam is open book, so the plan puts memorizing time into understanding and practice instead.</p></section>",
+      );
     if (a.style && a.style.question_types)
       parts.push(
         '<section class="sp-box"><h3>How the exam asks</h3><p class="sp-muted">From ' +
@@ -3907,6 +3937,8 @@
         if (x.weight) meta.push(x.weight + "% of the grade");
         if (x.format && (x.format.types || []).length)
           meta.push(formatSummary(x.format, true));
+        if (x.type === "exam" && bookFor(x.course, x.format))
+          meta.push(BOOK[bookFor(x.course, x.format)]);
         return (
           '<li class="sp-rem-row' +
           cls +

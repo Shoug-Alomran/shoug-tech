@@ -1459,13 +1459,18 @@
       if (Object.keys(exams).length) data.exams = exams;
       if (state.draft.term) data.term = state.draft.term;
       data.updatedAt = state.fb.firestore.FieldValue.serverTimestamp();
+      // Read the grade now: writing the rating fires the ratings listener,
+      // which can rebuild the draft before saveGrade runs.
+      var grade = state.draft.grade || "";
       state.saving = true;
       state.status = ["Saving…", "جارٍ الحفظ…"];
       render();
       ratingsRef(state.fb, course)
         .doc(state.user.uid)
         .set(data)
-        .then(saveGrade)
+        .then(function () {
+          return saveGrade(grade);
+        })
         .then(function () {
           state.status = [
             "Saved. Thanks for rating!",
@@ -1689,9 +1694,13 @@
           if (d.uid === uid) state.mine = d;
         });
       // Seed the form from the saved rating unless the student is mid-edit.
+      // A grade picked but not saved yet survives the reseed (the first save
+      // reseeds as soon as the new rating arrives); a sign-in change drops it.
       if (reset || !prev || !state.mine) {
+        var pending = !reset && state.draft ? state.draft.grade : "";
         state.draft = draftFrom(state.mine);
-        if (state.gradeMine) state.draft.grade = state.gradeMine.grade;
+        if (pending) state.draft.grade = pending;
+        else if (state.gradeMine) state.draft.grade = state.gradeMine.grade;
       }
     }
 
@@ -1737,8 +1746,7 @@
         })
         .catch(function () {});
     }
-    function saveGrade() {
-      var want = state.draft.grade || "";
+    function saveGrade(want) {
       var mine = state.gradeMine;
       if (!want && !mine) return Promise.resolve();
       if (mine && want === mine.grade) return Promise.resolve();

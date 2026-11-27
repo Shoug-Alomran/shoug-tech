@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="en" data-sg-styled data-no-page-search>
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/assets/shoug-favicon-v4.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/shoug-apple-touch-icon-v4.png"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule Planner | SHOUG.TECH</title>
+    <meta
+      name="description"
+      content="Pick your PSU courses and see every schedule that fits: no time clashes, your free time kept, finals spread out, with Murshid's advice on load, difficulty and prerequisites."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/schedule-planner/"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/javascripts/html-theme-sync.js"></script>
+    <style>
+      :root {
+        --bg: #f6f4fb;
+        --surface: #ffffff;
+        --surface-2: #f1edf8;
+        --border: rgba(22, 17, 31, 0.14);
+        --text: #16111f;
+        --muted: #5f566c;
+        --accent: #9b1fd0;
+        --accent-soft: rgba(155, 31, 208, 0.1);
+        --good: #0f8a6c;
+        --warn: #b26a00;
+        --bad: #d61f45;
+        --block: rgba(214, 31, 69, 0.1);
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+        --radius: 14px;
+        --hour: 64px;
+      }
+      html[data-theme="dark"] {
+        --bg: #07040d;
+        --surface: #110a1c;
+        --surface-2: #1a1128;
+        --border: rgba(255, 255, 255, 0.1);
+        --text: #f8f7fb;
+        --muted: #a99fb5;
+        --accent: #c75cf0;
+        --accent-soft: rgba(199, 92, 240, 0.14);
+        --good: #41d6c3;
+        --warn: #ffb547;
+        --bad: #ff536f;
+        --block: rgba(255, 83, 111, 0.14);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        overflow-x: clip;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 400 15px/1.5 var(--sans);
+      }
+      [dir="rtl"],
+      .ar {
+        font-family: "IBM Plex Sans Arabic", var(--sans);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      /* ── Top bar ── */
+      .topbar {
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        top: 0;
+        z-index: 30;
+      }
+      .topbar .in {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        padding: 0 clamp(14px, 2.5vw, 28px);
+        flex-wrap: nowrap;
+      }
+      .brand {
+        flex: none;
+        font: 700 0.8rem var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text);
+        text-decoration: none;
+      }
+      .brand b {
+        color: var(--accent);
+      }
+      .updated {
+        font: 500 0.75rem var(--mono);
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      .apptabs {
+        display: flex;
+        align-self: stretch;
+        overflow-x: auto;
+        scrollbar-width: none;
+        min-width: 0;
+        flex: 1;
+      }
+      .apptabs::-webkit-scrollbar { display: none; }
+      .apptabs a {
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        white-space: nowrap;
+        text-decoration: none;
+        color: var(--muted);
+        font: 700 0.7rem var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 2px solid transparent;
+      }
+      .apptabs a:hover { color: var(--text); }
+      .apptabs a.active { color: var(--text); border-bottom-color: var(--accent); }
+      .pagehead {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 18px clamp(14px, 2.5vw, 28px) 0;
+      }
+      .pagehead h1 { font-size: 1.35rem; margin: 0; }
+      .topbar-end {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        font: 600 0.85rem/1 var(--sans);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 9px 14px;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn:hover {
+        border-color: var(--accent);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+      .btn:focus-visible,
+      .chip:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* ── Layout ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 300px;
+        gap: 18px;
+        padding: 18px clamp(14px, 2.5vw, 28px) 120px;
+        align-items: start;
+      }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+      .panel + .panel {
+        margin-top: 14px;
+      }
+      .panel h2 {
+        font-size: 0.95rem;
+        margin: 0 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .label {
+        font: 700 0.68rem var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .side {
+        position: sticky;
+        top: 76px;
+        max-height: calc(100vh - 92px);
+        overflow: auto;
+        scrollbar-width: thin;
+      }
+
+      .seg {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        background: var(--surface-2);
+        border-radius: 999px;
+        padding: 3px;
+        gap: 3px;
+      }
+      .seg button {
+        border: 0;
+        background: transparent;
+        border-radius: 999px;
+        padding: 8px 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .seg button[aria-pressed="true"] {
+        background: var(--accent);
+        color: #fff;
+      }
+      select.field,
+      input.field {
+        width: 100%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 11px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .stack > * + * {
+        margin-top: 10px;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 0.88rem;
+      }
+      .toggle input {
+        appearance: none;
+        width: 38px;
+        height: 22px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        position: relative;
+        cursor: pointer;
+        flex: none;
+        transition: background 0.15s;
+      }
+      .toggle input::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--muted);
+        transition: transform 0.15s;
+      }
+      .toggle input:checked {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .toggle input:checked::after {
+        transform: translateX(16px);
+        background: #fff;
+      }
+
+      .course-list {
+        margin-top: 10px;
+        display: grid;
+        gap: 6px;
+      }
+      .course {
+        display: grid;
+        grid-template-columns: 22px 1fr auto;
+        gap: 8px;
+        align-items: start;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        background: var(--surface);
+      }
+      .course:hover {
+        border-color: var(--accent);
+      }
+      .course.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .course .tick {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        margin-top: 2px;
+        display: grid;
+        place-items: center;
+      }
+      .course.on .tick {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .course.on .tick::after {
+        content: "";
+        width: 7px;
+        height: 4px;
+        border: 2px solid #fff;
+        border-top: 0;
+        border-right: 0;
+        transform: rotate(-45deg) translate(1px, -1px);
+      }
+      .course .code {
+        font: 700 0.85rem var(--mono);
+      }
+      .course .name {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      .course .meta {
+        font: 500 0.7rem var(--mono);
+        color: var(--muted);
+        text-align: right;
+        white-space: nowrap;
+      }
+      .pill {
+        display: inline-block;
+        font: 600 0.66rem var(--mono);
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--muted);
+      }
+      .pill.bad {
+        background: var(--block);
+        color: var(--bad);
+      }
+      .pill.good {
+        background: color-mix(in srgb, var(--good) 15%, transparent);
+        color: var(--good);
+      }
+      .pill.warn {
+        background: color-mix(in srgb, var(--warn) 16%, transparent);
+        color: var(--warn);
+      }
+      .more {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: center;
+        padding: 6px;
+      }
+
+      .free-form { display: grid; gap: 8px; }
+      .free-form textarea { resize: vertical; min-height: 64px; font-size: 0.86rem; line-height: 1.4; }
+      .free-form .btn { justify-self: end; }
+      .rules { display: flex; flex-wrap: wrap; gap: 6px; }
+      .rule {
+        display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem;
+        padding: 5px 6px 5px 10px; border-radius: 999px; background: var(--block); color: var(--bad);
+        border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent);
+      }
+      .rule button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0 2px; font-size: 0.75rem; }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        border-color: var(--bad);
+        color: var(--bad);
+        background: var(--block);
+      }
+
+      /* ── Center ── */
+      .meter {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 10px 18px;
+        margin-bottom: 14px;
+      }
+      .meter svg {
+        flex: none;
+      }
+      .meter .t {
+        font-weight: 700;
+      }
+      .meter .s {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .meter .lvl {
+        font: 700 0.72rem var(--mono);
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-left: 6px;
+      }
+      .meter .chev {
+        margin-left: auto;
+        color: var(--muted);
+        transition: transform 0.2s;
+      }
+      .meter[aria-expanded="true"] .chev {
+        transform: rotate(180deg);
+      }
+      .breakdown {
+        display: none;
+        margin: -6px 0 14px;
+        padding: 14px 18px;
+      }
+      .breakdown.open {
+        display: block;
+      }
+      .breakdown table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .breakdown td {
+        padding: 5px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .breakdown td:last-child {
+        text-align: right;
+        font-family: var(--mono);
+      }
+
+      .grid-wrap {
+        padding: 0;
+        overflow: hidden;
+      }
+      .week {
+        display: grid;
+        grid-template-columns: 64px repeat(5, minmax(0, 1fr));
+        position: relative;
+      }
+      .week.has-weekend {
+        grid-template-columns: 64px repeat(6, minmax(0, 1fr));
+      }
+      .week .head {
+        background: var(--surface);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 12px 8px;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+      }
+      .week .col {
+        position: relative;
+        border-left: 1px solid var(--border);
+      }
+      .week .times {
+        position: relative;
+      }
+      .week .time {
+        height: var(--hour);
+        font: 500 0.7rem var(--mono);
+        color: var(--muted);
+        padding: 4px 8px 0 0;
+        text-align: right;
+        border-top: 1px solid var(--border);
+      }
+      .week .slot {
+        height: var(--hour);
+        border-top: 1px solid var(--border);
+        cursor: pointer;
+      }
+      .week .slot:hover {
+        background: var(--block);
+      }
+      .week .slot:hover::after {
+        content: "+ Free";
+        font: 600 0.65rem var(--mono);
+        color: var(--bad);
+        padding: 4px 6px;
+        display: block;
+        opacity: 0.7;
+      }
+      .week .slot.break {
+        cursor: default;
+        background: var(--surface-2);
+        display: grid;
+        place-items: center;
+      }
+      .week .slot.break:hover::after {
+        content: none;
+      }
+      .week .slot.break span {
+        font: 600 0.66rem var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .slot.blocked,
+      .slot.blocked:hover {
+        background: repeating-linear-gradient(
+          135deg,
+          var(--block) 0 8px,
+          transparent 8px 16px
+        );
+      }
+      .slot.blocked::after,
+      .slot.blocked:hover::after {
+        content: "Free";
+        font: 600 0.65rem var(--mono);
+        color: var(--bad);
+        padding: 4px 6px;
+        display: block;
+        opacity: 1;
+      }
+      .block {
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        border-radius: 10px;
+        padding: 5px 8px;
+        overflow: hidden;
+        border: 1.5px solid var(--c);
+        background: color-mix(in srgb, var(--c) 16%, var(--surface));
+        color: var(--text);
+        font-size: 0.75rem;
+        line-height: 1.3;
+        z-index: 2;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .block:hover {
+        background: color-mix(in srgb, var(--c) 26%, var(--surface));
+      }
+      .block.is-closed {
+        border-style: dashed;
+      }
+      .block .bc {
+        font: 700 0.72rem var(--mono);
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+      }
+      .block .bcode {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .block .tag {
+        flex: none;
+        font: 700 0.6rem var(--mono);
+        padding: 1px 5px;
+        border-radius: 6px;
+        background: var(--c);
+        color: #fff;
+      }
+      .block .who,
+      .block .room {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--muted);
+      }
+      .block .closed {
+        color: var(--bad);
+        font-weight: 700;
+      }
+      .block .xdot {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--bad);
+      }
+      .block.short .room {
+        display: none;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 24px 24px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .empty-state h1 {
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+        line-height: 1.15;
+        margin: 10px 0;
+      }
+      .empty-state p {
+        color: var(--muted);
+        max-width: 520px;
+        margin: 0 auto 18px;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        max-width: 620px;
+        margin: 22px auto 0;
+      }
+      .steps div {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 0.85rem;
+      }
+      .steps b {
+        display: block;
+        font: 700 1.2rem var(--mono);
+        color: var(--accent);
+      }
+      .notice {
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-bottom: 14px;
+      }
+      .notice b {
+        color: var(--text);
+      }
+
+      .navbar {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 25;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+      }
+      .navbar .count {
+        text-align: center;
+        min-width: 150px;
+        line-height: 1.15;
+      }
+      .navbar .count small {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+      .navbar .count b {
+        font-size: 0.95rem;
+      }
+      .navbar select {
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+      }
+      .navbar .icon {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        justify-content: center;
+      }
+
+      /* ── Right ── */
+      .sel {
+        display: grid;
+        gap: 8px;
+      }
+      .sel .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border: 1.5px solid var(--c);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--c) 10%, var(--surface));
+      }
+      .sel .item .code {
+        font: 700 0.85rem var(--mono);
+      }
+      .sel .item .crn {
+        font: 600 0.75rem var(--mono);
+        color: var(--muted);
+      }
+      .sel .item .item-open {
+        margin: 0;
+        flex: 1;
+        text-align: left;
+        color: var(--text);
+        font-size: inherit;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .sel .item .item-open:hover .code { text-decoration: underline; }
+      .sel .item button {
+        margin-left: auto;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+      .finals {
+        display: grid;
+        gap: 6px;
+        font-size: 0.82rem;
+      }
+      .finals .f {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 8px;
+        padding: 6px 8px;
+        border-radius: 8px;
+      }
+      .finals .f b {
+        font-family: var(--mono);
+      }
+      .finals .f.close {
+        background: var(--block);
+        color: var(--bad);
+      }
+      .finals .f.clash {
+        background: var(--bad);
+        color: #fff;
+      }
+      .hint {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .saved-list {
+        display: grid;
+        gap: 6px;
+      }
+      .saved-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .saved-item:hover { border-color: var(--accent); }
+      .saved-open {
+        flex: 1;
+        display: grid;
+        gap: 4px;
+        text-align: left;
+        border: 0;
+        background: transparent;
+        padding: 10px 0 10px 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.86rem;
+      }
+      .saved-secs { font: 500 0.7rem/1.5 var(--mono); color: var(--muted); }
+      .saved-del {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+      .saved-del:hover { color: var(--bad); }
+      .block.pinned { box-shadow: inset 0 0 0 2px var(--c); }
+
+      .toast {
+        position: fixed;
+        bottom: 86px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text);
+        color: var(--bg);
+        padding: 9px 16px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        z-index: 60;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+
+      /* ── Section picker (per course) ── */
+      dialog {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+        color: var(--text);
+        padding: 0;
+        width: min(1080px, 96vw);
+        max-height: 92vh;
+      }
+      dialog[open] { display: flex; flex-direction: column; }
+      dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+      .pk-head { display: flex; align-items: flex-start; gap: 14px; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+      .pk-head h3 { margin: 0; font: 700 1.5rem var(--mono); display: inline; vertical-align: middle; }
+      .pk-head p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+      .pk-head .pill { vertical-align: middle; margin-right: 8px; font-size: 0.75rem; padding: 4px 10px; }
+      .pk-x { margin-left: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 1.1rem; color: var(--text); flex: none; }
+      .pk-body { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); min-height: 0; flex: 1; }
+      .pk-list { padding: 16px 22px; overflow: auto; border-right: 1px solid var(--border); }
+      .pk-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+      .pk-tools b { font-size: 1rem; }
+      .pk-tools .seg { margin-left: auto; }
+      .pk-prev { padding: 16px 22px; overflow: auto; }
+      .pk-prev h4 { margin: 0 0 6px; font-size: 1rem; }
+      .pk-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
+      .pk-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+      .pcard {
+        display: grid; grid-template-columns: 112px 1fr 26px; gap: 14px; align-items: center;
+        border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; cursor: pointer; background: var(--surface);
+      }
+      .pcard:hover { border-color: var(--accent); }
+      .pcard.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
+      .pcard.bad:not(.on) { border-color: color-mix(in srgb, var(--bad) 45%, transparent); }
+      .pcard.any { grid-template-columns: 1fr 26px; }
+      .pcard input { width: 20px; height: 20px; accent-color: var(--accent); justify-self: end; }
+      .ptime { display: grid; justify-items: center; gap: 2px; border-right: 1px solid var(--border); padding-right: 12px; }
+      .ptime b { font: 700 1.4rem var(--mono); }
+      .ptime b small { font-size: 0.7rem; margin-left: 2px; }
+      .ptime > span { font-size: 0.75rem; color: var(--muted); }
+      .pdays { display: flex; gap: 2px; margin-top: 4px; }
+      .pdays i { font: 700 0.6rem var(--mono); font-style: normal; padding: 2px 3px; border-radius: 4px; color: var(--muted); }
+      .pdays i.on { background: var(--accent); color: #fff; }
+      .pinfo { display: grid; gap: 6px; min-width: 0; }
+      .pwho { font-size: 0.98rem; }
+      .prooms { display: flex; flex-wrap: wrap; gap: 6px; }
+      .prooms span { font: 600 0.72rem var(--mono); border: 1px solid var(--border); border-radius: 8px; padding: 3px 7px; }
+      .prooms em { font-style: normal; color: var(--muted); font-weight: 500; }
+      .pmeta { font-size: 0.78rem; color: var(--muted); }
+      .pstatus { display: flex; flex-wrap: wrap; gap: 6px; }
+      .pstatus .pill { font-size: 0.72rem; padding: 3px 9px; }
+      .pw { display: grid; grid-template-columns: 44px repeat(5, minmax(0, 1fr)); gap: 0 4px; }
+      .pw > b { font-size: 0.75rem; text-align: center; padding-bottom: 6px; }
+      .pw-times { display: grid; grid-auto-rows: var(--px); }
+      .pw-times span { font: 500 0.62rem var(--mono); color: var(--muted); }
+      .pw-col { position: relative; height: calc(var(--rows) * var(--px)); background: var(--surface-2); border-radius: 8px; }
+      .pw-b { position: absolute; left: 2px; right: 2px; border-radius: 6px; font: 700 0.58rem var(--mono); display: grid; place-items: center; overflow: hidden; }
+      .pw-b.other { background: color-mix(in srgb, var(--muted) 30%, var(--surface)); color: var(--text); }
+      .pw-b.this { background: var(--good); color: #fff; }
+      .pw-b.clash { background: var(--bad); color: #fff; }
+      .pk-foot { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--border); }
+      .pk-foot span { color: var(--muted); font-size: 0.86rem; margin-right: auto; }
+      @media (max-width: 860px) {
+        .pk-body { grid-template-columns: 1fr; overflow: auto; }
+        .pk-list { border-right: 0; overflow: visible; }
+        .pk-prev { border-top: 1px solid var(--border); }
+        .pcard { grid-template-columns: 88px 1fr 22px; gap: 10px; padding: 12px; }
+        .ptime b { font-size: 1.1rem; }
+      }
+
+      @media (max-width: 1180px) {
+        .layout {
+          grid-template-columns: 300px minmax(0, 1fr);
+        }
+        .right {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 14px;
+        }
+        .right .panel + .panel {
+          margin-top: 0;
+        }
+      }
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .side {
+          position: static;
+          max-height: none;
+        }
+        .week {
+          grid-template-columns: 44px repeat(5, minmax(0, 1fr));
+        }
+        .week .head {
+          font-size: 0.72rem;
+          padding: 10px 2px;
+        }
+        .block {
+          left: 2px;
+          right: 2px;
+          padding: 4px;
+          font-size: 0.66rem;
+        }
+        .block .room {
+          display: none;
+        }
+        .block .tag {
+          display: none;
+        }
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        .navbar .count {
+          min-width: 104px;
+        }
+        .navbar select {
+          max-width: 92px;
+        }
+      }
+      /* ── Arabic (right to left) ── */
+      .btn.lang { font-family: "IBM Plex Sans Arabic", var(--sans); min-width: 58px; justify-content: center; }
+      html[dir="rtl"] body { font-family: "IBM Plex Sans Arabic", var(--sans); }
+      html[dir="rtl"] .topbar-end { margin-left: 0; margin-right: auto; }
+      html[dir="rtl"] .btn.lang { font-family: var(--sans); }
+      html[dir="rtl"] .label,
+      html[dir="rtl"] .apptabs a { letter-spacing: 0; text-transform: none; font-family: "IBM Plex Sans Arabic", var(--sans); font-size: 0.8rem; }
+      html[dir="rtl"] .course .meta { text-align: left; }
+      html[dir="rtl"] .meter { text-align: right; }
+      html[dir="rtl"] .meter .lvl { margin-left: 0; margin-right: 6px; }
+      html[dir="rtl"] .meter .chev { margin-left: 0; margin-right: auto; }
+      html[dir="rtl"] .breakdown td:last-child { text-align: left; }
+      html[dir="rtl"] .week .time { text-align: left; padding: 4px 0 0 8px; }
+      html[dir="rtl"] .week .col { border-left: 0; border-right: 1px solid var(--border); }
+      html[dir="rtl"] .block .xdot { right: auto; left: 6px; }
+      html[dir="rtl"] .sel .item .item-open { text-align: right; }
+      html[dir="rtl"] .sel .item button { margin-left: 0; margin-right: auto; }
+      html[dir="rtl"] .saved-open { text-align: right; padding: 10px 12px 10px 0; }
+      html[dir="rtl"] .flip { display: inline-block; transform: scaleX(-1); }
+      html[dir="rtl"] .pk-x { margin-left: 0; margin-right: auto; }
+      html[dir="rtl"] .pk-tools .seg { margin-left: 0; margin-right: auto; }
+      html[dir="rtl"] .pk-list { border-right: 0; border-left: 1px solid var(--border); }
+      html[dir="rtl"] .ptime { border-right: 0; border-left: 1px solid var(--border); padding-right: 0; padding-left: 12px; }
+      html[dir="rtl"] .pk-foot span { margin-right: 0; margin-left: auto; }
+      html[dir="rtl"] .pk-head .pill { margin-right: 0; margin-left: 8px; }
+      html[dir="rtl"] .rule { padding: 5px 10px 5px 6px; }
+      html[dir="rtl"] .free-form .btn { justify-self: start; }
+      html[dir="rtl"] .pw-times span { text-align: left; }
+      @media (max-width: 860px) { html[dir="rtl"] .pk-list { border-left: 0; } }
+    </style>
+    <link rel="stylesheet" href="/styles/site-shell.css" />
+    <link rel="stylesheet" href="/styles/murshid.css" />
+    <script defer src="/javascripts/site-palette.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="in">
+        <a class="brand" href="/"><b>SHOUG</b>.TECH</a>
+        <nav class="apptabs" aria-label="Your pages" data-ar-aria="صفحاتك">
+          <a href="/" data-ar="الرئيسية">Home</a>
+          <a href="/community/profile/" id="tab-profile" hidden data-ar="ملفي الشخصي">My Profile</a>
+          <a href="/account/calendar/" data-ar="التقويم">Calendar</a>
+          <a href="/academics/schedule-planner/" class="active" aria-current="page" data-ar="مخطط الجدول">Schedule Planner</a>
+          <a href="/academic-plan-themes/academic-plan/" id="tab-plan" data-ar="خطتي">My Plan</a>
+          <a href="/account/transcript/" data-ar="سجلي الأكاديمي">My Transcript</a>
+          <a href="/account/" data-ar="تقدمي">My Progress</a>
+          <a href="/bookmarks/" data-ar="المحفوظات">Bookmarks</a>
+          <a href="/community/" data-ar="المجتمع">Community</a>
+        </nav>
+        <div class="topbar-end">
+          <button class="btn lang" type="button" id="lang-toggle" lang="ar">عربي</button>
+          <button class="btn" type="button" onclick="toggleTheme()" aria-label="Switch light or dark mode" data-ar-aria="التبديل بين الوضع الفاتح والداكن">
+            <span id="themeIcon" aria-hidden="true">🌙</span>
+          </button>
+          <button id="shoug-fb-user" class="btn" type="button" data-account-loader>Sign In</button>
+        </div>
+      </div>
+    </header>
+    <div class="pagehead">
+      <h1 data-ar="مخطط الجدول">Schedule Planner</h1>
+      <span class="updated" id="updated">Loading timetable…</span>
+    </div>
+
+    <div class="layout">
+      <!-- Start side: term, campus, courses, free time -->
+      <aside class="side" aria-label="Courses and filters" data-ar-aria="المواد والتصفية">
+        <section class="panel stack">
+          <div class="label" data-ar="الفصل الدراسي">Term</div>
+          <select class="field" id="term" aria-label="Term" data-ar-aria="الفصل الدراسي"></select>
+          <div class="label" data-ar="المقر">Campus</div>
+          <div class="seg" role="group" aria-label="Campus" data-ar-aria="المقر">
+            <button type="button" data-campus="f" aria-pressed="false" data-ar="طالبات">Female</button>
+            <button type="button" data-campus="m" aria-pressed="false" data-ar="طلاب">Male</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2><span data-ar="المواد">Courses</span> <span class="pill" id="picked-count">0 picked</span></h2>
+          <button class="btn primary" type="button" id="ask-murshid" style="width: 100%; justify-content: center">
+            <span aria-hidden="true">✦</span> <span data-ar="اسأل مرشد ماذا تسجّل">Ask Murshid what to take</span>
+          </button>
+          <div class="stack" style="margin-top: 12px">
+            <label class="toggle"><input type="checkbox" id="opt-closed" /> <span data-ar="إظهار الشعب المغلقة">Include closed sections</span></label>
+            <label class="toggle"><input type="checkbox" id="opt-final-clash" /> <span data-ar="السماح بتعارض الاختبارات النهائية">Allow final exam clashes</span></label>
+          </div>
+          <div style="margin-top: 14px" class="stack">
+            <select class="field" id="dept" aria-label="Filter by major" data-ar-aria="تصفية حسب التخصص"></select>
+            <input
+              class="field"
+              id="search"
+              type="search"
+              placeholder="Search: CYS405, Web, د. زينب"
+              data-ar-placeholder="ابحث: CYS405، ويب، د. زينب"
+              autocomplete="off"
+              aria-label="Search courses"
+              data-ar-aria="ابحث في المواد"
+            />
+          </div>
+          <div class="course-list" id="course-list" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <h2>
+            <span data-ar="وقت الفراغ">Free time</span>
+            <button class="btn ghost" type="button" id="clear-free" data-ar="مسح">Clear</button>
+          </h2>
+          <form id="free-form" class="free-form">
+            <label class="sr-only" for="free-text" data-ar="متى تريد أن تكون متفرغًا؟">When do you want to be free?</label>
+            <textarea
+              id="free-text"
+              class="field"
+              rows="2"
+              maxlength="500"
+              dir="auto"
+              placeholder="Tell me in your words: Thursdays off, nothing before 10, done by 2 on Mondays… (English or عربي)"
+              data-ar-placeholder="اكتب بكلماتك: الخميس إجازة، لا شيء قبل 10، أخلص الساعة 2 يوم الاثنين… (عربي أو English)"
+            ></textarea>
+            <button class="btn primary" type="submit" id="free-apply" data-ar="تطبيق">Apply</button>
+          </form>
+          <div id="free-rules" aria-live="polite"></div>
+          <div class="label" style="margin: 12px 0 6px" data-ar="اختيارات سريعة">Quick picks</div>
+          <div class="chips" id="presets">
+            <button class="chip" type="button" data-preset="early" aria-pressed="false" data-ar="لا شيء قبل 9">Nothing before 9</button>
+            <button class="chip" type="button" data-preset="late" aria-pressed="false" data-ar="لا شيء بعد 2 م">Nothing after 2 PM</button>
+            <button class="chip" type="button" data-preset="thu" aria-pressed="false" data-ar="الخميس إجازة">Thursdays off</button>
+            <button class="chip" type="button" data-preset="sun" aria-pressed="false" data-ar="الأحد إجازة">Sundays off</button>
+          </div>
+          <p class="hint" data-ar="أو اضغط على أي ساعة فارغة في الجدول لتجعلها وقت فراغ، واضغط مرة أخرى للتراجع. اضغط على أي مادة لعرض شعبها الأخرى. الساعة 12–1 استراحة للجامعة كلها.">
+            Or tap any empty hour on the schedule to keep it free, and tap again to undo. Tap a class to see its other sections. 12–1 is already the university break.
+          </p>
+        </section>
+      </aside>
+
+      <!-- Center: load + week grid -->
+      <main>
+        <button class="meter" type="button" id="meter" aria-expanded="false" aria-controls="breakdown" hidden>
+          <svg width="54" height="34" viewBox="0 0 54 34" aria-hidden="true">
+            <path d="M5 30a22 22 0 0 1 44 0" fill="none" stroke="var(--surface-2)" stroke-width="6" stroke-linecap="round" />
+            <path id="meter-arc" d="M5 30a22 22 0 0 1 44 0" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" />
+            <line id="meter-needle" x1="27" y1="30" x2="27" y2="12" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+          <span>
+            <span class="t" data-ar="حِمل الجدول">Schedule load</span><span class="lvl" id="meter-level"></span><br />
+            <span class="s" id="meter-sub"></span>
+          </span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="panel breakdown" id="breakdown"></div>
+        <div id="notice"></div>
+        <section class="panel grid-wrap" id="grid-panel">
+          <div class="empty-state" id="empty">
+            <div id="empty-mascot"></div>
+            <h1 data-ar="لنبنِ جدولك على طريقتك">Let's build your schedule, your way</h1>
+            <p data-ar="اختر موادك، أو اضغط على الساعات بالأسفل لتجعلها وقت فراغ. ستحصل على كل جدول بلا تعارض في الأوقات ولا في الاختبارات النهائية، ثم اختر ما يناسبك.">
+              Pick your courses, or tap hours below to keep them free. You'll get every schedule with no time clashes and no clashing finals, then choose the one you like.
+            </p>
+            <div class="steps">
+              <div><b>1</b><span data-ar="اختر الفصل والمقر">Choose the term and campus</span></div>
+              <div><b>2</b><span data-ar="اختر المواد أو اسأل مرشد">Pick courses, or ask Murshid</span></div>
+              <div><b>3</b><span data-ar="تصفّح الجداول واحفظ ما يعجبك">Browse schedules and save one</span></div>
+            </div>
+          </div>
+          <div class="week" id="week" hidden></div>
+        </section>
+      </main>
+
+      <!-- End side: selected sections, finals, saved -->
+      <aside class="right" aria-label="Selected sections and finals" data-ar-aria="الشعب المختارة والاختبارات">
+        <section class="panel">
+          <h2><span data-ar="الشعب المختارة">Selected sections</span> <span class="pill" id="hours">0 h</span></h2>
+          <div class="sel" id="sel"></div>
+          <button class="btn" type="button" id="copy" style="width: 100%; justify-content: center; margin-top: 10px" disabled data-ar="نسخ أرقام الشعب">Copy section numbers</button>
+        </section>
+        <section class="panel">
+          <h2 data-ar="الاختبارات النهائية">Final exams</h2>
+          <div class="finals" id="finals"></div>
+          <p class="hint" data-ar="الأحمر: اختباران نهائيان في نفس اليوم أو بينهما أقل من 24 ساعة.">Red: two finals on the same day or less than 24 hours apart.</p>
+        </section>
+        <section class="panel">
+          <h2 data-ar="الجداول المحفوظة">Saved schedules</h2>
+          <div class="saved-list" id="saved"></div>
+        </section>
+      </aside>
+    </div>
+
+    <nav class="navbar" id="navbar" aria-label="Browse schedules" data-ar-aria="تصفح الجداول" hidden>
+      <select id="sort" aria-label="Sort schedules" data-ar-aria="ترتيب الجداول">
+        <option value="days" data-ar="أقل أيام">Fewest days</option>
+        <option value="gaps" data-ar="أقل فراغات">Fewest gaps</option>
+        <option value="late" data-ar="بداية متأخرة">Latest start</option>
+        <option value="early" data-ar="نهاية مبكرة">Earliest finish</option>
+        <option value="finals" data-ar="النهائيات متباعدة">Finals spread out</option>
+        <option value="load" data-ar="الأخف حِملًا">Lightest load</option>
+      </select>
+      <button class="btn icon" type="button" id="prev" aria-label="Previous schedule" data-ar-aria="الجدول السابق"><span class="flip">‹</span></button>
+      <div class="count"><small data-ar="تعرض">Viewing</small><b id="count">–</b></div>
+      <button class="btn icon" type="button" id="next" aria-label="Next schedule" data-ar-aria="الجدول التالي"><span class="flip">›</span></button>
+      <button class="btn" type="button" id="save">☆ Save</button>
+    </nav>
+
+    <dialog id="sections-dialog" aria-labelledby="sections-title">
+      <div class="pk-head">
+        <div>
+          <span class="pill" id="sections-hours"></span><h3 id="sections-title">Sections</h3>
+          <p id="sections-sub"></p>
+        </div>
+        <button class="pk-x" type="button" id="sections-close" aria-label="Close" data-ar-aria="إغلاق">✕</button>
+      </div>
+      <div class="pk-body">
+        <section class="pk-list" aria-label="Sections" data-ar-aria="الشعب">
+          <div class="pk-tools">
+            <b data-ar="اختر شعبة">Pick a section</b>
+            <span class="pill" id="sections-count"></span>
+            <div class="seg" role="group" aria-label="Sort sections" data-ar-aria="ترتيب الشعب">
+              <button type="button" data-psort="fit" aria-pressed="true" data-ar="الأنسب">Best fit</button>
+              <button type="button" data-psort="early" aria-pressed="false" data-ar="الأبكر">Earliest</button>
+              <button type="button" data-psort="open" aria-pressed="false" data-ar="المتاحة فقط">Open only</button>
+            </div>
+          </div>
+          <div id="sections-body" role="radiogroup" aria-label="Sections" data-ar-aria="الشعب"></div>
+        </section>
+        <aside class="pk-prev" aria-label="Preview your week" data-ar-aria="معاينة أسبوعك">
+          <h4 data-ar="معاينة أسبوعك">Preview your week</h4>
+          <div class="pk-legend">
+            <span><i style="background: var(--good)"></i><span data-ar="هذه المادة">This course</span></span>
+            <span><i style="background: color-mix(in srgb, var(--muted) 30%, var(--surface))"></i><span data-ar="موادك الأخرى">Your other courses</span></span>
+            <span><i style="background: var(--bad)"></i><span data-ar="تعارض">Clash</span></span>
+          </div>
+          <div id="sections-preview"></div>
+        </aside>
+      </div>
+      <div class="pk-foot">
+        <span data-ar="اختر شعبة وستُثبَّت في جدولك.">Pick a section and it's pinned to your schedule.</span>
+        <button class="btn" type="button" id="sections-remove" data-ar="حذف المادة">Remove course</button>
+        <button class="btn primary" type="button" id="sections-done" data-ar="تم">Done</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="/javascripts/firebase-auth.js?v=66"></script>
+    <script src="/javascripts/free-time-parser.js?v=2" defer></script>
+    <script src="/javascripts/murshid.js?v=4" defer></script>
+    <script src="/javascripts/schedule-planner.js?v=4" defer></script>
+    <script src="/javascripts/register-sw.js" defer></script>
+  </body>
+</html>

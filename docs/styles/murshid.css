@@ -1,0 +1,152 @@
+/* Murshid, the schedule planner's advisor (docs/javascripts/murshid.js). */
+.ms-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.14));
+  background: var(--surface, #fff);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+}
+.ms-fab:focus-visible { outline: 2px solid var(--accent, #9b1fd0); outline-offset: 3px; }
+.ms-fab .ms-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--bad, #d61f45);
+  color: #fff;
+  font: 700 0.7rem/20px var(--mono, monospace);
+  padding: 0 5px;
+}
+.ms-fab .ms-dot[hidden] { display: none; }
+
+.ms-bubble {
+  position: fixed;
+  right: 100px;
+  bottom: 30px;
+  z-index: 40;
+  max-width: min(320px, calc(100vw - 130px));
+  background: var(--surface, #fff);
+  color: var(--text, #16111f);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.14));
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.ms-bubble.show { opacity: 1; transform: none; pointer-events: auto; cursor: pointer; }
+
+/* Avatar (pixel art) */
+.ms-me { width: 100%; height: 100%; image-rendering: pixelated; }
+.ms-fab .ms-me { border-radius: 50%; }
+.ms-me .lid { opacity: 0; animation: ms-blink 5s infinite; }
+.ms-me .cheek { opacity: 0; transition: opacity 0.3s; }
+.ms-me .alert, .ms-me .think { opacity: 0; transition: opacity 0.2s; }
+.ms-happy .ms-me .cheek { opacity: 1; }
+.ms-alarm .ms-me .alert { opacity: 1; animation: ms-hop 0.9s steps(2) 2; }
+.ms-think .ms-me .think { opacity: 1; }
+.ms-fab:hover .ms-me { animation: ms-hop 0.5s steps(2) 1; }
+@keyframes ms-blink {
+  0%, 94%, 100% { opacity: 0; }
+  96% { opacity: 1; }
+}
+@keyframes ms-hop {
+  50% { transform: translateY(-1.5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-me .lid, .ms-me, .ms-me .alert { animation: none !important; }
+}
+
+/* Panel */
+.ms-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  z-index: 50;
+  background: var(--surface, #fff);
+  color: var(--text, #16111f);
+  border-left: 1px solid var(--border, rgba(0, 0, 0, 0.14));
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.2);
+  transform: translateX(105%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+.ms-panel.open { transform: none; }
+.ms-head { display: flex; gap: 12px; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.ms-head .ms-avatar { width: 52px; height: 52px; flex: none; }
+.ms-head h2 { margin: 0; font-size: 1.05rem; }
+.ms-head p { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.ms-head .ms-x { margin-left: auto; border: 0; background: transparent; font-size: 1.3rem; cursor: pointer; color: var(--muted); }
+.ms-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 10px 18px 0; }
+.ms-tabs button {
+  border: 0;
+  background: transparent;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.ms-tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.ms-body { flex: 1; overflow: auto; padding: 14px 18px 30px; }
+.ms-body h3 { font: 700 0.68rem var(--mono, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+.ms-body h3:first-child { margin-top: 4px; }
+.ms-card { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; font-size: 0.86rem; line-height: 1.45; }
+.ms-card b { font-weight: 700; }
+.ms-card.warn { border-color: color-mix(in srgb, var(--bad) 45%, transparent); background: color-mix(in srgb, var(--bad) 7%, transparent); }
+.ms-card.good { border-color: color-mix(in srgb, var(--good) 45%, transparent); background: color-mix(in srgb, var(--good) 7%, transparent); }
+.ms-card .ms-t { display: flex; gap: 8px; align-items: baseline; font-weight: 700; margin-bottom: 2px; }
+.ms-card .ms-t .ico { flex: none; width: 18px; text-align: center; }
+.ms-card ul { margin: 6px 0 0; padding-left: 18px; }
+.ms-card li + li { margin-top: 3px; }
+.ms-card a { color: var(--accent); }
+.ms-card .ms-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.ms-mini { font: 600 0.75rem var(--sans); border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; padding: 5px 10px; cursor: pointer; }
+.ms-mini:hover { border-color: var(--accent); }
+.ms-field { display: grid; gap: 4px; margin-bottom: 10px; font-size: 0.82rem; }
+.ms-field select, .ms-field input, .ms-field textarea {
+  background: var(--surface-2, #f1edf8);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+  color: inherit;
+}
+.ms-sug { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.ms-sug:last-child { border-bottom: 0; }
+.ms-sug small { color: var(--muted); display: block; }
+.ms-sug .h { font: 600 0.72rem var(--mono, monospace); color: var(--muted); }
+.ms-muted { color: var(--muted); font-size: 0.82rem; }
+.ms-empty { text-align: center; padding: 26px 8px; color: var(--muted); font-size: 0.88rem; }
+.ms-empty .ms-bigme { width: 110px; height: 110px; margin: 0 auto 8px; }
+#empty-mascot .ms-me { width: 84px; height: 84px; }
+@media (max-width: 800px) {
+  .ms-fab { width: 60px; height: 60px; bottom: 84px; right: 12px; }
+  .ms-bubble { right: 82px; bottom: 92px; }
+}
+
+/* Arabic (right to left) */
+html[dir="rtl"] .ms-panel { font-family: "IBM Plex Sans Arabic", var(--sans, sans-serif); }
+html[dir="rtl"] .ms-head .ms-x { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .ms-card ul { padding-left: 0; padding-right: 18px; }
+html[dir="rtl"] .ms-body h3 { letter-spacing: 0; text-transform: none; font-family: "IBM Plex Sans Arabic", var(--sans, sans-serif); font-size: 0.8rem; }
+html[dir="rtl"] .ms-bubble { border-radius: 16px 16px 16px 4px; }

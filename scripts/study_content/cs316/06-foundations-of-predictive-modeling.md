@@ -77,10 +77,10 @@ Let f(x, y) = x² + y².
 - ∂f/∂x = 2x and ∂f/∂y = 2y, so **∇f = (2x, 2y)**.
 - At (1, 1), the gradient is (2, 2). It points directly away from the minimum at the origin, which is why we walk the _opposite_ way.
 - Second derivatives: ∂²f/∂x² = 2, ∂²f/∂y² = 2, and the mixed terms are 0. So the **Hessian is [[2, 0], [0, 2]]**. Positive on the diagonal means it curves up in every direction: a bowl.
-    ::
-    ::mnemonic Hessian = How it bends
-    The **H**essian says **H**ow the surface bends, since it has second derivatives. The **J**acobian is about **J**ust the first derivatives of many outputs.
-    ::
+      ::
+      ::mnemonic Hessian = How it bends
+      The **H**essian says **H**ow the surface bends, since it has second derivatives. The **J**acobian is about **J**ust the first derivatives of many outputs.
+      ::
 
 **Convexity test.** For one variable: if f″(x) is non-negative everywhere, f is convex. For many variables: if the Hessian is **positive semidefinite** across the domain, f is convex.
 

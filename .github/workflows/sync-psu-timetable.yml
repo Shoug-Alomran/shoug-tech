@@ -1,0 +1,49 @@
+name: Sync PSU timetable
+
+# Refreshes docs/data/psu-timetable/ (sections, times, open/closed, finals)
+# for the schedule planner. Open/closed changes fast during registration, so
+# this runs every 6 hours; slow it down outside registration if you like.
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: "psu-timetable"
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Fetch PSU timetable
+        run: node scripts/sync-psu-timetable.js
+
+      - name: Rebuild course catalog
+        run: node scripts/build-course-catalog.js
+
+      - name: Commit updated timetable
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "Update PSU timetable"
+          file_pattern: docs/data/psu-timetable/*.json docs/data/course-catalog.json
+
+      # Commits made with GITHUB_TOKEN don't trigger the push deploy, so start it here.
+      - name: Deploy the new data
+        if: steps.commit.outputs.changes_detected == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-mkdocs.yml --ref main

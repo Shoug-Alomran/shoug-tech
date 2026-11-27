@@ -35,9 +35,6 @@ jobs:
       - name: Embed new resource files
         run: python3 scripts/embed_resources.py
 
-      - name: Repair slide breakdown viewers
-        run: python3 scripts/repair_slide_breakdown_viewers.py
-
       - name: Apply cybersecurity red theme
         run: python3 scripts/apply_cyber_red_theme.py
 
@@ -53,19 +50,14 @@ jobs:
           python3 scripts/build_ai_slide_contexts.py
           python3 scripts/optimize_site_html.py
 
-      # SE371's seven chapter routes were once overwritten with listing clones.
-      # The repaired pages are committed, so the deploy only checks they still
-      # embed their own chapter (read-only). Regenerate locally with
-      # `python3 scripts/fix_se371_viewers.py` if this check ever fails.
-      - name: Check SE371 dedicated viewers
-        run: python3 scripts/fix_se371_viewers.py --check
-
       # Generated pages sometimes inherit canonical/OG/hreflang URLs from the
       # template page. The filesystem route is authoritative, so normalize all
       # folder-page URLs after every HTML generator/optimizer has finished.
       - name: Normalize canonical page URLs
         run: python3 scripts/normalize_page_urls.py
 
+      # Runs once, after every generator: the build can rewrite viewer pages,
+      # and the validator below checks every course's viewers (SE371 included).
       - name: Finalize slide breakdown viewers
         run: python3 scripts/repair_slide_breakdown_viewers.py
 
@@ -191,11 +183,6 @@ jobs:
 
       - name: Check Cloudflare Pages limits
         run: python3 scripts/check_pages_limits.py
-
-      - name: Report deployment artifact size
-        run: |
-          du -sh docs
-          find docs -type f | wc -l
 
       # Meta-refresh pages become real 301s in functions/_middleware.js, which
       # also serves .html URLs without Pages' extension-stripping redirect.

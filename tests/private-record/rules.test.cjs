@@ -164,15 +164,23 @@ test("mock exam and mistakes sync docs are owner-only, with their own fields", a
   const mock = { history: [], ready: {}, seen: {}, updatedAt: 1 };
   const mistakes = { items: [], gone: {}, updatedAt: 1 };
   await assertSucceeds(as("shoug").doc("users/shoug/private/mock").set(mock));
-  await assertSucceeds(as("shoug").doc("users/shoug/private/mistakes").set(mistakes));
+  await assertSucceeds(
+    as("shoug").doc("users/shoug/private/mistakes").set(mistakes),
+  );
   await assertSucceeds(as("shoug").doc("users/shoug/private/mock").get());
   await assertFails(as("someone").doc("users/shoug/private/mock").get());
-  await assertFails(as("someone").doc("users/shoug/private/mistakes").set(mistakes));
+  await assertFails(
+    as("someone").doc("users/shoug/private/mistakes").set(mistakes),
+  );
   // Each doc takes only its own fields, so neither can carry the academic record.
   await assertFails(
-    as("shoug").doc("users/shoug/private/mock").set({ ...mock, academicRecord: record.academicRecord }),
+    as("shoug")
+      .doc("users/shoug/private/mock")
+      .set({ ...mock, academicRecord: record.academicRecord }),
   );
-  await assertFails(as("shoug").doc("users/shoug/private/mistakes").set({ history: [] }));
+  await assertFails(
+    as("shoug").doc("users/shoug/private/mistakes").set({ history: [] }),
+  );
 });
 
 const report = () => ({
@@ -190,19 +198,41 @@ test("signed-in students can report a question as themselves", async () => {
   await assertSucceeds(as("shoug").collection("questionReports").add(report()));
   await assertFails(as("someone").collection("questionReports").add(report()));
   await assertFails(
-    env.unauthenticatedContext().firestore().collection("questionReports").add({ ...report(), uid: "" }),
+    env
+      .unauthenticatedContext()
+      .firestore()
+      .collection("questionReports")
+      .add({ ...report(), uid: "" }),
   );
-  await assertFails(as("shoug").collection("questionReports").add({ ...report(), reason: "spam" }));
-  await assertFails(as("shoug").collection("questionReports").add({ ...report(), extra: 1 }));
+  await assertFails(
+    as("shoug")
+      .collection("questionReports")
+      .add({ ...report(), reason: "spam" }),
+  );
+  await assertFails(
+    as("shoug")
+      .collection("questionReports")
+      .add({ ...report(), extra: 1 }),
+  );
 });
 
 test("only the admin reads question reports", async () => {
   await env.withSecurityRulesDisabled(async (ctx) => {
-    await ctx.firestore().doc("courseCommerce/ethics").set({ adminUid: "admin" });
-    await ctx.firestore().doc("questionReports/r1").set({ ...report(), createdAt: 1 });
+    await ctx
+      .firestore()
+      .doc("courseCommerce/ethics")
+      .set({ adminUid: "admin" });
+    await ctx
+      .firestore()
+      .doc("questionReports/r1")
+      .set({ ...report(), createdAt: 1 });
   });
-  const admin = env.authenticatedContext("admin", { email_verified: true }).firestore();
+  const admin = env
+    .authenticatedContext("admin", { email_verified: true })
+    .firestore();
   await assertSucceeds(admin.doc("questionReports/r1").get());
   await assertFails(as("shoug").doc("questionReports/r1").get());
-  await assertFails(as("shoug").doc("questionReports/r1").update({ note: "x" }));
+  await assertFails(
+    as("shoug").doc("questionReports/r1").update({ note: "x" }),
+  );
 });

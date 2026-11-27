@@ -254,7 +254,7 @@
   )
     return;
   var s = document.createElement("script");
-  s.src = "/javascripts/course-ratings.js?v=9";
+  s.src = "/javascripts/course-ratings.js?v=10";
   s.async = true;
   document.head.appendChild(s);
   // Private "MY GRADE" row for the student's own GPA (academic-record.js).
@@ -311,9 +311,8 @@
       return;
     var a = document.createElement("a");
     a.href = "/academics/mock-exam/";
-    a.textContent = "Take a timed mock exam ->";
+    a.textContent = "Take a timed mock exam";
     a.setAttribute("data-ar-text", "خذي اختبارًا تجريبيًا بوقت محدد");
-    pack.parentNode.appendChild(document.createElement("br"));
     pack.parentNode.appendChild(a);
   }
 
