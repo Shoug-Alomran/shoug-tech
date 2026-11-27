@@ -31,6 +31,13 @@ const HEADERS = {
 
 const ANALYTICS_TAG =
   '<script defer src="/javascripts/site-analytics.js?v=1"></script>';
+// Theme: follow the device until the visitor picks one (docs/javascripts/
+// site-theme.js explains the two storage keys). THEME_BOOT runs first in
+// <head>, before any page script reads "shoug-theme". The first visit after
+// this shipped ("shoug-theme-v2") resets saved themes once, because older
+// scripts saved the theme on page load even when nobody had chosen one.
+const THEME_BOOT = `<script>(function(){try{var s=localStorage,k="shoug-theme",a="shoug-theme-auto",v="shoug-theme-v2",m=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark",saved=s.getItem(k),auto=s.getItem(a);if(!s.getItem(v)){s.setItem(v,"1");saved=null;}if(!saved||saved===auto){s.setItem(k,m);s.setItem(a,m);}else if(auto!==null){s.removeItem(a);}}catch(e){}})();</script>`;
+const THEME_TAG = '<script defer src="/javascripts/site-theme.js?v=1"></script>';
 // The administrator's "Admin" header tab (docs/javascripts/admin-nav.js).
 const ADMIN_NAV_TAG =
   '<script defer src="/javascripts/admin-nav.js?v=1"></script>';
@@ -47,9 +54,9 @@ const NO_CLARITY =
 function withSiteScripts(response, path) {
   const type = response.headers.get("content-type") || "";
   if (!response.ok || !type.includes("text/html")) return response;
-  const tags = path.startsWith("/admin")
-    ? ADMIN_NAV_TAG
-    : ANALYTICS_TAG + ADMIN_NAV_TAG;
+  const tags =
+    THEME_TAG +
+    (path.startsWith("/admin") ? ADMIN_NAV_TAG : ANALYTICS_TAG + ADMIN_NAV_TAG);
   const wantClarity = !NO_CLARITY.test(path);
   let hasClarity = false;
   return new HTMLRewriter()
@@ -60,6 +67,7 @@ function withSiteScripts(response, path) {
     })
     .on("head", {
       element(head) {
+        head.prepend(THEME_BOOT, { html: true });
         head.append(tags, { html: true });
         // Decided at </head>, once every script in the head has been seen.
         if (wantClarity)

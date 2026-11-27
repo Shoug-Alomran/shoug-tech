@@ -135,6 +135,7 @@
       sort: s.sort || "days",
       freeText: s.freeText || "",
       pinned: s.pinned || {}, // code -> section group the student chose
+      showPassed: !!s.showPassed,
       textRules: s.textRules || { rules: [], maxDays: null, preferGaps: false, unknown: [] },
       // One entry per schedule (term + campus + sections), oldest kept.
       saved: (s.saved || []).filter(function (x, i, all) {
@@ -235,24 +236,8 @@
             );
           })
           .join("");
-        var depts = index.departments || [];
-        $("dept").innerHTML =
-          '<option value="">' + L("All majors", "كل التخصصات") + "</option>" +
-          depts
-            .map(function (d) {
-              return (
-                '<option value="' +
-                esc(d.code) +
-                '"' +
-                (d.code === state.dept ? " selected" : "") +
-                ">" +
-                esc(d.code) +
-                " · " +
-                esc(d.name) +
-                "</option>"
-              );
-            })
-            .join("");
+        buildMajors(index.departments || []);
+        renderMajor();
         return loadTerm();
       })
       .catch(function (err) {
@@ -664,6 +649,19 @@
     return out;
   }
 
+  /** Courses passed: "completed" in any plan grid, or a grade of D or better (W, F, DN don't count). */
+  function passedCourses() {
+    var out = {};
+    Object.keys(grades).forEach(function (c) { if (grades[c].points >= 1) out[c] = true; });
+    Object.keys(PLAN_GRID_KEYS).forEach(function (k) {
+      var saved = null;
+      try { saved = JSON.parse(localStorage.getItem(PLAN_GRID_KEYS[k]) || "null"); } catch (e) {}
+      var map = (saved && saved.statusMap) || {};
+      Object.keys(map).forEach(function (c) { if (map[c] === "completed") out[c.replace(/\s+/g, "").toUpperCase()] = true; });
+    });
+    return out;
+  }
+
   /** Finished, graded courses most like `code`, and how they shift its difficulty. */
   function personal(code) {
     var graded = Object.keys(grades);
@@ -896,6 +894,114 @@
     return (isAr() ? ar || (c && c.en) : (c && c.en) || ar) || code;
   }
 
+  // ── Majors ─────────────────────────────────────────────────────────────
+  // Edugate lists 60+ "departments": each major, its preparatory year
+  // (PYP-…), its tracks (SE-CYS) or minors (ACC_MKT), and a few leftovers
+  // (LAW--). They're folded into ~22 majors by their Arabic name, so the
+  // picker is: major, then track/minor chips, then a prep-year tick.
+  var majors = {}; // key -> { key, ar, en, college, main, prep, aliases[], tracks[] }
+  var MAJOR_EN = {
+    SE: "Software Engineering", CS: "Computer Science", IS: "Information Systems",
+    FINANCE: "Finance", ACC: "Accounting", MKT: "Marketing", AVM: "Aviation Management", HRM: "Human Resource Management",
+    "PROD.MNGT": "Engineering Management (Production)", EE: "Electrical Engineering", CEE: "Civil & Environmental Engineering",
+    ISE: "Industrial & Systems Engineering", ME: "Mechanical Engineering", LAW: "Law", LAM: "Language & Media",
+    ASDS: "Applied Statistics & Data Science", ETRA: "Translation", ARCH: "Architecture", ID: "Interior Design",
+    "PYP-MBBS": "Medicine & Surgery", "PYP-AL": "Applied Linguistics", "PYP-ACTS": "Actuarial Science",
+  };
+  var TRACK_EN = {
+    CYS: "Cybersecurity", "AI&DS": "AI & Data Science", DX: "Digital Transformation",
+    ACC: "Accounting", AVM: "Aviation Management", FIN: "Finance", MKT: "Marketing", ID: "Interior Design", ARCH: "Architecture",
+  };
+  var COLLEGE_EN = {
+    "علوم الحاسب والمعلومات": "Computer & Information Sciences", "إدارة الأعمال": "Business Administration",
+    "الهندسة": "Engineering", "القانون": "Law", "العلوم والدراسات الإنسانية": "Humanities & Sciences",
+    "العمارة والتصميم": "Architecture & Design", "عمادة السنة التحضيرية": "Preparatory Year", "البنات": "Women's Campus",
+  };
+  var COLLEGE_ORDER = ["علوم الحاسب والمعلومات", "إدارة الأعمال", "الهندسة", "القانون", "العلوم والدراسات الإنسانية", "العمارة والتصميم", "عمادة السنة التحضيرية"];
+
+  function arabicKey(name) {
+    // "تحضيري هندسة برمجيات" and "هندسة البرمجيات" → "هندسة برمجيات"
+    return String(name)
+      .replace(/\(.*\)/, "").replace(/-+/g, " ").replace(/^\s*تحضيري\s+/, "")
+      .replace(/ـ/g, "").trim().split(/\s+/)
+      .map(function (w) { return w.replace(/^وال/, "و").replace(/^(ال|لل)/, ""); })
+      .join(" ");
+  }
+  function cleanCollege(c) { return String(c || "").replace(/ـ/g, "").trim(); }
+
+  function buildMajors(depts) {
+    majors = {};
+    depts.forEach(function (d) {
+      var key = arabicKey(d.name);
+      var m = (majors[key] = majors[key] || { key: key, ar: "", college: "", main: null, prep: null, aliases: [], tracks: [] });
+      var paren = String(d.name).match(/\((.*)\)/);
+      if (/^PYP/.test(d.code)) {
+        m.prep = d.code;
+        if (!m.ar) m.ar = String(d.name).replace(/^\s*تحضيري\s+/, "");
+      } else if (paren) {
+        var suffix = d.code.split(/[-_]/).pop();
+        m.tracks.push({ code: d.code, ar: paren[1].replace(/تخصص فرعي\s*/, "").trim(), en: TRACK_EN[suffix] || suffix, minor: /تخصص فرعي/.test(paren[1]) });
+      } else if (!m.main && !/--$/.test(d.code) && !/^\d+$/.test(d.code)) {
+        m.main = d.code;
+        m.ar = String(d.name).replace(/-+$/, "");
+        m.college = cleanCollege(d.college);
+      } else m.aliases.push(d.code);
+    });
+    Object.keys(majors).forEach(function (k) {
+      var m = majors[k];
+      if (!m.main && m.aliases.length) m.main = m.aliases.shift();
+      if (!m.college) m.college = cleanCollege((depts.filter(function (d) { return d.code === (m.main || m.prep); })[0] || {}).college);
+      m.en = MAJOR_EN[m.main] || MAJOR_EN[m.prep] || null;
+    });
+  }
+
+  function majorOf(code) {
+    if (!code) return null;
+    return Object.keys(majors).map(function (k) { return majors[k]; }).filter(function (m) {
+      return m.main === code || m.prep === code || m.aliases.indexOf(code) > -1 || m.tracks.some(function (t) { return t.code === code; });
+    })[0] || null;
+  }
+
+  /** The Edugate department codes the current choice covers (a major includes its leftover duplicates). */
+  function deptCodes() {
+    var m = majorOf(state.dept);
+    if (m && state.dept === m.main) return [m.main].concat(m.aliases);
+    return [state.dept];
+  }
+
+  function majorName(m) { return isAr() || !m.en ? m.ar : m.en; }
+
+  function renderMajor() {
+    var list = Object.keys(majors).map(function (k) { return majors[k]; });
+    var current = majorOf(state.dept);
+    var groups = {};
+    list.forEach(function (m) { (groups[m.college] = groups[m.college] || []).push(m); });
+    var order = COLLEGE_ORDER.filter(function (c) { return groups[c]; }).concat(Object.keys(groups).filter(function (c) { return COLLEGE_ORDER.indexOf(c) < 0; }));
+    $("major").innerHTML = '<option value="">' + L("All majors", "كل التخصصات") + "</option>" + order.map(function (c) {
+      var label = isAr() ? c : COLLEGE_EN[c] || c;
+      return '<optgroup label="' + esc(label) + '">' + groups[c]
+        .sort(function (a, b) { return majorName(a).localeCompare(majorName(b), isAr() ? "ar" : "en"); })
+        .map(function (m) { return '<option value="' + esc(m.key) + '"' + (current === m ? " selected" : "") + ">" + esc(majorName(m)) + "</option>"; })
+        .join("") + "</optgroup>";
+    }).join("");
+    var extra = $("major-extra");
+    if (!current) { extra.hidden = true; return; }
+    var inPrep = state.dept === current.prep && !!current.main;
+    var hasTracks = current.tracks.length > 0;
+    extra.hidden = !hasTracks && !(current.prep && current.main);
+    var minors = hasTracks && current.tracks.every(function (t) { return t.minor; });
+    $("major-tracks-label").textContent = minors ? L("Minor", "التخصص الفرعي") : L("Track", "المسار");
+    $("major-tracks-wrap").hidden = !hasTracks || inPrep;
+    $("major-tracks").innerHTML = hasTracks
+      ? ['<button type="button" class="chip" data-track="" aria-pressed="' + (state.dept === current.main || current.aliases.indexOf(state.dept) > -1) + '">' + (minors ? L("No minor", "بدون") : L("General", "عام")) + "</button>"]
+          .concat(current.tracks.map(function (t) {
+            return '<button type="button" class="chip" data-track="' + esc(t.code) + '" aria-pressed="' + (state.dept === t.code) + '">' + esc(isAr() ? t.ar : t.en) + "</button>";
+          })).join("")
+      : "";
+    $("major-prep-row").hidden = !(current.prep && current.main);
+    $("major-prep").checked = inPrep;
+  }
+
   function syncControls() {
     document.querySelectorAll("[data-campus]").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.campus === state.campus));
@@ -919,8 +1025,18 @@
       return;
     }
     var q = $("search").value.trim().toLowerCase();
+    // Courses already passed (plan grid "completed", or a passing grade) are
+    // hidden unless the student asks to see them or has picked them.
+    var passed = passedCourses();
+    var hiddenPassed = 0;
     var codes = Object.keys(term.courses).filter(function (code) {
-      return !state.dept || term.courses[code].d.indexOf(state.dept) > -1;
+      if (passed[code] && !state.showPassed && state.picked.indexOf(code) < 0) {
+        if (!state.dept || deptCodes().some(function (x) { return term.courses[code].d.indexOf(x) > -1; })) hiddenPassed++;
+        return false;
+      }
+      if (!state.dept) return true;
+      var codes = deptCodes();
+      return term.courses[code].d.some(function (x) { return codes.indexOf(x) > -1; });
     });
     // "SE", "cys", "se4", "CS 210": match course codes only. SE ranks above
     // SEC (exact letters first). Anything else, or a code-like query with no
@@ -1020,6 +1136,7 @@
           "</span></span></span>" +
           '<span class="meta">' +
           hoursOf(code) +
+          (passed[code] ? '<span class="pill good">' + L("passed", "مجتازة") + "</span><br>" : "") +
           L(" h", " س") + "<br>" +
           (open
             ? open + "/" + keys.length + L(" open", " متاحة")
@@ -1039,6 +1156,11 @@
         (rest.length - LIMIT) +
         L(" more. Search to narrow down.", " أخرى. ابحث لتضييق النتائج.") + "</div>";
     if (!html) html = '<div class="more">' + L("No courses match.", "لا توجد مواد مطابقة.") + "</div>";
+    if (hiddenPassed || state.showPassed)
+      html += '<div class="more">' + (state.showPassed
+        ? L("Showing courses you've passed. ", "تظهر المواد التي اجتزتها. ") + '<button type="button" class="linkish" data-passed="hide">' + L("Hide them", "إخفاؤها") + "</button>"
+        : L(hiddenPassed + " course" + (hiddenPassed > 1 ? "s" : "") + " you've passed " + (hiddenPassed > 1 ? "are" : "is") + " hidden. ", "تم إخفاء " + hiddenPassed + " من المواد التي اجتزتها. ") +
+          '<button type="button" class="linkish" data-passed="show">' + L("Show", "إظهار") + "</button>") + "</div>";
     list.innerHTML = html;
   }
 
@@ -1546,9 +1668,29 @@
         loadTerm();
       });
     });
-    $("dept").addEventListener("change", function () {
-      state.dept = this.value;
+    $("major").addEventListener("change", function () {
+      var m = majors[this.value];
+      state.dept = m ? m.main || m.prep : "";
       persist();
+      renderMajor();
+      renderList();
+    });
+    $("major-tracks").addEventListener("click", function (e) {
+      var chip = e.target.closest("[data-track]");
+      if (!chip) return;
+      var m = majorOf(state.dept);
+      if (!m) return;
+      state.dept = chip.dataset.track || m.main;
+      persist();
+      renderMajor();
+      renderList();
+    });
+    $("major-prep").addEventListener("change", function () {
+      var m = majorOf(state.dept);
+      if (!m) return;
+      state.dept = this.checked && m.prep ? m.prep : m.main || m.prep;
+      persist();
+      renderMajor();
       renderList();
     });
     $("search").addEventListener("input", renderList);
@@ -1594,6 +1736,12 @@
     });
 
     $("course-list").addEventListener("click", function (e) {
+      var toggle = e.target.closest("[data-passed]");
+      if (toggle) {
+        state.showPassed = toggle.dataset.passed === "show";
+        persist();
+        return renderList();
+      }
       var sec = e.target.closest("[data-sections]");
       if (sec) {
         e.stopPropagation();
@@ -1769,6 +1917,7 @@
       );
     });
 
+    $("to-calendar").addEventListener("click", addToCalendar);
     $("save").addEventListener("click", function () {
       var sched = results[current];
       if (!sched) return;
@@ -1925,6 +2074,126 @@
       (t.unknown && t.unknown.length ? '<p class="hint">' + L("Couldn't use: “", "لم أستطع استخدام: «") + esc(t.unknown.join(L("”, “", "»، «"))) + L("”. Try saying it with days and times.", "». جرّب كتابته بالأيام والأوقات.") + "</p>" : "");
   }
 
+  var TYPE_EN = { L: "", B: "Lab", T: "Tutorial", S: "Studio", C: "Co-op" };
+  var WEEKDAY = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  function hhmm(mins) { return String(Math.floor(mins / 60)).padStart(2, "0") + ":" + String(mins % 60).padStart(2, "0"); }
+  function newId() { return "sp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function codeOfTitle(t) {
+    var m = String(t || "").toUpperCase().replace(/\s+/g, "").match(/[A-Z]{2,6}\d{3}/);
+    return m ? m[0] : "";
+  }
+
+  /**
+   * Writes the schedule on screen into the calendar (users/{uid}/private/data):
+   * one class per section meeting time, plus each course's final. Classes and
+   * finals the planner added before for the same term are replaced, so
+   * pressing it again after changing the schedule doesn't double anything.
+   */
+  function addToCalendar() {
+    var sched = results[current];
+    if (!sched) return;
+    var fb = window.__shoug_fb;
+    var user = fb && fb.auth && fb.auth().currentUser;
+    if (!user || !window.ShougPrivate) {
+      toast(L("Sign in to add this schedule to your calendar", "سجّل الدخول لإضافة الجدول إلى تقويمك"));
+      var signIn = document.querySelector("#shoug-fb-user");
+      if (signIn && signIn.tagName === "BUTTON") signIn.click();
+      return;
+    }
+    // Edugate "20262" → the calendar's term "262" (Second Semester 2026).
+    var calTerm = state.term.slice(2, 4) + state.term.slice(4);
+    var termLabel = termName({ value: state.term, label: (term && term.termLabel) || "" });
+    var codes = sched.map(function (o) { return o.code; });
+    var btn = $("to-calendar");
+    btn.disabled = true;
+    window.ShougPrivate.ready(user.uid)
+      .then(function (ref) {
+        return ref.get().then(function (snap) {
+          var data = (snap && snap.exists && snap.data()) || {};
+          var classes = Array.isArray(data.calendarClassSchedules) ? data.calendarClassSchedules.filter(Boolean) : [];
+          var mine = classes.filter(function (c) {
+            return c.termId === calTerm && c.source !== "schedule-planner" && codes.indexOf(codeOfTitle(c.title)) > -1;
+          });
+          if (mine.length) {
+            var list = mine.map(function (c) { return codeOfTitle(c.title); }).filter(function (c, i, a) { return a.indexOf(c) === i; }).join(", ");
+            if (!window.confirm(L(
+              "Your calendar already has classes for " + list + " in " + termLabel + ". Replace them with this schedule?",
+              "تقويمك فيه محاضرات لـ " + list + " في " + termLabel + ". هل تريد استبدالها بهذا الجدول؟"))) return null;
+          }
+          var kept = classes.filter(function (c) {
+            if (c.termId !== calTerm) return true;
+            if (c.source === "schedule-planner") return false;
+            return codes.indexOf(codeOfTitle(c.title)) < 0;
+          });
+          var added = 0;
+          sched.forEach(function (o) {
+            var slots = {};
+            o.meetings.forEach(function (m) {
+              var k = m.crn + "|" + m.s + "|" + m.e + "|" + m.room;
+              var slot = (slots[k] = slots[k] || { m: m, days: [] });
+              if (slot.days.indexOf(WEEKDAY[m.d]) < 0) slot.days.push(WEEKDAY[m.d]);
+            });
+            Object.keys(slots).forEach(function (k) {
+              var x = slots[k];
+              kept.push({
+                id: newId(),
+                title: o.code + (TYPE_EN[x.m.t] ? " " + TYPE_EN[x.m.t] : ""),
+                days: x.days,
+                start: hhmm(x.m.s),
+                end: hhmm(x.m.e),
+                location: x.m.room || "",
+                onlineLink: "",
+                onlineOnly: false,
+                termId: calTerm,
+                source: "schedule-planner",
+                crn: x.m.crn,
+                section: o.g,
+              });
+              added++;
+            });
+          });
+          var exams = data.exams && typeof data.exams === "object" ? data.exams : {};
+          var examPayload = {};
+          var del = fb.firestore.FieldValue.delete();
+          Object.keys(exams).forEach(function (id) {
+            var e = exams[id] || {};
+            if (e.source === "schedule-planner" && e.termId === calTerm) examPayload[id] = del;
+          });
+          var finals = 0;
+          sched.forEach(function (o) {
+            if (!o.exam) return;
+            var date = o.exam.slice(0, 10), start = o.exam.slice(11, 16);
+            var already = Object.keys(exams).some(function (id) {
+              var e = exams[id] || {};
+              return e.source !== "schedule-planner" && codeOfTitle(e.course) === o.code && /final/i.test(e.type || "") && e.date === date;
+            });
+            if (already) return;
+            examPayload[newId()] = { course: o.code, type: "final", date: date, start: start, end: "", location: "", source: "schedule-planner", termId: calTerm };
+            finals++;
+          });
+          return ref.set({
+            calendarClassSchedules: kept,
+            exams: examPayload,
+            updatedAt: fb.firestore.FieldValue.serverTimestamp(),
+          }, { merge: true }).then(function () { return { added: added, finals: finals }; });
+        });
+      })
+      .then(function (done) {
+        if (!done) return;
+        $("notice").innerHTML = '<div class="notice">' +
+          L("<b>Added to your calendar:</b> " + done.added + " class times and " + done.finals + " final" + (done.finals === 1 ? "" : "s") + " in " + termLabel + ". ",
+            "<b>أُضيف إلى تقويمك:</b> " + done.added + " مواعيد محاضرات و" + done.finals + " اختبارات نهائية في " + termLabel + ". ") +
+          '<a href="/account/calendar/">' + L("Open calendar", "افتح التقويم") + "</a></div>";
+        toast(L("Added to your calendar", "أُضيف إلى تقويمك"));
+        if (window.Murshid) window.Murshid.react("love", 2600, L("It's in your calendar now!", "صار في تقويمك الآن!"));
+      })
+      .catch(function (err) {
+        console.error(err);
+        toast(L("Couldn't reach your calendar. Try again.", "تعذّر الوصول إلى تقويمك. حاول مرة أخرى."));
+      })
+      .then(function () { btn.disabled = false; });
+  }
+
   function paintSlot(slot, on) {
     var k = slot.dataset.slot,
       i = state.blocks.indexOf(k);
@@ -1980,8 +2249,8 @@
     openSections: openSections,
     setDept: function (code) {
       state.dept = code;
-      $("dept").value = code;
       persist();
+      renderMajor();
       renderList();
     },
   };
@@ -2068,8 +2337,7 @@
         if (t) o.textContent = termName(t);
       });
       $("term").value = current;
-      var all = $("dept").options[0];
-      if (all) all.textContent = L("All majors", "كل التخصصات");
+      renderMajor();
     }
     render();
     if ($("sections-dialog").open) renderPicker();

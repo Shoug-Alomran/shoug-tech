@@ -1,6 +1,11 @@
 """Constructors for CYS401 annotated-slide content. The markup is the SE423 one (see se423_annotated/ch01_introduction.py)."""
+import json
+from pathlib import Path
+
 from se423_annotated.common import mcq, scen, section, short, slide, tf, tip, trap, trick  # noqa: F401
 from cs331_annotated.common import fig  # noqa: F401
+
+PAST_QUESTIONS = json.loads(Path(__file__).with_name('past_questions.json').read_text(encoding='utf-8'))
 
 # Every CYS401 deck, in course order: key -> (annotated slug, standalone file, slides folder, label).
 DECKS = {
@@ -41,6 +46,7 @@ PAPERS = {
 
 def past(paper, label, related=False, question=None):
     assert paper in PAPERS, paper
+    question = question or PAST_QUESTIONS.get(paper, {}).get(label)
     item = {'paper': paper, 'label': label, 'related': related}
     if question:
         item['question'] = question
