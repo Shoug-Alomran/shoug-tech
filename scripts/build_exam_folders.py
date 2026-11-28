@@ -71,6 +71,8 @@ def read(path):
 
 
 def write(path, text):
+    if 'slide-gallery-grid' in text and 'document-previews.js' not in text:
+        text = re.sub(r'</head\s*>', '<script defer src="/javascripts/document-previews.js?v=3"></script></head>', text, count=1, flags=re.I)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(text)

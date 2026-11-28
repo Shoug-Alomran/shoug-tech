@@ -167,7 +167,12 @@ def read(path):
         return fh.read()
 
 
+DOCUMENT_PREVIEW_TAG = '<script defer src="/javascripts/document-previews.js?v=3"></script>'
+
+
 def write(path, text):
+    if 'slide-gallery-grid' in text and 'document-previews.js' not in text:
+        text = re.sub(r'</head\s*>', DOCUMENT_PREVIEW_TAG + '</head>', text, count=1, flags=re.I)
     with open(path, 'w', encoding='utf-8') as fh:
         fh.write(text)
 

@@ -99,6 +99,15 @@ def listing_page(chapters):
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ECON102 Listing Vault</title><style>body{{margin:0;background:#f7f5f0;color:#20212a;font:16px/1.6 Inter,system-ui,sans-serif}}main{{max-width:1050px;margin:auto;padding:24px}}section{{padding-top:20px;margin:28px 0;border-top:2px solid #6b3fd1}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}}.card{{background:white;border:1px solid #ddd;border-radius:12px;padding:16px}}h1,h2,h3{{font-family:Georgia,serif}}li{{padding:3px 0}}</style></head><body><main><h1>ECON102 Listing Vault</h1><p>{count} chapter lists collected from the course study notes, grouped by chapter for quick review.</p>{''.join(cards)}</main></body></html>'''
 
 
+def enhance_glossary(page):
+    css = ''':root{color-scheme:light;--bg:#f8f7fb;--panel:#fff;--text:#201a2b;--muted:#655c72;--line:#ded7e8;--accent:#7134ad}:root[data-theme="dark"]{color-scheme:dark;--bg:#0b0711;--panel:#15101d;--text:#f5f0fa;--muted:#b7acc5;--line:#393044;--accent:#d28aff}body{background:var(--bg);color:var(--text)}.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg);border-color:var(--line)}input{flex:1 1 280px;min-width:0;background:var(--panel);color:var(--text);border-color:var(--line)}nav a{background:var(--panel);border-color:var(--line);color:var(--accent)}small,.term span{color:var(--muted)}section{background:var(--panel);border-color:var(--line);border-top-color:var(--accent);border-radius:12px;padding:18px}.term{border-color:var(--line)}.bar button{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font:inherit;cursor:pointer}'''
+    page = page.replace('<style>', '<script>try{var t=localStorage.getItem("shoug-theme");document.documentElement.setAttribute("data-theme",t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script><style>', 1)
+    page = page.replace('</style>', css + '</style>', 1)
+    page = re.sub(r'<div class="bar">.*?</div>', '<div class="bar"><input id="q" type="search" autocomplete="off" placeholder="Search glossary terms…" aria-label="Search glossary terms"><span id="result-count" aria-live="polite"></span><button id="clear" type="button">Clear</button><button id="theme" type="button">Dark mode</button><button type="button" onclick="window.print()">Print</button></div>', page, count=1, flags=re.S)
+    script = '''<script>(function(){var root=document.documentElement,theme=document.querySelector("#theme"),q=document.querySelector("#q"),clear=document.querySelector("#clear"),terms=[...document.querySelectorAll(".term")],sections=[...document.querySelectorAll("main section")],empty=document.querySelector("#empty"),count=document.querySelector("#result-count");function setTheme(t){root.setAttribute("data-theme",t);try{localStorage.setItem("shoug-theme",t)}catch(e){}theme.textContent=t==="dark"?"Light mode":"Dark mode"}var saved=null;try{saved=localStorage.getItem("shoug-theme")}catch(e){}setTheme(saved==="dark"||saved==="light"?saved:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));theme.addEventListener("click",function(){setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark")});function filter(){var term=q.value.trim().toLocaleLowerCase(),n=0;terms.forEach(function(e){var ok=!term||e.textContent.toLocaleLowerCase().includes(term);e.hidden=!ok;if(ok)n++});sections.forEach(function(s){s.hidden=!s.querySelector(".term:not([hidden])")});empty.style.display=n?"none":"block";count.textContent=term?n+" of "+terms.length+" terms":""}q.addEventListener("input",filter);clear.addEventListener("click",function(){q.value="";filter();q.focus()});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&q.value){q.value="";filter()}});filter()})();</script>'''
+    return re.sub(r'<script>let q=document\.querySelector\(.*?</script>', script, page, count=1, flags=re.S)
+
+
 def write_wrapper(slug, label, child):
     folder = BASE / slug
     folder.mkdir(parents=True, exist_ok=True)
@@ -143,7 +152,7 @@ def main():
     vault = BASE / "listing-vault"
     gloss.mkdir(parents=True, exist_ok=True)
     vault.mkdir(parents=True, exist_ok=True)
-    (gloss / "glossary.html").write_text(glossary_page(chapters), encoding="utf-8")
+    (gloss / "glossary.html").write_text(enhance_glossary(glossary_page(chapters)), encoding="utf-8")
     (vault / "listing-vault.html").write_text(listing_page(chapters), encoding="utf-8")
     write_wrapper("glossary", "ECON102 Glossary", "glossary.html")
     write_wrapper("listing-vault", "ECON102 Listing Vault", "listing-vault.html")

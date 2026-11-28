@@ -661,6 +661,11 @@ def main():
     if "--no-previews" not in sys.argv:
         build_preview_strip()
     course = build_study()
+    # Breakdown add-ons, limited to this course (contents, translation, reading progress).
+    # Read-aloud and the quiz layers are site-wide only; run install_slide_reader.py,
+    # install_quiz_motion.py and install_quiz_review.py by hand and revert other courses.
+    for installer in ("install_breakdown_contents.py", "install_breakdown_language.py"):
+        run([sys.executable, "scripts/" + installer, URL.strip("/")])
     build_breakdown_strip(course)
     run([sys.executable, "scripts/build_econ102_study_tools.py"])
     build_resource_indexes()

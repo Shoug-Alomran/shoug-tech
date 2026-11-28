@@ -39,6 +39,8 @@ const ANALYTICS_TAG =
 const THEME_BOOT = `<script>(function(){try{var s=localStorage,k="shoug-theme",a="shoug-theme-auto",v="shoug-theme-v2",m=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark",saved=s.getItem(k),auto=s.getItem(a);if(!s.getItem(v)){s.setItem(v,"1");saved=null;}if(!saved||saved===auto){s.setItem(k,m);s.setItem(a,m);}else if(auto!==null){s.removeItem(a);}}catch(e){}})();</script>`;
 const THEME_TAG =
   '<script defer src="/javascripts/site-theme.js?v=1"></script>';
+const DOCUMENT_PREVIEWS_TAG =
+  '<script defer src="/javascripts/document-previews.js?v=3"></script>';
 // The administrator's "Admin" header tab (docs/javascripts/admin-nav.js).
 const ADMIN_NAV_TAG =
   '<script defer src="/javascripts/admin-nav.js?v=1"></script>';
@@ -57,6 +59,7 @@ function withSiteScripts(response, path) {
   if (!response.ok || !type.includes("text/html")) return response;
   const tags =
     THEME_TAG +
+    DOCUMENT_PREVIEWS_TAG +
     (path.startsWith("/admin") ? ADMIN_NAV_TAG : ANALYTICS_TAG + ADMIN_NAV_TAG);
   const wantClarity = !NO_CLARITY.test(path);
   let hasClarity = false;

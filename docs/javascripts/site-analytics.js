@@ -52,6 +52,9 @@
   }
 
   var params = new URLSearchParams(location.search);
+  // Card thumbnails load destination pages in preview-only iframes. Do not
+  // count those background renders as page views or let them advance sessions.
+  if (params.get("preview") === "1") return;
   var mode = params.get("analytics");
   if (mode === "off") set(OPT_OUT, "1");
   if (mode === "on") remove(OPT_OUT);
