@@ -351,14 +351,14 @@ def update_sidebar_data():
 def update_business_hub():
     path = os.path.join(DOCS, "academics/business/index.html")
     t = bnc.read(path)
-    row_re = re.compile(r'<a class="course-row" href="%s">.*?</a\s*>' % re.escape(URL), re.S)
-    if row_re.search(t):
-        t = row_re.sub(lambda _m: bnc.course_row(COURSE), t, count=1)
-    else:
-        econ101 = re.search(r'<a class="course-row" href="/academics/business/econ101/"\s*>.*?</a\s*>', t, re.S)
-        if not econ101:
-            raise SystemExit("Business page has no ECON101 row")
-        t = t[: econ101.end()] + "\n            " + bnc.course_row(COURSE) + t[econ101.end():]
+    # \s*> and \s+: the page may have been reformatted (Prettier puts ">" on the next line).
+    # Drop every ECON102 row, then add exactly one after ECON101, so re-runs never duplicate it.
+    row_re = re.compile(r'\s*<a\s+class="course-row"\s+href="%s"\s*>.*?</a\s*>' % re.escape(URL), re.S)
+    t = row_re.sub("", t)
+    econ101 = re.search(r'<a\s+class="course-row"\s+href="/academics/business/econ101/"\s*>.*?</a\s*>', t, re.S)
+    if not econ101:
+        raise SystemExit("Business page has no ECON101 row")
+    t = t[: econ101.end()] + "\n            " + bnc.course_row(COURSE) + t[econ101.end():]
     bnc.write(path, t)
 
 
@@ -724,6 +724,12 @@ def main():
     build_pages(data)
     if "--no-previews" not in sys.argv:
         build_preview_strip()
+    # build_slide_hub.py leaves "Slides moved" redirects in these folders, and build_study won't
+    # overwrite a redirect, so the hub would lose its Slide Breakdowns and Annotated Slides folders.
+    for folder in ("slide-breakdowns", "annotated-slides"):
+        stub = os.path.join(COURSE_DIR, folder, "index.html")
+        if os.path.isfile(stub) and "Slides moved</title>" in bnc.read(stub):
+            os.remove(stub)
     course = build_study()
     # Breakdown add-ons, limited to this course (contents, translation, reading progress).
     # Read-aloud and the quiz layers are site-wide only; run install_slide_reader.py,
