@@ -322,7 +322,15 @@ def render_pdf(path):
         if shutil.which('pdftoppm'):
             subprocess.run(['pdftoppm', '-f', '1', '-l', '1', '-r', '80', '-jpeg', '-singlefile', path, out], check=True)
             return Image.open(out + '.jpg').convert('RGB')
-        raise RuntimeError('PDF preview requires Poppler')
+    try:  # No Poppler (e.g. Windows): pypdfium2 renders the first page at the same ~80 dpi.
+        import pypdfium2
+    except ImportError:
+        raise RuntimeError('PDF preview requires Poppler or pypdfium2')
+    pdf = pypdfium2.PdfDocument(path)
+    try:
+        return pdf[0].render(scale=80 / 72).to_pil().convert('RGB')
+    finally:
+        pdf.close()
 
 
 def fit_cell(image):
