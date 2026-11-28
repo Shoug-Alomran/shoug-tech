@@ -13,20 +13,20 @@
 - Explain open market purchases and sales in the simplified model
 - Trace the transmission from the policy rate to real GDP and inflation
 - Distinguish crisis cure (emergency liquidity) from crisis prevention (macroprudential regulation)
-  @vocab
-  Monetary policy | Central bank decisions that influence interest rates, the quantity of money and economic activity.
-  Policy interest rate | The short-term rate the central bank targets (the federal funds rate in the U.S.).
-  Contractionary policy | Raising the policy rate to slow spending and inflation.
-  Expansionary policy | Lowering the policy rate to boost spending and employment.
-  Transmission mechanism | The chain from a policy rate change to real GDP, jobs and inflation.
-  Emergency liquidity | Central bank lending to keep banks and markets working in a crisis.
-  Macroprudential regulation | Rules that reduce risk across the whole financial system.
-  @map
-  1-3 | What monetary policy is; the two objectives | MEMORIZE | Stable prices + maximum sustainable employment
-  4 | Contractionary vs expansionary policy | MEMORIZE | High inflation: raise; weak demand: lower
-  5-6 | Open market operations; five key facts | MEMORIZE | Buy = easier; sell = tighter
-  7-9 | The transmission mechanism | WRITE | Rate → loan rates → C and I → AD → Y and P
-  10 | Financial crisis: cure and prevention | MEMORIZE | Emergency liquidity vs macroprudential rules
+@vocab
+Monetary policy | Central bank decisions that influence interest rates, the quantity of money and economic activity.
+Policy interest rate | The short-term rate the central bank targets (the federal funds rate in the U.S.).
+Contractionary policy | Raising the policy rate to slow spending and inflation.
+Expansionary policy | Lowering the policy rate to boost spending and employment.
+Transmission mechanism | The chain from a policy rate change to real GDP, jobs and inflation.
+Emergency liquidity | Central bank lending to keep banks and markets working in a crisis.
+Macroprudential regulation | Rules that reduce risk across the whole financial system.
+@map
+1-3 | What monetary policy is; the two objectives | MEMORIZE | Stable prices + maximum sustainable employment
+4 | Contractionary vs expansionary policy | MEMORIZE | High inflation: raise; weak demand: lower
+5-6 | Open market operations; five key facts | MEMORIZE | Buy = easier; sell = tighter
+7-9 | The transmission mechanism | WRITE | Rate → loan rates → C and I → AD → Y and P
+10 | Financial crisis: cure and prevention | MEMORIZE | Emergency liquidity vs macroprudential rules
 
 ## What monetary policy is and what it aims for | Slides 1-3 | must
 
@@ -54,7 +54,7 @@ Because **unpredictable inflation is costly**: it redistributes income and wealt
 - Dual mandate: price stability and maximum sustainable employment
 - Price stability means low, stable inflation (about 2%)
 - The FOMC targets the federal funds rate
-  ::
+::
 
 ## Contractionary and expansionary policy | Slide 4 | must
 
@@ -78,7 +78,7 @@ If the economy is **hot** (high inflation), **hike** the rate. If it's **cold** 
 - High inflation: raise the policy rate (contractionary)
 - Recession: lower the policy rate (expansionary)
 - Higher rates make borrowing dearer and slow spending
-  ::
+::
 
 ## Open market operations | Slides 5-6 | must
 
@@ -108,7 +108,7 @@ Central bank **buys** securities → reserves up, rates down → **boost**. **Se
 - Buying securities adds reserves and lowers short-term rates
 - Selling securities drains reserves and raises short-term rates
 - Interest on reserves and the discount rate are further tools
-  ::
+::
 
 ## The transmission mechanism | Slides 7-9 | must
 
@@ -155,7 +155,7 @@ A rate cut works through **spending**, so it shifts **AD**. It doesn't directly 
 - Lower rates: investment and consumption rise, AD shifts right
 - Higher rates: spending slows, AD shifts left
 - The effects arrive with long and variable lags
-  ::
+::
 
 ## Financial crisis: cure and prevention | Slide 10 | must
 
@@ -180,7 +180,7 @@ Emergency liquidity responds **after** a crisis starts. Capital and liquidity ru
 - Cure: emergency liquidity, lender of last resort, deep rate cuts
 - Prevention: macroprudential regulation of the whole system
 - Example: higher capital requirements so banks can absorb losses
-  ::
+::
 
 @cheat
 
@@ -216,123 +216,90 @@ Emergency liquidity responds **after** a crisis starts. Capital and liquidity ru
 
 @mcq 3
 The two objectives of U.S. monetary policy are:
-
-- Price stability and maximum sustainable employment
-
-* A balanced budget and a stable exchange rate
-* Zero inflation and zero unemployment
-* Fast money growth and low interest rates
-
++ Price stability and maximum sustainable employment
+- A balanced budget and a stable exchange rate
+- Zero inflation and zero unemployment
+- Fast money growth and low interest rates
 > The Fed's dual mandate.
-> @mcq 3
-> Price stability matters mainly because unpredictable inflation:
-
-- Redistributes income and wealth and makes planning harder
-
-* Always raises real GDP above potential GDP permanently
-* Always lowers the natural rate of unemployment
-* Makes the government budget move into surplus
-
+@mcq 3
+Price stability matters mainly because unpredictable inflation:
++ Redistributes income and wealth and makes planning harder
+- Always raises real GDP above potential GDP permanently
+- Always lowers the natural rate of unemployment
+- Makes the government budget move into surplus
 > Unpredictable inflation is costly to plan around.
-> @mcq 3
-> "Maximum sustainable employment" means unemployment is:
-
-- Close to the natural rate
-
-* Exactly zero
-* Above the natural rate
-* At its historic high
-
+@mcq 3
+"Maximum sustainable employment" means unemployment is:
++ Close to the natural rate
+- Exactly zero
+- Above the natural rate
+- At its historic high
 > Below the natural rate, inflation would rise.
-> @mcq 4
-> Inflation is well above target. The central bank should:
-
-- Raise the policy interest rate
-
-* Lower the policy interest rate
-* Buy government securities
-* Cut the interest on reserves
-
-> Contractionary policy slows spending.
-> @mcq 4
-> In a recession with weak aggregate demand, the central bank should:
-
+@mcq 4
+Inflation is well above target. The central bank should:
++ Raise the policy interest rate
 - Lower the policy interest rate
-
-* Raise the policy interest rate
-* Sell government securities
-* Raise the interest on reserves rate
-
+- Buy government securities
+- Cut the interest on reserves
+> Contractionary policy slows spending.
+@mcq 4
+In a recession with weak aggregate demand, the central bank should:
++ Lower the policy interest rate
+- Raise the policy interest rate
+- Sell government securities
+- Raise the interest on reserves rate
 > Expansionary policy makes borrowing cheaper.
-> @mcq 5
-> When the central bank buys government securities:
-
-- Bank reserves rise and short-term rates fall
-
-* Bank reserves fall and short-term rates rise
-* Bank reserves rise and short-term rates rise
-* Bank reserves fall and short-term rates fall
-
+@mcq 5
+When the central bank buys government securities:
++ Bank reserves rise and short-term rates fall
+- Bank reserves fall and short-term rates rise
+- Bank reserves rise and short-term rates rise
+- Bank reserves fall and short-term rates fall
 > Buying adds liquidity: easier conditions.
-> @mcq 7
-> The central bank lowers interest rates. Business investment:
-
-- Increases, and AD shifts rightward
-
-* Decreases, and AD shifts leftward
-* Increases, and AD shifts leftward
-* Decreases, and AD shifts rightward
-
+@mcq 7
+The central bank lowers interest rates. Business investment:
++ Increases, and AD shifts rightward
+- Decreases, and AD shifts leftward
+- Increases, and AD shifts leftward
+- Decreases, and AD shifts rightward
 > Cheaper borrowing makes more projects profitable.
-> @mcq 9
-> A rise in the policy interest rate tends to:
-
-- Shift AD leftward and ease inflation
-
-* Shift AD rightward and raise inflation
-* Shift SAS leftward and raise inflation
-* Shift LAS rightward and ease inflation
-
+@mcq 9
+A rise in the policy interest rate tends to:
++ Shift AD leftward and ease inflation
+- Shift AD rightward and raise inflation
+- Shift SAS leftward and raise inflation
+- Shift LAS rightward and ease inflation
 > Spending slows, so AD shifts left.
-> @mcq 7
-> Which is the correct order of the transmission mechanism?
-
-- Policy rate, loan rates, spending, AD, real GDP
-
-* Real GDP, AD, spending, loan rates, policy rate
-* Loan rates, policy rate, AD, spending, real GDP
-* Spending, policy rate, real GDP, loan rates, AD
-
+@mcq 7
+Which is the correct order of the transmission mechanism?
++ Policy rate, loan rates, spending, AD, real GDP
+- Real GDP, AD, spending, loan rates, policy rate
+- Loan rates, policy rate, AD, spending, real GDP
+- Spending, policy rate, real GDP, loan rates, AD
 > The rate change works through borrowing costs to spending.
-> @mcq 10
-> During a financial crisis, providing emergency liquidity to banks is an example of:
-
-- A crisis cure
-
-* Crisis prevention
-* Fiscal stimulus
-* Macroprudential regulation
-
-> Emergency lending responds once a crisis has started.
-> @mcq 10
-> Raising banks' capital requirements to make the whole financial system safer is:
-
+@mcq 10
+During a financial crisis, providing emergency liquidity to banks is an example of:
++ A crisis cure
+- Crisis prevention
+- Fiscal stimulus
 - Macroprudential regulation
-
-* Emergency liquidity
-* Expansionary monetary policy
-* An automatic stabilizer
-
+> Emergency lending responds once a crisis has started.
+@mcq 10
+Raising banks' capital requirements to make the whole financial system safer is:
++ Macroprudential regulation
+- Emergency liquidity
+- Expansionary monetary policy
+- An automatic stabilizer
 > Prevention aimed at system-wide risk.
-> @short 4
-> Inflation is too high. Explain what the central bank should do to interest rates and how this affects borrowing, spending and aggregate demand.
-> ~ raise, borrowing more expensive, investment, consumption, AD left
+@short 4
+Inflation is too high. Explain what the central bank should do to interest rates and how this affects borrowing, spending and aggregate demand.
+~ raise, borrowing more expensive, investment, consumption, AD left
 > It should raise the policy interest rate. Borrowing becomes more expensive, so firms invest less and households consume less, AD shifts left, and inflation pressure eases.
-> @short 9
-> The central bank lowers interest rates. Trace the effects through to real GDP.
-> ~ loan rates fall, investment rises, consumption, AD right, real GDP rises
+@short 9
+The central bank lowers interest rates. Trace the effects through to real GDP.
+~ loan rates fall, investment rises, consumption, AD right, real GDP rises
 > Loan and market rates fall, so business investment and consumption rise (and the currency depreciates, raising net exports). AD shifts right, so real GDP and employment rise in the short run, with some upward pressure on prices.
-> @short 10
-> Distinguish crisis cure from crisis prevention, and give one example of macroprudential regulation.
-> ~ emergency liquidity, cure, prevention, macroprudential, capital requirements
+@short 10
+Distinguish crisis cure from crisis prevention, and give one example of macroprudential regulation.
+~ emergency liquidity, cure, prevention, macroprudential, capital requirements
 > The cure is emergency liquidity: the central bank lends to banks so markets keep working once a crisis starts. Prevention is macroprudential regulation that reduces system-wide risk beforehand, for example higher capital requirements so banks can absorb losses.

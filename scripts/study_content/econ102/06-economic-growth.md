@@ -13,21 +13,21 @@
 - Use the aggregate production function and labor market to find potential GDP
 - Explain the effects of population growth and of labor productivity growth
 - Explain why labor productivity grows, and outline the growth theories and policies
-  @vocab
-  Economic growth | A sustained expansion of production possibilities, measured as the increase in real GDP.
-  Potential GDP | Real GDP produced when the economy is at full employment.
-  Labor productivity | Real GDP per hour of labor.
-  Aggregate production function | How real GDP changes as the quantity of labor changes, with capital and technology constant.
-  Real wage rate | The money wage rate divided by the price level: what an hour of work buys.
-  Human capital | The knowledge and skills people get from education, training and experience.
-  @map
-  4-8 | Growth rate; growth versus a business cycle expansion | WRITE | Growth rate formulas; PPF shift vs moving to the PPF
-  9-10 | The Rule of 70 | WRITE | Doubling time = 70 ÷ growth rate
-  11-14 | Long-term growth trends in the U.S. and the world | MEMORIZE | Convergence or not
-  15-21 | Production function and labor market: potential GDP | WRITE | Equilibrium real wage and hours; read the production function
-  22-29 | What makes potential GDP grow | MEMORIZE | Population growth vs productivity growth
-  30-33 | Why labor productivity grows | MEMORIZE | Preconditions; capital, human capital, technology
-  34-49 | Growth theories, evidence and policies | SKIM | Classical, neoclassical, new growth; five policies
+@vocab
+Economic growth | A sustained expansion of production possibilities, measured as the increase in real GDP.
+Potential GDP | Real GDP produced when the economy is at full employment.
+Labor productivity | Real GDP per hour of labor.
+Aggregate production function | How real GDP changes as the quantity of labor changes, with capital and technology constant.
+Real wage rate | The money wage rate divided by the price level: what an hour of work buys.
+Human capital | The knowledge and skills people get from education, training and experience.
+@map
+4-8 | Growth rate; growth versus a business cycle expansion | WRITE | Growth rate formulas; PPF shift vs moving to the PPF
+9-10 | The Rule of 70 | WRITE | Doubling time = 70 ÷ growth rate
+11-14 | Long-term growth trends in the U.S. and the world | MEMORIZE | Convergence or not
+15-21 | Production function and labor market: potential GDP | WRITE | Equilibrium real wage and hours; read the production function
+22-29 | What makes potential GDP grow | MEMORIZE | Population growth vs productivity growth
+30-33 | Why labor productivity grows | MEMORIZE | Preconditions; capital, human capital, technology
+34-49 | Growth theories, evidence and policies | SKIM | Classical, neoclassical, new growth; five policies
 
 ## The basics: growth rates | Slides 4-8 | must
 
@@ -70,7 +70,7 @@ About **3% a year** (5% − 2%).
 - Growth rate = change in real GDP ÷ last year's real GDP × 100
 - Growth of real GDP per person ≈ real GDP growth − population growth
 - Growth shifts the PPF out; a recovery moves the economy back to the PPF
-  ::
+::
 
 ## The magic of sustained growth: the Rule of 70 | Slides 9-10 | must
 
@@ -102,7 +102,7 @@ India's numbers are bigger, but they're in a different currency. Only the **grow
 - Doubling time ≈ 70 ÷ growth rate
 - A few points of growth make an enormous difference over decades
 - Compare countries by growth rates, not by numbers in different currencies
-  ::
+::
 
 ## Long-term growth trends | Slides 11-14 | know
 
@@ -117,7 +117,7 @@ India's numbers are bigger, but they're in a different currency. Only the **grow
 - U.S. real GDP per person: about 2% a year over the long run
 - Fast growers like China and the Asian economies are catching up
 - Many poorer economies are falling further behind
-  ::
+::
 
 ## How potential GDP is determined | Slides 15-21 | must
 
@@ -150,7 +150,7 @@ Labor productivity = real GDP ÷ hours = 2,625 ÷ 35 = **$75 per hour**.
 - Equilibrium gives the full-employment quantity of labor
 - Potential GDP = output on the production function at that quantity of labor
 - Labor productivity = real GDP ÷ labor hours
-  ::
+::
 
 ## What makes potential GDP grow? | Slides 22-29 | must
 
@@ -184,7 +184,7 @@ The **demand for labor increases** (each hour produces more, so firms want more 
 - Population growth: more hours, lower real wage, lower productivity
 - Productivity growth: higher demand for labor, higher real wage, higher real GDP per person
 - Only productivity growth raises living standards
-  ::
+::
 
 ## Why labor productivity grows | Slides 30-33 | must
 
@@ -216,7 +216,7 @@ Labor productivity is still growing, but **much more slowly**. **Capital product
 - Preconditions: firms, property rights, markets create incentives
 - Sources: physical capital, human capital, technology
 - More capital raises productivity, potential GDP, employment and the real wage
-  ::
+::
 
 ## Growth theories and policies | Slides 34-49 | skim
 
@@ -239,7 +239,7 @@ Five **policies** for faster growth: create **incentive mechanisms** (property r
 - Neoclassical: technology drives growth; diminishing returns to capital
 - New growth: profit-seeking innovation keeps growth going
 - Policies: incentives, saving, R&D, education, trade
-  ::
+::
 
 @cheat
 
@@ -281,133 +281,97 @@ Five **policies** for faster growth: create **incentive mechanisms** (property r
 
 @mcq 4
 Economic growth is best defined as a sustained expansion of production possibilities measured as the increase in:
-
-- Real GDP over a given period
-
-* Nominal GDP over a given period
-* Consumption goods over a given period
-* Production goods over a given period
-
++ Real GDP over a given period
+- Nominal GDP over a given period
+- Consumption goods over a given period
+- Production goods over a given period
 > Growth is measured with real GDP, which removes price changes.
-> @mcq 5
-> Real GDP rises from 520 billion to 546 billion. The growth rate is:
-
-- 5 percent
-
-* 2 percent
-* 10 percent
-* 26 percent
-
+@mcq 5
+Real GDP rises from 520 billion to 546 billion. The growth rate is:
++ 5 percent
+- 2 percent
+- 10 percent
+- 26 percent
 > 26 ÷ 520 × 100 = 5%.
-> @mcq 6
-> Population grows by 2 percent and real GDP by 5 percent. Real GDP per person grows by about:
-
-- 3 percent
-
-* 2 percent
-* 5 percent
-* 7 percent
-
+@mcq 6
+Population grows by 2 percent and real GDP by 5 percent. Real GDP per person grows by about:
++ 3 percent
+- 2 percent
+- 5 percent
+- 7 percent
 > Growth per person ≈ 5% − 2%.
-> @mcq 7
-> Which situation represents economic growth?
-
-- An outward shift of the PPF
-
-* Moving from inside the PPF to the PPF
-* Falling unemployment during a recovery
-* Returning to full employment after a recession
-
+@mcq 7
+Which situation represents economic growth?
++ An outward shift of the PPF
+- Moving from inside the PPF to the PPF
+- Falling unemployment during a recovery
+- Returning to full employment after a recession
 > Growth expands production possibilities; the other three are recoveries.
-> @mcq 9
-> Real GDP per person grows at 7 percent a year. By the Rule of 70 it doubles in about:
-
-- 10 years
-
-* 14 years
-* 35 years
-* 49 years
-
+@mcq 9
+Real GDP per person grows at 7 percent a year. By the Rule of 70 it doubles in about:
++ 10 years
+- 14 years
+- 35 years
+- 49 years
 > 70 ÷ 7 = 10.
-> @mcq 19
-> At a real wage of $40 an hour, labor supplied and demanded both equal 35 hours. At $50 an hour there is:
-
-- A surplus of labor
-
-* A shortage of labor
-* Full employment of labor
-* No change in employment
-
+@mcq 19
+At a real wage of $40 an hour, labor supplied and demanded both equal 35 hours. At $50 an hour there is:
++ A surplus of labor
+- A shortage of labor
+- Full employment of labor
+- No change in employment
 > Above the equilibrium wage, more hours are supplied than demanded.
-> @mcq 21
-> Potential GDP is 2,625 and full-employment labor is 35 hours. Labor productivity is:
-
-- $75 an hour
-
-* $35 an hour
-* $2,590 an hour
-* $91,875 an hour
-
+@mcq 21
+Potential GDP is 2,625 and full-employment labor is 35 hours. Labor productivity is:
++ $75 an hour
+- $35 an hour
+- $2,590 an hour
+- $91,875 an hour
 > 2,625 ÷ 35 = 75.
-> @mcq 25
-> An increase in population, with no change in productivity, will:
-
-- Lower the real wage and raise potential GDP
-
-* Raise the real wage and raise potential GDP
-* Lower the real wage and lower potential GDP
-* Raise the real wage and lower potential GDP
-
+@mcq 25
+An increase in population, with no change in productivity, will:
++ Lower the real wage and raise potential GDP
+- Raise the real wage and raise potential GDP
+- Lower the real wage and lower potential GDP
+- Raise the real wage and lower potential GDP
 > Labor supply rises, the real wage falls, and more hours raise potential GDP.
-> @mcq 28
-> An increase in labor productivity increases:
-
-- The demand for labor
-
-* The supply of labor
-* The working-age population
-* The natural unemployment rate
-
+@mcq 28
+An increase in labor productivity increases:
++ The demand for labor
+- The supply of labor
+- The working-age population
+- The natural unemployment rate
 > Each hour produces more, so firms demand more hours.
-> @mcq 26
-> Population growth on its own doesn't raise living standards because:
-
-- Diminishing returns lower real GDP per hour of labor
-
-* More people means lower total real GDP every time
-* The production function shifts down as people arrive
-* The demand for labor falls as the population grows
-
+@mcq 26
+Population growth on its own doesn't raise living standards because:
++ Diminishing returns lower real GDP per hour of labor
+- More people means lower total real GDP every time
+- The production function shifts down as people arrive
+- The demand for labor falls as the population grows
 > More hours with the same capital and technology means each hour produces less.
-> @mcq 30
-> The fundamental precondition for labor productivity growth is:
-
-- An incentive system of firms, property rights and markets
-
-* A large and fast-growing working-age population
-* A high and rising level of government spending
-* A fixed exchange rate and a large trade surplus
-
+@mcq 30
+The fundamental precondition for labor productivity growth is:
++ An incentive system of firms, property rights and markets
+- A large and fast-growing working-age population
+- A high and rising level of government spending
+- A fixed exchange rate and a large trade surplus
 > Incentives created by firms, property rights and markets come first.
-> @mcq 40
-> New growth theory says growth can persist because:
-
-- People choose to innovate and knowledge isn't subject to diminishing returns
-
-* Population growth always pushes real GDP per person back to subsistence level
-* Diminishing returns to capital bring growth to a stop unless technology changes
-* Governments can keep real GDP above potential GDP for long periods of time
-
+@mcq 40
+New growth theory says growth can persist because:
++ People choose to innovate and knowledge isn't subject to diminishing returns
+- Population growth always pushes real GDP per person back to subsistence level
+- Diminishing returns to capital bring growth to a stop unless technology changes
+- Governments can keep real GDP above potential GDP for long periods of time
 > Profit-seeking innovation keeps growth going; the others describe classical or neoclassical theory or a cycle.
-> @short 5
-> Real GDP grows from 18,163 to 18,526 and the population from 123.5 to 124.7. Calculate the growth rate of real GDP and of real GDP per person, and the years for real GDP per person to double.
-> ~ 2.0, 1.0, Rule of 70, 70 years
+@short 5
+Real GDP grows from 18,163 to 18,526 and the population from 123.5 to 124.7. Calculate the growth rate of real GDP and of real GDP per person, and the years for real GDP per person to double.
+~ 2.0, 1.0, Rule of 70, 70 years
 > Real GDP grows (363 ÷ 18,163) × 100 = 2.0%. Real GDP per person rises from 147,070 to 148,565, about 1.0%. By the Rule of 70 it doubles in about 70 ÷ 1 = 70 years.
-> @short 19
-> At a real wage of $40, labor supplied and demanded are both 35 hours; the production function gives real GDP of 2,625 at 35 hours. Find the equilibrium, potential GDP and labor productivity.
-> ~ 40, 35 hours, 2625, 75
+@short 19
+At a real wage of $40, labor supplied and demanded are both 35 hours; the production function gives real GDP of 2,625 at 35 hours. Find the equilibrium, potential GDP and labor productivity.
+~ 40, 35 hours, 2625, 75
 > Equilibrium real wage $40 an hour with 35 hours of labor employed. Potential GDP is real GDP at 35 hours, 2,625. Labor productivity = 2,625 ÷ 35 = $75 an hour.
-> @short 28
-> Compare the effects of population growth and labor productivity growth on the real wage rate, potential GDP and real GDP per person.
-> ~ labor supply, labor demand, real wage, potential GDP, per person
+@short 28
+Compare the effects of population growth and labor productivity growth on the real wage rate, potential GDP and real GDP per person.
+~ labor supply, labor demand, real wage, potential GDP, per person
 > Population growth raises labor supply: the real wage falls, potential GDP rises, but real GDP per hour of labor falls, so living standards don't rise. Productivity growth raises labor demand: the real wage rises, potential GDP rises, and real GDP per person rises.

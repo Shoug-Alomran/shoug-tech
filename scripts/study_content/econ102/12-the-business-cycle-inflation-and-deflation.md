@@ -13,22 +13,22 @@
 - Explain expected inflation and its effects
 - Distinguish deflation from disinflation, and explain the causes and consequences of deflation
 - Use the short-run and long-run Phillips curves
-  @vocab
-  Demand-pull inflation | Inflation that starts because aggregate demand increases.
-  Cost-push inflation | Inflation that starts with an increase in costs (money wages or raw material prices).
-  Stagflation | A rising price level combined with falling real GDP.
-  Deflation | A persistently falling price level; the inflation rate is negative.
-  Disinflation | A fall in the inflation rate; prices still rise, but more slowly.
-  Short-run Phillips curve | The inverse relationship between inflation and unemployment, with expected inflation and the natural rate fixed.
-  Long-run Phillips curve | Vertical at the natural unemployment rate.
-  @map
-  4-15 | The business cycle in the AS-AD model | MEMORIZE | AD vs potential GDP growth: points B, C, D
-  16-24 | Real business cycle theory | SKIM | Productivity impulse; intertemporal substitution
-  25-31 | Demand-pull inflation | WRITE | AD right → wages rise → SAS left → repeat
-  32-37 | Cost-push inflation | WRITE | SAS left → stagflation → AD response → spiral
-  38-41 | Expected inflation; forecasting | MEMORIZE | AD and SAS shift together
-  42-45 | Deflation: causes and consequences | MEMORIZE | Slow money growth; higher real debt
-  46-53 | The Phillips curve | WRITE | SRPC slopes down; LRPC vertical
+@vocab
+Demand-pull inflation | Inflation that starts because aggregate demand increases.
+Cost-push inflation | Inflation that starts with an increase in costs (money wages or raw material prices).
+Stagflation | A rising price level combined with falling real GDP.
+Deflation | A persistently falling price level; the inflation rate is negative.
+Disinflation | A fall in the inflation rate; prices still rise, but more slowly.
+Short-run Phillips curve | The inverse relationship between inflation and unemployment, with expected inflation and the natural rate fixed.
+Long-run Phillips curve | Vertical at the natural unemployment rate.
+@map
+4-15 | The business cycle in the AS-AD model | MEMORIZE | AD vs potential GDP growth: points B, C, D
+16-24 | Real business cycle theory | SKIM | Productivity impulse; intertemporal substitution
+25-31 | Demand-pull inflation | WRITE | AD right → wages rise → SAS left → repeat
+32-37 | Cost-push inflation | WRITE | SAS left → stagflation → AD response → spiral
+38-41 | Expected inflation; forecasting | MEMORIZE | AD and SAS shift together
+42-45 | Deflation: causes and consequences | MEMORIZE | Slow money growth; higher real debt
+46-53 | The Phillips curve | WRITE | SRPC slopes down; LRPC vertical
 
 ## The business cycle in the AS-AD model | Slides 4-15 | must
 
@@ -59,7 +59,7 @@ Real GDP grows **slowly**, falling below potential: a **recessionary gap** opens
 - Growth, inflation and the cycle are one process: LAS and AD both shift right
 - AD faster than potential: inflationary gap; slower: recessionary gap
 - AD up: Y and P up; AD down: Y and P down; SAS left: Y down, P up
-  ::
+::
 
 ## Mainstream and real business cycle theories | Slides 16-24 | skim
 
@@ -75,7 +75,7 @@ Real GDP grows **slowly**, falling below potential: a **recessionary gap** opens
 - Mainstream: fluctuating AD with sticky money wages
 - RBC: productivity shocks and people's choice of when to work
 - RBC says money doesn't drive the cycle; critics point to sticky wages
-  ::
+::
 
 ## Demand-pull inflation | Slides 25-31 | must
 
@@ -98,7 +98,7 @@ A single increase in AD gives a **one-time** rise in the price level. **Ongoing*
 - Demand-pull starts with AD shifting right: real GDP and the price level rise
 - Money wages then rise, shifting SAS left
 - Inflation continues only if money growth keeps shifting AD right
-  ::
+::
 
 ## Cost-push inflation | Slides 32-37 | must
 
@@ -131,7 +131,7 @@ If real GDP falls **while** prices rise, the cause is on the **supply** side (SA
 - Cost-push starts with SAS shifting left: real GDP falls, price level rises (stagflation)
 - It becomes a spiral only if the central bank keeps increasing money to fight unemployment
 - Demand-pull raises real GDP at first; cost-push lowers it
-  ::
+::
 
 ## Expected inflation | Slides 38-41 | know
 
@@ -144,7 +144,7 @@ When the inflation forecast is **wrong**, real GDP moves away from potential: in
 - Expected inflation: AD and SAS shift together, real GDP stays at potential
 - Unexpected inflation moves real GDP away from potential
 - A rational expectation uses all available information
-  ::
+::
 
 ## Deflation and disinflation | Slides 42-45 | must
 
@@ -186,7 +186,7 @@ Inflation falling from 6% to 2% is **disinflation**: prices are still rising, ju
 - Deflation comes from AD growing more slowly than potential GDP (slow money growth)
 - Deflation raises the real burden of debt and weakens spending
 - Cure: faster money growth or fiscal stimulus
-  ::
+::
 
 ## The Phillips curve | Slides 46-53 | must
 
@@ -225,7 +225,7 @@ The **SRPC shifts up** by 2 percentage points; the **LRPC doesn't move**, becaus
 - LRPC is vertical at the natural rate: no long-run tradeoff
 - Higher expected inflation shifts the SRPC up
 - A higher natural rate shifts both curves right
-  ::
+::
 
 @cheat
 
@@ -267,143 +267,104 @@ The **SRPC shifts up** by 2 percentage points; the **LRPC doesn't move**, becaus
 
 @mcq 13
 Aggregate demand grows faster than potential GDP. The economy moves toward:
-
-- An inflationary gap with faster inflation
-
-* A recessionary gap with slower inflation
-* Full employment with steady inflation
-* Deflation with falling real GDP
-
++ An inflationary gap with faster inflation
+- A recessionary gap with slower inflation
+- Full employment with steady inflation
+- Deflation with falling real GDP
 > Real GDP rises above potential when AD outpaces LAS.
-> @mcq 16
-> Real business cycle theory says fluctuations are caused mainly by:
-
-- Changes in productivity growth
-
-* Changes in the quantity of money
-* Changes in government spending
-* Changes in the exchange rate
-
+@mcq 16
+Real business cycle theory says fluctuations are caused mainly by:
++ Changes in productivity growth
+- Changes in the quantity of money
+- Changes in government spending
+- Changes in the exchange rate
 > RBC's impulse is a productivity (technology) shock.
-> @mcq 26
-> Demand-pull inflation starts with:
-
-- An increase in aggregate demand
-
-* A decrease in aggregate supply
-* A rise in the price of oil
-* A rise in money wage rates
-
+@mcq 26
+Demand-pull inflation starts with:
++ An increase in aggregate demand
+- A decrease in aggregate supply
+- A rise in the price of oil
+- A rise in money wage rates
 > The initial shock comes from spending.
-> @mcq 29
-> After AD increases from full employment, the money wage rate rises. This shifts:
-
-- SAS leftward
-
-* SAS rightward
-* AD leftward
-* LAS rightward
-
+@mcq 29
+After AD increases from full employment, the money wage rate rises. This shifts:
++ SAS leftward
+- SAS rightward
+- AD leftward
+- LAS rightward
 > Higher money wages raise costs.
-> @mcq 31
-> A demand-pull inflation continues over time only if:
-
-- The quantity of money keeps growing
-
-* Money wages stay fixed forever
-* Potential GDP grows faster than AD
-* The price of oil keeps falling
-
+@mcq 31
+A demand-pull inflation continues over time only if:
++ The quantity of money keeps growing
+- Money wages stay fixed forever
+- Potential GDP grows faster than AD
+- The price of oil keeps falling
 > Ongoing increases in AD need ongoing money growth.
-> @mcq 33
-> A rise in the price of oil, at first:
-
-- Lowers real GDP and raises the price level
-
-* Raises real GDP and raises the price level
-* Lowers real GDP and lowers the price level
-* Raises real GDP and lowers the price level
-
+@mcq 33
+A rise in the price of oil, at first:
++ Lowers real GDP and raises the price level
+- Raises real GDP and raises the price level
+- Lowers real GDP and lowers the price level
+- Raises real GDP and lowers the price level
 > SAS shifts left: cost-push stagflation.
-> @mcq 37
-> Which combination is stagflation?
-
-- A rising price level and falling real GDP
-
-* A rising price level and rising real GDP
-* A falling price level and falling real GDP
-* A falling price level and rising real GDP
-
+@mcq 37
+Which combination is stagflation?
++ A rising price level and falling real GDP
+- A rising price level and rising real GDP
+- A falling price level and falling real GDP
+- A falling price level and rising real GDP
 > Stagflation is the cost-push combination.
-> @mcq 38
-> When inflation is correctly expected, real GDP:
-
-- Stays at potential GDP as AD and SAS shift together
-
-* Rises above potential GDP as AD shifts faster
-* Falls below potential GDP as SAS shifts faster
-* Falls to zero as wages rise faster than prices
-
+@mcq 38
+When inflation is correctly expected, real GDP:
++ Stays at potential GDP as AD and SAS shift together
+- Rises above potential GDP as AD shifts faster
+- Falls below potential GDP as SAS shifts faster
+- Falls to zero as wages rise faster than prices
 > Money wages rise in step with the expected price level.
-> @mcq 42
-> The inflation rate falls from 6 percent to 2 percent. This is:
-
-- Disinflation
-
-* Deflation
-* Stagflation
-* Hyperinflation
-
+@mcq 42
+The inflation rate falls from 6 percent to 2 percent. This is:
++ Disinflation
+- Deflation
+- Stagflation
+- Hyperinflation
 > Prices still rise, only more slowly.
-> @mcq 45
-> Unanticipated deflation tends to:
-
-- Increase the real burden of debt
-
-* Decrease the real burden of debt
-* Leave the real burden of debt unchanged
-* Raise borrowers' real incomes
-
+@mcq 45
+Unanticipated deflation tends to:
++ Increase the real burden of debt
+- Decrease the real burden of debt
+- Leave the real burden of debt unchanged
+- Raise borrowers' real incomes
 > Debts are repaid with money worth more.
-> @mcq 47
-> The short-run Phillips curve shows that, with expected inflation fixed:
-
-- Higher inflation goes with lower unemployment
-
-* Higher inflation goes with higher unemployment
-* Inflation and unemployment are unrelated
-* Unemployment always equals the natural rate
-
+@mcq 47
+The short-run Phillips curve shows that, with expected inflation fixed:
++ Higher inflation goes with lower unemployment
+- Higher inflation goes with higher unemployment
+- Inflation and unemployment are unrelated
+- Unemployment always equals the natural rate
 > It's an inverse relationship.
-> @mcq 50
-> The long-run Phillips curve is:
-
-- Vertical at the natural unemployment rate
-
-* Horizontal at the expected inflation rate
-* Downward sloping like the short-run curve
-* Upward sloping from the natural rate
-
+@mcq 50
+The long-run Phillips curve is:
++ Vertical at the natural unemployment rate
+- Horizontal at the expected inflation rate
+- Downward sloping like the short-run curve
+- Upward sloping from the natural rate
 > There's no long-run tradeoff.
-> @mcq 52
-> A rise in the expected inflation rate shifts:
-
-- The short-run Phillips curve upward
-
-* The long-run Phillips curve rightward
-* The short-run Phillips curve downward
-* Both Phillips curves to the left
-
+@mcq 52
+A rise in the expected inflation rate shifts:
++ The short-run Phillips curve upward
+- The long-run Phillips curve rightward
+- The short-run Phillips curve downward
+- Both Phillips curves to the left
 > The SRPC intersects the LRPC at the expected inflation rate.
-> @short 36
-> Compare demand-pull and cost-push inflation: what starts each one, what happens to real GDP at first, and what is needed for each to continue?
-> ~ AD right, SAS left, real GDP rises, real GDP falls, money growth
+@short 36
+Compare demand-pull and cost-push inflation: what starts each one, what happens to real GDP at first, and what is needed for each to continue?
+~ AD right, SAS left, real GDP rises, real GDP falls, money growth
 > Demand-pull starts with AD shifting right, so real GDP and the price level rise. Cost-push starts with SAS shifting left, so real GDP falls while prices rise (stagflation). Both continue only if the quantity of money keeps growing: with demand-pull it keeps AD rising; with cost-push the central bank accommodates higher costs.
-> @short 42
-> Distinguish deflation from disinflation, and explain why deflation can harm the economy.
-> ~ price level falls, inflation slows, real debt, spending
+@short 42
+Distinguish deflation from disinflation, and explain why deflation can harm the economy.
+~ price level falls, inflation slows, real debt, spending
 > Deflation is a falling price level (negative inflation); disinflation is a fall in the inflation rate while prices still rise. Deflation raises the real burden of debt, so borrowers cut spending, AD weakens further and output falls.
-> @short 51
-> Explain the difference between the short-run and long-run Phillips curves, and what shifts each.
-> ~ SRPC slopes down, LRPC vertical, natural rate, expected inflation
+@short 51
+Explain the difference between the short-run and long-run Phillips curves, and what shifts each.
+~ SRPC slopes down, LRPC vertical, natural rate, expected inflation
 > The SRPC slopes down: with expected inflation fixed, higher inflation goes with lower unemployment. The LRPC is vertical at the natural unemployment rate: there's no long-run tradeoff. Higher expected inflation shifts the SRPC up; a higher natural rate shifts both curves right.

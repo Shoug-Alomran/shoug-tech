@@ -13,26 +13,26 @@
 - Measure GDP with the expenditure and income approaches
 - Calculate nominal GDP, real GDP and real GDP per person
 - Explain the uses and the limitations of real GDP
-  @vocab
-  Final good | Bought by its final user, not used up to make something else.
-  Intermediate good | Bought by a firm and used up in producing another good.
-  Consumption (C) | Households' spending on consumer goods and services.
-  Investment (I) | Firms' purchases of new capital, buildings and additions to inventories.
-  Net exports (X − M) | Exports minus imports.
-  Depreciation | Fall in the value of capital from wear and tear and obsolescence.
-  Real GDP | Output valued at the prices of a base year.
-  Nominal GDP | Output valued at the prices of the current year.
-  @map
-  4-7 | GDP defined: market value, final, within a country, period | MEMORIZE | The four parts and the three-question filter
-  8-21 | The circular flow; Y = C + I + G + (X − M) | MEMORIZE | Who buys and sells in which market; production = expenditure = income
-  22-24 | Why "domestic" and why "gross" | MEMORIZE | GDP vs GNI; depreciation; net investment
-  25-28 | Expenditure approach | WRITE | Classify C, I, G, X, M; find a missing number
-  29-33 | Income approach | MEMORIZE | Wages, interest, rent, profit; adjustments
-  34-37 | Nominal GDP and real GDP | WRITE | Current quantities × base-year prices
-  38-47 | Uses: living standards, growth, business cycle | MEMORIZE | Real GDP per person; Lucas wedge; peak, trough
-  48-52 | Comparing countries; limitations of real GDP | MEMORIZE | PPP; what GDP leaves out
-  53-59 | Chained-dollar real GDP | SKIM | Average of two growth rates, chained to the base year
-  60-67 | Appendix: time-series graphs | SKIM | Level, direction, trend; ratio scale
+@vocab
+Final good | Bought by its final user, not used up to make something else.
+Intermediate good | Bought by a firm and used up in producing another good.
+Consumption (C) | Households' spending on consumer goods and services.
+Investment (I) | Firms' purchases of new capital, buildings and additions to inventories.
+Net exports (X − M) | Exports minus imports.
+Depreciation | Fall in the value of capital from wear and tear and obsolescence.
+Real GDP | Output valued at the prices of a base year.
+Nominal GDP | Output valued at the prices of the current year.
+@map
+4-7 | GDP defined: market value, final, within a country, period | MEMORIZE | The four parts and the three-question filter
+8-21 | The circular flow; Y = C + I + G + (X − M) | MEMORIZE | Who buys and sells in which market; production = expenditure = income
+22-24 | Why "domestic" and why "gross" | MEMORIZE | GDP vs GNI; depreciation; net investment
+25-28 | Expenditure approach | WRITE | Classify C, I, G, X, M; find a missing number
+29-33 | Income approach | MEMORIZE | Wages, interest, rent, profit; adjustments
+34-37 | Nominal GDP and real GDP | WRITE | Current quantities × base-year prices
+38-47 | Uses: living standards, growth, business cycle | MEMORIZE | Real GDP per person; Lucas wedge; peak, trough
+48-52 | Comparing countries; limitations of real GDP | MEMORIZE | PPP; what GDP leaves out
+53-59 | Chained-dollar real GDP | SKIM | Average of two growth rates, chained to the base year
+60-67 | Appendix: time-series graphs | SKIM | Level, direction, trend; ratio scale
 
 ## What GDP is | Slides 4-7 | must
 
@@ -79,7 +79,7 @@ A factory's new machine isn't used up in one product; it is new **capital** that
 - Intermediate goods aren't counted separately, to avoid double counting
 - Used goods, transfer payments, financial assets and household production are excluded
 - Domestic means where it was produced, not who owns the producer
-  ::
+::
 
 ## The circular flow: production = expenditure = income | Slides 8-21 | must
 
@@ -132,7 +132,7 @@ Because every riyal spent on final goods and services is received by firms and p
 - Goods markets: firms sell to households (C), firms (I), governments (G) and foreigners (X − M)
 - Y = C + I + G + (X − M)
 - Aggregate production = aggregate expenditure = aggregate income
-  ::
+::
 
 ## Why "domestic" and why "gross"? | Slides 22-24 | must
 
@@ -159,7 +159,7 @@ GDP already uses **gross** investment. When a GDP data table lists depreciation 
 - Domestic: produced within the country; GNI counts residents' income wherever earned
 - Gross: before subtracting depreciation
 - Net investment = gross investment − depreciation
-  ::
+::
 
 ## Measuring GDP: the expenditure approach | Slides 25-28 | must
 
@@ -204,7 +204,7 @@ M = 205 − 183 = **$22 billion**.
 - New houses are investment; shares and bonds aren't investment
 - Transfer payments aren't government expenditure
 - Imports are subtracted; a missing number can be found because expenditure = income
-  ::
+::
 
 ## Measuring GDP: the income approach | Slides 29-33 | know
 
@@ -232,7 +232,7 @@ Factor incomes miss **taxes** (indirect taxes − subsidies) and **wear** (depre
 - Income approach: wages + interest + rent + profits
 - Add indirect taxes less subsidies, and add depreciation, to reach GDP
 - The two approaches differ only by the statistical discrepancy
-  ::
+::
 
 ## Nominal GDP and real GDP | Slides 34-37 | must
 
@@ -263,7 +263,7 @@ The group-work MCQ: nominal GDP rose; what can you conclude? Only that real GDP 
 - Real GDP: current quantities × base-year prices
 - Real GDP = nominal GDP in the base year
 - A rise in nominal GDP can come from higher prices alone
-  ::
+::
 
 ## Uses of real GDP: living standards, growth and the business cycle | Slides 38-47 | must
 
@@ -312,7 +312,7 @@ Real GDP is **falling**, moving from a peak down to a trough (officially, for at
 - Potential GDP: real GDP at full employment of all resources
 - Lucas wedge: output lost through the productivity growth slowdown
 - Business cycle: expansion, peak, recession (falling for two quarters or more), trough
-  ::
+::
 
 ## Comparing countries and the limits of GDP | Slides 48-52 | must
 
@@ -343,7 +343,7 @@ Not necessarily. Real GDP per person is an **average**: it doesn't show how inco
 - GDP omits household production, the underground economy, leisure and the environment
 - It ignores health, freedom and how income is distributed
 - GDP is a measure of production, not of overall well-being
-  ::
+::
 
 ## Chained-dollar real GDP | Slides 53-59 | skim
 
@@ -354,7 +354,7 @@ The Bureau of Economic Analysis doesn't use one fixed base year. It values produ
 - Value both years' output at each year's prices
 - Average the two growth rates
 - Link (chain) the averages back to the base year
-  ::
+::
 
 ## Appendix: time-series graphs | Slides 60-67 | skim
 
@@ -365,7 +365,7 @@ A **time-series graph** puts time on the x-axis and the variable on the y-axis. 
 - Time-series graph: time on the x-axis
 - Shows level, direction, speed and trend
 - Ratio scale: equal percentage changes look equal; the slope shows the growth rate
-  ::
+::
 
 @cheat
 
@@ -417,143 +417,104 @@ A **time-series graph** puts time on the x-axis and the variable on the y-axis. 
 
 @mcq 4
 GDP is the market value of all the:
-
-- Final goods and services produced within a country in a given period
-
-* Goods and services, final and intermediate, sold within a country
-* Final goods and services produced by a country's citizens anywhere
-* Goods and services bought by households in a given time period
-
++ Final goods and services produced within a country in a given period
+- Goods and services, final and intermediate, sold within a country
+- Final goods and services produced by a country's citizens anywhere
+- Goods and services bought by households in a given time period
 > Final, produced within the country, in a given period: residents' production abroad belongs in GNI.
-> @mcq 6
-> Intermediate goods aren't counted separately in GDP because:
-
-- Counting them separately would double count them
-
-* They have no market value of any kind at all
-* They are nearly always imported from abroad
-* They are counted in government expenditure
-
+@mcq 6
+Intermediate goods aren't counted separately in GDP because:
++ Counting them separately would double count them
+- They have no market value of any kind at all
+- They are nearly always imported from abroad
+- They are counted in government expenditure
 > Their value is already included in the price of the final good.
-> @mcq 7
-> Which transaction is included in Saudi Arabia's GDP this year?
-
-- A foreign-owned factory in Saudi Arabia produces new equipment
-
-* A Saudi household buys a used car from another household
-* A bakery in Riyadh buys flour to make the bread it sells
-* A Saudi investor buys shares in a listed company
-
+@mcq 7
+Which transaction is included in Saudi Arabia's GDP this year?
++ A foreign-owned factory in Saudi Arabia produces new equipment
+- A Saudi household buys a used car from another household
+- A bakery in Riyadh buys flour to make the bread it sells
+- A Saudi investor buys shares in a listed company
 > Domestic production counts whoever owns the firm; used goods, intermediate goods and shares are excluded.
-> @mcq 21
-> The circular flow shows that:
-
-- Aggregate production, expenditure and income are all equal
-
-* Aggregate expenditure is always less than aggregate income
-* Aggregate income is always greater than aggregate production
-* Aggregate production is equal to consumption expenditure
-
+@mcq 21
+The circular flow shows that:
++ Aggregate production, expenditure and income are all equal
+- Aggregate expenditure is always less than aggregate income
+- Aggregate income is always greater than aggregate production
+- Aggregate production is equal to consumption expenditure
 > Every riyal spent on final goods is paid out as someone's income.
-> @mcq 10
-> In the factor markets of the circular flow, households:
-
-- Sell the services of labor, land, capital and entrepreneurship
-
-* Buy the final goods and services that firms have produced
-* Buy labor, land, capital and entrepreneurship from firms
-* Sell final goods and services to firms and governments
-
+@mcq 10
+In the factor markets of the circular flow, households:
++ Sell the services of labor, land, capital and entrepreneurship
+- Buy the final goods and services that firms have produced
+- Buy labor, land, capital and entrepreneurship from firms
+- Sell final goods and services to firms and governments
 > Households sell factor services and receive incomes; they buy goods in the goods markets.
-> @mcq 26
-> In the expenditure approach, a firm's purchase of a new machine is:
-
-- Investment
-
-* Consumption
-* Government expenditure
-* An intermediate good
-
+@mcq 26
+In the expenditure approach, a firm's purchase of a new machine is:
++ Investment
+- Consumption
+- Government expenditure
+- An intermediate good
 > New capital bought by firms is investment, a final good.
-> @mcq 27
-> C = 640, I = 180, G = 250, X = 140, M = 190 (SAR millions). GDP is:
-
-- SAR 1,020 million
-
-* SAR 1,070 million
-* SAR 1,210 million
-* SAR 1,400 million
-
+@mcq 27
+C = 640, I = 180, G = 250, X = 140, M = 190 (SAR millions). GDP is:
++ SAR 1,020 million
+- SAR 1,070 million
+- SAR 1,210 million
+- SAR 1,400 million
 > 640 + 180 + 250 + (140 − 190) = 1,020.
-> @mcq 15
-> A government pension paid to a retired worker is:
-
-- Excluded from GDP
-
-* Part of government expenditure
-* Part of consumption
-* Part of investment
-
+@mcq 15
+A government pension paid to a retired worker is:
++ Excluded from GDP
+- Part of government expenditure
+- Part of consumption
+- Part of investment
 > A transfer payment buys no good or service, so nothing is produced.
-> @mcq 23
-> Gross investment is SAR 50 million and depreciation is SAR 20 million. Net investment is:
-
-- SAR 30 million
-
-* SAR 70 million
-* SAR 50 million
-* SAR 20 million
-
+@mcq 23
+Gross investment is SAR 50 million and depreciation is SAR 20 million. Net investment is:
++ SAR 30 million
+- SAR 70 million
+- SAR 50 million
+- SAR 20 million
 > Net investment = gross investment − depreciation.
-> @mcq 34
-> Nominal GDP rose from one year to the next. From this alone, you can conclude that:
-
-- Real GDP may have risen, fallen or stayed the same
-
-* Real GDP must have increased over the year
-* The price level must have increased over the year
-* The economy must have been in an expansion
-
+@mcq 34
+Nominal GDP rose from one year to the next. From this alone, you can conclude that:
++ Real GDP may have risen, fallen or stayed the same
+- Real GDP must have increased over the year
+- The price level must have increased over the year
+- The economy must have been in an expansion
 > Higher prices alone can raise nominal GDP.
-> @mcq 37
-> An economy's 2025 output valued at base-year (2024) prices is its:
-
-- Real GDP in 2025
-
-* Nominal GDP in 2025
-* Nominal GDP in 2024
-* GDP deflator in 2025
-
+@mcq 37
+An economy's 2025 output valued at base-year (2024) prices is its:
++ Real GDP in 2025
+- Nominal GDP in 2025
+- Nominal GDP in 2024
+- GDP deflator in 2025
 > Real GDP = current quantities × base-year prices.
-> @mcq 46
-> A recession is a period during which real GDP:
-
-- Decreases for at least two successive quarters
-
-* Grows more slowly than potential GDP for a year
-* Reaches its highest point in the business cycle
-* Increases for at least two successive quarters
-
+@mcq 46
+A recession is a period during which real GDP:
++ Decreases for at least two successive quarters
+- Grows more slowly than potential GDP for a year
+- Reaches its highest point in the business cycle
+- Increases for at least two successive quarters
 > A recession runs from a peak to a trough, with output falling for at least two quarters.
-> @mcq 51
-> Which of these is left out of GDP?
-
-- Meals cooked at home for the family
-
-* A haircut bought at a salon
-* A new ambulance for the city
-* A newly built family house
-
+@mcq 51
+Which of these is left out of GDP?
++ Meals cooked at home for the family
+- A haircut bought at a salon
+- A new ambulance for the city
+- A newly built family house
 > Household production isn't sold in a market, so GDP misses it.
-> @short 27
-> Use the data to calculate (i) aggregate expenditure and (ii) imports: aggregate income $183 billion, C $118 billion, I $34 billion, G $28 billion, exports $25 billion.
-> ~ 183, expenditure equals income, 205, 22
+@short 27
+Use the data to calculate (i) aggregate expenditure and (ii) imports: aggregate income $183 billion, C $118 billion, I $34 billion, G $28 billion, exports $25 billion.
+~ 183, expenditure equals income, 205, 22
 > Aggregate expenditure equals aggregate income, so it's $183 billion. 183 = 118 + 34 + 28 + 25 − M = 205 − M, so imports M = $22 billion.
-> @short 35
-> An economy produces coffee and dates. 2024 (base year): 600 units of coffee at $5 and 900 boxes of dates at $2. 2025: 700 units at $6 and 1,000 boxes at $3. Calculate nominal GDP in both years and real GDP in 2025.
-> ~ 4800, 7200, 5500, base-year prices
+@short 35
+An economy produces coffee and dates. 2024 (base year): 600 units of coffee at $5 and 900 boxes of dates at $2. 2025: 700 units at $6 and 1,000 boxes at $3. Calculate nominal GDP in both years and real GDP in 2025.
+~ 4800, 7200, 5500, base-year prices
 > Nominal 2024 = 3,000 + 1,800 = $4,800. Nominal 2025 = 4,200 + 3,000 = $7,200. Real 2025 = 700 × $5 + 1,000 × $2 = $5,500 (2025 quantities at 2024 prices).
-> @short 51
-> Give one use of real GDP per person and two things it leaves out.
-> ~ standard of living, household production, underground, leisure, environment
+@short 51
+Give one use of real GDP per person and two things it leaves out.
+~ standard of living, household production, underground, leisure, environment
 > It measures the average standard of living, so it can compare living standards over time or across countries. It leaves out household production and environmental quality (also leisure and the underground economy).

@@ -678,7 +678,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/business/econ102/extra-resources/cheat-sheets/course-review/",
-    "title": "ECON102 Complete Course Review",
+    "title": "ECON102 | Complete Course Review",
     "track": "business",
     "course": "econ102",
     "section": "extra-resources",

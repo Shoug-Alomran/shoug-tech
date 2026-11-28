@@ -42,7 +42,7 @@ Run everything from the repo root, for example `python3 scripts/embed_resources.
 
 `sync-psu-academic-calendar.js` runs on its own schedule from `.github/workflows/sync-psu-academic-calendar.yml`.
 
-`sync-psu-timetable.js` (PSU Edugate timetable → `docs/data/psu-timetable/`) and `build-course-catalog.js` (plan grids + syllabi → `docs/data/course-catalog.json`) feed the schedule planner and Murshid. They run every 6 hours from `.github/workflows/sync-psu-timetable.yml`, which starts a deploy only when the data changed. Run `build-course-catalog.js` by hand after editing a plan grid or `course-syllabi.json`.
+`sync-psu-timetable.js` (PSU Edugate timetable → `docs/data/psu-timetable/`) and `build-course-catalog.js` (plan grids + syllabi → `docs/data/course-catalog.json`) feed the schedule planner and Murshida. They run every 6 hours from `.github/workflows/sync-psu-timetable.yml`, which starts a deploy only when the data changed. Run `build-course-catalog.js` by hand after editing a plan grid or `course-syllabi.json`.
 
 ### Git and Claude Code hooks
 

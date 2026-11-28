@@ -14,25 +14,25 @@
 - Calculate unplanned reserves, the monetary base and the money multiplier
 - Explain the demand for money, the supply of money and money market equilibrium
 - Use the quantity theory of money to find the inflation rate
-  @vocab
-  Means of payment | A method of settling a debt.
-  Monetary base | Currency (notes and coins) + banks' deposits at the Fed.
-  Desired reserve ratio | The fraction of deposits banks choose to hold as reserves.
-  Currency drain ratio | The ratio of currency held by the public to deposits.
-  Money multiplier | Change in the quantity of money ÷ change in the monetary base.
-  Velocity of circulation | The average number of times a dollar is used in a year to buy final goods: V = PY ÷ M.
-  FOMC | Federal Open Market Committee, the Fed's main policy-making body.
-  @map
-  4-12 | What money is; three functions; M1 and M2 | WRITE | Calculate M1 and M2; deposits are money, cheques are not
-  13-20 | Depository institutions | MEMORIZE | Liquidity, funds, risk; regulation
-  21-29 | The Fed: structure, balance sheet, tools | MEMORIZE | FOMC; monetary base; four tools
-  30-34 | Open market operations, discount rate, interest on reserves | MEMORIZE | Fed buys → reserves up
-  35-41 | How banks create money; the money multiplier | WRITE | Unplanned reserves; multiplier = ΔM ÷ ΔMB
-  42-47 | The demand for money | MEMORIZE | Interest rate, price level, real GDP, financial innovation
-  48-53 | The supply of money: three targets | MEMORIZE | Base, interest rate, quantity of money
-  54-61 | Money market equilibrium: short run and long run | MEMORIZE | Money up → rate down (short run), price level up (long run)
-  62-64 | The quantity theory of money | WRITE | MV = PY; inflation = money growth + V growth − Y growth
-  65-70 | Math note: the money multiplier | WRITE | Rounds of lending with a currency drain
+@vocab
+Means of payment | A method of settling a debt.
+Monetary base | Currency (notes and coins) + banks' deposits at the Fed.
+Desired reserve ratio | The fraction of deposits banks choose to hold as reserves.
+Currency drain ratio | The ratio of currency held by the public to deposits.
+Money multiplier | Change in the quantity of money ÷ change in the monetary base.
+Velocity of circulation | The average number of times a dollar is used in a year to buy final goods: V = PY ÷ M.
+FOMC | Federal Open Market Committee, the Fed's main policy-making body.
+@map
+4-12 | What money is; three functions; M1 and M2 | WRITE | Calculate M1 and M2; deposits are money, cheques are not
+13-20 | Depository institutions | MEMORIZE | Liquidity, funds, risk; regulation
+21-29 | The Fed: structure, balance sheet, tools | MEMORIZE | FOMC; monetary base; four tools
+30-34 | Open market operations, discount rate, interest on reserves | MEMORIZE | Fed buys → reserves up
+35-41 | How banks create money; the money multiplier | WRITE | Unplanned reserves; multiplier = ΔM ÷ ΔMB
+42-47 | The demand for money | MEMORIZE | Interest rate, price level, real GDP, financial innovation
+48-53 | The supply of money: three targets | MEMORIZE | Base, interest rate, quantity of money
+54-61 | Money market equilibrium: short run and long run | MEMORIZE | Money up → rate down (short run), price level up (long run)
+62-64 | The quantity theory of money | WRITE | MV = PY; inflation = money growth + V growth − Y growth
+65-70 | Math note: the money multiplier | WRITE | Rounds of lending with a currency drain
 
 ## What money is | Slides 4-12 | must
 
@@ -76,7 +76,7 @@ The **$250 million held by banks isn't counted**: it's bank reserves, not curren
 - M1 = currency outside banks + demand deposits + other liquid deposits
 - M2 = M1 + small time deposits + retail money funds
 - Currency inside banks isn't part of M1; cheques and credit cards aren't money
-  ::
+::
 
 ## Depository institutions | Slides 13-20 | must
 
@@ -105,7 +105,7 @@ They're regulated through **deposit insurance** (the FDIC insures deposits up to
 - Assets: reserves, liquid assets, securities, loans
 - Benefits: create liquidity, pool risk, lower borrowing and monitoring costs
 - Regulation: deposit insurance, capital and reserve requirements
-  ::
+::
 
 ## The Federal Reserve System | Slides 21-29 | must
 
@@ -137,7 +137,7 @@ The **FOMC** sets policy and meets roughly **every six weeks**. The Board has **
 - Board of Governors: 7 members, 14-year terms
 - FOMC sets monetary policy and meets about every six weeks
 - Monetary base = notes + coins + banks' deposits at the Fed
-  ::
+::
 
 ## Open market operations and the other tools | Slides 30-34 | must
 
@@ -169,7 +169,7 @@ The monetary base and bank reserves both **decrease by $20 million**.
 - Open market sale: reserves and the monetary base decrease
 - Discount window: last-resort loans at the discount rate
 - A higher interest on reserves rate discourages lending
-  ::
+::
 
 ## How banks create money | Slides 35-41 | must
 
@@ -211,7 +211,7 @@ Reserves (R/D) and currency drain (C/D) are **leaks** from the lending chain. Th
 - Unplanned reserves = actual − desired reserves
 - Money multiplier = ΔM ÷ ΔMB
 - A larger reserve ratio or currency drain makes the multiplier smaller
-  ::
+::
 
 ## The demand for money | Slides 42-47 | must
 
@@ -236,7 +236,7 @@ The demand for money curve shifts **leftward** (to MD0): people need to hold les
 - Higher real GDP or price level shifts it right
 - Financial innovation shifts it left
 - A change in the interest rate is a movement along the curve
-  ::
+::
 
 ## The supply of money and money market equilibrium | Slides 48-61 | must
 
@@ -270,7 +270,7 @@ The **vertical** curve.
 - Equilibrium where money demanded = money supplied
 - Short run: more money lowers the interest rate
 - Long run: more money raises only the price level
-  ::
+::
 
 ## The quantity theory of money | Slides 62-64 | must
 
@@ -300,7 +300,7 @@ P = M × V ÷ Y = 25 × 15.4 ÷ 350 = **1.1** (GDP deflator 110): halving money 
 - MV = PY; V = PY ÷ M
 - Inflation = money growth + velocity growth − real GDP growth
 - In the long run, more money raises the price level in the same proportion
-  ::
+::
 
 @cheat
 
@@ -344,143 +344,104 @@ P = M × V ÷ Y = 25 × 15.4 ÷ 350 = **1.1** (GDP deflator 110): halving money 
 
 @mcq 6
 Keeping $200 at home for an emergency uses money as a:
-
-- Store of value
-
-* Medium of exchange
-* Unit of account
-* Means of credit
-
++ Store of value
+- Medium of exchange
+- Unit of account
+- Means of credit
 > Holding money to spend later is the store of value function.
-> @mcq 9
-> Currency outside banks is $200 m, currency in banks $250 m, demand deposits $900 m and other liquid deposits $100 m. M1 is:
-
-- $1,200 million
-
-* $1,450 million
-* $1,150 million
-* $750 million
-
+@mcq 9
+Currency outside banks is $200 m, currency in banks $250 m, demand deposits $900 m and other liquid deposits $100 m. M1 is:
++ $1,200 million
+- $1,450 million
+- $1,150 million
+- $750 million
 > 200 + 900 + 100; currency held by banks is reserves, not M1.
-> @mcq 12
-> Which of these is money?
-
-- A demand deposit at a bank
-
-* A credit card
-* A debit card
-* A cheque
-
+@mcq 12
+Which of these is money?
++ A demand deposit at a bank
+- A credit card
+- A debit card
+- A cheque
 > Deposits are money; cheques and debit cards move deposits, and credit cards create loans.
-> @mcq 18
-> Which is NOT a function of depository institutions?
-
-- Concentrating risk on a few borrowers
-
-* Creating liquidity from short-term deposits
-* Lowering the cost of borrowing funds
-* Lowering the cost of monitoring borrowers
-
+@mcq 18
+Which is NOT a function of depository institutions?
++ Concentrating risk on a few borrowers
+- Creating liquidity from short-term deposits
+- Lowering the cost of borrowing funds
+- Lowering the cost of monitoring borrowers
 > Banks pool and spread risk.
-> @mcq 25
-> The part of the Fed that meets about every six weeks to set monetary policy is the:
-
-- Federal Open Market Committee
-
-* Board of Governors
-* Federal Reserve Banks
-* Commercial banks
-
+@mcq 25
+The part of the Fed that meets about every six weeks to set monetary policy is the:
++ Federal Open Market Committee
+- Board of Governors
+- Federal Reserve Banks
+- Commercial banks
 > The FOMC makes monetary policy decisions.
-> @mcq 31
-> When the Fed buys securities from a bank, bank reserves:
-
-- Increase by the amount of the purchase
-
-* Decrease by the amount of the purchase
-* Stay the same, because the two changes offset
-* Increase by the purchase times the reserve ratio
-
+@mcq 31
+When the Fed buys securities from a bank, bank reserves:
++ Increase by the amount of the purchase
+- Decrease by the amount of the purchase
+- Stay the same, because the two changes offset
+- Increase by the purchase times the reserve ratio
 > The Fed pays by crediting the bank's deposit at the Fed.
-> @mcq 37
-> A bank has deposits of $1,500,000, a desired reserve ratio of 12% and reserves of $200,000. Its unplanned reserves are:
-
-- $20,000
-
-* $180,000
-* $120,000
-* Zero
-
+@mcq 37
+A bank has deposits of $1,500,000, a desired reserve ratio of 12% and reserves of $200,000. Its unplanned reserves are:
++ $20,000
+- $180,000
+- $120,000
+- Zero
 > 200,000 − 0.12 × 1,500,000.
-> @mcq 41
-> The monetary base rises by $4 billion and the quantity of money by $10 billion. The money multiplier is:
-
-- 2.5
-
-* 0.4
-* 6.0
-* 40.0
-
+@mcq 41
+The monetary base rises by $4 billion and the quantity of money by $10 billion. The money multiplier is:
++ 2.5
+- 0.4
+- 6.0
+- 40.0
 > 10 ÷ 4 = 2.5.
-> @mcq 44
-> Introducing ATMs and online banking shifts the demand for money curve:
-
-- Leftward
-
-* Rightward
-* Upward along the curve
-* Downward along the curve
-
+@mcq 44
+Introducing ATMs and online banking shifts the demand for money curve:
++ Leftward
+- Rightward
+- Upward along the curve
+- Downward along the curve
 > Financial innovation lets people hold less money.
-> @mcq 46
-> An increase in real GDP, other things the same:
-
-- Shifts the demand for money rightward
-
-* Shifts the demand for money leftward
-* Moves down along the demand for money
-* Has no effect on the demand for money
-
+@mcq 46
+An increase in real GDP, other things the same:
++ Shifts the demand for money rightward
+- Shifts the demand for money leftward
+- Moves down along the demand for money
+- Has no effect on the demand for money
 > More spending needs more money.
-> @mcq 53
-> When the Fed targets the quantity of money, the supply of money curve is:
-
-- Vertical
-
-* Horizontal
-* Upward sloping
-* Downward sloping
-
+@mcq 53
+When the Fed targets the quantity of money, the supply of money curve is:
++ Vertical
+- Horizontal
+- Upward sloping
+- Downward sloping
 > The quantity is fixed whatever the interest rate.
-> @mcq 57
-> In the short run, an increase in the quantity of money:
-
-- Lowers the nominal interest rate
-
-* Raises the nominal interest rate
-* Leaves the interest rate unchanged
-* Raises real GDP permanently
-
+@mcq 57
+In the short run, an increase in the quantity of money:
++ Lowers the nominal interest rate
+- Raises the nominal interest rate
+- Leaves the interest rate unchanged
+- Raises real GDP permanently
 > People buy bonds with surplus money, so bond prices rise and the rate falls.
-> @mcq 64
-> Money grows 3 percent, velocity is constant and real GDP grows 2 percent. Inflation is:
-
-- 1 percent
-
-* 5 percent
-* 3 percent
-* 6 percent
-
+@mcq 64
+Money grows 3 percent, velocity is constant and real GDP grows 2 percent. Inflation is:
++ 1 percent
+- 5 percent
+- 3 percent
+- 6 percent
 > 3 + 0 − 2 = 1.
-> @short 9
-> Currency is $1,824 bn, demand deposits $2,126 bn, other liquid deposits $12,234 bn, small time deposits $466 bn and retail money funds $1,142 bn. Calculate M1 and M2.
-> ~ M1, 16184, M2, 17792
+@short 9
+Currency is $1,824 bn, demand deposits $2,126 bn, other liquid deposits $12,234 bn, small time deposits $466 bn and retail money funds $1,142 bn. Calculate M1 and M2.
+~ M1, 16184, M2, 17792
 > M1 = 1,824 + 2,126 + 12,234 = $16,184 billion. M2 = M1 + 466 + 1,142 = $17,792 billion.
-> @short 31
-> The Fed sells $20 million of securities to a bank. Show the changes in both balance sheets and state what happens to reserves and the monetary base.
-> ~ securities, reserves, decrease, monetary base
+@short 31
+The Fed sells $20 million of securities to a bank. Show the changes in both balance sheets and state what happens to reserves and the monetary base.
+~ securities, reserves, decrease, monetary base
 > Fed: securities −$20 m and banks' deposits −$20 m. Bank: securities +$20 m and reserves −$20 m. Bank reserves and the monetary base both fall by $20 million.
-> @short 63
-> Real GDP is 350 million, P = 2.2 and M = 50 million. M is then halved. Using the quantity theory, find velocity and the new price level.
-> ~ 15.4, constant velocity, 25, 1.1
+@short 63
+Real GDP is 350 million, P = 2.2 and M = 50 million. M is then halved. Using the quantity theory, find velocity and the new price level.
+~ 15.4, constant velocity, 25, 1.1
 > V = 2.2 × 350 ÷ 50 = 15.4. With V and real GDP unchanged and M = 25 million, P = 25 × 15.4 ÷ 350 = 1.1, so the price level halves.

@@ -417,6 +417,41 @@ STUDY_EXAMS = [
 ]
 
 
+REVIEW = ("course-review", "Complete Course Review")
+
+
+def install_page_addons():
+    """Read-aloud on breakdowns, and the quiz colour/motion layer and mistakes tracker on quiz pages.
+
+    The same tags the site-wide installers add, applied to ECON102's pages only."""
+    import install_quiz_motion as motion
+    import install_quiz_review as review
+    import install_slide_reader as reader
+
+    changed = 0
+    for page in glob.glob(os.path.join(COURSE_DIR, "slide-breakdowns", "*", "*.html")):
+        if page.endswith("index.html"):
+            continue
+        t = bnc.read(page)
+        new = reader.EXISTING.sub(reader.TAG, t, count=1) if reader.EXISTING.search(t) else t.replace("</body>", reader.TAG + "\n</body>", 1)
+        if new != t:
+            bnc.write(page, new)
+            changed += 1
+    for page in glob.glob(os.path.join(COURSE_DIR, "exams", "*", "*.html")):
+        if page.endswith("index.html"):
+            continue
+        t = new = bnc.read(page)
+        if "quiz-motion.js" not in new:
+            new = re.sub(r"</head\s*>", motion.TAGS + "</head>", new, count=1)
+        if page.endswith("-quiz.html") and review.TAG not in new and "</body>" in new:
+            i = new.rindex("</body>")
+            new = new[:i] + "    " + review.TAG + "\n  " + new[i:]
+        if new != t:
+            bnc.write(page, new)
+            changed += 1
+    print("page add-ons installed on", changed, "pages")
+
+
 def study_course():
     import build_course_study as bcs
 
@@ -429,6 +464,35 @@ def study_course():
                 return [("%s student sheet (no slides yet)" % deck["head"],
                          "%s%s/%s.pdf" % (URL, s, s.rstrip("/").split("/")[-1])) for s in sources]
             return super().slide_links(deck)
+
+        # The cheat-sheet folder is rebuilt from STUDY_EXAMS each time; keep the course review in it.
+        # build_econ102_cheat_sheets.py then writes every sheet's content (these are placeholders).
+        def write_cheats(self, data):
+            # OneDrive can lock an emptied folder; the files are rewritten next, so skip what can't be removed.
+            real = bcs.shutil.rmtree
+            bcs.shutil.rmtree = lambda p, *a, **k: real(p, ignore_errors=True)
+            try:
+                super().write_cheats(data)
+            finally:
+                bcs.shutil.rmtree = real
+            path = bcs.CHEAT_PATH
+            href = lambda slug: "%s%s%s/" % (self.url, path, slug)
+            sheets = [(e[0], "%s Cheat Sheet" % e[1]) for e in STUDY_EXAMS] + [(REVIEW[0], REVIEW[1])]
+            n = len(sheets)
+            bnc.write(os.path.join(self.out, path, REVIEW[0], "index.html"), self.frame_page(
+                href(REVIEW[0]), path, "Cheat Sheets", "CHEAT SHEETS", n, REVIEW[1], REVIEW[0] + ".html",
+                href(sheets[-2][0]), None, data))
+            rows = "".join(self.row(href(slug), i, title) for i, (slug, title) in enumerate(sheets, 1))
+            self.listing(data, path, "Cheat Sheets", "أوراق المراجعة", rows, active="extra-resources/")
+
+        def update_sidebar(self):
+            data = super().update_sidebar()
+            data["children"][self.url + bcs.CHEAT_PATH].append(
+                {"url": "%s%s%s/" % (self.url, bcs.CHEAT_PATH, REVIEW[0]), "attrs": "", "label": REVIEW[1]})
+            with open(DATA_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+                f.write("\n")
+            return data
 
     bnc.SECTIONS["business"] = ("Business", "إدارة الأعمال")
     bcs.EXAMS["ECON102"] = STUDY_EXAMS
@@ -666,6 +730,9 @@ def main():
     # install_quiz_motion.py and install_quiz_review.py by hand and revert other courses.
     for installer in ("install_breakdown_contents.py", "install_breakdown_language.py"):
         run([sys.executable, "scripts/" + installer, URL.strip("/")])
+    install_page_addons()
+    # The full cheat sheets replace the placeholders build_study just wrote.
+    run([sys.executable, "scripts/build_econ102_cheat_sheets.py"])
     build_breakdown_strip(course)
     run([sys.executable, "scripts/build_econ102_study_tools.py"])
     build_resource_indexes()

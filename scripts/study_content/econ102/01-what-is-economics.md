@@ -13,23 +13,23 @@
 - Use the six ideas of the economic way of thinking: tradeoff, rational choice, benefit, opportunity cost, the margin, incentives
 - Classify statements as positive or normative
 - Read scatter diagrams and graphs, and calculate a slope
-  @vocab
-  Scarcity | We want more than our resources can provide, so we must choose.
-  Incentive | A reward that encourages an action or a penalty that discourages it.
-  Opportunity cost | The highest-valued alternative you give up to get something.
-  Marginal | The effect of a little more or a little less of something.
-  Positive statement | About what is; can be tested against facts.
-  Normative statement | About what ought to be; an opinion that can't be tested.
-  Ceteris paribus | "Other things remaining the same."
-  @map
-  4-6 | Definition of economics, micro versus macro | MEMORIZE | Scarcity, incentive, the two branches
-  7-13 | What, how and for whom; factors of production | MEMORIZE | Four factors and four incomes
-  14-23 | Self-interest versus the social interest | MEMORIZE | Efficiency; globalization, monopolies, climate, Covid examples
-  24-31 | The economic way of thinking | MEMORIZE | Tradeoff, opportunity cost, margin, incentives
-  32-35 | Economics as a social science and policy tool | MEMORIZE | Positive versus normative; models; ceteris paribus
-  36-43 | Economists in the economy | SKIM | Jobs, earnings and skills
-  44-62 | Appendix: graphing data and economic models | WRITE | Scatter diagrams; positive, negative, max/min, unrelated
-  63-74 | Appendix: slope and more than two variables | WRITE | Slope = rise ÷ run; ceteris paribus in graphs
+@vocab
+Scarcity | We want more than our resources can provide, so we must choose.
+Incentive | A reward that encourages an action or a penalty that discourages it.
+Opportunity cost | The highest-valued alternative you give up to get something.
+Marginal | The effect of a little more or a little less of something.
+Positive statement | About what is; can be tested against facts.
+Normative statement | About what ought to be; an opinion that can't be tested.
+Ceteris paribus | "Other things remaining the same."
+@map
+4-6 | Definition of economics, micro versus macro | MEMORIZE | Scarcity, incentive, the two branches
+7-13 | What, how and for whom; factors of production | MEMORIZE | Four factors and four incomes
+14-23 | Self-interest versus the social interest | MEMORIZE | Efficiency; globalization, monopolies, climate, Covid examples
+24-31 | The economic way of thinking | MEMORIZE | Tradeoff, opportunity cost, margin, incentives
+32-35 | Economics as a social science and policy tool | MEMORIZE | Positive versus normative; models; ceteris paribus
+36-43 | Economists in the economy | SKIM | Jobs, earnings and skills
+44-62 | Appendix: graphing data and economic models | WRITE | Scatter diagrams; positive, negative, max/min, unrelated
+63-74 | Appendix: slope and more than two variables | WRITE | Slope = rise ÷ run; ceteris paribus in graphs
 
 ## What economics is | Slides 4-6 | must
 
@@ -63,7 +63,7 @@ Available resources are **not enough to satisfy all human wants**. Watch for dis
 - Microeconomics: individuals, firms, markets
 - Macroeconomics: the national and global economy
 - An incentive is a reward or a penalty that changes behaviour
-  ::
+::
 
 ## What, how and for whom? | Slides 7-13 | must
 
@@ -101,7 +101,7 @@ In economics, **capital** means physical tools and buildings, not money or share
 - Land earns rent, labor earns wages, capital earns interest, entrepreneurship earns profit
 - Human capital is the quality of labor: education, training, experience
 - Capital means physical tools and buildings, not money
-  ::
+::
 
 ## Self-interest and the social interest | Slides 14-23 | know
 
@@ -131,7 +131,7 @@ The slides use four topics to show self-interest and the social interest sometim
 - Social interest is judged by efficiency and equity
 - Efficient: you can't make anyone better off without making someone worse off
 - Globalization, tech monopolies, climate change and Covid show the two can clash
-  ::
+::
 
 ## The economic way of thinking | Slides 24-31 | must
 
@@ -174,7 +174,7 @@ Opportunity cost = the **next best** alternative. Not every alternative, not the
 - Opportunity cost = the highest-valued alternative given up
 - Do more if marginal benefit exceeds marginal cost
 - A change in marginal cost or marginal benefit changes incentives and choices
-  ::
+::
 
 ## Economics as a social science and a policy tool | Slides 32-35 | must
 
@@ -211,7 +211,7 @@ The group-work True/False says "a statement must be factually correct before eco
 - An economic model keeps only the features needed for the purpose
 - Ceteris paribus isolates one cause by holding everything else fixed
 - Policy advice combines positive analysis with normative goals
-  ::
+::
 
 ## Economists in the economy | Slides 36-43 | skim
 
@@ -222,7 +222,7 @@ An economics major opens jobs as an economist, market research analyst, financia
 - Economics majors work well beyond "economist" jobs
 - Five skills: critical thinking, analysis, maths, writing, speaking
 - The profession is working to become more diverse
-  ::
+::
 
 ## Appendix: graphing data | Slides 44-53 | must
 
@@ -241,7 +241,7 @@ To **show whether two variables appear to be related**. It doesn't determine the
 - x-axis horizontal, y-axis vertical, origin at zero
 - Scatter diagram: one variable plotted against another to see whether they're related
 - A pattern on a scatter diagram is not proof of cause and effect
-  ::
+::
 
 ## Appendix: relationships in economic models | Slides 54-62 | must
 
@@ -268,7 +268,7 @@ Put quantity on the x-axis and price on the y-axis. As price rises, quantity pur
 - Negative (inverse): move in opposite directions, downward-sloping graph
 - Some relationships reach a maximum or a minimum
 - Unrelated variables give a horizontal or a vertical line
-  ::
+::
 
 ## Appendix: slope and more than two variables | Slides 63-74 | must
 
@@ -302,7 +302,7 @@ A steeper line has a larger slope in absolute value, but **don't read slope off 
 - Straight line: constant slope; curve: slope varies
 - Slope of a curve at a point = slope of its tangent; across an arc = average slope
 - Graph a third variable by holding it constant; changing it shifts the curve
-  ::
+::
 
 @cheat
 
@@ -348,133 +348,97 @@ A steeper line has a larger slope in absolute value, but **don't read slope off 
 
 @mcq 4
 Which situation best describes scarcity?
-
-- Available resources can't satisfy all of people's wants
-
-* People have fewer wants than the resources they own
-* Everyone in the economy owns the same resources
-* People get all they want without making any choice
-
++ Available resources can't satisfy all of people's wants
+- People have fewer wants than the resources they own
+- Everyone in the economy owns the same resources
+- People get all they want without making any choice
 > Scarcity means wants exceed the resources available, and everyone faces it.
-> @mcq 6
-> Which question is studied in macroeconomics?
-
-- Why did the national unemployment rate rise this year?
-
-* How many workers should one café hire this month?
-* Why are students buying more e-books than before?
-* How does a farmer choose which crop to plant?
-
+@mcq 6
+Which question is studied in macroeconomics?
++ Why did the national unemployment rate rise this year?
+- How many workers should one café hire this month?
+- Why are students buying more e-books than before?
+- How does a farmer choose which crop to plant?
 > Macroeconomics studies the national and global economy; the other three are individual choices.
-> @mcq 11
-> Which pair of factor of production and income does NOT match?
-
-- Capital and profit
-
-* Labor and wages
-* Land and rent
-* Entrepreneurship and profit
-
+@mcq 11
+Which pair of factor of production and income does NOT match?
++ Capital and profit
+- Labor and wages
+- Land and rent
+- Entrepreneurship and profit
 > Capital earns interest. Profit is the income of entrepreneurship.
-> @mcq 28
-> The opportunity cost of attending a one-hour class is:
-
-- The single best thing you would have done with that hour
-
-* The sum of every activity you could have done instead
-* The tuition you pay for that hour of class
-* Zero, because attending class is your own choice
-
+@mcq 28
+The opportunity cost of attending a one-hour class is:
++ The single best thing you would have done with that hour
+- The sum of every activity you could have done instead
+- The tuition you pay for that hour of class
+- Zero, because attending class is your own choice
 > Opportunity cost is the highest-valued alternative forgone, not the sum of all alternatives.
-> @mcq 29
-> A rational person studies one more hour when:
-
-- The marginal benefit of the hour exceeds its marginal cost
-
-* The total benefit of studying exceeds the total cost
-* The marginal cost of the hour exceeds its marginal benefit
-* The hour has no opportunity cost of any kind at all
-
+@mcq 29
+A rational person studies one more hour when:
++ The marginal benefit of the hour exceeds its marginal cost
+- The total benefit of studying exceeds the total cost
+- The marginal cost of the hour exceeds its marginal benefit
+- The hour has no opportunity cost of any kind at all
 > Choices are made at the margin: do more while marginal benefit exceeds marginal cost.
-> @mcq 31
-> A university offers a scholarship to students with high grades. This is an example of:
-
-- An incentive
-
-* A tradeoff
-* Scarcity
-* A factor of production
-
+@mcq 31
+A university offers a scholarship to students with high grades. This is an example of:
++ An incentive
+- A tradeoff
+- Scarcity
+- A factor of production
 > A reward that encourages an action is an incentive.
-> @mcq 32
-> Which statement is positive?
-
-- If the price of a product rises, people buy less of it
-
-* The government should reduce the price of gasoline
-* University education ought to be free for everyone
-* The government must give more support to students
-
+@mcq 32
+Which statement is positive?
++ If the price of a product rises, people buy less of it
+- The government should reduce the price of gasoline
+- University education ought to be free for everyone
+- The government must give more support to students
 > A positive statement can be tested against the facts; "should" and "ought" signal normative statements.
-> @mcq 33
-> "Ceteris paribus" means:
-
-- Other things remaining the same
-
-* All variables change together
-* The cause comes after the effect
-* The model fits all of the facts
-
+@mcq 33
+"Ceteris paribus" means:
++ Other things remaining the same
+- All variables change together
+- The cause comes after the effect
+- The model fits all of the facts
 > Economists hold other things constant to isolate the effect of one variable.
-> @mcq 49
-> The main purpose of a scatter diagram is to:
-
-- Show whether two variables appear to be related
-
-* Prove which variable causes the change in the other
-* Add up the total value of the two variables shown
-* Show how a single variable changes over time only
-
+@mcq 49
+The main purpose of a scatter diagram is to:
++ Show whether two variables appear to be related
+- Prove which variable causes the change in the other
+- Add up the total value of the two variables shown
+- Show how a single variable changes over time only
 > A scatter diagram reveals a pattern but can't prove cause and effect.
-> @mcq 55
-> As household income rises, spending also rises. On a graph this relationship is:
-
-- Upward sloping
-
-* Downward sloping
-* A horizontal line
-* A vertical line
-
+@mcq 55
+As household income rises, spending also rises. On a graph this relationship is:
++ Upward sloping
+- Downward sloping
+- A horizontal line
+- A vertical line
 > Variables that move in the same direction have a positive relationship.
-> @mcq 63
-> A line passes through (2, 100) and (6, 300). Its slope is:
-
-- 50
-
-* 200
-* 4
-* 0.02
-
+@mcq 63
+A line passes through (2, 100) and (6, 300). Its slope is:
++ 50
+- 200
+- 4
+- 0.02
 > Slope = Δy ÷ Δx = 200 ÷ 4 = 50.
-> @mcq 74
-> Ice-cream demand depends on price and temperature. On a price–quantity graph, a rise in temperature:
-
-- Shifts the whole curve
-
-* Moves along the same curve
-* Changes the slope sign
-* Has no effect at all
-
+@mcq 74
+Ice-cream demand depends on price and temperature. On a price–quantity graph, a rise in temperature:
++ Shifts the whole curve
+- Moves along the same curve
+- Changes the slope sign
+- Has no effect at all
 > The variable held constant (temperature) shifts the curve when it changes.
-> @short 25
-> The night before a test you go to the movies instead of studying, and score 54% instead of your usual 76%. Did you face a tradeoff, and what was the opportunity cost?
-> ~ tradeoff, opportunity cost, 22, studying, next best
+@short 25
+The night before a test you go to the movies instead of studying, and score 54% instead of your usual 76%. Did you face a tradeoff, and what was the opportunity cost?
+~ tradeoff, opportunity cost, 22, studying, next best
 > Yes: one evening could be spent on the movies or on studying, not both. The opportunity cost of the movies was the forgone studying, shown by the 22 percentage points of grade lost (76% − 54%).
-> @short 32
-> Classify each statement as positive or normative and explain: (a) The country should reduce its food imports. (b) The country imports wheat and rice.
-> ~ normative, should, value, positive, testable
+@short 32
+Classify each statement as positive or normative and explain: (a) The country should reduce its food imports. (b) The country imports wheat and rice.
+~ normative, should, value, positive, testable
 > (a) Normative: "should" makes it a value judgement that can't be tested. (b) Positive: a statement about what is, which can be checked against trade data.
-> @short 63
-> Points A (2 hours, SAR 100) and B (6 hours, SAR 300) lie on a straight line of hours worked against earnings. Calculate the slope and explain its meaning.
-> ~ 200, 4, 50, per hour, wage
+@short 63
+Points A (2 hours, SAR 100) and B (6 hours, SAR 300) lie on a straight line of hours worked against earnings. Calculate the slope and explain its meaning.
+~ 200, 4, 50, per hour, wage
 > Slope = (300 − 100) ÷ (6 − 2) = 200 ÷ 4 = 50. Each extra hour worked adds SAR 50 to total earnings, so the slope is the hourly wage.

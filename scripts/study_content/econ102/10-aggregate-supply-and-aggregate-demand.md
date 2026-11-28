@@ -13,22 +13,22 @@
 - Find short-run and long-run macroeconomic equilibrium
 - Identify inflationary and recessionary gaps and explain how they close
 - Use AS-AD to explain growth, inflation and the business cycle
-  @vocab
-  Aggregate supply | The relationship between the quantity of real GDP supplied and the price level.
-  LAS | Long-run aggregate supply: real GDP supplied when real GDP = potential GDP.
-  SAS | Short-run aggregate supply: real GDP supplied when money wages and potential GDP are fixed.
-  Aggregate demand | The relationship between the quantity of real GDP demanded and the price level.
-  Inflationary gap | Real GDP above potential GDP.
-  Recessionary gap | Real GDP below potential GDP.
-  Stagflation | Rising price level combined with falling real GDP.
-  @map
-  4-9 | LAS and SAS: shapes and why | MEMORIZE | Vertical at potential; upward because money wages are fixed
-  10-13 | Changes in aggregate supply | MEMORIZE | Potential GDP shifts both; money wage shifts SAS only
-  14-20 | AD and why it slopes down | MEMORIZE | Wealth, intertemporal and international substitution effects
-  21-26 | Changes in aggregate demand | MEMORIZE | Expectations, fiscal and monetary policy, the world economy
-  27-29 | Short-run macroeconomic equilibrium | WRITE | Where AD meets SAS
-  30-34 | Long-run equilibrium; growth and inflation | WRITE | Where AD, SAS and LAS meet
-  35-39 | The business cycle; demand and supply fluctuations | WRITE | Gaps; how they close; stagflation
+@vocab
+Aggregate supply | The relationship between the quantity of real GDP supplied and the price level.
+LAS | Long-run aggregate supply: real GDP supplied when real GDP = potential GDP.
+SAS | Short-run aggregate supply: real GDP supplied when money wages and potential GDP are fixed.
+Aggregate demand | The relationship between the quantity of real GDP demanded and the price level.
+Inflationary gap | Real GDP above potential GDP.
+Recessionary gap | Real GDP below potential GDP.
+Stagflation | Rising price level combined with falling real GDP.
+@map
+4-9 | LAS and SAS: shapes and why | MEMORIZE | Vertical at potential; upward because money wages are fixed
+10-13 | Changes in aggregate supply | MEMORIZE | Potential GDP shifts both; money wage shifts SAS only
+14-20 | AD and why it slopes down | MEMORIZE | Wealth, intertemporal and international substitution effects
+21-26 | Changes in aggregate demand | MEMORIZE | Expectations, fiscal and monetary policy, the world economy
+27-29 | Short-run macroeconomic equilibrium | WRITE | Where AD meets SAS
+30-34 | Long-run equilibrium; growth and inflation | WRITE | Where AD, SAS and LAS meet
+35-39 | The business cycle; demand and supply fluctuations | WRITE | Gaps; how they close; stagflation
 
 ## Aggregate supply: LAS and SAS | Slides 4-9 | must
 
@@ -68,7 +68,7 @@ Because **money wages don't immediately change with the price level**. A higher 
 - SAS slopes up because the money wage rate is fixed in the short run
 - A price level change moves along SAS; it doesn't shift it
 - SAS cuts LAS where the money wage rate is at its full-employment level
-  ::
+::
 
 ## Changes in aggregate supply | Slides 10-13 | must
 
@@ -93,7 +93,7 @@ Potential GDP depends on real resources, not on money wages. A rise in the money
 - Higher potential GDP shifts LAS and SAS right
 - A higher money wage rate or raw material price shifts SAS left only
 - LAS moves only when productive capacity changes
-  ::
+::
 
 ## Aggregate demand and why it slopes down | Slides 14-20 | must
 
@@ -118,7 +118,7 @@ A change in the price level is a **movement along** the AD curve. Only other inf
 - AD: quantity of real GDP demanded against the price level
 - Slopes down because of wealth, intertemporal and international substitution effects
 - A change in the price level moves along AD
-  ::
+::
 
 ## Changes in aggregate demand | Slides 21-26 | must
 
@@ -140,17 +140,17 @@ The curve **shifts** when anything other than the price level changes buying pla
 ::mnemonic "Four steps" from the study guide
 
 1. **Identify** the event: spending, production costs, or productive capacity? 2. **Pick the curve**: spending → AD, costs → SAS, capacity → LAS. 3. **Direction**: does it raise or lower spending, costs or capacity? 4. **Explain** the effect on real GDP and the price level.
-   ::
-   ::trap A stronger currency shifts AD left
-   An **appreciation** makes exports dearer and imports cheaper, so net exports fall and **AD shifts left**. Students often guess "right" because a strong currency sounds good.
-   ::
-   ::key
+::
+::trap A stronger currency shifts AD left
+An **appreciation** makes exports dearer and imports cheaper, so net exports fall and **AD shifts left**. Students often guess "right" because a strong currency sounds good.
+::
+::key
 
 - Fiscal policy (G up, T down) shifts AD right
 - Monetary policy (lower interest rate, more money) shifts AD right
 - Higher foreign income shifts AD right; an appreciation shifts it left
 - Higher expected income, inflation or profit shifts AD right
-  ::
+::
 
 ## Short-run macroeconomic equilibrium | Slides 27-29 | must
 
@@ -163,7 +163,7 @@ If the price level is above equilibrium, firms can't sell all they produce, so t
 - Short-run equilibrium: AD = SAS
 - Real GDP can be above, below or at potential GDP in the short run
 - Firms adjust output and prices along SAS to reach it
-  ::
+::
 
 ## Long-run equilibrium, growth and inflation | Slides 30-34 | must
 
@@ -180,7 +180,7 @@ Growth pushes **LAS** right. Inflation happens when **AD** runs to the right **f
 - Long-run equilibrium: AD, SAS and LAS meet; real GDP = potential GDP
 - Growth: LAS shifts right over time
 - Inflation: AD grows faster than LAS (money grows faster than potential GDP)
-  ::
+::
 
 ## The business cycle and fluctuations | Slides 35-39 | must
 
@@ -219,7 +219,7 @@ When real GDP falls **and** the price level rises, the cause is a **leftward shi
 - An AD increase: short run, real GDP and the price level rise; long run, money wages rise and real GDP returns to potential
 - An SAS decrease (e.g. oil prices up): real GDP falls, price level rises (stagflation)
 - In the long run, real GDP returns to potential GDP
-  ::
+::
 
 @cheat
 
@@ -262,143 +262,104 @@ When real GDP falls **and** the price level rises, the cause is a **leftward shi
 
 @mcq 4
 In the long run, real GDP equals:
-
-- Potential GDP
-
-* Nominal GDP
-* Aggregate demand
-* Consumption expenditure
-
++ Potential GDP
+- Nominal GDP
+- Aggregate demand
+- Consumption expenditure
 > The LAS curve is vertical at potential GDP.
-> @mcq 6
-> The LAS curve is:
-
-- Vertical
-
-* Horizontal
-* Downward sloping
-* Upward sloping
-
+@mcq 6
+The LAS curve is:
++ Vertical
+- Horizontal
+- Downward sloping
+- Upward sloping
 > Potential GDP doesn't depend on the price level.
-> @mcq 7
-> The SAS curve slopes upward mainly because:
-
-- Money wages don't immediately change with the price level
-
-* Money wages adjust instantly to every price level change
-* Potential GDP changes with every change in the price level
-* Aggregate demand stays fixed whatever the price level
-
+@mcq 7
+The SAS curve slopes upward mainly because:
++ Money wages don't immediately change with the price level
+- Money wages adjust instantly to every price level change
+- Potential GDP changes with every change in the price level
+- Aggregate demand stays fixed whatever the price level
 > A higher price level with a fixed money wage lowers the real wage, so firms produce more.
-> @mcq 9
-> A rise in the price level with the money wage rate unchanged causes:
-
-- A movement upward along the SAS curve
-
-* A leftward shift of the SAS curve
-* A rightward shift of the LAS curve
-* A movement downward along the SAS curve
-
+@mcq 9
+A rise in the price level with the money wage rate unchanged causes:
++ A movement upward along the SAS curve
+- A leftward shift of the SAS curve
+- A rightward shift of the LAS curve
+- A movement downward along the SAS curve
 > A price level change moves along SAS.
-> @mcq 11
-> Which change shifts both LAS and SAS rightward?
-
-- Technological progress
-
-* A higher price level
-* A higher money wage rate
-* Higher expected inflation
-
+@mcq 11
+Which change shifts both LAS and SAS rightward?
++ Technological progress
+- A higher price level
+- A higher money wage rate
+- Higher expected inflation
 > Technology raises potential GDP.
-> @mcq 13
-> A rise in the money wage rate, other things the same, shifts:
-
-- SAS leftward
-
-* SAS rightward
-* LAS rightward
-* AD leftward
-
+@mcq 13
+A rise in the money wage rate, other things the same, shifts:
++ SAS leftward
+- SAS rightward
+- LAS rightward
+- AD leftward
 > Higher costs reduce short-run supply; potential GDP is unchanged.
-> @mcq 18
-> A rise in the price level lowers the real value of people's wealth, so they spend less. This is the:
-
-- Wealth effect
-
-* Intertemporal substitution effect
-* International substitution effect
-* Multiplier effect
-
-> Lower real wealth means more saving and less spending.
-> @mcq 20
-> A rise in the domestic price level makes domestic goods dearer than foreign goods. This explains the:
-
+@mcq 18
+A rise in the price level lowers the real value of people's wealth, so they spend less. This is the:
++ Wealth effect
+- Intertemporal substitution effect
 - International substitution effect
-
-* Wealth effect
-* Intertemporal substitution effect
-* Expected profit effect
-
+- Multiplier effect
+> Lower real wealth means more saving and less spending.
+@mcq 20
+A rise in the domestic price level makes domestic goods dearer than foreign goods. This explains the:
++ International substitution effect
+- Wealth effect
+- Intertemporal substitution effect
+- Expected profit effect
 > Exports fall and imports rise, lowering real GDP demanded.
-> @mcq 24
-> An increase in government expenditure on goods and services shifts:
-
-- The AD curve rightward
-
-* The AD curve leftward
-* The SAS curve rightward
-* The LAS curve rightward
-
-> G is a component of aggregate demand.
-> @mcq 25
-> An appreciation of the domestic currency shifts:
-
+@mcq 24
+An increase in government expenditure on goods and services shifts:
++ The AD curve rightward
 - The AD curve leftward
-
-* The AD curve rightward
-* The SAS curve leftward
-* The LAS curve rightward
-
+- The SAS curve rightward
+- The LAS curve rightward
+> G is a component of aggregate demand.
+@mcq 25
+An appreciation of the domestic currency shifts:
++ The AD curve leftward
+- The AD curve rightward
+- The SAS curve leftward
+- The LAS curve rightward
 > Exports become dearer and imports cheaper, so net exports fall.
-> @mcq 32
-> Real GDP is greater than potential GDP. The economy has:
-
-- An inflationary gap
-
-* A recessionary gap
-* Full-employment equilibrium
-* Stagflation
-
+@mcq 32
+Real GDP is greater than potential GDP. The economy has:
++ An inflationary gap
+- A recessionary gap
+- Full-employment equilibrium
+- Stagflation
 > Output above potential is an inflationary gap.
-> @mcq 36
-> Starting at full employment, AD increases. In the long run:
-
-- Real GDP returns to potential and the price level is higher
-
-* Real GDP stays above potential and the price level is higher
-* Real GDP returns to potential and the price level is lower
-* Real GDP falls below potential and the price level is higher
-
+@mcq 36
+Starting at full employment, AD increases. In the long run:
++ Real GDP returns to potential and the price level is higher
+- Real GDP stays above potential and the price level is higher
+- Real GDP returns to potential and the price level is lower
+- Real GDP falls below potential and the price level is higher
 > Money wages rise, shifting SAS left until real GDP is back at potential.
-> @mcq 39
-> A sharp rise in the world price of oil:
-
-- Lowers real GDP and raises the price level
-
-* Raises real GDP and raises the price level
-* Lowers real GDP and lowers the price level
-* Raises real GDP and lowers the price level
-
+@mcq 39
+A sharp rise in the world price of oil:
++ Lowers real GDP and raises the price level
+- Raises real GDP and raises the price level
+- Lowers real GDP and lowers the price level
+- Raises real GDP and lowers the price level
 > SAS shifts left: stagflation.
-> @short 19
-> Explain the three reasons the AD curve slopes downward.
-> ~ wealth, intertemporal, interest rate, international, net exports
+@short 19
+Explain the three reasons the AD curve slopes downward.
+~ wealth, intertemporal, interest rate, international, net exports
 > A higher price level lowers the real value of wealth, so people spend less (wealth effect); it lowers the real value of money and raises the interest rate, so people borrow and spend less now (intertemporal substitution); and it makes domestic goods dearer than foreign ones, so net exports fall (international substitution).
-> @short 32
-> The economy is at full employment when aggregate demand increases. Explain the short-run and long-run effects on real GDP and the price level.
-> ~ inflationary gap, money wage, SAS shifts left, potential GDP, price level
+@short 32
+The economy is at full employment when aggregate demand increases. Explain the short-run and long-run effects on real GDP and the price level.
+~ inflationary gap, money wage, SAS shifts left, potential GDP, price level
 > Short run: AD shifts right along SAS, so real GDP rises above potential and the price level rises (an inflationary gap). Long run: money wages rise, SAS shifts left, the price level rises further and real GDP returns to potential GDP.
-> @short 39
-> Using the four-step method, explain the effect of a large rise in the price of oil.
-> ~ production costs, SAS, left, real GDP falls, price level rises, stagflation
+@short 39
+Using the four-step method, explain the effect of a large rise in the price of oil.
+~ production costs, SAS, left, real GDP falls, price level rises, stagflation
 > It's a production cost event, so it shifts SAS. Higher costs shift SAS leftward. Real GDP falls and the price level rises at the same time: stagflation.

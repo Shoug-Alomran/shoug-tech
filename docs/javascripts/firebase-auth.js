@@ -2593,7 +2593,7 @@
           position: "bottom",
           tag: "Step 2 of 4 | Schedule Planner",
           title: "Plan Around Your Week",
-          body: "Choose courses and campus, set free-time preferences, then compare clash-free schedules. Murshid can suggest courses, and you can save a schedule or copy section numbers.",
+          body: "Choose courses and campus, set free-time preferences, then compare clash-free schedules. Murshida can suggest courses, and you can save a schedule or copy section numbers.",
         },
         {
           target: function () {
@@ -3289,7 +3289,7 @@
           position: "bottom",
           tag: "Step 2 of 8",
           title: "Plan Your PSU Schedule",
-          body: "Choose courses, set free-time preferences, compare clash-free schedules, and ask Murshid for course suggestions. Save a schedule or copy its section numbers.",
+          body: "Choose courses, set free-time preferences, compare clash-free schedules, and ask Murshida for course suggestions. Save a schedule or copy its section numbers.",
         },
         {
           target: function () {

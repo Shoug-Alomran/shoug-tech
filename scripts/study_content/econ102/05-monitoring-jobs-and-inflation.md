@@ -13,23 +13,23 @@
 - Link unemployment to the output gap
 - Explain why inflation and deflation are problems
 - Construct the CPI and calculate the inflation rate, and explain the CPI's biases
-  @vocab
-  Working-age population | People aged 16 and over who aren't in jail, hospital or the armed forces.
-  Labor force | Employed + unemployed.
-  Unemployed | Without work but available and actively looking (or waiting to be recalled or to start).
-  Discouraged worker | Wants a job but has stopped looking because they think none is available.
-  Natural unemployment | Frictional + structural unemployment.
-  Price level | The average level of prices, measured by a price index.
-  CPI basket | The fixed set of goods and services a typical urban household buys.
-  @map
-  4-9 | Why unemployment is a problem; the labor force categories | MEMORIZE | Who counts as unemployed
-  10-15 | Three labor market indicators | WRITE | Unemployment rate, participation rate, E/P ratio
-  16-21 | Marginally attached, discouraged and part-time workers; U-1 to U-6 | MEMORIZE | Why the official rate understates
-  22-28 | Frictional, structural, cyclical; natural unemployment | MEMORIZE | Classify from a news clip
-  29-30 | Unemployment and the output gap | MEMORIZE | Okun-style link
-  31-33 | Why inflation and deflation are problems | MEMORIZE | Redistribution, resource diversion
-  34-44 | Constructing the CPI; the inflation rate | WRITE | Basket, cost, CPI formula, inflation formula
-  45-53 | CPI bias; chained CPI, PCE, core inflation | MEMORIZE | Four biases; alternative indexes
+@vocab
+Working-age population | People aged 16 and over who aren't in jail, hospital or the armed forces.
+Labor force | Employed + unemployed.
+Unemployed | Without work but available and actively looking (or waiting to be recalled or to start).
+Discouraged worker | Wants a job but has stopped looking because they think none is available.
+Natural unemployment | Frictional + structural unemployment.
+Price level | The average level of prices, measured by a price index.
+CPI basket | The fixed set of goods and services a typical urban household buys.
+@map
+4-9 | Why unemployment is a problem; the labor force categories | MEMORIZE | Who counts as unemployed
+10-15 | Three labor market indicators | WRITE | Unemployment rate, participation rate, E/P ratio
+16-21 | Marginally attached, discouraged and part-time workers; U-1 to U-6 | MEMORIZE | Why the official rate understates
+22-28 | Frictional, structural, cyclical; natural unemployment | MEMORIZE | Classify from a news clip
+29-30 | Unemployment and the output gap | MEMORIZE | Okun-style link
+31-33 | Why inflation and deflation are problems | MEMORIZE | Redistribution, resource diversion
+34-44 | Constructing the CPI; the inflation rate | WRITE | Basket, cost, CPI formula, inflation formula
+45-53 | CPI bias; chained CPI, PCE, core inflation | MEMORIZE | Four biases; alternative indexes
 
 ## Why unemployment matters and who is unemployed | Slides 4-9 | must
 
@@ -74,7 +74,7 @@ Retiree: **not in the labor force**. Student looking for work: **unemployed**. W
 - Labor force = employed + unemployed
 - Unemployed: no job, available, and looked in the past four weeks (or waiting for recall or to start)
 - Not looking means not in the labor force
-  ::
+::
 
 ## The three labor market indicators | Slides 10-15 | must
 
@@ -114,7 +114,7 @@ Over the business cycle, the unemployment rate **rises in recessions** and falls
 - Participation rate = labor force ÷ working-age population
 - Employment-to-population ratio = E ÷ working-age population
 - Track each flow: who enters or leaves employment, unemployment and the labor force
-  ::
+::
 
 ## Broader measures of unemployment | Slides 16-21 | know
 
@@ -133,7 +133,7 @@ U-1 is the narrowest and **U-6 the widest net**. Each step up catches more under
 - Discouraged workers aren't counted as unemployed in the official rate
 - So the official rate understates under-used labor
 - U-6 adds marginally attached workers and involuntary part-timers
-  ::
+::
 
 ## Frictional, structural and cyclical unemployment | Slides 22-28 | must
 
@@ -163,7 +163,7 @@ Frictional unemployment is short and healthy (matching people to jobs). Structur
 - Frictional: normal job search; structural: skills or location mismatch; cyclical: recessions
 - Natural unemployment = frictional + structural
 - Full employment: unemployment rate = natural rate, not zero
-  ::
+::
 
 ## Unemployment and real GDP over the cycle | Slides 29-30 | know
 
@@ -180,7 +180,7 @@ Output gap **down** (negative), unemployment **up**. They mirror each other thro
 - Output gap = (real GDP − potential GDP) ÷ potential GDP
 - Negative gap: unemployment above the natural rate
 - Positive gap: unemployment below the natural rate
-  ::
+::
 
 ## Why inflation and deflation are problems | Slides 31-33 | must
 
@@ -202,7 +202,7 @@ The **borrower** gains and you (the **lender**) lose: you're repaid SAR 1,050, b
 - Unpredictable inflation, not inflation itself, is the main problem
 - It redistributes income and wealth (borrowers gain, lenders lose)
 - It lowers real GDP and diverts resources into forecasting inflation
-  ::
+::
 
 ## The Consumer Price Index and the inflation rate | Slides 34-44 | must
 
@@ -240,7 +240,7 @@ A CPI that is still **rising** but more slowly means a **falling inflation rate*
 - CPI = cost of the fixed basket now ÷ cost in the base period × 100
 - Inflation rate = percentage change in the CPI
 - The basket's quantities are fixed at base-period amounts
-  ::
+::
 
 ## Is the CPI biased? Alternative price indexes | Slides 45-53 | know
 
@@ -273,7 +273,7 @@ Smartphones: **new goods bias**. Discount online stores: **outlet substitution b
 - Chained CPI reduces substitution bias
 - PCE index uses national accounts data
 - Core inflation excludes food and fuel
-  ::
+::
 
 @cheat
 
@@ -317,143 +317,104 @@ Smartphones: **new goods bias**. Discount online stores: **outlet substitution b
 
 @mcq 8
 A person without a job who has stopped looking because they believe no work is available is:
-
-- Not in the labor force
-
-* Counted as unemployed
-* Counted as employed
-* Frictionally unemployed
-
-> Discouraged workers aren't looking, so they're outside the labor force.
-> @mcq 11
-> Labor force 159 million, employment 148 million. The unemployment rate is about:
-
-- 6.9 percent
-
-* 7.4 percent
-* 4.2 percent
-* 93.1 percent
-
-> 11 ÷ 159 × 100 = 6.9%.
-> @mcq 14
-> The labor force participation rate is the labor force as a percentage of the:
-
-- Working-age population
-
-* Total population
-* Number employed
-* Number unemployed
-
-> LFPR = labor force ÷ working-age population × 100.
-> @mcq 13
-> The employment-to-population ratio divides employment by the:
-
-- Working-age population
-
-* Labor force
-* Number unemployed
-* Total population
-
-> E/P = employment ÷ working-age population × 100.
-> @mcq 23
-> A new graduate searching for her first job is:
-
++ Not in the labor force
+- Counted as unemployed
+- Counted as employed
 - Frictionally unemployed
-
-* Structurally unemployed
-* Cyclically unemployed
-* Not in the labor force
-
+> Discouraged workers aren't looking, so they're outside the labor force.
+@mcq 11
+Labor force 159 million, employment 148 million. The unemployment rate is about:
++ 6.9 percent
+- 7.4 percent
+- 4.2 percent
+- 93.1 percent
+> 11 ÷ 159 × 100 = 6.9%.
+@mcq 14
+The labor force participation rate is the labor force as a percentage of the:
++ Working-age population
+- Total population
+- Number employed
+- Number unemployed
+> LFPR = labor force ÷ working-age population × 100.
+@mcq 13
+The employment-to-population ratio divides employment by the:
++ Working-age population
+- Labor force
+- Number unemployed
+- Total population
+> E/P = employment ÷ working-age population × 100.
+@mcq 23
+A new graduate searching for her first job is:
++ Frictionally unemployed
+- Structurally unemployed
+- Cyclically unemployed
+- Not in the labor force
 > Normal job search when entering the labor market is frictional.
-> @mcq 24
-> Bank tellers lose their jobs because customers switch to mobile banking apps. This is:
-
-- Structural unemployment
-
-* Frictional unemployment
-* Cyclical unemployment
-* Seasonal unemployment
-
+@mcq 24
+Bank tellers lose their jobs because customers switch to mobile banking apps. This is:
++ Structural unemployment
+- Frictional unemployment
+- Cyclical unemployment
+- Seasonal unemployment
 > Technological change makes their skills obsolete.
-> @mcq 26
-> Natural unemployment is the sum of:
-
-- Frictional and structural unemployment
-
-* Frictional and cyclical unemployment
-* Structural and cyclical unemployment
-* All three types of unemployment
-
+@mcq 26
+Natural unemployment is the sum of:
++ Frictional and structural unemployment
+- Frictional and cyclical unemployment
+- Structural and cyclical unemployment
+- All three types of unemployment
 > Natural unemployment is what remains when there's no cyclical unemployment.
-> @mcq 30
-> When real GDP is below potential GDP, the unemployment rate is:
-
-- Above the natural unemployment rate
-
-* Below the natural unemployment rate
-* Equal to the natural unemployment rate
-* Equal to zero across the whole economy
-
+@mcq 30
+When real GDP is below potential GDP, the unemployment rate is:
++ Above the natural unemployment rate
+- Below the natural unemployment rate
+- Equal to the natural unemployment rate
+- Equal to zero across the whole economy
 > A negative output gap means positive cyclical unemployment.
-> @mcq 33
-> Unexpected inflation tends to:
-
-- Benefit borrowers and hurt lenders
-
-* Benefit lenders and hurt borrowers
-* Benefit lenders and borrowers alike
-* Have no effect on borrowers or lenders
-
+@mcq 33
+Unexpected inflation tends to:
++ Benefit borrowers and hurt lenders
+- Benefit lenders and hurt borrowers
+- Benefit lenders and borrowers alike
+- Have no effect on borrowers or lenders
 > Loans are repaid with money that buys less.
-> @mcq 42
-> The basket cost $90 in the base year and $156 this year. The CPI this year is:
-
-- 173.3
-
-* 156.0
-* 66.0
-* 57.7
-
+@mcq 42
+The basket cost $90 in the base year and $156 this year. The CPI this year is:
++ 173.3
+- 156.0
+- 66.0
+- 57.7
 > 156 ÷ 90 × 100 = 173.3.
-> @mcq 43
-> The CPI rose from 257.8 to 271.7. The inflation rate is about:
-
-- 5.4 percent
-
-* 13.9 percent
-* 2.7 percent
-* 71.7 percent
-
+@mcq 43
+The CPI rose from 257.8 to 271.7. The inflation rate is about:
++ 5.4 percent
+- 13.9 percent
+- 2.7 percent
+- 71.7 percent
 > (271.7 − 257.8) ÷ 257.8 × 100 = 5.4%.
-> @mcq 47
-> People switch to chicken when the price of beef rises, but the CPI basket doesn't change. This is:
-
-- Commodity substitution bias
-
-* New goods bias
-* Quality change bias
-* Outlet substitution bias
-
+@mcq 47
+People switch to chicken when the price of beef rises, but the CPI basket doesn't change. This is:
++ Commodity substitution bias
+- New goods bias
+- Quality change bias
+- Outlet substitution bias
 > The fixed basket ignores switching to relatively cheaper goods.
-> @mcq 52
-> Core inflation excludes the prices of:
-
-- Food and fuel
-
-* Housing and rent
-* Imported goods
-* Medical care
-
+@mcq 52
+Core inflation excludes the prices of:
++ Food and fuel
+- Housing and rent
+- Imported goods
+- Medical care
 > Food and fuel prices are volatile, so core inflation removes them.
-> @short 11
-> In July, 10,000 people are employed, 1,000 unemployed and 5,000 not in the labor force. Calculate the unemployment rate and the employment-to-population ratio.
-> ~ 11000, 9.1, 16000, 62.5
+@short 11
+In July, 10,000 people are employed, 1,000 unemployed and 5,000 not in the labor force. Calculate the unemployment rate and the employment-to-population ratio.
+~ 11000, 9.1, 16000, 62.5
 > Labor force = 11,000, so the unemployment rate = 1,000 ÷ 11,000 = 9.1%. Working-age population = 16,000, so E/P = 10,000 ÷ 16,000 = 62.5%.
-> @short 22
-> A news clip says unemployment is rising because of an economic slowdown and because new technology is widening the gap between workers' skills and employers' needs. Name the two types of unemployment and say which is more worrying.
-> ~ cyclical, structural, skills, longer lasting
+@short 22
+A news clip says unemployment is rising because of an economic slowdown and because new technology is widening the gap between workers' skills and employers' needs. Name the two types of unemployment and say which is more worrying.
+~ cyclical, structural, skills, longer lasting
 > The slowdown causes cyclical unemployment; the skills gap causes structural unemployment. Structural is more worrying because it lasts longer and won't go away when growth recovers.
-> @short 40
-> Households spend $60 on juice at $2 a bottle and $30 on cloth at $5 a yard in the base year. Next year juice is $4 and cloth $6. Find the basket, the CPI and the inflation rate.
-> ~ 30 bottles, 6 yards, 156, 173.3, 73.3
+@short 40
+Households spend $60 on juice at $2 a bottle and $30 on cloth at $5 a yard in the base year. Next year juice is $4 and cloth $6. Find the basket, the CPI and the inflation rate.
+~ 30 bottles, 6 yards, 156, 173.3, 73.3
 > The basket is 30 bottles and 6 yards (cost $90). Next year it costs 30 × 4 + 6 × 6 = $156. CPI = 156 ÷ 90 × 100 = 173.3, so inflation is 73.3%.

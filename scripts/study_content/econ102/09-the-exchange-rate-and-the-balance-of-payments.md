@@ -13,24 +13,24 @@
 - Explain arbitrage, interest rate parity, purchasing power parity and the real exchange rate
 - Compare flexible, fixed and crawling peg exchange rate policies
 - Calculate the balance of payments accounts and the sector balances
-  @vocab
-  Exchange rate | The price at which one currency exchanges for another.
-  Appreciation | A rise in the value of a currency in terms of another currency.
-  Depreciation | A fall in the value of a currency in terms of another currency.
-  Official reserves | A government's holdings of foreign currency.
-  Net borrower | A country borrowing more from the rest of the world than it lends to it.
-  Debtor nation | A country that, over its history, has borrowed more from abroad than it has lent.
-  Real exchange rate | The relative price of domestic and foreign goods and services.
-  @map
-  4-9 | The foreign exchange market; exchange rate as a price | MEMORIZE | Appreciate vs depreciate
-  10-14 | Demand for dollars: exports effect, expected profit effect | MEMORIZE | Why demand slopes down
-  15-21 | Supply of dollars: imports effect, expected profit effect; equilibrium | MEMORIZE | Why supply slopes up; surplus and shortage
-  22-30 | Changes in demand and supply | WRITE | Shifters: interest rate differential, expected future rate, exports, imports
-  31-40 | Arbitrage, PPP, interest rate parity, speculation, real exchange rate | MEMORIZE | Law of one price
-  41-45 | Flexible, fixed, crawling peg | MEMORIZE | How the central bank defends a peg
-  46-50 | Balance of payments accounts; borrowers and lenders | WRITE | Current, capital and financial, official settlements
-  51-58 | Global loanable funds; debtors and creditors | MEMORIZE | Net borrower vs debtor nation
-  59-62 | Current account balance and sector balances | WRITE | NX = (S − I) + (T − G)
+@vocab
+Exchange rate | The price at which one currency exchanges for another.
+Appreciation | A rise in the value of a currency in terms of another currency.
+Depreciation | A fall in the value of a currency in terms of another currency.
+Official reserves | A government's holdings of foreign currency.
+Net borrower | A country borrowing more from the rest of the world than it lends to it.
+Debtor nation | A country that, over its history, has borrowed more from abroad than it has lent.
+Real exchange rate | The relative price of domestic and foreign goods and services.
+@map
+4-9 | The foreign exchange market; exchange rate as a price | MEMORIZE | Appreciate vs depreciate
+10-14 | Demand for dollars: exports effect, expected profit effect | MEMORIZE | Why demand slopes down
+15-21 | Supply of dollars: imports effect, expected profit effect; equilibrium | MEMORIZE | Why supply slopes up; surplus and shortage
+22-30 | Changes in demand and supply | WRITE | Shifters: interest rate differential, expected future rate, exports, imports
+31-40 | Arbitrage, PPP, interest rate parity, speculation, real exchange rate | MEMORIZE | Law of one price
+41-45 | Flexible, fixed, crawling peg | MEMORIZE | How the central bank defends a peg
+46-50 | Balance of payments accounts; borrowers and lenders | WRITE | Current, capital and financial, official settlements
+51-58 | Global loanable funds; debtors and creditors | MEMORIZE | Net borrower vs debtor nation
+59-62 | Current account balance and sector balances | WRITE | NX = (S − I) + (T − G)
 
 ## The foreign exchange market | Slides 4-9 | must
 
@@ -59,7 +59,7 @@ An exchange rate is a **price**, determined by demand and supply. The **demand f
 - Appreciation: buys more foreign currency; depreciation: buys less
 - One currency's appreciation is the other's depreciation
 - The demand for one currency is the supply of another
-  ::
+::
 
 ## Demand and supply in the foreign exchange market | Slides 10-21 | must
 
@@ -86,7 +86,7 @@ Foreigners buying our **exports** create **demand** for our currency. We buying 
 - Supply of dollars: Americans buying imports and foreign assets; slopes up
 - Exports effect and imports effect, plus expected profit effects, explain the slopes
 - Surplus above equilibrium pushes the rate down; shortage below pushes it up
-  ::
+::
 
 ## Changes in the exchange rate | Slides 22-30 | must
 
@@ -124,7 +124,7 @@ A change in the interest rate differential or the expected future exchange rate 
 - Higher interest rate differential: demand up, supply down, currency appreciates
 - Higher expected future exchange rate: demand up, supply down
 - Exports shift demand; imports shift supply
-  ::
+::
 
 ## Arbitrage, speculation and market fundamentals | Slides 31-40 | know
 
@@ -144,7 +144,7 @@ Under **PPP**, money has the same **purchasing power** in every country. Under i
 - PPP: money buys the same amount everywhere
 - Speculation and changing expectations make exchange rates volatile
 - Real exchange rate = E × P ÷ P*
-  ::
+::
 
 ## Exchange rate policy | Slides 41-45 | must
 
@@ -170,7 +170,7 @@ If a central bank props up a **falling** currency, it buys its own money with re
 - Holding up a weak currency: buy it, official reserves fall
 - Holding down a strong currency: sell it, official reserves rise
 - A peg under steady pressure runs out of reserves
-  ::
+::
 
 ## The balance of payments | Slides 46-50 | must
 
@@ -199,7 +199,7 @@ The **current** account tracks goods, services, interest and transfers. **Capita
 - Capital and financial account = foreign investment in the country − its investment abroad
 - Official settlements = change in official reserves (an increase is recorded as negative)
 - The three accounts sum to zero
-  ::
+::
 
 ## Borrowers, lenders, debtors and creditors | Slides 51-58 | know
 
@@ -217,7 +217,7 @@ Net **borrower**: this year's flow. **Debtor** nation: the **pile** of debt buil
 - Debtor/creditor nation: the accumulated stock
 - One world real interest rate links national loanable funds markets
 - Borrowing to invest is sustainable; borrowing to consume isn't
-  ::
+::
 
 ## The current account and sector balances | Slides 59-62 | must
 
@@ -248,7 +248,7 @@ The current account is driven by **S − I** and **T − G**. Cutting a governme
 - Private balance = S − I; government balance = T − G
 - A government deficit tends to come with a net exports deficit (twin deficits)
 - Saving and investment, not the exchange rate, decide the current account in the long run
-  ::
+::
 
 @cheat
 
@@ -291,143 +291,104 @@ The current account is driven by **S − I** and **T − G**. Cutting a governme
 
 @mcq 8
 The U.S. dollar rises from 1.24 to 1.29 Canadian dollars. The U.S. dollar has:
-
-- Appreciated against the Canadian dollar
-
-* Depreciated against the Canadian dollar
-* Kept its value against the Canadian dollar
-* Appreciated, and so has the Canadian dollar
-
++ Appreciated against the Canadian dollar
+- Depreciated against the Canadian dollar
+- Kept its value against the Canadian dollar
+- Appreciated, and so has the Canadian dollar
 > One U.S. dollar now buys more Canadian dollars.
-> @mcq 9
-> The U.S. dollar falls from 121 yen to 108 yen. Against the dollar, the yen has:
-
-- Appreciated
-
-* Depreciated
-* Stayed the same
-* Been devalued
-
+@mcq 9
+The U.S. dollar falls from 121 yen to 108 yen. Against the dollar, the yen has:
++ Appreciated
+- Depreciated
+- Stayed the same
+- Been devalued
 > When the dollar depreciates against the yen, the yen appreciates against the dollar.
-> @mcq 12
-> The demand curve for U.S. dollars slopes downward because a lower exchange rate:
-
-- Makes U.S. exports cheaper for foreigners to buy
-
-* Makes U.S. imports cheaper for Americans to buy
-* Raises the U.S. interest rate differential
-* Lowers world demand for U.S. exports
-
+@mcq 12
+The demand curve for U.S. dollars slopes downward because a lower exchange rate:
++ Makes U.S. exports cheaper for foreigners to buy
+- Makes U.S. imports cheaper for Americans to buy
+- Raises the U.S. interest rate differential
+- Lowers world demand for U.S. exports
 > The exports effect: cheaper exports mean foreigners need more dollars.
-> @mcq 17
-> The supply of U.S. dollars comes mainly from:
-
-- Americans buying imports and foreign assets
-
-* Foreigners buying U.S. exports and assets
-* The Fed buying U.S. government securities
-* Foreign banks lending to American firms
-
+@mcq 17
+The supply of U.S. dollars comes mainly from:
++ Americans buying imports and foreign assets
+- Foreigners buying U.S. exports and assets
+- The Fed buying U.S. government securities
+- Foreign banks lending to American firms
 > To pay for imports, Americans sell dollars for foreign currency.
-> @mcq 21
-> If the exchange rate is above its equilibrium level, there is:
-
-- A surplus of the currency, so the rate falls
-
-* A shortage of the currency, so the rate rises
-* A surplus of the currency, so the rate rises
-* A shortage of the currency, so the rate falls
-
+@mcq 21
+If the exchange rate is above its equilibrium level, there is:
++ A surplus of the currency, so the rate falls
+- A shortage of the currency, so the rate rises
+- A surplus of the currency, so the rate rises
+- A shortage of the currency, so the rate falls
 > Quantity supplied exceeds quantity demanded above equilibrium.
-> @mcq 23
-> The U.S. interest rate rises while foreign rates stay the same. The dollar:
-
-- Appreciates as demand rises and supply falls
-
-* Depreciates as demand falls and supply rises
-* Appreciates as demand falls and supply falls
-* Depreciates as demand rises and supply rises
-
+@mcq 23
+The U.S. interest rate rises while foreign rates stay the same. The dollar:
++ Appreciates as demand rises and supply falls
+- Depreciates as demand falls and supply rises
+- Appreciates as demand falls and supply falls
+- Depreciates as demand rises and supply rises
 > A bigger interest rate differential makes U.S. assets more attractive.
-> @mcq 24
-> People come to expect the dollar to be worth more next year. Today the dollar:
-
-- Appreciates
-
-* Depreciates
-* Doesn't change
-* Is devalued by the Fed
-
+@mcq 24
+People come to expect the dollar to be worth more next year. Today the dollar:
++ Appreciates
+- Depreciates
+- Doesn't change
+- Is devalued by the Fed
 > A higher expected future rate raises demand and lowers supply today.
-> @mcq 32
-> Arbitrage in the foreign exchange market tends to bring about:
-
-- The law of one price
-
-* A fixed exchange rate
-* A current account deficit
-* A crawling peg
-
+@mcq 32
+Arbitrage in the foreign exchange market tends to bring about:
++ The law of one price
+- A fixed exchange rate
+- A current account deficit
+- A crawling peg
 > Buying low and selling high removes price differences across markets.
-> @mcq 42
-> A central bank holds its currency at a set value by buying and selling it in the foreign exchange market. This is a:
-
-- Fixed exchange rate
-
-* Flexible exchange rate
-* Crawling peg
-* Floating exchange rate
-
+@mcq 42
+A central bank holds its currency at a set value by buying and selling it in the foreign exchange market. This is a:
++ Fixed exchange rate
+- Flexible exchange rate
+- Crawling peg
+- Floating exchange rate
 > Intervening to hold a chosen value is a fixed (pegged) exchange rate.
-> @mcq 44
-> To stop its pegged currency from falling, a central bank:
-
-- Buys its own currency, so its official reserves fall
-
-* Sells its own currency, so its official reserves rise
-* Buys its own currency, so its official reserves rise
-* Sells its own currency, so its official reserves fall
-
+@mcq 44
+To stop its pegged currency from falling, a central bank:
++ Buys its own currency, so its official reserves fall
+- Sells its own currency, so its official reserves rise
+- Buys its own currency, so its official reserves rise
+- Sells its own currency, so its official reserves fall
 > It uses foreign currency reserves to buy its own money.
-> @mcq 48
-> Exports 2,264, imports 2,764, net interest income 193 and net transfers −127. The current account balance is:
-
-- −434
-
-* −500
-* −307
-* −627
-
+@mcq 48
+Exports 2,264, imports 2,764, net interest income 193 and net transfers −127. The current account balance is:
++ −434
+- −500
+- −307
+- −627
 > 2,264 − 2,764 + 193 − 127.
-> @mcq 57
-> A country that, over its history, has borrowed more from the rest of the world than it has lent is a:
-
-- Debtor nation
-
-* Net borrower
-* Creditor nation
-* Net lender
-
+@mcq 57
+A country that, over its history, has borrowed more from the rest of the world than it has lent is a:
++ Debtor nation
+- Net borrower
+- Creditor nation
+- Net lender
 > Debtor and creditor describe the accumulated stock, not this year's flow.
-> @mcq 60
-> Saving is 162, investment 181, net taxes 217 and government expenditure 230. Net exports equal:
-
-- −32
-
-* −19
-* −13
-* 6
-
+@mcq 60
+Saving is 162, investment 181, net taxes 217 and government expenditure 230. Net exports equal:
++ −32
+- −19
+- −13
+- 6
 > (162 − 181) + (217 − 230) = −19 − 13 = −32.
-> @short 22
-> Global demand for Colombian roses rises and Colombia's central bank raises its interest rate. Explain what happens to the demand for pesos, the supply of pesos and the exchange rate.
-> ~ demand increases, supply decreases, interest rate, appreciates
+@short 22
+Global demand for Colombian roses rises and Colombia's central bank raises its interest rate. Explain what happens to the demand for pesos, the supply of pesos and the exchange rate.
+~ demand increases, supply decreases, interest rate, appreciates
 > The demand for pesos increases (more rose exports and more attractive peso assets). The supply of pesos decreases (Colombians move less money abroad at the higher interest rate). The peso appreciates against the U.S. dollar.
-> @short 47
-> Using imports 2,764, exports 2,264, foreign investment in the U.S. 502, U.S. investment abroad 175, net interest 193, net transfers −127 and a statistical discrepancy of 101, calculate the three balance of payments accounts and say whether the U.S. was a net borrower.
-> ~ current account, −434, capital and financial, 428, official settlements, 6, net borrower
+@short 47
+Using imports 2,764, exports 2,264, foreign investment in the U.S. 502, U.S. investment abroad 175, net interest 193, net transfers −127 and a statistical discrepancy of 101, calculate the three balance of payments accounts and say whether the U.S. was a net borrower.
+~ current account, −434, capital and financial, 428, official settlements, 6, net borrower
 > Current account = −434. Capital and financial account = 502 − 175 + 101 = 428. Official settlements = 6, so the accounts sum to zero. The U.S. was a net borrower, since foreign investment in the U.S. exceeded U.S. investment abroad.
-> @short 44
-> Hong Kong pegs its dollar at 7.8 per U.S. dollar. The U.S. dollar falls sharply. Explain what the Hong Kong central bank must do and what happens to its official reserves.
-> ~ fixed, peg, sell Hong Kong dollars, buy U.S. dollars, reserves increase
+@short 44
+Hong Kong pegs its dollar at 7.8 per U.S. dollar. The U.S. dollar falls sharply. Explain what the Hong Kong central bank must do and what happens to its official reserves.
+~ fixed, peg, sell Hong Kong dollars, buy U.S. dollars, reserves increase
 > Hong Kong has a fixed exchange rate. A falling U.S. dollar pushes the Hong Kong dollar up, so the central bank supplies Hong Kong dollars and buys U.S. dollars to hold the peg. Its official reserves increase.

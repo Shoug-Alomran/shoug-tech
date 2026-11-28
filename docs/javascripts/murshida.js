@@ -1,5 +1,5 @@
 /**
- * Murshid (مرشد, "advisor") — the schedule planner's course advisor, drawn
+ * Murshida (مرشدة, "advisor") — the schedule planner's course advisor, drawn
  * as Shoug in pixel-art game mode.
  *
  * Two jobs:
@@ -12,11 +12,12 @@
  *     student ratings, exam weight from the syllabus, related courses,
  *     scarce sections, long days, gaps and crowded finals.
  *
- * Reads window.SchedulePlanner.context(); the planner calls Murshid.update().
+ * Reads window.SchedulePlanner.context(); the planner calls Murshida.update().
  */
 (function () {
   "use strict";
 
+  // Key keeps the pre-rename name so visitors keep their saved advisor state.
   var STORE = "shoug_murshid_v1";
   // Plan grid storage keys → plan folder under /academic-plan-themes/ and Edugate department code.
   var PLANS = {
@@ -90,7 +91,7 @@
       " ",
     );
 
-  // Murshid is Shoug in game mode: a 32×32 pixel avatar with long black
+  // Murshida is Shoug in game mode: a 32×32 pixel avatar with long black
   // side-swept hair, plum cat-eye glasses, gold earrings and necklace and a
   // purple V-neck. One character per pixel; "." is transparent. Eyes, mouth
   // and extras are layers, so she can react (see MOODS and react()).
@@ -1288,13 +1289,13 @@
     if (!panel) return;
     $(".ms-fab").setAttribute(
       "aria-label",
-      L("Open Murshid, your course advisor", "افتح مرشد، المرشد الدراسي"),
+      L("Open Murshida, your course advisor", "افتح مرشدة، المرشدة الدراسية"),
     );
-    panel.setAttribute("aria-label", L("Murshid", "مرشد"));
-    $(".ms-head h2", panel).textContent = L("Murshid", "مرشد");
+    panel.setAttribute("aria-label", L("Murshida", "مرشدة"));
+    $(".ms-head h2", panel).textContent = L("Murshida", "مرشدة");
     $(".ms-head p", panel).textContent = L(
       "Your course advisor",
-      "مرشدك لاختيار المواد",
+      "مرشدتك لاختيار المواد",
     );
     $(".ms-x", panel).setAttribute("aria-label", L("Close", "إغلاق"));
     $('[data-tab="suggest"]', panel).textContent = L(
@@ -1347,8 +1348,8 @@
       setTimeout(function () {
         say(
           L(
-            "Hi, I'm Murshid! Tell me your plan and I'll suggest what to take this term.",
-            "أهلًا، أنا مرشد! أخبرني بخطتك وسأقترح عليك مواد هذا الفصل.",
+            "Hi, I'm Murshida! Tell me your plan and I'll suggest what to take this term.",
+            "أهلًا، أنا مرشدة! أخبرني بخطتك وسأقترح عليك مواد هذا الفصل.",
           ),
         );
       }, 1200);
@@ -1872,7 +1873,7 @@
     renderPanel();
   }
 
-  window.Murshid = {
+  window.Murshida = {
     update: update,
     open: open,
     relabel: relabel,

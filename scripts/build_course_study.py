@@ -183,7 +183,7 @@ class Course:
     def mindmap_page(self, deck):
         text = nc.read(MAP_TEMPLATE)
         # The template ends its data with "// @@END-DATA"; older copies used a "// STATE" banner.
-        block = re.compile(r"const DATA = \{.*?\n\s*\};(?=\n\s*// @@END-DATA|\n\n\s*// ─+\n\s*// STATE)", re.S)
+        block = re.compile(r"const DATA = \{.*?\n\s*\};(?=\r?\n\s*// @@END-DATA|\r?\n\r?\n\s*// ─+\r?\n\s*// STATE)", re.S)
         if not block.search(text):
             raise SystemExit("mind map template no longer matches")
         data = json.dumps(self.map_tree(deck), ensure_ascii=False, indent=2).replace("</", "<\\/")

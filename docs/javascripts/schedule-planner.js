@@ -10,7 +10,7 @@
  * A "group" is what a student registers: the lecture plus its lab/tutorial,
  * which share a section number on Edugate (e.g. CYS405 44 = CRN 1309 + 1310).
  *
- * Murshid (murshid.js) reads window.SchedulePlanner for advice and can pick
+ * Murshida (murshida.js) reads window.SchedulePlanner for advice and can pick
  * courses through it. Everything the student sets is kept in localStorage.
  */
 (function () {
@@ -1617,7 +1617,7 @@
     renderFinals(sched);
     renderSaved();
     renderList();
-    if (window.Murshid) window.Murshid.update(api.context());
+    if (window.Murshida) window.Murshida.update(api.context());
   }
 
   function clashingPairs() {
@@ -1844,7 +1844,9 @@
               "an estimate: these courses have no ratings yet",
               "تقدير: لا توجد تقييمات لهذه المواد بعد",
             )) +
-      (l.personal ? L(" · adjusted to your grades", " · معدّل حسب درجاتك") : "");
+      (l.personal
+        ? L(" · adjusted to your grades", " · معدّل حسب درجاتك")
+        : "");
     $("breakdown").innerHTML =
       "<table>" +
       l.parts
@@ -2589,7 +2591,7 @@
             "تم تثبيت " + code + " الشعبة " + picker.choice,
           ),
         );
-        if (window.Murshid) window.Murshid.react("celebrate", 2000);
+        if (window.Murshida) window.Murshida.react("celebrate", 2000);
       }
     });
     $("sections-close").addEventListener("click", function () {
@@ -2800,8 +2802,8 @@
           .join(" · "),
       });
       toast(L("Saved", "تم الحفظ"));
-      if (window.Murshid)
-        window.Murshid.react(
+      if (window.Murshida)
+        window.Murshida.react(
           "love",
           2600,
           L("Saved! Good choice.", "تم الحفظ! اختيار موفق."),
@@ -2848,8 +2850,8 @@
         );
     });
 
-    $("ask-murshid").addEventListener("click", function () {
-      if (window.Murshid) window.Murshid.open("suggest");
+    $("ask-murshida").addEventListener("click", function () {
+      if (window.Murshida) window.Murshida.open("suggest");
     });
   }
 
@@ -2875,7 +2877,7 @@
       ? window.ShougFreeTime.parse(text)
       : { rules: [], unknown: [text] };
     var finish = function (result, how) {
-      if (window.Murshid) window.Murshid.settle();
+      if (window.Murshida) window.Murshida.settle();
       state.textRules = result;
       if (result.preferGaps && state.sort !== "gaps") state.sort = "gaps";
       persist();
@@ -2890,9 +2892,12 @@
               "Applied " + n + " rule" + (n > 1 ? "s" : ""),
               "تم تطبيق " + n + " قواعد",
             )
-          : L("I couldn't find any times in that", "لم أجد أوقاتًا في هذا النص"),
+          : L(
+              "I couldn't find any times in that",
+              "لم أجد أوقاتًا في هذا النص",
+            ),
       );
-      if (window.Murshid) window.Murshid.react(n ? "celebrate" : "sad", 2000);
+      if (window.Murshida) window.Murshida.react(n ? "celebrate" : "sad", 2000);
     };
     if (
       !local.unknown.length &&
@@ -2900,8 +2905,8 @@
     )
       return finish(local);
     var btn = $("free-apply");
-    if (window.Murshid)
-      window.Murshid.react(
+    if (window.Murshida)
+      window.Murshida.react(
         "think",
         0,
         L("Let me read that…", "دعني أقرأ ذلك…"),
@@ -3370,8 +3375,8 @@
           L("Open calendar", "افتح التقويم") +
           "</a></div>";
         toast(L("Added to your calendar", "أُضيف إلى تقويمك"));
-        if (window.Murshid)
-          window.Murshid.react(
+        if (window.Murshida)
+          window.Murshida.react(
             "love",
             2600,
             L("It's in your calendar now!", "صار في تقويمك الآن!"),
@@ -3400,7 +3405,7 @@
     slot.setAttribute("aria-pressed", String(on));
   }
 
-  // ── Public API (for Murshid) ────────────────────────────────────────────
+  // ── Public API (for Murshida) ────────────────────────────────────────────
 
   var api = {
     context: function () {
@@ -3571,7 +3576,7 @@
     }
     render();
     if ($("sections-dialog").open) renderPicker();
-    if (window.Murshid && window.Murshid.relabel) window.Murshid.relabel();
+    if (window.Murshida && window.Murshida.relabel) window.Murshida.relabel();
   }
 
   function start() {

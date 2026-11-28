@@ -3,7 +3,7 @@
 
 /**
  * Builds docs/data/course-catalog.json for the schedule planner and its
- * advisor (Murshid). One entry per course code, merged from:
+ * advisor (Murshida). One entry per course code, merged from:
  *
  *   docs/academic-plan-themes/<plan>/grid.html   COURSES: names, hours, prereqs,
  *                                                minHours, plan term

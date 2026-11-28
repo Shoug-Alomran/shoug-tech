@@ -13,21 +13,21 @@
 - Find equilibrium expenditure and explain how unplanned inventory changes move the economy there
 - Calculate the multiplier and the change in real GDP
 - Explain why taxes, imports and a rising price level make the multiplier smaller
-  @vocab
-  Aggregate planned expenditure (AE) | Planned C + I + G + X − M.
-  Disposable income (YD) | Income minus taxes plus transfer payments.
-  Consumption function | The relationship between consumption and disposable income.
-  MPC | Marginal propensity to consume: ΔC ÷ ΔYD.
-  MPS | Marginal propensity to save: ΔS ÷ ΔYD.
-  Autonomous expenditure | Spending that doesn't change when real GDP changes.
-  Induced expenditure | Spending that changes when real GDP changes.
-  Multiplier | Change in equilibrium real GDP ÷ change in autonomous expenditure.
-  @map
-  1 | Fixed prices; planned expenditure; disposable income | MEMORIZE | AE = C + I + G + X − M; YD = C + S
-  1-2 | MPC and MPS; autonomous vs induced | WRITE | MPC + MPS = 1
-  2 | Equilibrium expenditure and inventories | MEMORIZE | AE = Y on the 45° line
-  3-4 | The multiplier | WRITE | 1 ÷ (1 − MPC); ΔY = multiplier × ΔA
-  4-6 | Leakages and the price level | MEMORIZE | Taxes and imports shrink the multiplier
+@vocab
+Aggregate planned expenditure (AE) | Planned C + I + G + X − M.
+Disposable income (YD) | Income minus taxes plus transfer payments.
+Consumption function | The relationship between consumption and disposable income.
+MPC | Marginal propensity to consume: ΔC ÷ ΔYD.
+MPS | Marginal propensity to save: ΔS ÷ ΔYD.
+Autonomous expenditure | Spending that doesn't change when real GDP changes.
+Induced expenditure | Spending that changes when real GDP changes.
+Multiplier | Change in equilibrium real GDP ÷ change in autonomous expenditure.
+@map
+1 | Fixed prices; planned expenditure; disposable income | MEMORIZE | AE = C + I + G + X − M; YD = C + S
+1-2 | MPC and MPS; autonomous vs induced | WRITE | MPC + MPS = 1
+2 | Equilibrium expenditure and inventories | MEMORIZE | AE = Y on the 45° line
+3-4 | The multiplier | WRITE | 1 ÷ (1 − MPC); ΔY = multiplier × ΔA
+4-6 | Leakages and the price level | MEMORIZE | Taxes and imports shrink the multiplier
 
 ## Fixed prices and planned expenditure | Student sheet, Class 1 | must
 
@@ -51,7 +51,7 @@ S = YD − C = 800 − 600 = **$200 billion**.
 - AE = C + I + G + X − M
 - Disposable income = income − taxes + transfers
 - Saving = disposable income − consumption
-  ::
+::
 
 ## MPC, MPS, autonomous and induced spending | Student sheet, Class 1 | must
 
@@ -87,7 +87,7 @@ MPC = **ΔC ÷ ΔYD**. In Problem 1, consumption is $500 bn out of $500 bn of in
 - MPC = ΔC ÷ ΔYD; MPS = ΔS ÷ ΔYD; MPC + MPS = 1
 - Autonomous spending doesn't depend on real GDP; induced spending does
 - Consumption has an autonomous part (spending even at zero income) and an induced part
-  ::
+::
 
 ## Equilibrium expenditure | Student sheet, Class 1 | must
 
@@ -120,7 +120,7 @@ If inventories fall (**shelves empty**), people are buying more than firms make:
 - Equilibrium: AE = Y, where AE crosses the 45° line
 - AE > Y: unplanned fall in inventories, output rises
 - AE < Y: unplanned rise in inventories, output falls
-  ::
+::
 
 ## The multiplier | Student sheet, Class 2 | must
 
@@ -157,7 +157,7 @@ A **higher** MPC means more of each round is re-spent, so the multiplier is **la
 - Simple multiplier = 1 ÷ (1 − MPC) = 1 ÷ MPS
 - ΔY = multiplier × change in autonomous expenditure
 - A higher MPC gives a larger multiplier
-  ::
+::
 
 ## Why the real-world multiplier is smaller | Student sheet, Class 2 | must
 
@@ -174,7 +174,7 @@ Saving, **income taxes** and **imports** are **leakages**: each takes part of ev
 - Taxes and imports make the AE curve flatter
 - A rising price level makes the real GDP increase smaller than the fixed-price multiplier predicts
 - In the long run at full employment, the multiplier is zero
-  ::
+::
 
 @cheat
 
@@ -215,123 +215,90 @@ Saving, **income taxes** and **imports** are **leakages**: each takes part of ev
 
 @mcq 1
 The Keynesian aggregate expenditure model assumes that:
-
-- Both individual prices and the price level are fixed
-
-* Individual prices are flexible but the price level is fixed
-* Both individual prices and the price level are flexible
-* Individual prices are fixed but the price level is flexible
-
++ Both individual prices and the price level are fixed
+- Individual prices are flexible but the price level is fixed
+- Both individual prices and the price level are flexible
+- Individual prices are fixed but the price level is flexible
 > In the very short run firms adjust production, not prices.
-> @mcq 1
-> Disposable income is:
-
-- Income minus taxes plus transfer payments
-
-* Income minus saving and minus taxes
-* Income plus transfers minus consumption
-* Total income divided by the price level
-
+@mcq 1
+Disposable income is:
++ Income minus taxes plus transfer payments
+- Income minus saving and minus taxes
+- Income plus transfers minus consumption
+- Total income divided by the price level
 > YD = Y − T, where net taxes are taxes minus transfers.
-> @mcq 1
-> A consumption function shows:
-
-- A positive relationship between consumption and disposable income
-
-* A negative relationship between consumption and disposable income
-* A positive relationship between consumption and the price level
-* A negative relationship between consumption and saving
-
+@mcq 1
+A consumption function shows:
++ A positive relationship between consumption and disposable income
+- A negative relationship between consumption and disposable income
+- A positive relationship between consumption and the price level
+- A negative relationship between consumption and saving
 > Consumption rises as disposable income rises.
-> @mcq 2
-> Income rises from $400 bn to $500 bn and consumption from $420 bn to $500 bn. The MPC is:
-
-- 0.8
-
-* 1.0
-* 0.2
-* 1.25
-
+@mcq 2
+Income rises from $400 bn to $500 bn and consumption from $420 bn to $500 bn. The MPC is:
++ 0.8
+- 1.0
+- 0.2
+- 1.25
 > 80 ÷ 100 = 0.8.
-> @mcq 2
-> If the marginal propensity to consume is 0.75, the marginal propensity to save is:
-
-- 0.25
-
-* 0.75
-* 1.33
-* 4.00
-
+@mcq 2
+If the marginal propensity to consume is 0.75, the marginal propensity to save is:
++ 0.25
+- 0.75
+- 1.33
+- 4.00
 > MPC + MPS = 1.
-> @mcq 2
-> Autonomous expenditure is spending that:
-
-- Doesn't change when real GDP changes
-
-* Changes whenever real GDP changes
-* Is caused only by government policy
-* Shifts the short-run aggregate supply
-
+@mcq 2
+Autonomous expenditure is spending that:
++ Doesn't change when real GDP changes
+- Changes whenever real GDP changes
+- Is caused only by government policy
+- Shifts the short-run aggregate supply
 > Investment, government expenditure and exports are treated as autonomous.
-> @mcq 2
-> When aggregate planned expenditure is less than real GDP:
-
-- Inventories rise and firms cut production
-
-* Inventories fall and firms raise production
-* Inventories rise and firms raise production
-* Inventories fall and firms cut production
-
+@mcq 2
+When aggregate planned expenditure is less than real GDP:
++ Inventories rise and firms cut production
+- Inventories fall and firms raise production
+- Inventories rise and firms raise production
+- Inventories fall and firms cut production
 > Unsold output piles up as an unplanned increase in inventories.
-> @mcq 3
-> With an MPC of 0.8, no taxes and no imports, the multiplier is:
-
-- 5
-
-* 0.8
-* 1.25
-* 8
-
+@mcq 3
+With an MPC of 0.8, no taxes and no imports, the multiplier is:
++ 5
+- 0.8
+- 1.25
+- 8
 > 1 ÷ (1 − 0.8) = 5.
-> @mcq 3
-> A $75 billion increase in autonomous expenditure raises equilibrium expenditure by $150 billion. The multiplier is:
-
-- 2
-
-* 0.5
-* $75 billion
-* $225 billion
-
+@mcq 3
+A $75 billion increase in autonomous expenditure raises equilibrium expenditure by $150 billion. The multiplier is:
++ 2
+- 0.5
+- $75 billion
+- $225 billion
 > 150 ÷ 75; a multiplier is a number, not a dollar amount.
-> @mcq 3
-> The multiplier gets larger when:
-
-- The marginal propensity to consume increases
-
-* The marginal propensity to consume decreases
-* The marginal propensity to import increases
-* The income tax rate increases
-
+@mcq 3
+The multiplier gets larger when:
++ The marginal propensity to consume increases
+- The marginal propensity to consume decreases
+- The marginal propensity to import increases
+- The income tax rate increases
 > More of each round of income is spent again.
-> @mcq 4
-> Compared with a fixed price level, when the price level rises as aggregate demand increases, the increase in real GDP is:
-
-- Smaller than the fixed-price multiplier predicts
-
-* Larger than the fixed-price multiplier predicts
-* Equal to the fixed-price multiplier prediction
-* Always zero, even in the short run
-
+@mcq 4
+Compared with a fixed price level, when the price level rises as aggregate demand increases, the increase in real GDP is:
++ Smaller than the fixed-price multiplier predicts
+- Larger than the fixed-price multiplier predicts
+- Equal to the fixed-price multiplier prediction
+- Always zero, even in the short run
 > Part of the extra spending shows up as higher prices.
-> @short 2
-> Income rises from $400 billion to $500 billion and consumption from $420 billion to $500 billion. Calculate the MPC, the change in saving and the MPS.
-> ~ 0.8, saving, 20, 0.2
+@short 2
+Income rises from $400 billion to $500 billion and consumption from $420 billion to $500 billion. Calculate the MPC, the change in saving and the MPS.
+~ 0.8, saving, 20, 0.2
 > MPC = 80 ÷ 100 = 0.8. Saving goes from −20 to 0, so it rises by $20 billion. MPS = 20 ÷ 100 = 0.2, and MPC + MPS = 1.
-> @short 3
-> With fixed prices, no imports and no income taxes, the MPC is 0.80 and real GDP is $150 billion. Investment rises by $5 billion. Calculate the multiplier, the change in real GDP and the new real GDP, and explain why real GDP rises by more than $5 billion.
-> ~ 5, 25, 175, induced consumption
+@short 3
+With fixed prices, no imports and no income taxes, the MPC is 0.80 and real GDP is $150 billion. Investment rises by $5 billion. Calculate the multiplier, the change in real GDP and the new real GDP, and explain why real GDP rises by more than $5 billion.
+~ 5, 25, 175, induced consumption
 > Multiplier = 1 ÷ 0.2 = 5, so real GDP rises by $25 billion to $175 billion. The new investment becomes income, households spend 80% of it, that spending becomes more income, and so on, so induced consumption adds to the first $5 billion.
-> @short 2
-> Explain the difference between autonomous and induced consumption, and why not all consumption is induced.
-> ~ autonomous, induced, real GDP, zero income, wealth
+@short 2
+Explain the difference between autonomous and induced consumption, and why not all consumption is induced.
+~ autonomous, induced, real GDP, zero income, wealth
 > Induced consumption changes with disposable income (real GDP); autonomous consumption doesn't. Not all consumption is induced because people consume even with zero income, financed by wealth, past saving or borrowing.

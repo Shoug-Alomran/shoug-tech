@@ -13,23 +13,23 @@
 - Distinguish structural from cyclical budget balances
 - Explain the government expenditure, tax and balanced budget multipliers
 - Choose fiscal policy for a recessionary or inflationary gap, and explain its limits
-  @vocab
-  Fiscal policy | Using the federal budget (spending, taxes, transfers) to influence the economy.
-  Budget balance | Receipts − outlays.
-  Budget deficit | Outlays exceed receipts; the balance is negative.
-  Government debt | Total amount of government borrowing: the sum of past deficits minus past surpluses.
-  Automatic fiscal policy | A change in fiscal policy triggered by the state of the economy, with no new law.
-  Discretionary fiscal policy | A policy action that needs a new act of Congress.
-  Structural balance | The budget balance that would occur if real GDP were at potential GDP.
-  Cyclical balance | Actual balance − structural balance; caused by the business cycle.
-  @map
-  4-8 | The federal budget: institutions, receipts, outlays | MEMORIZE | Who makes the budget; money in and money out
-  9-16 | Surplus, deficit and debt | WRITE | Balance = receipts − outlays; debt = past deficits
-  17-26 | Supply-side effects: tax wedge, Laffer curve | SKIM | Taxes lower potential GDP
-  27-35 | Generational effects; Social Security | SKIM | Generational accounting
-  36-45 | Automatic stabilizers; structural and cyclical balances | MEMORIZE | No new law needed
-  46-50 | Discretionary stimulus and multipliers | WRITE | G and tax multipliers; AD shifts
-  51-53 | Supply effects, magnitude and time lags | MEMORIZE | Recognition, law-making, impact lags
+@vocab
+Fiscal policy | Using the federal budget (spending, taxes, transfers) to influence the economy.
+Budget balance | Receipts − outlays.
+Budget deficit | Outlays exceed receipts; the balance is negative.
+Government debt | Total amount of government borrowing: the sum of past deficits minus past surpluses.
+Automatic fiscal policy | A change in fiscal policy triggered by the state of the economy, with no new law.
+Discretionary fiscal policy | A policy action that needs a new act of Congress.
+Structural balance | The budget balance that would occur if real GDP were at potential GDP.
+Cyclical balance | Actual balance − structural balance; caused by the business cycle.
+@map
+4-8 | The federal budget: institutions, receipts, outlays | MEMORIZE | Who makes the budget; money in and money out
+9-16 | Surplus, deficit and debt | WRITE | Balance = receipts − outlays; debt = past deficits
+17-26 | Supply-side effects: tax wedge, Laffer curve | SKIM | Taxes lower potential GDP
+27-35 | Generational effects; Social Security | SKIM | Generational accounting
+36-45 | Automatic stabilizers; structural and cyclical balances | MEMORIZE | No new law needed
+46-50 | Discretionary stimulus and multipliers | WRITE | G and tax multipliers; AD shifts
+51-53 | Supply effects, magnitude and time lags | MEMORIZE | Recognition, law-making, impact lags
 
 ## The federal budget | Slides 4-8 | must
 
@@ -53,7 +53,7 @@ Outlays are **T**ransfers, **G**oods and services, and **I**nterest on debt.
 - The President proposes the budget; Congress passes it
 - Receipts: mostly income and social security taxes
 - Outlays: transfers, goods and services, debt interest
-  ::
+::
 
 ## Surplus, deficit and debt | Slides 9-16 | must
 
@@ -91,7 +91,7 @@ If the deficit shrinks from $1.7 trillion to $1 trillion, the debt **still rises
 - Budget balance = receipts − outlays
 - Deficit: a flow; debt: the stock of past borrowing
 - Any deficit adds to the debt; only surpluses reduce it
-  ::
+::
 
 ## Supply-side effects of fiscal policy | Slides 17-26 | skim
 
@@ -107,7 +107,7 @@ Taxes affect **potential GDP**, not just AD:
 - An income tax creates a tax wedge, lowering employment and potential GDP
 - Taxing interest income reduces saving, investment and growth
 - Laffer curve: above some rate, higher tax rates bring in less revenue
-  ::
+::
 
 ## Generational effects | Slides 27-35 | skim
 
@@ -118,7 +118,7 @@ Taxes affect **potential GDP**, not just AD:
 - Generational accounting compares each generation's taxes and benefits in present value
 - Promised Social Security benefits exceed future taxes: a fiscal imbalance
 - Future generations bear the generational imbalance
-  ::
+::
 
 ## Automatic stabilizers and the structural deficit | Slides 36-45 | must
 
@@ -154,7 +154,7 @@ Cyclical balance = actual balance − structural balance
 - Automatic stabilizers: tax revenue and needs-tested spending change with the cycle, no new law
 - Discretionary policy needs a new government decision
 - Cyclical deficit comes from a recession; structural deficit exists even at potential GDP
-  ::
+::
 
 ## Discretionary fiscal stimulus and multipliers | Slides 46-50 | must
 
@@ -190,7 +190,7 @@ Fiscal stimulus raises real GDP **and** the price level in the short run. If it 
 - Inflationary gap: cut G or raise taxes (AD left)
 - G multiplier > tax multiplier in size; the tax multiplier is negative
 - Balanced budget multiplier is positive
-  ::
+::
 
 ## Limits: supply effects, magnitude and time lags | Slides 51-53 | know
 
@@ -211,7 +211,7 @@ By the time a stimulus takes effect, the economy may already be recovering, so t
 - Tax cuts can raise potential GDP through supply-side effects
 - Multiplier size is uncertain
 - Recognition, law-making and impact lags slow discretionary policy
-  ::
+::
 
 @cheat
 
@@ -253,133 +253,97 @@ By the time a stimulus takes effect, the economy may already be recovering, so t
 
 @mcq 4
 Fiscal policy is the use of:
-
-- Government spending, taxes and transfers to influence the economy
-
-* Interest rates and the quantity of money to influence the economy
-* Exchange rate intervention to influence the balance of payments
-* Bank regulation to keep the financial system stable and safe
-
++ Government spending, taxes and transfers to influence the economy
+- Interest rates and the quantity of money to influence the economy
+- Exchange rate intervention to influence the balance of payments
+- Bank regulation to keep the financial system stable and safe
 > Monetary policy uses interest rates and money; fiscal policy uses the budget.
-> @mcq 9
-> Government outlays are $3.4 trillion and the deficit is $1.7 trillion. Receipts are:
-
-- $1.7 trillion
-
-* $5.1 trillion
-* $3.4 trillion
-* $2.0 trillion
-
+@mcq 9
+Government outlays are $3.4 trillion and the deficit is $1.7 trillion. Receipts are:
++ $1.7 trillion
+- $5.1 trillion
+- $3.4 trillion
+- $2.0 trillion
 > Receipts = outlays − deficit.
-> @mcq 9
-> The tax rate is 10 percent, income is $800 billion and outlays are $100 billion. The budget balance is:
-
-- A deficit of $20 billion
-
-* A surplus of $20 billion
-* A deficit of $80 billion
-* A surplus of $700 billion
-
+@mcq 9
+The tax rate is 10 percent, income is $800 billion and outlays are $100 billion. The budget balance is:
++ A deficit of $20 billion
+- A surplus of $20 billion
+- A deficit of $80 billion
+- A surplus of $700 billion
 > Revenue 80 − outlays 100 = −20.
-> @mcq 15
-> Government debt is:
-
-- The total of all past deficits minus past surpluses
-
-* The excess of outlays over receipts in one year
-* The interest the government pays on its loans
-* The value of all government receipts in a year
-
+@mcq 15
+Government debt is:
++ The total of all past deficits minus past surpluses
+- The excess of outlays over receipts in one year
+- The interest the government pays on its loans
+- The value of all government receipts in a year
 > Debt is a stock built up from past deficits.
-> @mcq 15
-> The deficit falls from $1.7 trillion to $1 trillion. Government debt:
-
-- Still increases, by $1 trillion
-
-* Falls, by $0.7 trillion
-* Stays exactly the same
-* Falls to $1 trillion
-
+@mcq 15
+The deficit falls from $1.7 trillion to $1 trillion. Government debt:
++ Still increases, by $1 trillion
+- Falls, by $0.7 trillion
+- Stays exactly the same
+- Falls to $1 trillion
 > Any deficit adds to the debt.
-> @mcq 38
-> In a recession, which happens automatically, with no new law?
-
-- Income tax revenue falls and unemployment benefits rise
-
-* Congress passes a new infrastructure spending package
-* The government sends emergency relief checks to families
-* The government announces a temporary cut in tax rates
-
+@mcq 38
+In a recession, which happens automatically, with no new law?
++ Income tax revenue falls and unemployment benefits rise
+- Congress passes a new infrastructure spending package
+- The government sends emergency relief checks to families
+- The government announces a temporary cut in tax rates
 > Automatic stabilizers respond to the state of the economy.
-> @mcq 46
-> Emergency relief checks approved by Congress during a recession are:
-
-- Discretionary fiscal policy
-
-* An automatic stabilizer
-* Monetary policy
-* A structural surplus
-
+@mcq 46
+Emergency relief checks approved by Congress during a recession are:
++ Discretionary fiscal policy
+- An automatic stabilizer
+- Monetary policy
+- A structural surplus
 > They needed a new government decision.
-> @mcq 41
-> The budget balance that would occur if real GDP equalled potential GDP is the:
-
-- Structural balance
-
-* Cyclical balance
-* Primary balance
-* Actual balance
-
+@mcq 41
+The budget balance that would occur if real GDP equalled potential GDP is the:
++ Structural balance
+- Cyclical balance
+- Primary balance
+- Actual balance
 > The cyclical balance is the part caused by the business cycle.
-> @mcq 42
-> Real GDP falls below potential GDP. The budget moves toward:
-
-- A cyclical deficit
-
-* A structural surplus
-* A cyclical surplus
-* A balanced budget
-
+@mcq 42
+Real GDP falls below potential GDP. The budget moves toward:
++ A cyclical deficit
+- A structural surplus
+- A cyclical surplus
+- A balanced budget
 > Receipts fall and needs-tested spending rises in a recession.
-> @mcq 46
-> To close a recessionary gap, fiscal policy should:
-
-- Increase government spending or cut taxes
-
-* Cut government spending or raise taxes
-* Raise taxes and leave spending unchanged
-* Cut spending and leave taxes unchanged
-
+@mcq 46
+To close a recessionary gap, fiscal policy should:
++ Increase government spending or cut taxes
+- Cut government spending or raise taxes
+- Raise taxes and leave spending unchanged
+- Cut spending and leave taxes unchanged
 > Expansionary policy shifts AD right.
-> @mcq 49
-> Compared with the government expenditure multiplier, the tax multiplier is:
-
-- Smaller in size, because part of a tax cut is saved
-
-* Larger in size, because a tax cut is spent in full
-* Equal in size, because both shift AD the same way
-* Zero, because tax changes don't affect spending
-
+@mcq 49
+Compared with the government expenditure multiplier, the tax multiplier is:
++ Smaller in size, because part of a tax cut is saved
+- Larger in size, because a tax cut is spent in full
+- Equal in size, because both shift AD the same way
+- Zero, because tax changes don't affect spending
 > A riyal of G is spent in full; a riyal of tax cut is partly saved.
-> @mcq 53
-> The time it takes Congress to pass a budget is the:
-
-- Law-making lag
-
-* Recognition lag
-* Impact lag
-* Inside lag
-
+@mcq 53
+The time it takes Congress to pass a budget is the:
++ Law-making lag
+- Recognition lag
+- Impact lag
+- Inside lag
 > Recognition comes before; impact comes after.
-> @short 9
-> Government outlays are $3.4 trillion and the deficit is $1.7 trillion. Calculate receipts and the change in government debt, and say what could stop debt from rising.
-> ~ receipts, 1.7, debt increases, cut outlays, raise receipts
+@short 9
+Government outlays are $3.4 trillion and the deficit is $1.7 trillion. Calculate receipts and the change in government debt, and say what could stop debt from rising.
+~ receipts, 1.7, debt increases, cut outlays, raise receipts
 > Receipts = 3.4 − 1.7 = $1.7 trillion. Financed by borrowing, the deficit raises government debt by $1.7 trillion. To stop the debt rising, the government must cut outlays or raise receipts until the budget is balanced or in surplus.
-> @short 40
-> The economy has a large recessionary gap. Describe one discretionary fiscal policy action and one automatic stabilizer.
-> ~ increase government spending, tax cut, discretionary, tax revenue falls, unemployment benefits
+@short 40
+The economy has a large recessionary gap. Describe one discretionary fiscal policy action and one automatic stabilizer.
+~ increase government spending, tax cut, discretionary, tax revenue falls, unemployment benefits
 > Discretionary: Congress increases government expenditure (for example, an infrastructure package) or cuts taxes, shifting AD right. Automatic: as incomes fall, income tax revenue falls and unemployment benefits rise without any new law, cushioning the fall in spending.
-> @short 42
-> Distinguish the structural budget balance from the cyclical budget balance.
-> ~ structural, potential GDP, cyclical, business cycle, recession
+@short 42
+Distinguish the structural budget balance from the cyclical budget balance.
+~ structural, potential GDP, cyclical, business cycle, recession
 > The structural balance is the balance that would occur at potential GDP and reflects the government's tax and spending rules. The cyclical balance is the actual balance minus the structural balance: a cyclical deficit appears when a recession lowers receipts and raises needs-tested spending.
